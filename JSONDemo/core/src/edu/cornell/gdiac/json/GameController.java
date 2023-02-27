@@ -295,11 +295,32 @@ public class GameController implements Screen, ContactListener {
 		if (avatar.isJumping()) {
 			jumpId = playSound( jumpSound, jumpId );
 		}
+
+		// Add a bullet if we fire
+		if (avatar.isShooting()) {
+			createBullet();
+		}
 		
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 	}
-	
+
+	/**
+	 * Add a new bullet to the world and send it in the right direction.
+	 */
+	private void createBullet() {
+
+	}
+
+	/**
+	 * Remove a new bullet from the world.
+	 *
+	 * @param  bullet   the bullet to remove
+	 */
+	public void removeBullet(Obstacle bullet) {
+
+	}
+
 	/**
 	 * Draw the physics objects to the canvas
 	 *
