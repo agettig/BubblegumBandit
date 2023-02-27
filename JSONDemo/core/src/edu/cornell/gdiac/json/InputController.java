@@ -26,6 +26,7 @@ import edu.cornell.gdiac.util.XBoxController;
  * detected the X-Box controller on start-up.  This class allows us to hot-swap in
  * a controller via the new XBox360Controller class.
  */
+
 public class InputController {
 	// Sensitivity for moving crosshair with gameplay
 	private static final float GP_ACCELERATE = 1.0f;
