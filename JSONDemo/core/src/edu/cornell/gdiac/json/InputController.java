@@ -326,6 +326,11 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 			vertical -= 1.0f;
 		}
+
+		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			secondPressed = true;
+			secondPrevious = false;
+		}
 		
 		// Mouse results
         tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
