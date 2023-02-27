@@ -6,7 +6,8 @@
             "wrapV": "repeated"
         },
         "dude": "textures/dude.png",
-        "goal": "textures/goaldoor.png"
+        "goal": "textures/goaldoor.png",
+        "gum": "textures/bubblegum.png"
     },
     "fonts": {
         "display": {
