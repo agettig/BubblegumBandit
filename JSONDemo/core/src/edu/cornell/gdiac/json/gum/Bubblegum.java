@@ -32,7 +32,7 @@ public class Bubblegum extends WheelObstacle {
      *
      * */
     public Bubblegum(float x, float y){
-        super(x, y, 2);
+        super(400, 400 , 2);
     }
 
 
@@ -81,6 +81,7 @@ public class Bubblegum extends WheelObstacle {
 
     @Override
     public void draw(GameCanvas canvas) {
+        System.out.println("draw gum");
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,
                 getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
     }
