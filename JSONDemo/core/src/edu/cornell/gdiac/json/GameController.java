@@ -306,7 +306,18 @@ public class GameController implements Screen, ContactListener {
 		if (InputController.getInstance().didSecondary()) {
 			createBubbleGum(avatar);
 		}
-		
+
+		if (InputController.getInstance().didPrimary()) {
+			createBubbleGum(avatar);
+		}
+
+		if (InputController.getInstance().didTertiary()) {
+			createBubbleGum(avatar);
+		}
+
+
+
+
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 	}
