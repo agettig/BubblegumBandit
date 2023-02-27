@@ -67,6 +67,12 @@ public class DudeModel extends CapsuleObstacle {
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
+	/** How long until we can shoot again */
+	private int shootCooldown;
+
+	/** Cooldown (in animation frames) for shooting */
+	private final int shotLimit;
+
 	/**
 	 * Returns left/right movement of this character.
 	 *
@@ -76,6 +82,24 @@ public class DudeModel extends CapsuleObstacle {
 	 */
 	public float getMovement() {
 		return movement;
+	}
+
+	/**
+	 * Returns true if the dude is actively firing.
+	 *
+	 * @return true if the dude is actively firing.
+	 */
+	public boolean isShooting() {
+		return isShooting && shootCooldown <= 0;
+	}
+
+	/**
+	 * Sets whether the dude is actively firing.
+	 *
+	 * @param value whether the dude is actively firing.
+	 */
+	public void setShooting(boolean value) {
+		isShooting = value;
 	}
 
 	/**
@@ -269,11 +293,14 @@ public class DudeModel extends CapsuleObstacle {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
 
+		shotLimit = 6;
 		// Gameplay attributes
 		isGrounded = false;
+		isShooting = false;
 		isJumping = false;
 		faceRight = true;
 
+		shootCooldown = 0;
 		jumpCooldown = 0;
 	}
 
@@ -420,6 +447,12 @@ public class DudeModel extends CapsuleObstacle {
 			jumpCooldown = getJumpLimit();
 		} else {
 			jumpCooldown = Math.max(0, jumpCooldown - 1);
+		}
+
+		if (isShooting()) {
+			shootCooldown = shotLimit;
+		} else {
+			shootCooldown = Math.max(0, shootCooldown - 1);
 		}
 
 		super.update(dt);
