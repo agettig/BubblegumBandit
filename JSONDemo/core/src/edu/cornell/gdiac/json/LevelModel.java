@@ -14,6 +14,7 @@
  */
  package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -245,7 +246,10 @@ public class LevelModel {
 			for(Obstacle obj : objects) {
 				obj.drawDebug(canvas);
 			}
+//			canvas.drawFOV(Color.RED, 1, 100, 1000, 1);
 			canvas.endDebug();
 		}
+
+
 	}
 }

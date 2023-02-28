@@ -64,6 +64,12 @@ public class DudeModel extends CapsuleObstacle {
 	/** Cache for internal force calculations */
 	private Vector2 forceCache = new Vector2();
 
+	/** Field of view for player. TEST */
+	private Vision vision;
+
+
+
+
 	/**
 	 * Returns left/right movement of this character.
 	 * 
@@ -272,6 +278,9 @@ public class DudeModel extends CapsuleObstacle {
 		faceRight = true;
 		
 		jumpCooldown = 0;
+
+		//field of view
+		vision = new Vision(8f, 1, 45f, Color.RED, this);
 	}
 	
 	/**
