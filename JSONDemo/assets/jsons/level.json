@@ -22,11 +22,11 @@
        	"sensorcolor":   "red",
        	"sensoropacity": 192
     },
-    "gum": {
+    "gumProjectile": {
       "offset" : 0.4,
       "speed"  : 10.0,
       "density": 10.0,
-      "texture": "gum"
+      "texture": "gumProjectile"
     },
     "exit": {
         "pos":           [ 2.0, 10.0],
