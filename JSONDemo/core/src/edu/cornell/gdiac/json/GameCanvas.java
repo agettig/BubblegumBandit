@@ -1151,4 +1151,23 @@ public class GameCanvas {
 		local.scale(sx,sy);
 		local.translate(-ox,-oy);
 	}
+
+
+	/**
+	 * Draws the ray casts of a body's field of view
+	 *
+	 */
+	public void drawFOV (Color color, float ox, float oy, float x, float y){
+		if (active != DrawPass.DEBUG) {
+//			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+			return;
+		}
+//		debugRender.setProjectionMatrix(camera.combined);
+//		debugRender.begin(ShapeRenderer.ShapeType.Line);
+		local.applyTo(vertex);
+		debugRender.setColor(color);
+		debugRender.line(ox,oy,x,y);
+		System.out.println("WHAT");
+//		debugRender.end();
+	}
 }
