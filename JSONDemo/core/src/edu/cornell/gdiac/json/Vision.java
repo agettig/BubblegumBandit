@@ -28,6 +28,8 @@ public class Vision {
 
     private Obstacle origin;
 
+    private Body body;
+
 
     public Vision(float radius, float direction, float range, Color color, Obstacle origin) {
         this.color = color;
@@ -37,18 +39,47 @@ public class Vision {
         this.origin = origin;
     }
 
-    /** Creates a sphere of vision */
-    public Vision(float radius, Color color, Obstacle origin) {
+    public Vision(float radius, float direction, float range, Color color, Body body) {
         this.color = color;
         this.radius = radius;
         this.direction = direction;
         this.range = range;
-        this.origin = origin;
+        this.body = body;
     }
 
+//    /** Creates a sphere of vision */
+//    public Vision(float radius, Color color, Obstacle origin) {
+//        this.color = color;
+//        this.radius = radius;
+//        this.direction = direction;
+//        this.range = range;
+//        this.origin = origin;
+//    }
 
-    public void test(){
-        Vector2 p1 = new Vector2(), p2 = new Vector2(), collision = new Vector2(), normal = new Vector2();
+
+    //testing
+    private Vector2 p1 = new Vector2(), p2 = new Vector2(), collision = new Vector2(), normal = new Vector2();
+
+    public void test(World world){
+
+        RayCastCallback callback = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                //point - position that ray intersects with a fixture
+                //normal - intersection relative to the point
+                collision.set(point);
+                Vision.this.normal.set(normal).add(point);
+                return -1;
+            }
+        };
+
+        //ray starts on object (this is some reason the bottom left corner of the screen)
+        p1 = origin.getPosition();
+        //rn is drawn diagonally upwards
+        p2.set(p1.x + 100, p1.y + 100);
+
+        world.rayCast(callback, p1, p2);
+
     }
 
     /** modifies direction but maintains range */
@@ -113,22 +144,19 @@ public class Vision {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        canvas.drawFOV(color, 1000000, 100, 1, 1);
+//        canvas.drawFOV(color, 1000000, 100, 1, 1);
+        canvas.drawFOV(color, p1, p2, collision, normal);
     }
 
-    /**
-     * Draws the outline of the physics body.
-     *
-     * This method can be helpful for understanding issues with collisions.
-     *
-     * @param canvas Drawing context
-     */
+//    /**
+//     * Draws the outline of the physics body.
+//     *
+//     * This method can be helpful for understanding issues with collisions.
+//     *
+//     * @param canvas Drawing context
+//     */
 //    public void drawDebug(GameCanvas canvas) {
-//        if (color != null) {
-//            for(PolygonShape tri : shapes) {
-//                canvas.drawPhysics(tri,color,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
-//            }
-//        }
+//        canvas.drawFOV(color, p1, p2, collision, normal);
 //    }
 
 

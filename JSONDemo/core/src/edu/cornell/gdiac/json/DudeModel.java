@@ -377,6 +377,9 @@ public class DudeModel extends CapsuleObstacle {
 		sensorDef.shape = sensorShape;
 		sensorFixture = body.createFixture(sensorDef);
 		sensorFixture.setUserData(getSensorName());
+
+		//actviate physics for raycasts
+		vision.test(world);
 		
 		return true;
 	}
@@ -440,6 +443,8 @@ public class DudeModel extends CapsuleObstacle {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+			vision.draw(canvas);
 		}
+
 	}
 }

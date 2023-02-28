@@ -66,6 +66,11 @@ public class GameCanvas {
 	
 	/** Rendering context for the debug outlines */
 	private ShapeRenderer debugRender;
+
+
+	/** Rendering context for the FOV outlines */
+	private ShapeRenderer fovRender;
+
 	
 	/** Track whether or not we are active (for error checking) */
 	private DrawPass active;
@@ -101,12 +106,14 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 		spriteBatch = new PolygonSpriteBatch();
 		debugRender = new ShapeRenderer();
+		fovRender = new ShapeRenderer();
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(getWidth(),getHeight());
 		camera.setToOrtho(false);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
+		fovRender.setProjectionMatrix(camera.combined);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -337,6 +344,7 @@ public class GameCanvas {
 		
 		setBlendState(BlendState.NO_PREMULT);
 		spriteBatch.begin();
+//		fovRender.begin();
     	active = DrawPass.STANDARD;
     }
 
@@ -374,6 +382,7 @@ public class GameCanvas {
 	 */
     public void end() {
     	spriteBatch.end();
+		fovRender.end();
     	active = DrawPass.INACTIVE;
     }
 
@@ -1157,17 +1166,19 @@ public class GameCanvas {
 	 * Draws the ray casts of a body's field of view
 	 *
 	 */
-	public void drawFOV (Color color, float ox, float oy, float x, float y){
-		if (active != DrawPass.DEBUG) {
-//			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
-			return;
-		}
-//		debugRender.setProjectionMatrix(camera.combined);
-//		debugRender.begin(ShapeRenderer.ShapeType.Line);
+	public void drawFOV (Color color, Vector2 p1, Vector2 p2, Vector2 collision, Vector2 normal){
+//		if (active != DrawPass.DEBUG) {
+////			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+//			return;
+//		}
+		fovRender.begin(ShapeRenderer.ShapeType.Line);
 		local.applyTo(vertex);
-		debugRender.setColor(color);
-		debugRender.line(ox,oy,x,y);
-		System.out.println("WHAT");
+		fovRender.setColor(color);
+		fovRender.line(p1, p2);
+		fovRender.line(collision, normal);
+//		System.out.println("hola");
+//		fovRender.end();
+
 //		debugRender.end();
 	}
 }
