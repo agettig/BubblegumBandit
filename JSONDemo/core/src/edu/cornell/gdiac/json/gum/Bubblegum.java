@@ -77,10 +77,4 @@ public class Bubblegum extends WheelObstacle {
      */
     public void setVy(float vy) { this.vy = vy; }
 
-    @Override
-    public void draw(GameCanvas canvas) {
-        System.out.println("draw gum");
-        canvas.draw(texture, Color.WHITE,origin.x,origin.y,
-                getX()*drawScale.x,getY()*drawScale.y,getAngle(),0.05f,0.05f);
-    }
 }
