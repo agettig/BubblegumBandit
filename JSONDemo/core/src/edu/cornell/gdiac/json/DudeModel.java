@@ -393,6 +393,10 @@ public class DudeModel extends CapsuleObstacle {
 		if (Math.abs(getVX()) >= getMaxSpeed()) {
 			setVX(Math.signum(getVX())*getMaxSpeed());
 		} else {
+			// TODO: This seems to create an issue where you can't slow down a jump
+			// once you hit top speed. Should check both directions independently
+			// and let you move the opposite direction even if at top speed.
+			// Might not be a problem without jumping, but it might be.
 			forceCache.set(getMovement(),0);
 			body.applyForce(forceCache,getPosition(),true);
 		}
