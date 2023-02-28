@@ -26,6 +26,7 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.json.gum.Bubblegum;
 
 /**
  * Gameplay controller for the game.
@@ -80,8 +81,12 @@ public class GameController implements Screen, ContactListener {
 	/** Countdown active for winning or losing */
 	private int countdown;
 
+	private TextureRegion gumTexture;
+
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
+
+	protected Queue<Bubblegum> gumQueue = new Queue<Bubblegum>();
 
 	/**
 	 * Returns true if the level is completed.
@@ -207,6 +212,7 @@ public class GameController implements Screen, ContactListener {
 		directory.finishLoading();
 		displayFont = directory.getEntry( "display", BitmapFont.class );
 		jumpSound = directory.getEntry( "jump", SoundEffect.class );
+		gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
 
 		// This represents the level but does not BUILD it
 		levelFormat = directory.getEntry( "level1", JsonValue.class );
@@ -304,6 +310,35 @@ public class GameController implements Screen, ContactListener {
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 		level.update(dt);
+	}
+
+
+	/**
+	 * Add a new bullet to the world and send it in the right direction.
+	 */
+	private void createBubbleGum(DudeModel avatar) {
+		float offset = 100;
+		offset *= (avatar.isFacingRight() ? 1 : -1);
+
+		//TEMPORARY HARDCODED VALUES FOR NOW
+		Bubblegum gum = new Bubblegum(avatar.getX() + offset, avatar.getY() + offset);
+        gum.setName("bullet");
+		gum.setDensity(10);
+	    gum.setTexture(gumTexture);
+	    gum.setBullet(true);
+	    gum.setGravityScale(0);
+		gum.setVX(12);
+
+		level.activate(gum);
+	}
+
+	/**
+	 * Remove a new bullet from the world.
+	 *
+	 * @param  bullet   the bullet to remove
+	 */
+	public void removeBubbleGum(Obstacle bullet) {
+
 	}
 
 	/**
