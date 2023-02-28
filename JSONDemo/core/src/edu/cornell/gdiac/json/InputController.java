@@ -160,6 +160,16 @@ public class InputController {
 		return tertiaryPressed;
 	}
 
+	/** Returns x coordinate of mouse click*/
+	public int getX() {
+		return Gdx.input.getX();
+	}
+
+	/**Returns y coordinate of mouse click */
+	public int getY() {
+		return Gdx.input.getY();
+	}
+
 	/**
 	 * Returns true if the reset button was pressed.
 	 *

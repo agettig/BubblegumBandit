@@ -25,14 +25,12 @@ public class Bubblegum extends WheelObstacle {
     /** Reference to the character avatar */
 	private DudeModel avatar;
 
-
-
     /**
      * Creates a Bubblegum projectile.
      *
      * */
     public Bubblegum(float x, float y){
-        super(400, 400 , 2);
+        super(x, y, 2);
     }
 
 
@@ -83,6 +81,6 @@ public class Bubblegum extends WheelObstacle {
     public void draw(GameCanvas canvas) {
         System.out.println("draw gum");
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,
-                getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
+                getX()*drawScale.x,getY()*drawScale.y,getAngle(),0.05f,0.05f);
     }
 }
