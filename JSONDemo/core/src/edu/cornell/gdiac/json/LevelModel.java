@@ -22,6 +22,8 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
+import java.util.Iterator;
+
 /**
  * Represents a single level in our game
  *
@@ -53,7 +55,7 @@ public class LevelModel {
 	
 	/** All the objects in the world. */
 	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
-	
+
 	/**
 	 * Returns the bounding rectangle for the physics world
 	 * 
@@ -182,7 +184,7 @@ public class LevelModel {
 	    avatar = new DudeModel();
 	    avatar.initialize(directory,levelFormat.get("avatar"));
 	    avatar.setDrawScale(scale);
-		activate(avatar);
+	    activate(avatar);
 	}
 
 	
@@ -200,7 +202,7 @@ public class LevelModel {
 	/**
 	 * Immediately adds the object to the physics world
 	 *
-	 * param obj The object to add
+	 * @param obj The object to add
 	 */
 	protected void activate(Obstacle obj) {
 		assert inBounds(obj) : "Object is not in bounds";
@@ -221,6 +223,26 @@ public class LevelModel {
 		boolean horiz = (bounds.x <= obj.getX() && obj.getX() <= bounds.x+bounds.width);
 		boolean vert  = (bounds.y <= obj.getY() && obj.getY() <= bounds.y+bounds.height);
 		return horiz && vert;
+	}
+
+	/**
+	 * Updates the level objects' physics state (NOT GAME LOGIC).
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 */
+	public void update(float dt) {
+		// Garbage collect the deleted objects.
+		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		while (iterator.hasNext()) {
+			PooledList<Obstacle>.Entry entry = iterator.next();
+			Obstacle obj = entry.getValue();
+			if (obj.isRemoved()) {
+				obj.deactivatePhysics(world);
+				entry.remove();
+			} else {
+				obj.update(dt);
+			}
+		}
 	}
 	
 	/**

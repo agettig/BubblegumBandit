@@ -53,7 +53,7 @@ public class GameController implements Screen, ContactListener {
 
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
-    /** How many frames after winning/losing do we continue? */
+    	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
 	// THESE ARE CONSTANTS BECAUSE WE NEED THEM BEFORE THE LEVEL IS LOADED
@@ -310,6 +310,7 @@ public class GameController implements Screen, ContactListener {
 
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+		level.update(dt);
 	}
 
 	/**
@@ -484,6 +485,15 @@ public class GameController implements Screen, ContactListener {
 				(bd1 == door   && bd2 == avatar)) {
 				setComplete(true);
 			}
+
+			// Gum collision with world
+			// TODO: Gum interactions
+			if (bd1.getName().equals("gum") && bd2 != avatar) {
+				removeGum(bd1);
+			}
+			if (bd2.getName().equals("gum") && bd1 != avatar) {
+				removeGum(bd2);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -563,5 +573,42 @@ public class GameController implements Screen, ContactListener {
 			sound.stop( soundId );
 		}
 		return sound.play(volume);
+	}
+
+	/**
+	 * Add a new bullet to the world and send it in the right direction.
+	 */
+	private void createGum() {
+		JsonValue gumJV = levelFormat.get("gum");
+		DudeModel avatar = level.getAvatar();
+		float offset = gumJV.getFloat("offset",0);
+		offset *= (avatar.isFacingRight() ? 1 : -1);
+		String key = gumJV.get("texture").asString();
+		TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+		float radius = gumTexture.getRegionWidth()/(2.0f*level.getScale().x);
+		WheelObstacle gum = new WheelObstacle(avatar.getX()+offset, avatar.getY(), radius);
+
+		gum.setName(gumJV.name());
+		gum.setDensity(gumJV.getFloat("density", 0));
+		gum.setDrawScale(level.getScale());
+		gum.setTexture(gumTexture);
+		gum.setBullet(true);
+		gum.setGravityScale(0);
+		// TODO: For different trajectories: change gravity scale, add various forces
+
+		// Compute position and velocity
+		float speed = gumJV.getFloat( "speed", 0 );
+		speed  *= (avatar.isFacingRight() ? 1 : -1);
+		gum.setVX(speed);
+		level.activate(gum);
+	}
+
+	/**
+	 * Remove a gum from the world.
+	 *
+	 * @param  gum   the gum to remove
+	 */
+	public void removeGum(Obstacle gum) {
+		gum.markRemoved(true);
 	}
 }
