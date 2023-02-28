@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -307,17 +308,6 @@ public class GameController implements Screen, ContactListener {
 			createBubbleGum(avatar);
 		}
 
-		if (InputController.getInstance().didPrimary()) {
-			createBubbleGum(avatar);
-		}
-
-		if (InputController.getInstance().didTertiary()) {
-			createBubbleGum(avatar);
-		}
-
-
-
-
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 	}
@@ -326,15 +316,19 @@ public class GameController implements Screen, ContactListener {
 	 * Add a new bullet to the world and send it in the right direction.
 	 */
 	private void createBubbleGum(DudeModel avatar) {
+		float offset = 100;
+		offset *= (avatar.isFacingRight() ? 1 : -1);
+
 		//TEMPORARY HARDCODED VALUES FOR NOW
-		Bubblegum gum = new Bubblegum(avatar.getX(), avatar.getY());
+		Bubblegum gum = new Bubblegum(avatar.getX() + offset, avatar.getY() + offset);
         gum.setName("bullet");
 		gum.setDensity(10);
 	    gum.setTexture(gumTexture);
 	    gum.setBullet(true);
 	    gum.setGravityScale(0);
 		gum.setVX(12);
-		gumQueue.addLast(gum);
+
+		level.activate(gum);
 	}
 
 	/**
