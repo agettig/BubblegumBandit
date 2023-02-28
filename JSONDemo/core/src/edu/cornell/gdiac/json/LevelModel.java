@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.json.enemies.*;
 
 /**
  * Represents a single level in our game
@@ -177,6 +178,21 @@ public class LevelModel {
 	        activate(obj);
 	        floor = floor.next();
 	    }
+
+		JsonValue enemy = levelFormat.get("enemies").child();
+		while (enemy != null){
+			Enemy a;
+			if (enemy.get("type").asString().equals("Moving")){
+				a = new StationaryEnemy();
+			}
+			else {
+				a = new MovingEnemy();
+			}
+			a.initialize(directory, enemy);
+			a.setDrawScale(scale);
+			activate(a);
+			enemy = enemy.next();
+		}
 
 		// Create dude
 	    avatar = new DudeModel();
