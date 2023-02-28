@@ -590,7 +590,8 @@ public class GameController implements Screen, ContactListener {
 		TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
 		float radius = gumTexture.getRegionWidth()/(2.0f*level.getScale().x);
 
-		WheelObstacle gum = new WheelObstacle(startX, startY, radius);
+		Bubblegum gum = new Bubblegum(startX, startY);
+		gum.setRadius(radius);
 
 		// Physics properties
 		gum.setName(gumJV.name());
