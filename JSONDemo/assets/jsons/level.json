@@ -23,7 +23,7 @@
        	"sensoropacity": 192
     },
     "gum": {
-      "offset" : 0.2,
+      "offset" : 0.4,
       "speed"  : 10.0,
       "density": 10.0,
       "texture": "gum"
