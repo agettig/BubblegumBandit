@@ -20,7 +20,13 @@
       	"sensorsize": 	 [ 0.183, 0.05 ], 
       	"sensorname": 	 "dudeGroundSensor",
        	"sensorcolor":   "red",
-       	"sensoropacity": 192,
+       	"sensoropacity": 192
+    },
+    "gum": {
+      "offset" : 0.2,
+      "speed"  : 10.0,
+      "density": 10.0,
+      "texture": "gum"
     },
     "exit": {
         "pos":           [ 2.0, 10.0],
@@ -57,7 +63,7 @@
             "texture":       "earth",
             "debugcolor":    "yellow",
             "debugopacity":  200
-        },
+        }
     },
   	"platforms": {
   		"floor1": {
