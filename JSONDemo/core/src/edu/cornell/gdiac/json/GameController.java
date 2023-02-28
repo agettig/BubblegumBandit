@@ -86,7 +86,11 @@ public class GameController implements Screen, ContactListener {
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
 
+
 	protected Queue<Bubblegum> gumQueue = new Queue<Bubblegum>();
+
+	/**Queue of Obstacles involved in a gum collision to make static  */
+	protected Queue<Obstacle> stickyQueue = new Queue<Obstacle>();
 
 	/**
 	 * Returns true if the level is completed.
@@ -304,32 +308,20 @@ public class GameController implements Screen, ContactListener {
 
 		if (InputController.getInstance().didShoot()) {
 			// TODO: Visible crosshair?
-			createGum(InputController.getInstance().getCrossHair()); // Fire gum if shoot
+			createGumProjectile(InputController.getInstance().getCrossHair());
+		}
+		level.update(dt);
+
+		if (!stickyQueue.isEmpty()) {
+			for (Obstacle ob : stickyQueue) {
+				ob.setBodyType(BodyDef.BodyType.StaticBody);
+			}
+			stickyQueue.clear();
+
 		}
 
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
-		level.update(dt);
-	}
-
-
-	/**
-	 * Add a new bullet to the world and send it in the right direction.
-	 */
-	private void createBubbleGum(DudeModel avatar) {
-		float offset = 100;
-		offset *= (avatar.isFacingRight() ? 1 : -1);
-
-		//TEMPORARY HARDCODED VALUES FOR NOW
-		Bubblegum gum = new Bubblegum(avatar.getX() + offset, avatar.getY() + offset);
-        gum.setName("bullet");
-		gum.setDensity(10);
-	    gum.setTexture(gumTexture);
-	    gum.setBullet(true);
-	    gum.setGravityScale(0);
-		gum.setVX(12);
-
-		level.activate(gum);
 	}
 
 	/**
@@ -488,11 +480,23 @@ public class GameController implements Screen, ContactListener {
 
 			// Gum collision with world
 			// TODO: Gum interactions
-			if (bd1.getName().equals("gum") && bd2 != avatar) {
-				removeGum(bd1);
+			if (bd1.getName().equals("gumProjectile")) {
+				bd1.setName("stickyGum");
+				stickyQueue.addLast(bd1);
+				stickyQueue.addLast(bd2);
 			}
-			if (bd2.getName().equals("gum") && bd1 != avatar) {
-				removeGum(bd2);
+			if (bd2.getName().equals("gumProjectile")) {
+				bd2.setName("stickyGum");
+				stickyQueue.addLast(bd1);
+				stickyQueue.addLast(bd2);
+			}
+			if (bd1.getName().equals("stickyGum")) {
+				stickyQueue.addLast(bd2);
+				System.out.println("Sticky gum collision");
+			}
+			if (bd2.getName().equals("stickyGum")) {
+				stickyQueue.addLast(bd1);
+				System.out.println("Sticky gum collision");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -576,10 +580,10 @@ public class GameController implements Screen, ContactListener {
 	}
 
 	/**
-	 * Add a new bullet to the world and send it in the right direction.
+	 * Add a new gum projectile to the world and send it in the right direction.
 	 */
-	private void createGum(Vector2 target) {
-		JsonValue gumJV = levelFormat.get("gum");
+	private void createGumProjectile(Vector2 target) {
+		JsonValue gumJV = levelFormat.get("gumProjectile");
 		DudeModel avatar = level.getAvatar();
 		float offset = gumJV.getFloat("offset",0);
 		offset *= (target.x > avatar.getX() ? 1 : -1);
@@ -590,8 +594,7 @@ public class GameController implements Screen, ContactListener {
 		TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
 		float radius = gumTexture.getRegionWidth()/(2.0f*level.getScale().x);
 
-		Bubblegum gum = new Bubblegum(startX, startY);
-		gum.setRadius(radius);
+		WheelObstacle gum = new WheelObstacle(startX, startY, radius);
 
 		// Physics properties
 		gum.setName(gumJV.name());
@@ -618,6 +621,7 @@ public class GameController implements Screen, ContactListener {
 	 * @param  gum   the gum to remove
 	 */
 	public void removeGum(Obstacle gum) {
+		System.out.println("Gum projectile deleted");
 		gum.markRemoved(true);
 	}
 }
