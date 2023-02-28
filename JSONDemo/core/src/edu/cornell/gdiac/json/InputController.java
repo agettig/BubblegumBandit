@@ -26,6 +26,7 @@ import edu.cornell.gdiac.util.XBoxController;
  * detected the X-Box controller on start-up.  This class allows us to hot-swap in
  * a controller via the new XBox360Controller class.
  */
+
 public class InputController {
 	// Sensitivity for moving crosshair with gameplay
 	private static final float GP_ACCELERATE = 1.0f;
@@ -158,6 +159,16 @@ public class InputController {
 	 */
 	public boolean didShoot() {
 		return shootPressed && !shootPrevious;
+	}
+
+	/** Returns x coordinate of mouse click*/
+	public int getX() {
+		return Gdx.input.getX();
+	}
+
+	/**Returns y coordinate of mouse click */
+	public int getY() {
+		return Gdx.input.getY();
 	}
 
 	/**
@@ -327,6 +338,11 @@ public class InputController {
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
 			vertical -= 1.0f;
+		}
+
+		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			secondPressed = true;
+			secondPrevious = false;
 		}
 		
 		// Mouse results

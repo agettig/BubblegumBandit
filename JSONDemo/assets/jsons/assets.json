@@ -8,6 +8,7 @@
         "dude": "textures/dude.png",
         "goal": "textures/goaldoor.png",
         "gum": "textures/gum.png"
+
     },
     "fonts": {
         "display": {

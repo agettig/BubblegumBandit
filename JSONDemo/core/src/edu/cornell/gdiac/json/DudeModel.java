@@ -33,14 +33,14 @@ public class DudeModel extends CapsuleObstacle {
 	/** The factor to multiply by the input */
 	private float force;
 	/** The amount to slow the character down */
-	private float damping; 
+	private float damping;
 	/** The maximum character speed */
 	private float maxspeed;
 	/** The impulse for the character jump */
 	private float jumppulse;
 	/** Cooldown (in animation frames) for jumping */
 	private int jumpLimit;
-	
+
 	/** The current horizontal movement of the character */
 	private float   movement;
 	/** Which direction is the character facing */
@@ -60,13 +60,22 @@ public class DudeModel extends CapsuleObstacle {
 	private String sensorName;
 	/** The color to paint the sensor in debug mode */
 	private Color sensorColor;
-	
+
 	/** Cache for internal force calculations */
 	private Vector2 forceCache = new Vector2();
 
+	/** Whether we are actively shooting */
+	private boolean isShooting;
+
+	/** How long until we can shoot again */
+	private int shootCooldown;
+
+	/** Cooldown (in animation frames) for shooting */
+	private final int shotLimit;
+
 	/**
 	 * Returns left/right movement of this character.
-	 * 
+	 *
 	 * This is the result of input times dude force.
 	 *
 	 * @return left/right movement of this character.
@@ -74,16 +83,34 @@ public class DudeModel extends CapsuleObstacle {
 	public float getMovement() {
 		return movement;
 	}
-	
+
+	/**
+	 * Returns true if the dude is actively firing.
+	 *
+	 * @return true if the dude is actively firing.
+	 */
+	public boolean isShooting() {
+		return isShooting && shootCooldown <= 0;
+	}
+
+	/**
+	 * Sets whether the dude is actively firing.
+	 *
+	 * @param value whether the dude is actively firing.
+	 */
+	public void setShooting(boolean value) {
+		isShooting = value;
+	}
+
 	/**
 	 * Sets left/right movement of this character.
-	 * 
+	 *
 	 * This is the result of input times dude force.
 	 *
 	 * @param value left/right movement of this character.
 	 */
 	public void setMovement(float value) {
-		movement = value; 
+		movement = value;
 		// Change facing if appropriate
 		if (movement < 0) {
 			faceRight = false;
@@ -100,14 +127,14 @@ public class DudeModel extends CapsuleObstacle {
 	public boolean isJumping() {
 		return isJumping && jumpCooldown <= 0 && isGrounded;
 	}
-	
+
 	/**
 	 * Sets whether the dude is actively jumping.
 	 *
 	 * @param value whether the dude is actively jumping.
 	 */
 	public void setJumping(boolean value) {
-		isJumping = value; 
+		isJumping = value;
 	}
 
 	/**
@@ -118,14 +145,14 @@ public class DudeModel extends CapsuleObstacle {
 	public boolean isGrounded() {
 		return isGrounded;
 	}
-	
+
 	/**
 	 * Sets whether the dude is on the ground.
 	 *
 	 * @param value whether the dude is on the ground.
 	 */
 	public void setGrounded(boolean value) {
-		isGrounded = value; 
+		isGrounded = value;
 	}
 
 	/**
@@ -138,7 +165,7 @@ public class DudeModel extends CapsuleObstacle {
 	public float getForce() {
 		return force;
 	}
-	
+
 	/**
 	 * Sets how much force to apply to get the dude moving
 	 *
@@ -158,7 +185,7 @@ public class DudeModel extends CapsuleObstacle {
 	public float getDamping() {
 		return damping;
 	}
-	
+
 	/**
 	 * Sets how hard the brakes are applied to get a dude to stop moving
 	 *
@@ -167,51 +194,51 @@ public class DudeModel extends CapsuleObstacle {
 	public void setDamping(float value) {
 		damping = value;
 	}
-	
+
 	/**
-	 * Returns the upper limit on dude left-right movement.  
+	 * Returns the upper limit on dude left-right movement.
 	 *
 	 * This does NOT apply to vertical movement.
 	 *
-	 * @return the upper limit on dude left-right movement.  
+	 * @return the upper limit on dude left-right movement.
 	 */
 	public float getMaxSpeed() {
 		return maxspeed;
 	}
-	
+
 	/**
-	 * Sets the upper limit on dude left-right movement.  
+	 * Sets the upper limit on dude left-right movement.
 	 *
 	 * This does NOT apply to vertical movement.
 	 *
-	 * @param value	the upper limit on dude left-right movement.  
+	 * @param value	the upper limit on dude left-right movement.
 	 */
 	public void setMaxSpeed(float value) {
 		maxspeed = value;
 	}
-	
+
 	/**
-	 * Returns the upward impulse for a jump.  
+	 * Returns the upward impulse for a jump.
 	 *
-	 * @return the upward impulse for a jump.  
+	 * @return the upward impulse for a jump.
 	 */
 	public float getJumpPulse() {
 		return jumppulse;
 	}
-	
+
 	/**
-	 * Sets the upward impulse for a jump.  
+	 * Sets the upward impulse for a jump.
 	 *
-	 * @param value	the upward impulse for a jump.  
+	 * @param value	the upward impulse for a jump.
 	 */
 	public void setJumpPulse(float value) {
 		jumppulse = value;
 	}
-	
+
 	/**
 	 * Returns the cooldown limit between jumps
 	 *
-	 * @return the cooldown limit between jumps  
+	 * @return the cooldown limit between jumps
 	 */
 	public int getJumpLimit() {
 		return jumpLimit;
@@ -220,7 +247,7 @@ public class DudeModel extends CapsuleObstacle {
 	/**
 	 * Sets the cooldown limit between jumps
 	 *
-	 * @param value	the cooldown limit between jumps  
+	 * @param value	the cooldown limit between jumps
 	 */
 	public void setJumpLimit(int value) {
 		jumpLimit = value;
@@ -233,10 +260,10 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * @return the name of the ground sensor
 	 */
-	public String getSensorName() { 
+	public String getSensorName() {
 		return sensorName;
 	}
-	
+
 	/**
 	 * Sets the name of the ground sensor
 	 *
@@ -244,7 +271,7 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * @param name the name of the ground sensor
 	 */
-	public void setSensorName(String name) { 
+	public void setSensorName(String name) {
 		sensorName = name;
 	}
 
@@ -256,7 +283,7 @@ public class DudeModel extends CapsuleObstacle {
 	public boolean isFacingRight() {
 		return faceRight;
 	}
-	
+
 	/**
 	 * Creates a new dude with degenerate settings
 	 *
@@ -265,19 +292,22 @@ public class DudeModel extends CapsuleObstacle {
 	public DudeModel() {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
-		
+
+		shotLimit = 6;
 		// Gameplay attributes
 		isGrounded = false;
+		isShooting = false;
 		isJumping = false;
 		faceRight = true;
-		
+
+		shootCooldown = 0;
 		jumpCooldown = 0;
 	}
-	
+
 	/**
 	 * Initializes the dude via the given JSON value
 	 *
-	 * The JSON value has been parsed and is part of a bigger level file.  However, 
+	 * The JSON value has been parsed and is part of a bigger level file.  However,
 	 * this JSON value is limited to the dude subtree
 	 *
 	 * @param directory the asset manager
@@ -289,7 +319,7 @@ public class DudeModel extends CapsuleObstacle {
 		float[] size = json.get("size").asFloatArray();
 		setPosition(pos[0],pos[1]);
 		setDimension(size[0],size[1]);
-		
+
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
 		setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
@@ -301,41 +331,41 @@ public class DudeModel extends CapsuleObstacle {
 		setMaxSpeed(json.get("maxspeed").asFloat());
 		setJumpPulse(json.get("jumppulse").asFloat());
 		setJumpLimit(json.get("jumplimit").asInt());
-		
+
 		// Reflection is best way to convert name to color
 		Color debugColor;
 		try {
 			String cname = json.get("debugcolor").asString().toUpperCase();
-		    Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-		    debugColor = new Color((Color)field.get(null));
+			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+			debugColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			debugColor = null; // Not defined
 		}
 		int opacity = json.get("debugopacity").asInt();
 		debugColor.mul(opacity/255.0f);
 		setDebugColor(debugColor);
-		
+
 		// Now get the texture from the AssetManager singleton
 		String key = json.get("texture").asString();
 		TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 		setTexture(texture);
-		
+
 		// Get the sensor information
 		Vector2 sensorCenter = new Vector2(0, -getHeight()/2);
 		float[] sSize = json.get("sensorsize").asFloatArray();
 		sensorShape = new PolygonShape();
 		sensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
-		
+
 		// Reflection is best way to convert name to color
 		try {
 			String cname = json.get("sensorcolor").asString().toUpperCase();
-		    Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-		    sensorColor = new Color((Color)field.get(null));
+			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+			sensorColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			sensorColor = null; // Not defined
 		}
 		opacity = json.get("sensoropacity").asInt();
-		sensorColor.mul(opacity/255.0f);	
+		sensorColor.mul(opacity/255.0f);
 		sensorName = json.get("sensorname").asString();
 	}
 
@@ -356,11 +386,11 @@ public class DudeModel extends CapsuleObstacle {
 
 		// Ground Sensor
 		// -------------
-		// We only allow the dude to jump when he's on the ground. 
+		// We only allow the dude to jump when he's on the ground.
 		// Double jumping is not allowed.
 		//
-		// To determine whether or not the dude is on the ground, 
-		// we create a thin sensor under his feet, which reports 
+		// To determine whether or not the dude is on the ground,
+		// we create a thin sensor under his feet, which reports
 		// collisions with the world but has no collision response.
 		FixtureDef sensorDef = new FixtureDef();
 		sensorDef.density = getDensity();
@@ -368,10 +398,10 @@ public class DudeModel extends CapsuleObstacle {
 		sensorDef.shape = sensorShape;
 		sensorFixture = body.createFixture(sensorDef);
 		sensorFixture.setUserData(getSensorName());
-		
+
 		return true;
 	}
-	
+
 
 	/**
 	 * Applies the force to the body of this dude
@@ -382,13 +412,13 @@ public class DudeModel extends CapsuleObstacle {
 		if (!isActive()) {
 			return;
 		}
-		
+
 		// Don't want to be moving. Damp out player motion
 		if (getMovement() == 0f) {
 			forceCache.set(-getDamping()*getVX(),0);
 			body.applyForce(forceCache,getPosition(),true);
 		}
-		
+
 		// Velocity too high, clamp it
 		if (Math.abs(getVX()) >= getMaxSpeed()) {
 			setVX(Math.signum(getVX())*getMaxSpeed());
@@ -407,7 +437,7 @@ public class DudeModel extends CapsuleObstacle {
 			body.applyLinearImpulse(forceCache,getPosition(),true);
 		}
 	}
-	
+
 	/**
 	 * Updates the object's physics state (NOT GAME LOGIC).
 	 *
@@ -422,7 +452,13 @@ public class DudeModel extends CapsuleObstacle {
 		} else {
 			jumpCooldown = Math.max(0, jumpCooldown - 1);
 		}
-		
+
+		if (isShooting()) {
+			shootCooldown = shotLimit;
+		} else {
+			shootCooldown = Math.max(0, shootCooldown - 1);
+		}
+
 		super.update(dt);
 	}
 
