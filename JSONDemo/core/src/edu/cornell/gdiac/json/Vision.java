@@ -24,41 +24,56 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast */
-    private int numRays = 5;
-
-    private Obstacle origin;
-
-    private Body body;
+    private int numRays = 64;
 
 
-    public Vision(float radius, float direction, float range, Color color, Obstacle origin) {
-        this.color = color;
+    private Array<Vector2> rays = new Array<>(numRays);
+    private Array<Body> bodies = new Array<>();
+
+
+    public Vision(float radius, float direction, float range, Color color) {
+        this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
         this.direction = direction;
         this.range = range;
-        this.origin = origin;
+        for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
-    public Vision(float radius, float direction, float range, Color color, Body body) {
-        this.color = color;
+    /** Creates a sphere of vision */
+    public Vision(float radius, Color color, Obstacle origin) {
+        this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
         this.direction = direction;
         this.range = range;
-        this.body = body;
+        for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
-//    /** Creates a sphere of vision */
-//    public Vision(float radius, Color color, Obstacle origin) {
-//        this.color = color;
-//        this.radius = radius;
-//        this.direction = direction;
-//        this.range = range;
-//        this.origin = origin;
-//    }
+    public void update(World world, Vector2 origin) {
+        float startAngle = (direction - range / 2) % (float) Math.PI;
+        for (int i = 0; i < numRays; i++) {
+            float angle = startAngle + i * (range / numRays) % (float) Math.PI;
+            final int finalI = i;
+            Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
+                origin.y + radius * (float) Math.sin(angle));
+            rays.get(finalI).set(end);
+            RayCastCallback ray = new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point,
+                                              Vector2 normal, float fraction) {
+                    rays.get(finalI).set(point);
+                    return -1f;
+                }
+            };
+            world.rayCast(ray, origin, end);
+
+        }
+    }
 
 
+    /*
     //testing
-    private Vector2 p1 = new Vector2(), p2 = new Vector2(), collision = new Vector2(), normal = new Vector2();
+    private Vector2 p1 = new Vector2(), p2 = new Vector2(),
+        collision = new Vector2(), normal = new Vector2();
 
     public void test(World world){
 
@@ -67,7 +82,7 @@ public class Vision {
             public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
                 //point - position that ray intersects with a fixture
                 //normal - intersection relative to the point
-                collision.set(point);
+                collision.set(point); //update other vector value to get collision pt
                 Vision.this.normal.set(normal).add(point);
                 return -1;
             }
@@ -80,84 +95,26 @@ public class Vision {
 
         world.rayCast(callback, p1, p2);
 
-    }
+    } */
 
     /** modifies direction but maintains range */
     public void setDirection(float direction) {
         this.direction = direction;
     }
 
-    public boolean seen(final Obstacle check, World world) {
-        if(!near(check)) return false;
-        final boolean[] found = {false};
-        float startAngle = (direction - range/2) % (float) Math.PI;
-        for(int i = 0; i<numRays; i++) {
-            float angle = startAngle +  i*(range/numRays) % (float) Math.PI;
-            RayCastCallback ray = new RayCastCallback() {
-                @Override
-                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                    if(fixture.getBody().equals(check.getBody())) {
-                        found[0] = true;
-                        return 0f; //continues looking
-                    }
-                    return -1f;
-                }
-            };
-            world.rayCast(ray, origin.getPosition(), new Vector2((float)Math.cos(angle), (float)Math.sin(angle)));
-            if(found[0]) return true;
-        }
-        return false;
-    }
-
-    //for use in seen above, uses radius and dot product check
-    private boolean near(Obstacle check) {
-        Vector2 pos = origin.getPosition();
-        Vector2 checkPos = check.getPosition();
-        Vector2 distance = pos.sub(checkPos);
-        if(distance.len()>radius) return false;
-
-        Vector2 heading = new Vector2((float) Math.cos(direction), (float) Math.sin(direction));
-        float angleDst = distance.dot(heading);
-        return angleDst < range;
-    }
-
-    public Array<Body> getBodiesInView(World world) {
-        float startAngle = (direction - range/2) % (float) Math.PI;
-        final Array<Body> bodies = new Array<Body>();
-        for(int i = 0; i<numRays; i++) {
-            float angle = startAngle + i * (range / numRays) % (float) Math.PI;
-            RayCastCallback ray = new RayCastCallback() {
-                @Override
-                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                    if(!bodies.contains(fixture.getBody(), true)) bodies.add(fixture.getBody());
-                    return -1f;
-                }
-            };
-            world.rayCast(ray, origin.getPosition(), new Vector2((float) Math.cos(angle), (float) Math.sin(angle)));
-        }
-        return bodies;
-    }
 
     /**
      * Draws the physics object.
      *
      * @param canvas Drawing context
      */
-    public void draw(GameCanvas canvas) {
-//        canvas.drawFOV(color, 1000000, 100, 1, 1);
-        canvas.drawFOV(color, p1, p2, collision, normal);
+    public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
+
+        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
+
     }
 
-//    /**
-//     * Draws the outline of the physics body.
-//     *
-//     * This method can be helpful for understanding issues with collisions.
-//     *
-//     * @param canvas Drawing context
-//     */
-//    public void drawDebug(GameCanvas canvas) {
-//        canvas.drawFOV(color, p1, p2, collision, normal);
-//    }
+
 
 
 

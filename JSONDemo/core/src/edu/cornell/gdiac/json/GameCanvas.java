@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -1166,19 +1167,46 @@ public class GameCanvas {
 	 * Draws the ray casts of a body's field of view
 	 *
 	 */
-	public void drawFOV (Color color, Vector2 p1, Vector2 p2, Vector2 collision, Vector2 normal){
-//		if (active != DrawPass.DEBUG) {
-////			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
-//			return;
-//		}
-		fovRender.begin(ShapeRenderer.ShapeType.Line);
-		local.applyTo(vertex);
-		fovRender.setColor(color);
-		fovRender.line(p1, p2);
-		fovRender.line(collision, normal);
-//		System.out.println("hola");
-//		fovRender.end();
+	public void drawFOV(Color color, Array<Vector2> ends, float x, float y,
+						float radius, float scalex, float scaley) { //might need to take radius?
 
-//		debugRender.end();
+		spriteBatch.setColor(color);
+
+		float[] vertices = new float[ends.size*2+2];
+		vertices[0] = x;
+		vertices[1] = y;
+		for(int i = 0; i<ends.size; i++) {
+			vertices[2*i+2] = ends.get(i).x;
+			vertices[2*i+1+2] = ends.get(i).y;
+		}
+
+		short[] indices = new short[ends.size*3-3]; //this may be the source of some bugs..
+		for(int i = 0; i<ends.size-1; i++) {
+			indices[3*i] = 0;
+			indices[3*i+1] = (short) i;
+			indices[3*i+2] = (short) ((short) i+1);
+		}
+
+		//draw here with batch..
+
+		PolygonSprite poly;
+		Texture textureSolid;
+
+		Pixmap pix = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+		pix.setColor(color);
+		pix.fill();
+		textureSolid = new Texture(pix);
+		PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
+				vertices,  indices);
+		poly = new PolygonSprite(polyReg);
+		poly.setOrigin(0, 0); //how to map origin to local coords?
+		//problem is beneath this line -> what is the scale and where is the player?
+
+		draw(polyReg, Color.WHITE, x,
+				y, scalex, scaley);
+
+
+
 	}
+
 }

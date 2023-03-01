@@ -180,7 +180,7 @@ public class LevelModel {
 	    }
 
 		// Create dude
-	    avatar = new DudeModel();
+	    avatar = new DudeModel(world);
 	    avatar.initialize(directory,levelFormat.get("avatar"));
 	    avatar.setDrawScale(scale);
 		activate(avatar);

@@ -295,6 +295,7 @@ public class GameController implements Screen, ContactListener {
 		if (avatar.isJumping()) {
 			jumpId = playSound( jumpSound, jumpId );
 		}
+		avatar.updateVision();
 		
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);

@@ -65,7 +65,8 @@ public class DudeModel extends CapsuleObstacle {
 	private Vector2 forceCache = new Vector2();
 
 	/** Field of view for player. TEST */
-	private Vision vision;
+	public Vision vision;
+	private World world;
 
 
 
@@ -268,7 +269,7 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * The main purpose of this constructor is to set the initial capsule orientation.
 	 */
-	public DudeModel() {
+	public DudeModel(World world) {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
 		
@@ -278,9 +279,11 @@ public class DudeModel extends CapsuleObstacle {
 		faceRight = true;
 		
 		jumpCooldown = 0;
+		this.world = world;
 
 		//field of view
-		vision = new Vision(8f, 1, 45f, Color.RED, this);
+		vision = new Vision(3f, (float) Math.PI,
+				(float) Math.PI/2, Color.YELLOW);
 	}
 	
 	/**
@@ -379,7 +382,7 @@ public class DudeModel extends CapsuleObstacle {
 		sensorFixture.setUserData(getSensorName());
 
 		//actviate physics for raycasts
-		vision.test(world);
+		//vision.test(world);
 		
 		return true;
 	}
@@ -442,9 +445,16 @@ public class DudeModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
-			vision.draw(canvas);
+			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+					getY()*drawScale.y,getAngle(),effect,1.0f);
+			vision.draw(canvas, getPosition().x, getPosition().y, drawScale.x, drawScale.y);
 		}
 
+	}
+
+
+	public void updateVision() {
+		vision.setDirection(faceRight? (float) -Math.PI : (float) Math.PI);
+		vision.update(world, getPosition());
 	}
 }
