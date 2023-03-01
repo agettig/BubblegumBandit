@@ -312,13 +312,8 @@ public class GameController implements Screen, ContactListener {
 		}
 		level.update(dt);
 
-		if (!stickyQueue.isEmpty()) {
-			for (Obstacle ob : stickyQueue) {
-				ob.setBodyType(BodyDef.BodyType.StaticBody);
-			}
-			stickyQueue.clear();
-
-		}
+		// Make everything in the sticky queue static.
+		immobilizeStickyQueue();
 
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
@@ -478,26 +473,11 @@ public class GameController implements Screen, ContactListener {
 				setComplete(true);
 			}
 
-			// Gum collision with world
+			// Check for gum collision
+			handleGumCollision(bd1, bd2);
+
 			// TODO: Gum interactions
-			if (bd1.getName().equals("gumProjectile")) {
-				bd1.setName("stickyGum");
-				stickyQueue.addLast(bd1);
-				stickyQueue.addLast(bd2);
-			}
-			if (bd2.getName().equals("gumProjectile")) {
-				bd2.setName("stickyGum");
-				stickyQueue.addLast(bd1);
-				stickyQueue.addLast(bd2);
-			}
-			if (bd1.getName().equals("stickyGum")) {
-				stickyQueue.addLast(bd2);
-				System.out.println("Sticky gum collision");
-			}
-			if (bd2.getName().equals("stickyGum")) {
-				stickyQueue.addLast(bd1);
-				System.out.println("Sticky gum collision");
-			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -624,4 +604,69 @@ public class GameController implements Screen, ContactListener {
 		System.out.println("Gum projectile deleted");
 		gum.markRemoved(true);
 	}
+
+	/**Adds an Obstacle to the end of the Sticky Queue.
+	 *
+	 * @param o the Obstacle to add.
+	 * */
+	private void enqueueSticky(Obstacle o){
+		if(o == null) return;
+		stickyQueue.addLast(o);
+	}
+
+	/**
+	 * Returns true if an Obstacle is a gum projectile.
+	 *
+	 * An Obstacle is a gum projectile if its name equals
+	 * "gumProjectile".
+	 *
+	 * @param o the Obstacle to check
+	 * @returns true if the Obstacle is a gum projectile
+	 * */
+	private boolean isGumProjectile(Obstacle o){
+		return o.getName().equals("gumProjectile");
+	}
+
+	/**
+	 * Handles a gum projectile's collision in the Box2D world.
+	 *
+	 * Examines two Obstacles in a collision. If either is a
+	 * gum projectile, adds it to the Sticky Queue.
+	 *
+	 * @param bd1 The first Obstacle in the collision.
+	 * @param bd2 The second Obstacle in the collision.
+	 * */
+	private void handleGumCollision(Obstacle bd1, Obstacle bd2){
+
+		//Safety check.
+		if(bd1 == null || bd2 == null) return;
+
+		if (isGumProjectile(bd1)) {
+			bd1.setName("stickyGum");
+			enqueueSticky(bd1);
+			enqueueSticky(bd2);
+		}
+		if (isGumProjectile(bd2)) {
+			bd2.setName("stickyGum");
+			enqueueSticky(bd1);
+			enqueueSticky(bd2);
+		}
+		if (bd1.getName().equals("stickyGum")) enqueueSticky(bd2);
+		if (bd2.getName().equals("stickyGum")) enqueueSticky(bd1);
+	}
+
+	/**
+	 * Makes every Obstacle's body in the Sticky Queue a StaticBody
+	 * before clearing the queue.
+	 * */
+	private void immobilizeStickyQueue(){
+		if(stickyQueue == null) return;
+		if(stickyQueue.isEmpty()) return;
+		for (Obstacle ob : stickyQueue) {
+			if(ob != null) ob.setBodyType(BodyDef.BodyType.StaticBody);
+		}
+		stickyQueue.clear();
+	}
+
+
 }
