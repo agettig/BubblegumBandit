@@ -3,6 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/BubblegumBandit.iml" filepath="$PROJECT_DIR$/.idea/BubblegumBandit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JSONDemo.iml" filepath="$PROJECT_DIR$/.idea/modules/JSONDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JSONDemo.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JSONDemo.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JSONDemo.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JSONDemo.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JSONDemo.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JSONDemo.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/JSONDemo.desktop.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/JSONDemo.desktop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/JSONDemo.desktop.main.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/JSONDemo.desktop.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/JSONDemo.desktop.test.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/JSONDemo.desktop.test.iml" />
     </modules>
   </component>
 </project>
