@@ -441,6 +441,7 @@ public class GameController implements Screen, ContactListener {
 	 * this method to test if it is the "right" kind of collision.  In particular, we
 	 * use it to test if we made it to the win door.
 	 *
+	 * This is where we check for gum collisions
 	 * @param contact The two bodies that collided
 	 */
 	public void beginContact(Contact contact) {
