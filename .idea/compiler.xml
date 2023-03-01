@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="JSONDemo.core" target="1.7" />
+      <module name="JSONDemo.core.main" target="1.7" />
+      <module name="JSONDemo.core.test" target="1.7" />
+      <module name="JSONDemo.desktop" target="1.8" />
+      <module name="JSONDemo.desktop.main" target="1.8" />
+      <module name="JSONDemo.desktop.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
