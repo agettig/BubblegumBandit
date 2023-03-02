@@ -1168,42 +1168,39 @@ public class GameCanvas {
 	 *
 	 */
 	public void drawFOV(Color color, Array<Vector2> ends, float x, float y,
-						float radius, float scalex, float scaley) { //might need to take radius?
+						float scalex, float scaley) {
 
-		spriteBatch.setColor(color);
 
 		float[] vertices = new float[ends.size*2+2];
-		vertices[0] = x;
-		vertices[1] = y;
+		vertices[0] = 0;
+		vertices[1] = 0;
 		for(int i = 0; i<ends.size; i++) {
-			vertices[2*i+2] = ends.get(i).x;
-			vertices[2*i+1+2] = ends.get(i).y;
+			int index = i+1;
+			vertices[2*index] = ends.get(i).x;
+			vertices[2*index+1] = ends.get(i).y;
 		}
 
-		short[] indices = new short[ends.size*3-3]; //this may be the source of some bugs..
-		for(int i = 0; i<ends.size-1; i++) {
+
+		short[] indices = new short[ends.size*3];
+		for(int i = 0; i<ends.size; i++) {
 			indices[3*i] = 0;
 			indices[3*i+1] = (short) i;
 			indices[3*i+2] = (short) ((short) i+1);
 		}
 
-		//draw here with batch..
-
-		PolygonSprite poly;
 		Texture textureSolid;
-
 		Pixmap pix = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
 		pix.setColor(color);
 		pix.fill();
 		textureSolid = new Texture(pix);
+
 		PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
 				vertices,  indices);
-		poly = new PolygonSprite(polyReg);
-		poly.setOrigin(0, 0); //how to map origin to local coords?
-		//problem is beneath this line -> what is the scale and where is the player?
 
-		draw(polyReg, Color.WHITE, x,
-				y, scalex, scaley);
+
+		draw(polyReg, Color.WHITE, x*scalex,
+				y*scaley, scalex, scaley);
+
 
 
 

@@ -24,7 +24,7 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast */
-    private int numRays = 64;
+    private int numRays = 120;
 
 
     private Array<Vector2> rays = new Array<>(numRays);
@@ -40,18 +40,19 @@ public class Vision {
     }
 
     /** Creates a sphere of vision */
-    public Vision(float radius, Color color, Obstacle origin) {
+    public Vision(float radius, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
-        this.direction = direction;
-        this.range = range;
+        this.direction = (float) Math.PI/2;
+        this.range = (float) Math.PI*2;
         for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
     public void update(World world, Vector2 origin) {
-        float startAngle = (direction - range / 2) % (float) Math.PI;
+        float startAngle = direction - range / 2;
+        float incrementAngle = range/(numRays-1);
         for (int i = 0; i < numRays; i++) {
-            float angle = startAngle + i * (range / numRays) % (float) Math.PI;
+            float angle =  ((startAngle + i * incrementAngle) );
             final int finalI = i;
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
                 origin.y + radius * (float) Math.sin(angle));
@@ -60,42 +61,22 @@ public class Vision {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
+                    if(bodies.contains(fixture.getBody(), false))
+                        bodies.add(fixture.getBody());
                     rays.get(finalI).set(point);
                     return -1f;
                 }
             };
             world.rayCast(ray, origin, end);
-
+            rays.get(i).sub(origin);
         }
+
     }
 
+    public boolean canSee(Obstacle obstacle) {
+       return bodies.contains(obstacle.getBody(), true);
+    }
 
-    /*
-    //testing
-    private Vector2 p1 = new Vector2(), p2 = new Vector2(),
-        collision = new Vector2(), normal = new Vector2();
-
-    public void test(World world){
-
-        RayCastCallback callback = new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                //point - position that ray intersects with a fixture
-                //normal - intersection relative to the point
-                collision.set(point); //update other vector value to get collision pt
-                Vision.this.normal.set(normal).add(point);
-                return -1;
-            }
-        };
-
-        //ray starts on object (this is some reason the bottom left corner of the screen)
-        p1 = origin.getPosition();
-        //rn is drawn diagonally upwards
-        p2.set(p1.x + 100, p1.y + 100);
-
-        world.rayCast(callback, p1, p2);
-
-    } */
 
     /** modifies direction but maintains range */
     public void setDirection(float direction) {
@@ -110,7 +91,7 @@ public class Vision {
      */
     public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
 
-        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
+        canvas.drawFOV(color, rays, x, y, scalex, scaley);
 
     }
 
