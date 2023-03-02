@@ -52,7 +52,7 @@ public class Vision {
         float startAngle = direction - range / 2;
         float incrementAngle = range/(numRays-1);
         for (int i = 0; i < numRays; i++) {
-            float angle =  ((startAngle + i * incrementAngle) );
+            float angle =  startAngle + i * incrementAngle;
             final int finalI = i;
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
                 origin.y + radius * (float) Math.sin(angle));
@@ -90,9 +90,7 @@ public class Vision {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
-
         canvas.drawFOV(color, rays, x, y, scalex, scaley);
-
     }
 
 
