@@ -48,14 +48,16 @@ public class MovingEnemy  extends Enemy{
         setEnemyState(EnemyState.valueOf(json.get("enemystate").asString()));
     }
 
+    // TODO
     @Override
     public void applyForce() {
-
+//        body.applyForce(new Vector2(5, 0),getPosition(),true);
     }
 
+    // TODO
     @Override
     public void update() {
-
+        applyForce();
     }
 
     // TODO changeStateIfApplicable
