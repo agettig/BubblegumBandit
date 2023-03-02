@@ -282,8 +282,8 @@ public class DudeModel extends CapsuleObstacle {
 		this.world = world;
 
 		//field of view
-		vision = new Vision(3f, (float) Math.PI,
-				(float) Math.PI/2, Color.YELLOW);
+		vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
+
 	}
 	
 	/**
@@ -454,7 +454,7 @@ public class DudeModel extends CapsuleObstacle {
 
 
 	public void updateVision() {
-		vision.setDirection(faceRight? (float) -Math.PI : (float) Math.PI);
+		//vision.setDirection(faceRight? (float) -Math.PI : (float) Math.PI);
 		vision.update(world, getPosition());
 	}
 }
