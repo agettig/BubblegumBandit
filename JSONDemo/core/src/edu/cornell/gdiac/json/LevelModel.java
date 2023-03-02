@@ -54,6 +54,9 @@ public class LevelModel {
 	
 	/** All the objects in the world. */
 	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
+
+	/** All enemies in the world */
+	private Enemy[] enemies;
 	
 	/**
 	 * Returns the bounding rectangle for the physics world
@@ -179,17 +182,27 @@ public class LevelModel {
 	        floor = floor.next();
 	    }
 
-		JsonValue enemy = levelFormat.get("enemies").child();
-		while (enemy != null){
+		// get number of enemies
+		int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
+
+		// initialize enemies list
+		enemies = new Enemy[numEnemies];
+
+		// json of enemy
+		JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
+
+		// initialize each enemy
+		for (int i= 0; i < numEnemies; i++){
 			Enemy a;
-			if (enemy.get("type").asString().equals("Moving")){
-				a = new StationaryEnemy();
+			if (enemy.get("type").asString().equals("moving")){
+				a = new MovingEnemy();
 			}
 			else {
-				a = new MovingEnemy();
+				a = new StationaryEnemy();
 			}
 			a.initialize(directory, enemy);
 			a.setDrawScale(scale);
+			enemies[i] = a;
 			activate(a);
 			enemy = enemy.next();
 		}
@@ -263,5 +276,9 @@ public class LevelModel {
 			}
 			canvas.endDebug();
 		}
+	}
+
+	public Enemy[] getEnemies() {
+		return enemies;
 	}
 }

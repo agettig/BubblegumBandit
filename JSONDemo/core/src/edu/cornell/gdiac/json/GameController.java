@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
@@ -305,7 +306,10 @@ public class GameController implements Screen, ContactListener {
 			jumpId = playSound( jumpSound, jumpId );
 			level.getWorld().setGravity(currentGravity);
 			avatar.flippedGravity();
+			for (Enemy e: level.getEnemies()) e.flippedGravity();
 		};
+
+		for (Enemy e: level.getEnemies()) e.update();
 		
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
