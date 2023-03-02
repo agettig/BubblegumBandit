@@ -49,6 +49,7 @@ public class Vision {
     }
 
     public void update(World world, Vector2 origin) {
+        bodies.clear();
         float startAngle = direction - range / 2;
         float incrementAngle = range/(numRays-1);
         for (int i = 0; i < numRays; i++) {
