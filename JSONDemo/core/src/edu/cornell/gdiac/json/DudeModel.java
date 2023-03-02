@@ -454,7 +454,7 @@ public class DudeModel extends CapsuleObstacle {
 
 
 	public void updateVision() {
-		//vision.setDirection(faceRight? (float) -Math.PI : (float) Math.PI);
+		vision.setDirection(faceRight? (float) -Math.PI : (float) Math.PI);
 		vision.update(world, getPosition());
 	}
 }
