@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -292,9 +293,19 @@ public class GameController implements Screen, ContactListener {
 		avatar.setJumping(InputController.getInstance().didPrimary());
 		
 		avatar.applyForce();
-		if (avatar.isJumping()) {
+
+		// remove jump
+//		if (avatar.isJumping()) {
+//			jumpId = playSound( jumpSound, jumpId );
+//		}
+
+		if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
+			Vector2 currentGravity = level.getWorld().getGravity();
+			currentGravity.y = -currentGravity.y;
 			jumpId = playSound( jumpSound, jumpId );
-		}
+			level.getWorld().setGravity(currentGravity);
+			avatar.flippedGravity();
+		};
 		
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);

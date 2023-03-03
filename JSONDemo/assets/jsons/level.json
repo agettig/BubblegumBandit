@@ -20,7 +20,7 @@
       	"sensorsize": 	 [ 0.183, 0.05 ], 
       	"sensorname": 	 "dudeGroundSensor",
        	"sensorcolor":   "red",
-       	"sensoropacity": 192,
+       	"sensoropacity": 192
     },
     "exit": {
         "pos":           [ 2.0, 10.0],

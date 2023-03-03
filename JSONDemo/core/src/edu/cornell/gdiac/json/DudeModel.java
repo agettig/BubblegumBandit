@@ -64,6 +64,9 @@ public class DudeModel extends CapsuleObstacle {
 	/** Cache for internal force calculations */
 	private Vector2 forceCache = new Vector2();
 
+	/** Cache for flipping player orientation */
+	private float angle;
+
 	/**
 	 * Returns left/right movement of this character.
 	 * 
@@ -397,11 +400,12 @@ public class DudeModel extends CapsuleObstacle {
 			body.applyForce(forceCache,getPosition(),true);
 		}
 
+		// remove jumping
 		// Jump!
-		if (isJumping()) {
-			forceCache.set(0, getJumpPulse());
-			body.applyLinearImpulse(forceCache,getPosition(),true);
-		}
+//		if (isJumping()) {
+//			forceCache.set(0, getJumpPulse());
+//			body.applyLinearImpulse(forceCache,getPosition(),true);
+//		}
 	}
 	
 	/**
@@ -432,5 +436,15 @@ public class DudeModel extends CapsuleObstacle {
 			float effect = faceRight ? 1.0f : -1.0f;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
 		}
+	}
+
+	/**
+	 * Flips the player's angle and direction when the world gravity is flipped
+	 *
+	 * */
+	public void flippedGravity(){
+		angle = body.getAngle() == 0 ? 3.14f : 0f;
+		body.setTransform(body.getPosition(), angle);
+		faceRight = !faceRight;
 	}
 }
