@@ -26,6 +26,7 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.json.gum.Bubblegum;
 
 /**
  * Gameplay controller for the game.
@@ -52,7 +53,7 @@ public class GameController implements Screen, ContactListener {
 
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
-    /** How many frames after winning/losing do we continue? */
+    	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
 	// THESE ARE CONSTANTS BECAUSE WE NEED THEM BEFORE THE LEVEL IS LOADED
@@ -70,7 +71,7 @@ public class GameController implements Screen, ContactListener {
 
 	/** Reference to the game level */
 	protected LevelModel level;
-		
+
 	/** Whether or not this is an active controller */
 	private boolean active;
 	/** Whether we have completed this level */
@@ -80,8 +81,16 @@ public class GameController implements Screen, ContactListener {
 	/** Countdown active for winning or losing */
 	private int countdown;
 
+	private TextureRegion gumTexture;
+
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
+
+
+	protected Queue<Bubblegum> gumQueue = new Queue<Bubblegum>();
+
+	/**Queue of Obstacles involved in a gum collision to make static  */
+	protected Queue<Obstacle> stickyQueue = new Queue<Obstacle>();
 
 	/**
 	 * Returns true if the level is completed.
@@ -132,7 +141,7 @@ public class GameController implements Screen, ContactListener {
 		}
 		failed = value;
 	}
-	
+
 	/**
 	 * Returns true if this is the active screen
 	 *
@@ -152,7 +161,7 @@ public class GameController implements Screen, ContactListener {
 	public GameCanvas getCanvas() {
 		return canvas;
 	}
-	
+
 	/**
 	 * Sets the canvas associated with this controller
 	 *
@@ -164,9 +173,9 @@ public class GameController implements Screen, ContactListener {
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
 	}
-	
+
 	/**
-	 * Creates a new game world 
+	 * Creates a new game world
 	 *
 	 * The physics bounds and drawing scale are now stored in the LevelModel and
 	 * defined by the appropriate JSON file.
@@ -182,7 +191,7 @@ public class GameController implements Screen, ContactListener {
 		setFailure(false);
 		sensorFixtures = new ObjectSet<Fixture>();
 	}
-	
+
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
@@ -207,29 +216,30 @@ public class GameController implements Screen, ContactListener {
 		directory.finishLoading();
 		displayFont = directory.getEntry( "display", BitmapFont.class );
 		jumpSound = directory.getEntry( "jump", SoundEffect.class );
+		gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
 
 		// This represents the level but does not BUILD it
 		levelFormat = directory.getEntry( "level1", JsonValue.class );
 	}
-	
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
-	 * This method disposes of the level and creates a new one. It will 
+	 * This method disposes of the level and creates a new one. It will
 	 * reread from the JSON file, allowing us to make changes on the fly.
 	 */
 	public void reset() {
 		level.dispose();
-		
+
 		setComplete(false);
 		setFailure(false);
 		countdown = -1;
-		
+
 		// Reload the json each time
 		level.populate(directory, levelFormat);
 		level.getWorld().setContactListener(this);
 	}
-	
+
 	/**
 	 * Returns whether to process the update loop
 	 *
@@ -238,7 +248,7 @@ public class GameController implements Screen, ContactListener {
 	 * normally.
 	 *
 	 * @param dt Number of seconds since last animation frame
-	 * 
+	 *
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
@@ -252,12 +262,12 @@ public class GameController implements Screen, ContactListener {
 		if (input.didDebug()) {
 			level.setDebug(!level.getDebug());
 		}
-		
+
 		// Handle resets
 		if (input.didReset()) {
 			reset();
 		}
-		
+
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
 			listener.exitScreen(this, EXIT_QUIT);
@@ -267,15 +277,15 @@ public class GameController implements Screen, ContactListener {
 		} else if (countdown == 0) {
 			reset();
 		}
-		
+
 		if (!isFailure() && level.getAvatar().getY() < -1) {
 			setFailure(true);
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * The core gameplay loop of this world.
 	 *
@@ -289,9 +299,8 @@ public class GameController implements Screen, ContactListener {
 	public void update(float dt) {
 		// Process actions in object model
 		DudeModel avatar = level.getAvatar();
-		avatar.setMovement(InputController.getInstance().getHorizontal() *avatar.getForce());
+		avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
 		avatar.setJumping(InputController.getInstance().didPrimary());
-		
 		avatar.applyForce();
 
 		// remove jump
@@ -303,6 +312,19 @@ public class GameController implements Screen, ContactListener {
 			Vector2 currentGravity = level.getWorld().getGravity();
 			currentGravity.y = -currentGravity.y;
 			jumpId = playSound( jumpSound, jumpId );
+
+		}
+
+		if (InputController.getInstance().didShoot()) {
+			// TODO: Visible crosshair?
+			createGumProjectile(InputController.getInstance().getCrossHair());
+		}
+		level.update(dt);
+
+		// Make everything in the sticky queue static.
+		immobilizeStickyQueue();
+
+
 			level.getWorld().setGravity(currentGravity);
 			avatar.flippedGravity();
 		};
@@ -310,7 +332,16 @@ public class GameController implements Screen, ContactListener {
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 	}
-	
+
+	/**
+	 * Remove a new bullet from the world.
+	 *
+	 * @param  bullet   the bullet to remove
+	 */
+	public void removeBubbleGum(Obstacle bullet) {
+
+	}
+
 	/**
 	 * Draw the physics objects to the canvas
 	 *
@@ -323,9 +354,9 @@ public class GameController implements Screen, ContactListener {
 	 */
 	public void draw(float delta) {
 		canvas.clear();
-		
+
 		level.draw(canvas);
-		
+
 		// Final message
 		if (complete && !failed) {
 			displayFont.setColor(Color.YELLOW);
@@ -339,11 +370,11 @@ public class GameController implements Screen, ContactListener {
 			canvas.end();
 		}
 	}
-	
+
 	/**
-	 * Called when the Screen is resized. 
+	 * Called when the Screen is resized.
 	 *
-	 * This can happen at any point during a non-paused state but will never happen 
+	 * This can happen at any point during a non-paused state but will never happen
 	 * before a call to show().
 	 *
 	 * @param width  The new width in pixels
@@ -372,8 +403,8 @@ public class GameController implements Screen, ContactListener {
 
 	/**
 	 * Called when the Screen is paused.
-	 * 
-	 * This is usually when it's not active or visible on screen. An Application is 
+	 *
+	 * This is usually when it's not active or visible on screen. An Application is
 	 * also paused before it is destroyed.
 	 */
 	public void pause() {
@@ -391,7 +422,7 @@ public class GameController implements Screen, ContactListener {
 	public void resume() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	/**
 	 * Called when this screen becomes the current screen for a Game.
 	 */
@@ -420,10 +451,11 @@ public class GameController implements Screen, ContactListener {
 	/**
 	 * Callback method for the start of a collision
 	 *
-	 * This method is called when we first get a collision between two objects.  We use 
+	 * This method is called when we first get a collision between two objects.  We use
 	 * this method to test if it is the "right" kind of collision.  In particular, we
 	 * use it to test if we made it to the win door.
 	 *
+	 * This is where we check for gum collisions
 	 * @param contact The two bodies that collided
 	 */
 	public void beginContact(Contact contact) {
@@ -435,26 +467,32 @@ public class GameController implements Screen, ContactListener {
 
 		Object fd1 = fix1.getUserData();
 		Object fd2 = fix2.getUserData();
-		
+
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
 
 			DudeModel avatar = level.getAvatar();
 			BoxObstacle door = level.getExit();
-			
+
 			// See if we have landed on the ground.
 			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
 				(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
 				avatar.setGrounded(true);
 				sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
 			}
-			
+
 			// Check for win condition
 			if ((bd1 == avatar && bd2 == door  ) ||
 				(bd1 == door   && bd2 == avatar)) {
 				setComplete(true);
 			}
+
+			// Check for gum collision
+			handleGumCollision(bd1, bd2);
+
+			// TODO: Gum interactions
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -467,7 +505,7 @@ public class GameController implements Screen, ContactListener {
 	 * This method is called when two objects cease to touch.  The main use of this method
 	 * is to determine when the characer is NOT on the ground.  This is how we prevent
 	 * double jumping.
-	 */ 
+	 */
 	public void endContact(Contact contact) {
 		Fixture fix1 = contact.getFixtureA();
 		Fixture fix2 = contact.getFixtureB();
@@ -477,7 +515,7 @@ public class GameController implements Screen, ContactListener {
 
 		Object fd1 = fix1.getUserData();
 		Object fd2 = fix2.getUserData();
-		
+
 		Object bd1 = body1.getUserData();
 		Object bd2 = body2.getUserData();
 
@@ -490,7 +528,7 @@ public class GameController implements Screen, ContactListener {
 			}
 		}
 	}
-	
+
 	/** Unused ContactListener method */
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
@@ -535,4 +573,115 @@ public class GameController implements Screen, ContactListener {
 		}
 		return sound.play(volume);
 	}
+
+	/**
+	 * Add a new gum projectile to the world and send it in the right direction.
+	 */
+	private void createGumProjectile(Vector2 target) {
+		JsonValue gumJV = levelFormat.get("gumProjectile");
+		DudeModel avatar = level.getAvatar();
+		float offset = gumJV.getFloat("offset",0);
+		offset *= (target.x > avatar.getX() ? 1 : -1);
+		float startX = avatar.getX() + offset;
+		float startY = avatar.getY();
+
+		String key = gumJV.get("texture").asString();
+		TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+		float radius = gumTexture.getRegionWidth()/(2.0f*level.getScale().x);
+
+		WheelObstacle gum = new WheelObstacle(startX, startY, radius);
+
+		// Physics properties
+		gum.setName(gumJV.name());
+		gum.setDensity(gumJV.getFloat("density", 0));
+		gum.setDrawScale(level.getScale());
+		gum.setTexture(gumTexture);
+		gum.setBullet(true);
+		gum.setGravityScale(0);
+		// TODO: For different trajectories: change gravity scale, add various forces
+
+		// Compute position and velocity
+		float speed = gumJV.getFloat( "speed", 0 );
+		Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
+		gumVel.nor();
+		gumVel.scl(speed);
+		gum.setVX(gumVel.x);
+		gum.setVY(gumVel.y);
+		level.activate(gum);
+	}
+
+	/**
+	 * Remove a gum from the world.
+	 *
+	 * @param  gum   the gum to remove
+	 */
+	public void removeGum(Obstacle gum) {
+		System.out.println("Gum projectile deleted");
+		gum.markRemoved(true);
+	}
+
+	/**Adds an Obstacle to the end of the Sticky Queue.
+	 *
+	 * @param o the Obstacle to add.
+	 * */
+	private void enqueueSticky(Obstacle o){
+		if(o == null) return;
+		stickyQueue.addLast(o);
+	}
+
+	/**
+	 * Returns true if an Obstacle is a gum projectile.
+	 *
+	 * An Obstacle is a gum projectile if its name equals
+	 * "gumProjectile".
+	 *
+	 * @param o the Obstacle to check
+	 * @returns true if the Obstacle is a gum projectile
+	 * */
+	private boolean isGumProjectile(Obstacle o){
+		return o.getName().equals("gumProjectile");
+	}
+
+	/**
+	 * Handles a gum projectile's collision in the Box2D world.
+	 *
+	 * Examines two Obstacles in a collision. If either is a
+	 * gum projectile, adds it to the Sticky Queue.
+	 *
+	 * @param bd1 The first Obstacle in the collision.
+	 * @param bd2 The second Obstacle in the collision.
+	 * */
+	private void handleGumCollision(Obstacle bd1, Obstacle bd2){
+
+		//Safety check.
+		if(bd1 == null || bd2 == null) return;
+
+		if (isGumProjectile(bd1)) {
+			bd1.setName("stickyGum");
+			enqueueSticky(bd1);
+			enqueueSticky(bd2);
+		}
+		if (isGumProjectile(bd2)) {
+			bd2.setName("stickyGum");
+			enqueueSticky(bd1);
+			enqueueSticky(bd2);
+		}
+		if (bd1.getName().equals("stickyGum")) enqueueSticky(bd2);
+		if (bd2.getName().equals("stickyGum")) enqueueSticky(bd1);
+	}
+
+	/**
+	 * Makes every Obstacle's body in the Sticky Queue a StaticBody
+	 * before clearing the queue.
+	 * */
+	private void immobilizeStickyQueue(){
+		if(stickyQueue == null) return;
+		if(stickyQueue.isEmpty()) return;
+		for (Obstacle ob : stickyQueue) {
+			if(ob != null) ob.setBodyType(BodyDef.BodyType.StaticBody);
+		}
+		stickyQueue.clear();
+	}
+
+
 }
