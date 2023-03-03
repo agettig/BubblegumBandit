@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.json.enemies.*;
 
 import java.util.Iterator;
 
@@ -55,6 +56,9 @@ public class LevelModel {
 	
 	/** All the objects in the world. */
 	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
+
+	/** All enemies in the world */
+	private Enemy[] enemies;
 
 	/**
 	 * Returns the bounding rectangle for the physics world
@@ -180,6 +184,31 @@ public class LevelModel {
 	        floor = floor.next();
 	    }
 
+		// get number of enemies
+		int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
+
+		// initialize enemies list
+		enemies = new Enemy[numEnemies];
+
+		// json of enemy
+		JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
+
+		// initialize each enemy
+		for (int i= 0; i < numEnemies; i++){
+			Enemy a;
+			if (enemy.get("type").asString().equals("moving")){
+				a = new MovingEnemy();
+			}
+			else {
+				a = new StationaryEnemy();
+			}
+			a.initialize(directory, enemy);
+			a.setDrawScale(scale);
+			enemies[i] = a;
+			activate(a);
+			enemy = enemy.next();
+		}
+
 		// Create dude
 	    avatar = new DudeModel();
 	    avatar.initialize(directory,levelFormat.get("avatar"));
@@ -269,5 +298,9 @@ public class LevelModel {
 			}
 			canvas.endDebug();
 		}
+	}
+
+	public Enemy[] getEnemies() {
+		return enemies;
 	}
 }
