@@ -29,6 +29,14 @@ import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.json.gum.Bubblegum;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.HashMap;
+import java.util.function.Function;
+
+import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
+
 /**
  * Gameplay controller for the game.
  * <p>
@@ -82,6 +90,8 @@ public class GameController implements Screen, ContactListener {
      * Number of position iterations for the constrain solvers
      */
     public static final int WORLD_POSIT = 2;
+
+    private static final HashMap<String, Function<Float, Void>> callbacks = new HashMap<>();
 
     /**
      * Reference to the game canvas
@@ -227,6 +237,15 @@ public class GameController implements Screen, ContactListener {
         setComplete(false);
         setFailure(false);
         sensorFixtures = new ObjectSet<Fixture>();
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI(new SliderListener());
+            }
+        });
     }
 
     /**
@@ -370,7 +389,7 @@ public class GameController implements Screen, ContactListener {
         // Turn the physics engine crank.
         level.getWorld().
 
-        step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
+                step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
     }
 
 
@@ -722,4 +741,27 @@ public class GameController implements Screen, ContactListener {
         stickyQueue.clear();
     }
 
+    public void setGravity(float gravity) {
+        float g = gravity;
+        if (level.getWorld().getGravity().y < 0) {
+            g = -g;
+        }
+        level.getWorld().setGravity(new Vector2(0, g));
+    }
+
+    class SliderListener implements ChangeListener{
+        public void stateChanged(ChangeEvent e) {
+            JSlider source = (JSlider) e.getSource();
+            if (!source.getValueIsAdjusting()) {
+                int val = (int) source.getValue();
+                if (source.getName().equals("gravity")) {
+                    setGravity(val);
+                    System.out.println(level.getWorld().getGravity().y);
+                }
+            }
+
+        }
+    }
+
 }
+
