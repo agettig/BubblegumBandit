@@ -84,6 +84,9 @@ public class InputController {
 	private Vector2 crosscache;
 	/** For the gamepad crosshair control */
 	private float momentum;
+
+	/** If gravity was switched */
+	private boolean switchGravity;
 	
 	/** An X-Box controller (if it is connected) */
 	XBoxController xbox;
@@ -124,6 +127,8 @@ public class InputController {
 	public Vector2 getCrossHair() {
 		return crosscache.set(crosshair);
 	}
+
+	public boolean getSwitchGravity(){return switchGravity;};
 
 	/**
 	 * Returns true if the primary action button was pressed.
@@ -322,6 +327,7 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		switchGravity = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.W));
 		
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
@@ -331,6 +337,7 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
 			horizontal -= 1.0f;
 		}
+
 		
 		vertical = (secondary ? vertical : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -344,6 +351,17 @@ public class InputController {
 			secondPressed = true;
 			secondPrevious = false;
 		}
+
+
+		// remove vertical controls
+//		vertical = (secondary ? vertical : 0.0f);
+//		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+//			vertical += 1.0f;
+//		}
+//		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+//			vertical -= 1.0f;
+//		}
+
 		
 		// Mouse results
 		shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
