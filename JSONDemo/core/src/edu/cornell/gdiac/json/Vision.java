@@ -27,7 +27,7 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast */
-    private int numRays = 64;
+    private int numRays = 10;
 
     /**
      * Contains the current endpoints of the FOV
