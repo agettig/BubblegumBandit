@@ -24,13 +24,26 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast */
-    private int numRays = 120;
+    private int numRays = 64;
 
 
+    /**
+     * Contains the current endpoints of the FOV
+     */
     private Array<Vector2> rays = new Array<>(numRays);
+    /**
+     * The bodies currently in the FOV
+     */
     private Array<Body> bodies = new Array<>();
 
 
+    /**
+     * Creates an FOV
+     * @param radius the radius/length of the FOV
+     * @param direction the direction the FOV points in radians
+     * @param range the range in radians of the FOV
+     * @param color the color of the FOV for drawing, will always be drawn translucent
+     */
     public Vision(float radius, float direction, float range, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
@@ -39,7 +52,11 @@ public class Vision {
         for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
-    /** Creates a sphere of vision */
+    /**
+     * Creates a circular FOV
+     * @param radius the radius of the FOV
+     * @param color the color of the FOV for drawing, will always be translucent
+     */
     public Vision(float radius, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
@@ -48,6 +65,11 @@ public class Vision {
         for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
+    /**
+     * Updates the FOV to the current Box2d world state
+     * @param world the world
+     * @param origin the origin of the FOV in Box2d world coordinates
+     */
     public void update(World world, Vector2 origin) {
         bodies.clear();
         float startAngle = direction - range / 2;
@@ -74,20 +96,30 @@ public class Vision {
 
     }
 
+    /**
+     * Returns whether a given obstacle is in view. Call only after update is called.
+     * @param obstacle the obstacle being checked
+     * @return whether the obstacle is in view.
+     */
     public boolean canSee(Obstacle obstacle) {
-       return bodies.contains(obstacle.getBody(), true);
+       return bodies.contains(obstacle.getBody(),
+           true);
     }
 
 
-    /** modifies direction but maintains range */
+    /**
+     * Modifies the direction of the FOV, maintains range
+     * Should be called when the parent obstacle turns around or flips, etc.
+     * Could also be used for robots that scan back and forth.
+     * @param direction the new direction in radians
+     */
     public void setDirection(float direction) {
         this.direction = direction;
     }
 
 
     /**
-     * Draws the physics object.
-     *
+     * Draws the FOV, calls a helped method in GameCanvas.
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
