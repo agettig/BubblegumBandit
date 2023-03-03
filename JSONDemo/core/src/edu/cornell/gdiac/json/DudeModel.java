@@ -447,7 +447,7 @@ public class DudeModel extends CapsuleObstacle {
 			float effect = faceRight ? 1.0f : -1.0f;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
 					getY()*drawScale.y,getAngle(),effect,1.0f);
-			vision.draw(canvas, getPosition().x, getPosition().y, drawScale.x, drawScale.y);
+			vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 		}
 
 	}
@@ -456,5 +456,20 @@ public class DudeModel extends CapsuleObstacle {
 	public void updateVision() {
 		vision.setDirection(faceRight? (float) -Math.PI : (float) Math.PI);
 		vision.update(world, getPosition());
+	}
+
+
+
+	/**
+	 * Draws the outline of the physics body, including the field of vision
+	 *
+	 * This method can be helpful for understanding issues with collisions.
+	 *
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void drawDebug(GameCanvas canvas) {
+		vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+		super.drawDebug(canvas);
 	}
 }
