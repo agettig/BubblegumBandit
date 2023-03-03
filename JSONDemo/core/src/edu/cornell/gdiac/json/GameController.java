@@ -302,8 +302,17 @@ public class GameController implements Screen, ContactListener {
 		avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
 		avatar.setJumping(InputController.getInstance().didPrimary());
 		avatar.applyForce();
-		if (avatar.isJumping()) {
+
+		// remove jump
+//		if (avatar.isJumping()) {
+//			jumpId = playSound( jumpSound, jumpId );
+//		}
+
+		if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
+			Vector2 currentGravity = level.getWorld().getGravity();
+			currentGravity.y = -currentGravity.y;
 			jumpId = playSound( jumpSound, jumpId );
+
 		}
 
 		if (InputController.getInstance().didShoot()) {
@@ -315,6 +324,11 @@ public class GameController implements Screen, ContactListener {
 		// Make everything in the sticky queue static.
 		immobilizeStickyQueue();
 
+
+			level.getWorld().setGravity(currentGravity);
+			avatar.flippedGravity();
+		};
+		
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 	}
