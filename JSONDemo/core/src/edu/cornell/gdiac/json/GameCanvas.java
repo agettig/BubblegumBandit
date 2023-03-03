@@ -1232,7 +1232,7 @@ public class GameCanvas {
 		fovRender.setColor(color);
 
 		for(Vector2 end : ends){
-			fovRender.line(x*scalex, y*scaley, (end.x *scalex+ x), (end.y*scaley+y));
+			fovRender.line(x*scalex, y*scaley, (end.x + x) *scalex, (end.y+y)*scaley);
 		}
 
 
