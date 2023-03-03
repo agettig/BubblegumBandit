@@ -1164,12 +1164,16 @@ public class GameCanvas {
 
 
 	/**
-	 * Draws the ray casts of a body's field of view
-	 *
+	 * Draws an FOV
+	 * @param color the color of the FOV
+	 * @param ends every vertex in the FOV shape, excluding the origin
+	 * @param x the Box2d world x coordinate of the origin
+	 * @param y the Box2d world y coordinate of the origin
+	 * @param scalex the physics engine scalar, x
+	 * @param scaley the physics engine scalar, y
 	 */
 	public void drawFOV(Color color, Array<Vector2> ends, float x, float y,
 						float scalex, float scaley) {
-
 
 		float[] vertices = new float[ends.size*2+2];
 		vertices[0] = 0;
@@ -1179,7 +1183,6 @@ public class GameCanvas {
 			vertices[2*index] = ends.get(i).x;
 			vertices[2*index+1] = ends.get(i).y;
 		}
-
 
 		short[] indices = new short[ends.size*3];
 		for(int i = 0; i<ends.size; i++) {
@@ -1200,8 +1203,6 @@ public class GameCanvas {
 
 		draw(polyReg, Color.WHITE, x*scalex,
 				y*scaley, scalex, scaley);
-
-
 
 
 	}
