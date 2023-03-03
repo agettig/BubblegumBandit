@@ -299,7 +299,8 @@ public class GameController implements Screen, ContactListener {
 	public void update(float dt) {
 		// Process actions in object model
 		DudeModel avatar = level.getAvatar();
-		avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
+		avatar.setMovement(
+				InputController.getInstance().getHorizontal() * avatar.getForce());
 		avatar.setJumping(InputController.getInstance().didPrimary());
 		avatar.applyForce();
 
@@ -311,8 +312,9 @@ public class GameController implements Screen, ContactListener {
 		if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
 			Vector2 currentGravity = level.getWorld().getGravity();
 			currentGravity.y = -currentGravity.y;
-			jumpId = playSound( jumpSound, jumpId );
-
+			jumpId = playSound(jumpSound, jumpId);
+			level.getWorld().setGravity(currentGravity);
+			avatar.flippedGravity();
 		}
 
 		if (InputController.getInstance().didShoot()) {
@@ -324,23 +326,10 @@ public class GameController implements Screen, ContactListener {
 		// Make everything in the sticky queue static.
 		immobilizeStickyQueue();
 
-
-			level.getWorld().setGravity(currentGravity);
-			avatar.flippedGravity();
-		};
-		
 		// Turn the physics engine crank.
 		level.getWorld().step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 	}
 
-	/**
-	 * Remove a new bullet from the world.
-	 *
-	 * @param  bullet   the bullet to remove
-	 */
-	public void removeBubbleGum(Obstacle bullet) {
-
-	}
 
 	/**
 	 * Draw the physics objects to the canvas
