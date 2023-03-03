@@ -17,6 +17,9 @@ public class Vision {
     /** The color of the FOV graphic. */
     private Color color;
 
+    /** The color of the rays of the FOV during debug mode. */
+    private Color DEBUGCOLOR = Color.RED;
+
     /** The direction of the FOV. In LibGdx, 0 is up. */
     private float direction;
     /** The range in radians of the FOV */
@@ -24,9 +27,9 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast */
-    private int numRays = 64;
+    private int numRays = 10;
 
-
+    /** End points of all casted rays */
     private Array<Vector2> rays = new Array<>(numRays);
     private Array<Body> bodies = new Array<>();
 
@@ -51,7 +54,7 @@ public class Vision {
     public void update(World world, Vector2 origin) {
         float startAngle = (direction - range / 2) % (float) Math.PI;
         for (int i = 0; i < numRays; i++) {
-            float angle = startAngle + i * (range / numRays) % (float) Math.PI;
+            float angle = startAngle + i * (range / (numRays )) % (float) Math.PI;
             final int finalI = i;
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
                 origin.y + radius * (float) Math.sin(angle));
@@ -70,33 +73,6 @@ public class Vision {
     }
 
 
-    /*
-    //testing
-    private Vector2 p1 = new Vector2(), p2 = new Vector2(),
-        collision = new Vector2(), normal = new Vector2();
-
-    public void test(World world){
-
-        RayCastCallback callback = new RayCastCallback() {
-            @Override
-            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-                //point - position that ray intersects with a fixture
-                //normal - intersection relative to the point
-                collision.set(point); //update other vector value to get collision pt
-                Vision.this.normal.set(normal).add(point);
-                return -1;
-            }
-        };
-
-        //ray starts on object (this is some reason the bottom left corner of the screen)
-        p1 = origin.getPosition();
-        //rn is drawn diagonally upwards
-        p2.set(p1.x + 100, p1.y + 100);
-
-        world.rayCast(callback, p1, p2);
-
-    } */
-
     /** modifies direction but maintains range */
     public void setDirection(float direction) {
         this.direction = direction;
@@ -111,7 +87,16 @@ public class Vision {
     public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
 
         canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
+//            canvas.drawRays(color, rays, x, y, radius, scalex, scaley);
+    }
 
+    /**
+     * Draws the outline of the physics object.
+     */
+    public void drawDebug(GameCanvas canvas, float x, float y, float scalex, float scaley) {
+
+//        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
+        canvas.drawRays(DEBUGCOLOR, rays, x, y, radius, scalex, scaley);
     }
 
 

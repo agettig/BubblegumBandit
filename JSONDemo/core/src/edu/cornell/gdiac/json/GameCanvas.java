@@ -1170,6 +1170,14 @@ public class GameCanvas {
 	public void drawFOV(Color color, Array<Vector2> ends, float x, float y,
 						float radius, float scalex, float scaley) { //might need to take radius?
 
+//		//if debug mode is on, draw rays instead
+//		if (active == DrawPass.DEBUG) {
+//			System.out.println("he");
+//			drawRays(Color.RED, ends, x, y, radius, scalex, scaley);
+//			return;
+//		}
+
+
 		spriteBatch.setColor(color);
 
 		float[] vertices = new float[ends.size*2+2];
@@ -1187,7 +1195,7 @@ public class GameCanvas {
 			indices[3*i+2] = (short) ((short) i+1);
 		}
 
-		//draw here with batch..
+		//draw here with batch.
 
 		PolygonSprite poly;
 		Texture textureSolid;
@@ -1205,6 +1213,37 @@ public class GameCanvas {
 		draw(polyReg, Color.WHITE, x,
 				y, scalex, scaley);
 
+
+
+	}
+
+
+	/**
+	 * Draw the individual rays of the field of vision
+	 *
+	 * @param color
+	 * @param ends
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param scalex
+	 * @param scaley
+	 */
+	public void drawRays(Color color, Array<Vector2> ends, float x, float y,
+						float radius, float scalex, float scaley) {
+
+		if (active != DrawPass.DEBUG) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+			return;
+		}
+
+		fovRender.begin(ShapeRenderer.ShapeType.Line);
+		local.applyTo(vertex);
+		fovRender.setColor(color);
+
+		for(Vector2 end : ends){
+			fovRender.line(x*scalex, y*scaley, (end.x *scalex+ x), (end.y*scaley+y));
+		}
 
 
 	}

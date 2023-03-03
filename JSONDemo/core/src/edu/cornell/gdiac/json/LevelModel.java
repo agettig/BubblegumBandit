@@ -246,7 +246,6 @@ public class LevelModel {
 			for(Obstacle obj : objects) {
 				obj.drawDebug(canvas);
 			}
-//			canvas.drawFOV(Color.RED, 1, 100, 1000, 1);
 			canvas.endDebug();
 		}
 
