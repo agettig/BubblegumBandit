@@ -353,9 +353,10 @@
   },
   "gumProjectile": {
     "offset": 0.4,
-    "speed": 10.0,
+    "speed": 7.0,
     "density": 10.0,
-    "texture": "gumProjectile"
+    "texture": "gumProjectile",
+    "gravityScale": 1.0
   },
   "exit": {
     "pos": [
