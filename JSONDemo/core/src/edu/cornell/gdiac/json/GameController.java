@@ -17,6 +17,7 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -28,6 +29,9 @@ import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.json.gum.Bubblegum;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Gameplay controller for the game.
@@ -116,18 +120,17 @@ public class GameController implements Screen, ContactListener {
 
     private TextureRegion gumTexture;
 
+    private TextureRegion stuckGumTexture;
+
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
     protected ObjectSet<Fixture> sensorFixtures;
 
-
-    protected Queue<Bubblegum> gumQueue = new Queue<Bubblegum>();
-
     /**
-     * Queue of Obstacles involved in a gum collision to make static
+     * Queue of gum joints
      */
-    protected Queue<Obstacle> stickyQueue = new Queue<Obstacle>();
+    protected Queue<JointDef> jointsQueue = new Queue<JointDef>();
 
     /**
      * Returns true if the level is completed.
@@ -254,6 +257,7 @@ public class GameController implements Screen, ContactListener {
         displayFont = directory.getEntry("display", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
+        stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
@@ -335,15 +339,9 @@ public class GameController implements Screen, ContactListener {
     public void update(float dt) {
         // Process actions in object model
         DudeModel avatar = level.getAvatar();
-        avatar.setMovement(
-                InputController.getInstance().getHorizontal() * avatar.getForce());
+        avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.applyForce();
-
-        // remove jump
-//		if (avatar.isJumping()) {
-//			jumpId = playSound( jumpSound, jumpId );
-//		}
 
         if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
@@ -354,29 +352,22 @@ public class GameController implements Screen, ContactListener {
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
-        ;
 
         for (Enemy e : level.getEnemies()) e.update();
 
-
-
-
-		if (InputController.getInstance().didShoot()) {
-        // TODO: Visible crosshair?
-        createGumProjectile(InputController.getInstance().getCrossHair());
+        if (InputController.getInstance().didShoot()) {
+            // TODO: Visible crosshair?
+            createGumProjectile(InputController.getInstance().getCrossHair());
         }
 
-		level.update(dt);
+        level.update(dt);
 
-    // Make everything in the sticky queue static.
-    immobilizeStickyQueue();
+        // Turn the physics engine crank.
+        level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
-    // Turn the physics engine crank.
-		level.getWorld().
-
-    step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
-
-}
+        // Add all of the pending joints to the world.
+        addJointsToWorld();
+    }
 
 
     /**
@@ -527,7 +518,7 @@ public class GameController implements Screen, ContactListener {
             }
 
             // Check for gum collision
-            handleGumCollision(bd1, bd2);
+            resolveGumCollision(bd1, bd2);
 
             // TODO: Gum interactions
 
@@ -664,13 +655,13 @@ public class GameController implements Screen, ContactListener {
     }
 
     /**
-     * Adds an Obstacle to the end of the Sticky Queue.
+     * Adds a JointDef to the end of the Joint Queue.
      *
-     * @param o the Obstacle to add.
+     * @param j the JointDef to add.
      */
-    private void enqueueSticky(Obstacle o) {
-        if (o == null) return;
-        stickyQueue.addLast(o);
+    private void enqueueJoint(JointDef j) {
+        if (j == null) return;
+        jointsQueue.addLast(j);
     }
 
     /**
@@ -686,6 +677,21 @@ public class GameController implements Screen, ContactListener {
         return o.getName().equals("gumProjectile");
     }
 
+    private void createStuckGum(Obstacle bd1) {
+        JsonValue gumJV = levelFormat.get("gumProjectile");
+        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
+        WheelObstacle stuckGum = new WheelObstacle(bd1.getX(), bd1.getY(), radius);
+
+        stuckGum.setName("stickyGum");
+        stuckGum.setDensity(gumJV.getFloat("density", 0));
+        stuckGum.setDrawScale(level.getScale());
+        stuckGum.setTexture(stuckGumTexture);
+        stuckGum.setBullet(true);
+        stuckGum.setGravityScale(0);
+        stuckGum.setVX(0);
+        stuckGum.setVY(0);
+        level.activate(stuckGum);
+    }
     /**
      * Handles a gum projectile's collision in the Box2D world.
      * <p>
@@ -695,36 +701,55 @@ public class GameController implements Screen, ContactListener {
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
-    private void handleGumCollision(Obstacle bd1, Obstacle bd2) {
+    private void resolveGumCollision(Obstacle bd1, Obstacle bd2) {
 
         //Safety check.
         if (bd1 == null || bd2 == null) return;
 
         if (isGumProjectile(bd1)) {
-            bd1.setName("stickyGum");
-            enqueueSticky(bd1);
-            enqueueSticky(bd2);
+            createStuckGum(bd1);
+            removeGum(bd1);
         }
         if (isGumProjectile(bd2)) {
-            bd2.setName("stickyGum");
-            enqueueSticky(bd1);
-            enqueueSticky(bd2);
+            createStuckGum(bd2);
+            removeGum(bd2);
         }
-        if (bd1.getName().equals("stickyGum")) enqueueSticky(bd2);
-        if (bd2.getName().equals("stickyGum")) enqueueSticky(bd1);
+        // Add weld joint between gum and object
+        if (bd1.getName().equals("stickyGum")) {
+            WeldJointDef jointDef = new WeldJointDef();
+            jointDef.bodyA = bd1.getBody();
+            jointDef.bodyB = bd2.getBody();
+
+            Vector2 anchor = new Vector2();
+            jointDef.localAnchorA.set(anchor);
+            anchor.set(bd2.getX() - bd1.getX(), bd2.getY() - bd1.getY());
+            jointDef.localAnchorB.set(anchor);
+            enqueueJoint(jointDef);
+        }
+        if (bd2.getName().equals("stickyGum")) {
+            WeldJointDef jointDef = new WeldJointDef();
+            jointDef.bodyA = bd1.getBody();
+            jointDef.bodyB = bd2.getBody();
+            Vector2 anchor = new Vector2();
+            jointDef.localAnchorB.set(anchor);
+            anchor.set(bd2.getX() - bd1.getX(), bd2.getY() - bd1.getY());
+            jointDef.localAnchorA.set(anchor);
+            enqueueJoint(jointDef);
+        }
     }
 
     /**
-     * Makes every Obstacle's body in the Sticky Queue a StaticBody
-     * before clearing the queue.
+     * Adds every joint in the joint queue to the world before clearing the queue.
      */
-    private void immobilizeStickyQueue() {
-        if (stickyQueue == null) return;
-        if (stickyQueue.isEmpty()) return;
-        for (Obstacle ob : stickyQueue) {
-            if (ob != null) ob.setBodyType(BodyDef.BodyType.StaticBody);
+    private void addJointsToWorld() {
+        if (jointsQueue == null || jointsQueue.isEmpty()) return;
+        for (JointDef jointDef: jointsQueue) {
+            if (jointDef != null) {
+                level.getWorld().createJoint(jointDef);
+                // Todo: Keep track so you can remove from the world at some point
+            }
         }
-        stickyQueue.clear();
+        jointsQueue.clear();
     }
 
 }
