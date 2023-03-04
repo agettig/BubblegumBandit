@@ -635,7 +635,7 @@ public class GameController implements Screen, ContactListener {
         gum.setDrawScale(level.getScale());
         gum.setTexture(gumTexture);
         gum.setBullet(true);
-        gum.setGravityScale(0);
+        gum.setGravityScale(gumJV.getFloat("gravityScale", 0));
         // TODO: For different trajectories: change gravity scale, add various forces
 
         // Compute position and velocity
@@ -654,7 +654,6 @@ public class GameController implements Screen, ContactListener {
      * @param gum the gum to remove
      */
     public void removeGum(Obstacle gum) {
-        System.out.println("Gum projectile deleted");
         gum.markRemoved(true);
     }
 
