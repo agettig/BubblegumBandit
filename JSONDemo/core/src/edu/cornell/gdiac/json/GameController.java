@@ -677,21 +677,6 @@ public class GameController implements Screen, ContactListener {
         return o.getName().equals("gumProjectile");
     }
 
-    private void createStuckGum(Obstacle bd1) {
-        JsonValue gumJV = levelFormat.get("gumProjectile");
-        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
-        WheelObstacle stuckGum = new WheelObstacle(bd1.getX(), bd1.getY(), radius);
-
-        stuckGum.setName("stickyGum");
-        stuckGum.setDensity(gumJV.getFloat("density", 0));
-        stuckGum.setDrawScale(level.getScale());
-        stuckGum.setTexture(stuckGumTexture);
-        stuckGum.setBullet(true);
-        stuckGum.setGravityScale(0);
-        stuckGum.setVX(0);
-        stuckGum.setVY(0);
-        level.activate(stuckGum);
-    }
     /**
      * Handles a gum projectile's collision in the Box2D world.
      * <p>
@@ -707,12 +692,14 @@ public class GameController implements Screen, ContactListener {
         if (bd1 == null || bd2 == null) return;
 
         if (isGumProjectile(bd1)) {
-            createStuckGum(bd1);
-            removeGum(bd1);
+            bd1.setName("stickyGum");
+            bd1.setVX(0);
+            bd1.setVY(0);
         }
         if (isGumProjectile(bd2)) {
-            createStuckGum(bd2);
-            removeGum(bd2);
+            bd2.setName("stickyGum");
+            bd2.setVX(0);
+            bd2.setVY(0);
         }
         // Add weld joint between gum and object
         if (bd1.getName().equals("stickyGum")) {
