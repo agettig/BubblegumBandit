@@ -57,6 +57,7 @@ public class MovingEnemy  extends Enemy{
     // TODO
     @Override
     public void update() {
+        super.update();
         applyForce();
     }
 

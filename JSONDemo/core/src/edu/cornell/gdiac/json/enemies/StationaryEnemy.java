@@ -22,6 +22,6 @@ public class StationaryEnemy extends Enemy{
 
     @Override
     public void update() {
-
+        super.update();
     }
 }
