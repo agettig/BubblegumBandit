@@ -32,6 +32,11 @@ import edu.cornell.gdiac.json.gum.Bubblegum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
 /**
  * Gameplay controller for the game.
@@ -182,6 +187,7 @@ public class GameController implements Screen, ContactListener {
         failed = value;
     }
 
+
     /**
      * Returns true if this is the active screen
      *
@@ -230,6 +236,15 @@ public class GameController implements Screen, ContactListener {
         setComplete(false);
         setFailure(false);
         sensorFixtures = new ObjectSet<Fixture>();
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI(new SliderListener());
+            }
+        });
     }
 
     /**
@@ -354,6 +369,7 @@ public class GameController implements Screen, ContactListener {
         }
 
         for (Enemy e : level.getEnemies()) e.update();
+        avatar.updateVision();
 
         if (InputController.getInstance().didShoot()) {
             // TODO: Visible crosshair?
@@ -739,4 +755,38 @@ public class GameController implements Screen, ContactListener {
         jointsQueue.clear();
     }
 
+    public void setGravity(float gravity) {
+        float g = gravity;
+        if (level.getWorld().getGravity().y < 0) {
+            g = -g;
+        }
+        level.getWorld().setGravity(new Vector2(0, g));
+    }
+
+    class SliderListener implements ChangeListener{
+        public void stateChanged(ChangeEvent e) {
+            JSlider source = (JSlider) e.getSource();
+            if (!source.getValueIsAdjusting()) {
+                int val = (int) source.getValue();
+                if (source.getName().equals("gravity")) {
+                    setGravity(val);
+                }
+                else if (source.getName().equals("radius")){
+                    for (Enemy enemy : level.getEnemies()){
+                        enemy.vision.setRadius(val);
+                        enemy.updateVision();
+                    }
+                }
+                else if (source.getName().equals("range")){
+                    for (Enemy enemy: level.getEnemies()){
+                        enemy.vision.setRange((float) (val * (Math.PI/180f)));
+                        enemy.updateVision();
+                    }
+                }
+            }
+
+        }
+    }
+
 }
+
