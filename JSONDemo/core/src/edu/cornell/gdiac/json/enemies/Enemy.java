@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.GameCanvas;
 import edu.cornell.gdiac.json.Sensor;
+import edu.cornell.gdiac.json.Vision;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
@@ -58,6 +59,10 @@ public abstract class Enemy extends CapsuleObstacle {
      */
     private Sensor[] sensors;
     private Color sensorColor;
+
+    public Vision vision;
+
+    private World world;
 
     /**
      * Cache for internal force calculations
@@ -182,13 +187,15 @@ public abstract class Enemy extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public Enemy(float x, float y, float width, float height) {
+    public Enemy( World world) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
         isGrounded = false;
         faceRight = true;
         isFlipped = false;
         yScale = 1f;
+        this.world = world;
+        vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
     }
 
     /**
@@ -278,7 +285,8 @@ public abstract class Enemy extends CapsuleObstacle {
         } else if (yScale > -1f && isFlipped) {
             yScale -= 0.1f;
         }
-    };
+        updateVision();
+    }
 
     /**
      * Draws the physics object.
@@ -290,6 +298,7 @@ public abstract class Enemy extends CapsuleObstacle {
             float effect = faceRight ? 1.0f : -1.0f;
             float yFlip = isFlipped ? -1 : 1;
             canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, yScale);
+            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 
@@ -310,6 +319,12 @@ public abstract class Enemy extends CapsuleObstacle {
             }
             canvas.drawPhysics(s.getSensorShape(), sensorColor, x, y, getAngle(), drawScale.x, drawScale.y);
         }
+        vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+    }
+
+    public void updateVision() {
+        vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
+        vision.update(world, getPosition());
     }
 
     /**

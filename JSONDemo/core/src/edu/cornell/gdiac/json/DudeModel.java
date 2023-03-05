@@ -72,6 +72,10 @@ public class DudeModel extends CapsuleObstacle {
 	/** Cache for internal force calculations */
 	private Vector2 forceCache = new Vector2();
 
+	/** Field of view for player. TEST */
+	public Vision vision;
+	private World world;
+
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
@@ -310,7 +314,7 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * The main purpose of this constructor is to set the initial capsule orientation.
 	 */
-	public DudeModel() {
+	public DudeModel(World world) {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
 
@@ -319,13 +323,18 @@ public class DudeModel extends CapsuleObstacle {
 		isGrounded = false;
 		isShooting = false;
 		isJumping = false;
-		faceRight = true;
+		faceRight = false;
 
 		shootCooldown = 0;
 		jumpCooldown = 0;
 
 		isFlipped = false;
 		yScale = 1.0f;
+		this.world = world;
+
+		//field of view
+		vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
+
 	}
 
 	/**
@@ -445,6 +454,9 @@ public class DudeModel extends CapsuleObstacle {
 		topSensorFixture = body.createFixture(sensorDef);
 		topSensorFixture.setUserData(topSensorName);
 
+		//actviate physics for raycasts
+		//vision.test(world);
+
 		return true;
 	}
 
@@ -517,7 +529,30 @@ public class DudeModel extends CapsuleObstacle {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,yScale);
+			vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 		}
+
+	}
+
+
+	public void updateVision() {
+		vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
+		vision.update(world, getPosition());
+	}
+
+
+
+	/**
+	 * Draws the outline of the physics body, including the field of vision
+	 *
+	 * This method can be helpful for understanding issues with collisions.
+	 *
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void drawDebug(GameCanvas canvas) {
+		vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+		super.drawDebug(canvas);
 	}
 
 	/**
@@ -526,5 +561,6 @@ public class DudeModel extends CapsuleObstacle {
 	 * */
 	public void flippedGravity(){
 		isFlipped = !isFlipped;
+
 	}
 }
