@@ -306,8 +306,4 @@ public class LevelModel {
 	public Enemy[] getEnemies() {
 		return enemies;
 	}
-
-	public Enemy[] getEnemies() {
-		return enemies;
-	}
 }
