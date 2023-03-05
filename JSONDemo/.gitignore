@@ -1,5 +1,9 @@
 ## Java
 
+.idea
+.DS_Store
+JSONDemo/gradle
+
 *.class
 *.war
 *.ear
