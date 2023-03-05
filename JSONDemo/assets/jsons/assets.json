@@ -6,7 +6,10 @@
             "wrapV": "repeated"
         },
         "dude": "textures/dude.png",
-        "goal": "textures/goaldoor.png"
+        "goal": "textures/goaldoor.png",
+        "gumProjectile": "textures/gum.png",
+        "gum": "textures/gum.png"
+
     },
     "fonts": {
         "display": {
@@ -19,5 +22,5 @@
 	},
 	"jsons" : {
 		"level1" : "jsons/level.json"
-	}
+    }
 }

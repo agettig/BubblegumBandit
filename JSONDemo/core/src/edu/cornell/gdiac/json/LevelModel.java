@@ -22,6 +22,9 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.json.enemies.*;
+
+import java.util.Iterator;
 
 /**
  * Represents a single level in our game
@@ -54,7 +57,10 @@ public class LevelModel {
 	
 	/** All the objects in the world. */
 	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
-	
+
+	/** All enemies in the world */
+	private Enemy[] enemies;
+
 	/**
 	 * Returns the bounding rectangle for the physics world
 	 * 
@@ -179,11 +185,36 @@ public class LevelModel {
 	        floor = floor.next();
 	    }
 
+		// get number of enemies
+		int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
+
+		// initialize enemies list
+		enemies = new Enemy[numEnemies];
+
+		// json of enemy
+		JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
+
+		// initialize each enemy
+		for (int i= 0; i < numEnemies; i++){
+			Enemy a;
+			if (enemy.get("type").asString().equals("moving")){
+				a = new MovingEnemy();
+			}
+			else {
+				a = new StationaryEnemy();
+			}
+			a.initialize(directory, enemy);
+			a.setDrawScale(scale);
+			enemies[i] = a;
+			activate(a);
+			enemy = enemy.next();
+		}
+
 		// Create dude
 	    avatar = new DudeModel(world);
 	    avatar.initialize(directory,levelFormat.get("avatar"));
 	    avatar.setDrawScale(scale);
-		activate(avatar);
+	    activate(avatar);
 	}
 
 	
@@ -201,7 +232,7 @@ public class LevelModel {
 	/**
 	 * Immediately adds the object to the physics world
 	 *
-	 * param obj The object to add
+	 * @param obj The object to add
 	 */
 	protected void activate(Obstacle obj) {
 		assert inBounds(obj) : "Object is not in bounds";
@@ -222,6 +253,26 @@ public class LevelModel {
 		boolean horiz = (bounds.x <= obj.getX() && obj.getX() <= bounds.x+bounds.width);
 		boolean vert  = (bounds.y <= obj.getY() && obj.getY() <= bounds.y+bounds.height);
 		return horiz && vert;
+	}
+
+	/**
+	 * Updates the level objects' physics state (NOT GAME LOGIC).
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 */
+	public void update(float dt) {
+		// Garbage collect the deleted objects.
+		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		while (iterator.hasNext()) {
+			PooledList<Obstacle>.Entry entry = iterator.next();
+			Obstacle obj = entry.getValue();
+			if (obj.isRemoved()) {
+				obj.deactivatePhysics(world);
+				entry.remove();
+			} else {
+				obj.update(dt);
+			}
+		}
 	}
 	
 	/**
@@ -250,5 +301,9 @@ public class LevelModel {
 		}
 
 
+	}
+
+	public Enemy[] getEnemies() {
+		return enemies;
 	}
 }

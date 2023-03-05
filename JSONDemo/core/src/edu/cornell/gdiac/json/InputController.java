@@ -26,6 +26,7 @@ import edu.cornell.gdiac.util.XBoxController;
  * detected the X-Box controller on start-up.  This class allows us to hot-swap in
  * a controller via the new XBox360Controller class.
  */
+
 public class InputController {
 	// Sensitivity for moving crosshair with gameplay
 	private static final float GP_ACCELERATE = 1.0f;
@@ -63,8 +64,9 @@ public class InputController {
 	/** Whether the secondary action button was pressed. */
 	private boolean secondPressed;
 	private boolean secondPrevious;
-	/** Whether the teritiary action button was pressed. */
-	private boolean tertiaryPressed;
+	/** Whether the shoot button was pressed. */
+	private boolean shootPressed;
+	private boolean shootPrevious;
 	/** Whether the debug toggle was pressed. */
 	private boolean debugPressed;
 	private boolean debugPrevious;
@@ -82,6 +84,9 @@ public class InputController {
 	private Vector2 crosscache;
 	/** For the gamepad crosshair control */
 	private float momentum;
+
+	/** If gravity was switched */
+	private boolean switchGravity;
 	
 	/** An X-Box controller (if it is connected) */
 	XBoxController xbox;
@@ -123,6 +128,8 @@ public class InputController {
 		return crosscache.set(crosshair);
 	}
 
+	public boolean getSwitchGravity(){return switchGravity;};
+
 	/**
 	 * Returns true if the primary action button was pressed.
 	 *
@@ -148,15 +155,25 @@ public class InputController {
 	}
 
 	/**
-	 * Returns true if the tertiary action button was pressed.
+	 * Returns true if the shoot action was pressed.
 	 *
-	 * This is a sustained button. It will returns true as long as the player
-	 * holds it down.
+	 * This is a one-press button. It only returns true at the moment it was
+	 * pressed, and returns false at any frame afterwards.
 	 *
-	 * @return true if the secondary action button was pressed.
+	 * @return true if the shoot button was pressed.
 	 */
-	public boolean didTertiary() {
-		return tertiaryPressed;
+	public boolean didShoot() {
+		return shootPressed && !shootPrevious;
+	}
+
+	/** Returns x coordinate of mouse click*/
+	public int getX() {
+		return Gdx.input.getX();
+	}
+
+	/**Returns y coordinate of mouse click */
+	public int getY() {
+		return Gdx.input.getY();
 	}
 
 	/**
@@ -237,6 +254,7 @@ public class InputController {
 		// Helps us ignore buttons that are held down
 		primePrevious  = primePressed;
 		secondPrevious = secondPressed;
+		shootPrevious = shootPressed;
 		resetPrevious  = resetPressed;
 		debugPrevious  = debugPressed;
 		exitPrevious = exitPressed;
@@ -276,7 +294,7 @@ public class InputController {
 		secondPressed = xbox.getRightTrigger() > 0.6f;
 		
 		// Move the crosshairs with the right stick.
-		tertiaryPressed = xbox.getA();
+		shootPressed = xbox.getRightTrigger() > 0.6f;
 		crosscache.set(xbox.getLeftX(), xbox.getLeftY());
 		if (crosscache.len2() > GP_THRESHOLD) {
 			momentum += GP_ACCELERATE;
@@ -302,32 +320,51 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.D));
-		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
+		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP)) ||
+				(Gdx.input.isKeyPressed(Input.Keys.W));
 		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		switchGravity = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.W));
 		
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
-		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
 			horizontal += 1.0f;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
 			horizontal -= 1.0f;
 		}
+
 		
 		vertical = (secondary ? vertical : 0.0f);
-		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
 			vertical += 1.0f;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
 			vertical -= 1.0f;
 		}
+
+		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			secondPressed = true;
+			secondPrevious = false;
+		}
+
+
+		// remove vertical controls
+//		vertical = (secondary ? vertical : 0.0f);
+//		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+//			vertical += 1.0f;
+//		}
+//		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+//			vertical -= 1.0f;
+//		}
+
 		
 		// Mouse results
-        tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;
