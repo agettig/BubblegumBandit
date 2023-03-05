@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.json.enemies;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
@@ -38,8 +39,8 @@ public class MovingEnemy  extends Enemy{
         this.state = state;
     }
 
-    public MovingEnemy(){
-        super(0,0,1,1);
+    public MovingEnemy(World world){
+        super(world);
     }
 
     public void initialize(AssetDirectory directory, JsonValue json){

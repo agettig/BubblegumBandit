@@ -14,6 +14,7 @@
  */
  package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -197,10 +198,10 @@ public class LevelModel {
 		for (int i= 0; i < numEnemies; i++){
 			Enemy a;
 			if (enemy.get("type").asString().equals("moving")){
-				a = new MovingEnemy();
+				a = new MovingEnemy(world);
 			}
 			else {
-				a = new StationaryEnemy();
+				a = new StationaryEnemy(world);
 			}
 			a.initialize(directory, enemy);
 			a.setDrawScale(scale);
@@ -210,7 +211,7 @@ public class LevelModel {
 		}
 
 		// Create dude
-	    avatar = new DudeModel();
+	    avatar = new DudeModel(world);
 	    avatar.initialize(directory,levelFormat.get("avatar"));
 	    avatar.setDrawScale(scale);
 	    activate(avatar);
@@ -298,6 +299,8 @@ public class LevelModel {
 			}
 			canvas.endDebug();
 		}
+
+
 	}
 
 	public Enemy[] getEnemies() {
