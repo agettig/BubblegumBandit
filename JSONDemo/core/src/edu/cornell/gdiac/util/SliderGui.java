@@ -41,7 +41,7 @@ import javax.swing.event.*;
  */
 public class SliderGui extends JPanel implements ChangeListener {
 
-    public void addSlider(String name, int min, int max, int init, ChangeListener c){
+    public void addSlider(String name, int min, int max, int init, ChangeListener c, int majorTick, int minorTick){
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         JLabel sliderLabel = new JLabel(name, JLabel.CENTER);
         sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -54,8 +54,8 @@ public class SliderGui extends JPanel implements ChangeListener {
 
         framesPerSecond.addChangeListener(c);
 
-        framesPerSecond.setMajorTickSpacing(10);
-        framesPerSecond.setMinorTickSpacing(1);
+        framesPerSecond.setMajorTickSpacing(majorTick);
+        framesPerSecond.setMinorTickSpacing(minorTick);
         framesPerSecond.setPaintTicks(true);
         framesPerSecond.setPaintLabels(true);
         framesPerSecond.setBorder(
@@ -69,8 +69,9 @@ public class SliderGui extends JPanel implements ChangeListener {
     }
 
     public SliderGui(ChangeListener c) {
-        addSlider("gravity", 0, 20, 5, c);
-        addSlider("Test2", 10, 20, 15, c);
+        addSlider("gravity", 0, 20, 5, c, 5,1);
+        addSlider("radius", 1, 10, 3, c, 1,1);
+        addSlider("range", 0, 360, 90, c, 60, 30);
     }
 
     /** Listen to the slider. */
