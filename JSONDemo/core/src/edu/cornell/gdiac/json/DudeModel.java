@@ -68,7 +68,6 @@ public class DudeModel extends CapsuleObstacle {
 	public Vision vision;
 	private World world;
 
-
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
@@ -414,7 +413,6 @@ public class DudeModel extends CapsuleObstacle {
 
 		//actviate physics for raycasts
 		//vision.test(world);
-		
 
 		return true;
 	}
