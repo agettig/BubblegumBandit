@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -66,6 +67,11 @@ public class GameCanvas {
 	
 	/** Rendering context for the debug outlines */
 	private ShapeRenderer debugRender;
+
+
+	/** Rendering context for the FOV outlines */
+	private ShapeRenderer fovRender;
+
 	
 	/** Track whether or not we are active (for error checking) */
 	private DrawPass active;
@@ -101,12 +107,14 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 		spriteBatch = new PolygonSpriteBatch();
 		debugRender = new ShapeRenderer();
+		fovRender = new ShapeRenderer();
 		
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(getWidth(),getHeight());
 		camera.setToOrtho(false);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
+		fovRender.setProjectionMatrix(camera.combined);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -337,6 +345,7 @@ public class GameCanvas {
 		
 		setBlendState(BlendState.NO_PREMULT);
 		spriteBatch.begin();
+//		fovRender.begin();
     	active = DrawPass.STANDARD;
     }
 
@@ -374,6 +383,7 @@ public class GameCanvas {
 	 */
     public void end() {
     	spriteBatch.end();
+		fovRender.end();
     	active = DrawPass.INACTIVE;
     }
 
@@ -1151,4 +1161,81 @@ public class GameCanvas {
 		local.scale(sx,sy);
 		local.translate(-ox,-oy);
 	}
+
+
+	/**
+	 * Draws an FOV
+	 * @param color the color of the FOV
+	 * @param ends every vertex in the FOV shape, excluding the origin
+	 * @param x the Box2d world x coordinate of the origin
+	 * @param y the Box2d world y coordinate of the origin
+	 * @param scalex the physics engine scalar, x
+	 * @param scaley the physics engine scalar, y
+	 */
+	public void drawFOV(Color color, Array<Vector2> ends, float x, float y,
+						float scalex, float scaley) {
+
+		float[] vertices = new float[ends.size*2+2];
+		vertices[0] = 0;
+		vertices[1] = 0;
+		for(int i = 0; i<ends.size; i++) {
+			int index = i+1;
+			vertices[2*index] = ends.get(i).x;
+			vertices[2*index+1] = ends.get(i).y;
+		}
+
+		short[] indices = new short[ends.size*3];
+		for(int i = 0; i<ends.size; i++) {
+			indices[3*i] = 0;
+			indices[3*i+1] = (short) i;
+			indices[3*i+2] = (short) ((short) i+1);
+		}
+
+		Texture textureSolid;
+		Pixmap pix = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+		pix.setColor(color);
+		pix.fill();
+		textureSolid = new Texture(pix);
+
+		PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
+				vertices,  indices);
+
+
+		draw(polyReg, Color.WHITE, x*scalex,
+				y*scaley, scalex, scaley);
+
+
+	}
+
+
+	/**
+	 * Draw the individual rays of the field of vision
+	 *
+	 * @param color
+	 * @param ends
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param scalex
+	 * @param scaley
+	 */
+	public void drawRays(Color color, Array<Vector2> ends, float x, float y,
+						float radius, float scalex, float scaley) {
+
+		if (active != DrawPass.DEBUG) {
+			Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+			return;
+		}
+
+		fovRender.begin(ShapeRenderer.ShapeType.Line);
+		local.applyTo(vertex);
+		fovRender.setColor(color);
+
+		for(Vector2 end : ends){
+			fovRender.line(x*scalex, y*scaley, (end.x + x) *scalex, (end.y+y)*scaley);
+		}
+
+
+	}
+
 }
