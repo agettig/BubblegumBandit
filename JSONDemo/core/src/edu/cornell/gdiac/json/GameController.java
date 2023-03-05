@@ -79,13 +79,13 @@ public class GameController implements Screen, ContactListener {
      */
     public static final float WORLD_STEP = 1 / 60.0f;
     /**
-     * Number of velocity iterations for the constrain solvers
+     * Number of velocity iterations for the constraint solvers
      */
-    public static final int WORLD_VELOC = 6;
+    public static final int WORLD_VELOC = 8;
     /**
-     * Number of position iterations for the constrain solvers
+     * Number of position iterations for the constraint solvers
      */
-    public static final int WORLD_POSIT = 2;
+    public static final int WORLD_POSIT = 3;
 
     /**
      * Reference to the game canvas
@@ -695,34 +695,36 @@ public class GameController implements Screen, ContactListener {
             bd1.setName("stickyGum");
             bd1.setVX(0);
             bd1.setVY(0);
+            enqueueJoint(createGumJoint(bd1, bd2));
         }
-        if (isGumProjectile(bd2)) {
+        else if (isGumProjectile(bd2)) {
             bd2.setName("stickyGum");
             bd2.setVX(0);
             bd2.setVY(0);
+            enqueueJoint(createGumJoint(bd2, bd1));
         }
         // Add weld joint between gum and object
-        if (bd1.getName().equals("stickyGum")) {
-            WeldJointDef jointDef = new WeldJointDef();
-            jointDef.bodyA = bd1.getBody();
-            jointDef.bodyB = bd2.getBody();
+        else if (bd1.getName().equals("stickyGum")) {
+            enqueueJoint(createGumJoint(bd1, bd2));
+        }
+        else if (bd2.getName().equals("stickyGum")) {
+            enqueueJoint(createGumJoint(bd2, bd1));
+        }
+    }
 
-            Vector2 anchor = new Vector2();
-            jointDef.localAnchorA.set(anchor);
-            anchor.set(bd2.getX() - bd1.getX(), bd2.getY() - bd1.getY());
-            jointDef.localAnchorB.set(anchor);
-            enqueueJoint(jointDef);
-        }
-        if (bd2.getName().equals("stickyGum")) {
-            WeldJointDef jointDef = new WeldJointDef();
-            jointDef.bodyA = bd1.getBody();
-            jointDef.bodyB = bd2.getBody();
-            Vector2 anchor = new Vector2();
-            jointDef.localAnchorB.set(anchor);
-            anchor.set(bd2.getX() - bd1.getX(), bd2.getY() - bd1.getY());
-            jointDef.localAnchorA.set(anchor);
-            enqueueJoint(jointDef);
-        }
+    /**
+     * Returns a WeldJointDef connecting gum and another obstacle.
+     */
+    private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyB = ob.getBody();
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
     }
 
     /**

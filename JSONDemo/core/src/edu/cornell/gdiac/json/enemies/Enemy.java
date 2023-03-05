@@ -65,6 +65,16 @@ public abstract class Enemy extends CapsuleObstacle {
     private Vector2 forceCache = new Vector2();
 
     /**
+     * Whether this enemy is flipped
+     */
+    private boolean isFlipped;
+
+    /**
+     * The y scale of this enemy (for flipping when gravity swaps)
+     */
+    private float yScale;
+
+    /**
      * Returns left/right movement of this character.
      * <p>
      * This is the result of input times dude force.
@@ -177,6 +187,8 @@ public abstract class Enemy extends CapsuleObstacle {
         setFixedRotation(true);
         isGrounded = false;
         faceRight = true;
+        isFlipped = false;
+        yScale = 1f;
     }
 
     /**
@@ -260,7 +272,13 @@ public abstract class Enemy extends CapsuleObstacle {
 
     public abstract void applyForce();
 
-    public abstract void update();
+    public void update() {
+        if (yScale < 1f && !isFlipped) {
+            yScale += 0.1f;
+        } else if (yScale > -1f && isFlipped) {
+            yScale -= 0.1f;
+        }
+    };
 
     /**
      * Draws the physics object.
@@ -270,7 +288,8 @@ public abstract class Enemy extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+            float yFlip = isFlipped ? -1 : 1;
+            canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, yScale);
         }
     }
 
@@ -332,8 +351,6 @@ public abstract class Enemy extends CapsuleObstacle {
      * Flips the player's angle and direction when the world gravity is flipped
      */
     public void flippedGravity() {
-        angle = body.getAngle() == 0 ? 3.14f : 0f;
-        body.setTransform(body.getPosition(), angle);
-        faceRight = !faceRight;
+        isFlipped = !isFlipped;
     }
 }
