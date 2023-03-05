@@ -179,6 +179,7 @@ public class GameController implements Screen, ContactListener {
         failed = value;
     }
 
+
     /**
      * Returns true if this is the active screen
      *
@@ -356,6 +357,7 @@ public class GameController implements Screen, ContactListener {
         }
 
         for (Enemy e : level.getEnemies()) e.update();
+        avatar.updateVision();
 
         if (InputController.getInstance().didShoot()) {
             // TODO: Visible crosshair?
@@ -370,7 +372,9 @@ public class GameController implements Screen, ContactListener {
         // Turn the physics engine crank.
         level.getWorld().
 
+
         step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
+
     }
 
 
