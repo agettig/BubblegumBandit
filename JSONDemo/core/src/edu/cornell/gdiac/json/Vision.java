@@ -139,11 +139,11 @@ public class Vision {
         canvas.drawRays(DEBUGCOLOR, rays, x, y, radius, scalex, scaley);
     }
 
+    public void setRange(float range) {
+        this.range = range;
+    }
 
-
-
-
-
-
-
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
 }
