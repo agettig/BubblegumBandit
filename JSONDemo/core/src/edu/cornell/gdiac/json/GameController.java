@@ -355,26 +355,26 @@ public class GameController implements Screen, ContactListener {
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
-		avatar.updateVision();
 
         for (Enemy e : level.getEnemies()) e.update();
+        avatar.updateVision();
 
-		if (InputController.getInstance().didShoot()) {
-        // TODO: Visible crosshair?
-        createGumProjectile(InputController.getInstance().getCrossHair());
+        if (InputController.getInstance().didShoot()) {
+            // TODO: Visible crosshair?
+            createGumProjectile(InputController.getInstance().getCrossHair());
         }
 
-		level.update(dt);
+        level.update(dt);
 
-    // Make everything in the sticky queue static.
-    immobilizeStickyQueue();
+        // Make everything in the sticky queue static.
+        immobilizeStickyQueue();
 
-    // Turn the physics engine crank.
-		level.getWorld().
+        // Turn the physics engine crank.
+        level.getWorld().
 
-    step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
+                step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
-}
+    }
 
 
     /**
