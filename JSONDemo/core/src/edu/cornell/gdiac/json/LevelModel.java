@@ -198,10 +198,10 @@ public class LevelModel {
 		for (int i= 0; i < numEnemies; i++){
 			Enemy a;
 			if (enemy.get("type").asString().equals("moving")){
-				a = new MovingEnemy();
+				a = new MovingEnemy(world);
 			}
 			else {
-				a = new StationaryEnemy();
+				a = new StationaryEnemy(world);
 			}
 			a.initialize(directory, enemy);
 			a.setDrawScale(scale);

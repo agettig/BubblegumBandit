@@ -305,7 +305,7 @@ public class DudeModel extends CapsuleObstacle {
 		isGrounded = false;
 		isShooting = false;
 		isJumping = false;
-		faceRight = true;
+		faceRight = false;
 
 		shootCooldown = 0;
 		jumpCooldown = 0;
@@ -486,6 +486,7 @@ public class DudeModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
+			if (world.getGravity().y > 0) effect =-effect;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
 					getY()*drawScale.y,getAngle(),effect,1.0f);
 			vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
@@ -521,6 +522,5 @@ public class DudeModel extends CapsuleObstacle {
 	public void flippedGravity(){
 		angle = body.getAngle() == 0 ? 3.14f : 0f;
 		body.setTransform(body.getPosition(), angle);
-		faceRight = !faceRight;
 	}
 }
