@@ -64,10 +64,6 @@ public class DudeModel extends CapsuleObstacle {
 	/** Cache for internal force calculations */
 	private Vector2 forceCache = new Vector2();
 
-	/** Field of view for player. TEST */
-	public Vision vision;
-	private World world;
-
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
@@ -79,6 +75,8 @@ public class DudeModel extends CapsuleObstacle {
 
 	/** Cache for flipping player orientation */
 	private float angle;
+
+	private World world;
 
 	/**
 	 * Returns left/right movement of this character.
@@ -311,9 +309,6 @@ public class DudeModel extends CapsuleObstacle {
 		jumpCooldown = 0;
 		this.world = world;
 
-		//field of view
-		vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
-
 	}
 
 	/**
@@ -489,17 +484,9 @@ public class DudeModel extends CapsuleObstacle {
 			if (world.getGravity().y > 0) effect =-effect;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
 					getY()*drawScale.y,getAngle(),effect,1.0f);
-			vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 		}
 
 	}
-
-
-	public void updateVision() {
-		vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
-		vision.update(world, getPosition());
-	}
-
 
 
 	/**
@@ -511,7 +498,6 @@ public class DudeModel extends CapsuleObstacle {
 	 * @param canvas Drawing context
 	 */
 	public void drawDebug(GameCanvas canvas) {
-		vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
 		super.drawDebug(canvas);
 	}
 
