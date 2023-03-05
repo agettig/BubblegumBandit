@@ -281,7 +281,7 @@ public class DudeModel extends CapsuleObstacle {
 	 * @return the name of the ground sensor
 	 */
 	public String getSensorName() {
-		return (isFlipped) ? topSensorName : bottomSensorName;
+		 return (isFlipped) ? topSensorName : bottomSensorName;
 	}
 
 	/**
@@ -395,7 +395,7 @@ public class DudeModel extends CapsuleObstacle {
 		}
 		opacity = json.get("sensoropacity").asInt();
 		bottomSensorColor.mul(opacity/255.0f);
-		bottomSensorName = json.get("sensorname").asString();
+		bottomSensorName = json.get("bottomsensorname").asString();
 
 		sensorCenter = new Vector2(0, getHeight()/2);
 		topSensorShape = new PolygonShape();
@@ -411,7 +411,7 @@ public class DudeModel extends CapsuleObstacle {
 		}
 		opacity = json.get("sensoropacity").asInt();
 		topSensorColor.mul(opacity/255.0f);
-		topSensorName = json.get("sensorname").asString();
+		topSensorName = json.get("topsensorname").asString();
 	}
 
 	/**
@@ -525,9 +525,8 @@ public class DudeModel extends CapsuleObstacle {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
 
-			if (world.getGravity().y > 0) effect =-effect;
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
-					getY()*drawScale.y,getAngle(),effect,1.0f);
+					getY()*drawScale.y,getAngle(),effect,yScale);
 
 		}
 
@@ -552,6 +551,5 @@ public class DudeModel extends CapsuleObstacle {
 	 * */
 	public void flippedGravity(){
 		isFlipped = !isFlipped;
-
 	}
 }
