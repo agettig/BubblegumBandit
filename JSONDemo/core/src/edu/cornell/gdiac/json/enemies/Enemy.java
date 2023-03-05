@@ -70,6 +70,16 @@ public abstract class Enemy extends CapsuleObstacle {
     private Vector2 forceCache = new Vector2();
 
     /**
+     * Whether this enemy is flipped
+     */
+    private boolean isFlipped;
+
+    /**
+     * The y scale of this enemy (for flipping when gravity swaps)
+     */
+    private float yScale;
+
+    /**
      * Returns left/right movement of this character.
      * <p>
      * This is the result of input times dude force.
@@ -182,6 +192,8 @@ public abstract class Enemy extends CapsuleObstacle {
         setFixedRotation(true);
         isGrounded = false;
         faceRight = true;
+        isFlipped = false;
+        yScale = 1f;
         this.world = world;
         vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
     }
@@ -268,6 +280,11 @@ public abstract class Enemy extends CapsuleObstacle {
     public abstract void applyForce();
 
     public void update() {
+        if (yScale < 1f && !isFlipped) {
+            yScale += 0.1f;
+        } else if (yScale > -1f && isFlipped) {
+            yScale -= 0.1f;
+        }
         updateVision();
     }
 
@@ -279,8 +296,8 @@ public abstract class Enemy extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            if (world.getGravity().y > 0) effect =-effect;
-            canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, 1.0f);
+            float yFlip = isFlipped ? -1 : 1;
+            canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, yScale);
             vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
@@ -349,7 +366,6 @@ public abstract class Enemy extends CapsuleObstacle {
      * Flips the player's angle and direction when the world gravity is flipped
      */
     public void flippedGravity() {
-        angle = body.getAngle() == 0 ? 3.14f : 0f;
-        body.setTransform(body.getPosition(), angle);
+        isFlipped = !isFlipped;
     }
 }
