@@ -364,6 +364,8 @@ public class GameController implements Screen, ContactListener {
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
             avatar.flippedGravity();
+            avatar.setGrounded(false);
+            sensorFixtures.clear();
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
