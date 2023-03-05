@@ -341,11 +341,6 @@ public class GameController implements Screen, ContactListener {
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.applyForce();
 
-        // remove jump
-//		if (avatar.isJumping()) {
-//			jumpId = playSound( jumpSound, jumpId );
-//		}
-
         if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
