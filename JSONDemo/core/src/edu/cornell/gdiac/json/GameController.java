@@ -369,7 +369,7 @@ public class GameController implements Screen, ContactListener {
         }
 
         for (Enemy e : level.getEnemies()) e.update();
-        avatar.updateVision();
+
 
         if (InputController.getInstance().didShoot()) {
             // TODO: Visible crosshair?
