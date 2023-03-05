@@ -68,7 +68,6 @@ public class DudeModel extends CapsuleObstacle {
 	public Vision vision;
 	private World world;
 
-
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
@@ -411,6 +410,7 @@ public class DudeModel extends CapsuleObstacle {
 		sensorDef.shape = sensorShape;
 		sensorFixture = body.createFixture(sensorDef);
 		sensorFixture.setUserData(getSensorName());
+
 
 		//actviate physics for raycasts
 		//vision.test(world);
