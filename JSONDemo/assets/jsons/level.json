@@ -33,9 +33,10 @@
       0.183,
       0.05
     ],
-    "sensorname": "dudeGroundSensor",
+    "bottomsensorname": "dudeGroundSensor",
     "sensorcolor": "red",
-    "sensoropacity": 192
+    "sensoropacity": 192,
+    "topsensorname": "dudeTopSensor"
   },
   "exit": {
     "pos": [
