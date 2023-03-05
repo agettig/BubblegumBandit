@@ -751,6 +751,18 @@ public class GameController implements Screen, ContactListener {
                 if (source.getName().equals("gravity")) {
                     setGravity(val);
                 }
+                else if (source.getName().equals("radius")){
+                    for (Enemy enemy : level.getEnemies()){
+                        enemy.vision.setRadius(val);
+                        enemy.updateVision();
+                    }
+                }
+                else if (source.getName().equals("range")){
+                    for (Enemy enemy: level.getEnemies()){
+                        enemy.vision.setRange((float) (val * (Math.PI/180f)));
+                        enemy.updateVision();
+                    }
+                }
             }
 
         }
