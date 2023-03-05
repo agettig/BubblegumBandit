@@ -90,6 +90,8 @@ public class DudeModel extends CapsuleObstacle {
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
 
+	/** The physics world */
+	private World world;
 
 	/**
 	 * Returns left/right movement of this character.
