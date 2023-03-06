@@ -1234,6 +1234,7 @@ public class GameCanvas {
 		for(Vector2 end : ends){
 			fovRender.line(x*scalex, y*scaley, (end.x + x) *scalex, (end.y+y)*scaley);
 		}
+		fovRender.end();
 
 
 	}
