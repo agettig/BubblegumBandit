@@ -12,16 +12,18 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * JSON version, 3/2/2016
  */
- package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.json;
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.physics.box2d.*;
-
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.util.*;
-import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.json.enemies.*;
+import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.enemies.MovingEnemy;
+import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.util.PooledList;
 
 import java.util.Iterator;
 
@@ -51,9 +53,9 @@ public class LevelModel {
 	/** Reference to the goalDoor (for collision detection) */
 	private ExitModel goalDoor;
 
-	/** Whether or not the level is in debug more (showing off physics) */	
+	/** Whether or not the level is in debug more (showing off physics) */
 	private boolean debug;
-	
+
 	/** All the objects in the world. */
 	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
 
@@ -62,7 +64,7 @@ public class LevelModel {
 
 	/**
 	 * Returns the bounding rectangle for the physics world
-	 * 
+	 *
 	 * The size of the rectangle is in physics, coordinates, not screen coordinates
 	 *
 	 * @return the bounding rectangle for the physics world
@@ -88,7 +90,7 @@ public class LevelModel {
 	public World getWorld() {
 		return world;
 	}
-	
+
 	/**
 	 * Returns a reference to the player avatar
 	 *
@@ -100,13 +102,13 @@ public class LevelModel {
 
 	/**
 	 * Returns a reference to the exit door
-	 * 
+	 *
 	 * @return a reference to the exit door
 	 */
 	public ExitModel getExit() {
 		return goalDoor;
 	}
-	
+
 	/**
 	 * Returns whether this level is currently in debug node
 	 *
@@ -114,11 +116,11 @@ public class LevelModel {
 	 * wireframes onscreen
 	 *
 	 * @return whether this level is currently in debug node
-	 */	
+	 */
 	public boolean getDebug() {
 		return debug;
 	}
-	
+
 	/**
 	 * Sets whether this level is currently in debug node
 	 *
@@ -126,14 +128,14 @@ public class LevelModel {
 	 * wireframes onscreen
 	 *
 	 * @param value	whether this level is currently in debug node
-	 */	
+	 */
 	public void setDebug(boolean value) {
 		debug = value;
 	}
 
 	/**
 	 * Creates a new LevelModel
-	 * 
+	 *
 	 * The level is empty and there is no active physics world.  You must read
 	 * the JSON file to initialize the level
 	 */
@@ -143,7 +145,7 @@ public class LevelModel {
 		scale = new Vector2(1,1);
 		debug  = false;
 	}
-	
+
 	/**
 	 * Lays out the game geography from the given JSON file
 	 *
@@ -154,35 +156,35 @@ public class LevelModel {
 		float gravity = levelFormat.getFloat("gravity");
 		float[] pSize = levelFormat.get("physicsSize").asFloatArray();
 		int[] gSize = levelFormat.get("graphicSize").asIntArray();
-		
+
 		world = new World(new Vector2(0,gravity),false);
 		bounds = new Rectangle(0,0,pSize[0],pSize[1]);
 		scale.x = gSize[0]/pSize[0];
 		scale.y = gSize[1]/pSize[1];
-		
+
 		// Add level goal
 		goalDoor = new ExitModel();
 		goalDoor.initialize(directory,levelFormat.get("exit"));
 		goalDoor.setDrawScale(scale);
 		activate(goalDoor);
 
-	    JsonValue wall = levelFormat.get("walls").child();
-	    while (wall != null) {
-	    	WallModel obj = new WallModel();
-	    	obj.initialize(directory, wall);
-	    	obj.setDrawScale(scale);
-	        activate(obj);
-	        wall = wall.next();
-	    }
-	    
-	    JsonValue floor = levelFormat.get("platforms").child();
-	    while (floor != null) {
-	    	PlatformModel obj = new PlatformModel();
-	    	obj.initialize(directory,floor);
-	    	obj.setDrawScale(scale);
-	        activate(obj);
-	        floor = floor.next();
-	    }
+		JsonValue wall = levelFormat.get("walls").child();
+		while (wall != null) {
+			WallModel obj = new WallModel();
+			obj.initialize(directory, wall);
+			obj.setDrawScale(scale);
+			activate(obj);
+			wall = wall.next();
+		}
+
+		JsonValue floor = levelFormat.get("platforms").child();
+		while (floor != null) {
+			PlatformModel obj = new PlatformModel();
+			obj.initialize(directory,floor);
+			obj.setDrawScale(scale);
+			activate(obj);
+			floor = floor.next();
+		}
 
 		// get number of enemies
 		int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
@@ -197,10 +199,10 @@ public class LevelModel {
 		for (int i= 0; i < numEnemies; i++){
 			Enemy a;
 			if (enemy.get("type").asString().equals("moving")){
-				a = new MovingEnemy();
+				a = new MovingEnemy(world);
 			}
 			else {
-				a = new StationaryEnemy();
+				a = new StationaryEnemy(world);
 			}
 			a.initialize(directory, enemy);
 			a.setDrawScale(scale);
@@ -209,14 +211,16 @@ public class LevelModel {
 			enemy = enemy.next();
 		}
 
+
+
 		// Create dude
-	    avatar = new DudeModel();
-	    avatar.initialize(directory,levelFormat.get("avatar"));
-	    avatar.setDrawScale(scale);
-	    activate(avatar);
+		avatar = new DudeModel();
+		avatar.initialize(directory,levelFormat.get("avatar"));
+		avatar.setDrawScale(scale);
+		activate(avatar);
 	}
 
-	
+
 	public void dispose() {
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);
@@ -238,7 +242,7 @@ public class LevelModel {
 		objects.add(obj);
 		obj.activatePhysics(world);
 	}
-	
+
 	/**
 	 * Returns true if the object is in bounds.
 	 *
@@ -273,7 +277,7 @@ public class LevelModel {
 			}
 		}
 	}
-	
+
 	/**
 	 * Draws the level to the given game canvas
 	 *
@@ -284,13 +288,13 @@ public class LevelModel {
 	 */
 	public void draw(GameCanvas canvas) {
 		canvas.clear();
-		
+
 		canvas.begin();
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.end();
-		
+
 		if (debug) {
 			canvas.beginDebug();
 			for(Obstacle obj : objects) {
@@ -298,6 +302,8 @@ public class LevelModel {
 			}
 			canvas.endDebug();
 		}
+
+
 	}
 
 	public Enemy[] getEnemies() {

@@ -2,14 +2,13 @@ package edu.cornell.gdiac.json.enemies;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.json.DudeModel;
 
+public class MovingEnemy  extends Enemy{
 
-public class MovingEnemy  extends Enemy {
-
-    private enum EnemyState {
+    private enum EnemyState{
         /**
          * The enemy is stationary
          */
@@ -29,39 +28,35 @@ public class MovingEnemy  extends Enemy {
         ATTACK
     }
 
-    /** The radius of how far in front of them the robot can see*/
+    /** How far forward this ship can move in a single turn */
+    private static final float MOVE_SPEED = 0.01f;
+    /** How much this ship can turn in a single turn */
+    private static final float TURN_SPEED = 15.0f;
+    /** Ship velocity */
+    private Vector2 velocity;
     private float visionRadius;
-
-    /** How far the robot is allowed to grab*/
-    private float grabRadius;
-    /** Time passed since the controller was started*/
     private long ticks;
-    /** State of the robot*/
+
     private EnemyState state;
-    /**Represents the player aka Bubblegum Bandit*/
-    private DudeModel target;
 
     public void setVisionRadius(float visionRadius) {
         this.visionRadius = visionRadius;
     }
 
-    public void setGrabRadius(float grabRadius) {this.grabRadius = grabRadius;}
-
-    public void setEnemyState(EnemyState state) {
+    public void setEnemyState(EnemyState state){
         this.state = state;
     }
 
-    public MovingEnemy() {
-        super(0, 0, 1, 1);
+    public MovingEnemy(World world){
+        super(world);
     }
 
-    public void initialize(AssetDirectory directory, JsonValue json, DudeModel target) {
+    public void initialize(AssetDirectory directory, JsonValue json){
         super.initialize(directory, json);
-        setVisionRadius(json.get("vision\n" +
-                "    public void setVisionRadius(float visionradius").asFloat());
-        setGrabRadius(json.get("grabradius").asFloat());
+        setVisionRadius(json.get("visionradius").asFloat());
         setEnemyState(EnemyState.valueOf(json.get("enemystate").asString()));
-        this.target = target;
+        velocity = new Vector2();
+        ticks = 5;
     }
 
     // TODO
@@ -73,55 +68,101 @@ public class MovingEnemy  extends Enemy {
     // TODO
     @Override
     public void update() {
+        super.update();
+
+        //determine how the enemy is moving
+        int direction = this.enemyMovementDirection();
+
+        //movement
+        if (direction == -1) {
+            velocity.x = -MOVE_SPEED;
+            velocity.y = 0;
+            this.vision.setDirection(-1);
+            this.moveBot();
+        } else if (direction == 1) {
+            velocity.x = MOVE_SPEED;
+            velocity.y = 0;
+            this.moveBot();
+        }
+        else {
+            velocity.x = 0;
+            velocity.y = 0;
+        }
+        if (ticks % 400 == 0) {
+            flipBot();
+        }
         applyForce();
     }
 
-    // TODO checkGrabRange
-    public boolean checkGrabRange(Vector2 player, Vector2 robot) {
-        return false;
+    private void flipBot() {
+        if (this.enemyMovementDirection() == 1) {
+            this.vision.setDirection(-1);
+            this.setFaceRight(false);
+        }else if (this.enemyMovementDirection() == -1) {
+            this.vision.setDirection(1);
+            this.setFaceRight(true);
+        }
     }
 
-    // TODO checkVisionRange
-    public boolean checkVisionRange(Vector2 player, Vector2 robot) {
-        return false;
+    private void moveBot() {
+        Vector2 tmp = new Vector2();
+        tmp.set(this.getPosition());
+
+        tmp.add(this.velocity.x, this.velocity.y);
+
+        if (this.isGrounded()) {
+            this.setPosition(tmp);
+            this.ticks += 1;
+        }
     }
 
-    // TODO changeStateIfApplicable
-    public void changeStateIfApplicable(){
-        // TODO add initialization
 
-        switch(state){
-            case STATIONARY:
-                this.state = EnemyState.WANDER;
-                break;
+        // TODO changeStateIfApplicable
+        public void changeStateIfApplicable () {
+            // TODO add initialization
 
-            case WANDER:
-                if (checkVisionRange(this.target.getPosition(), this.getPosition())) {
-                    this.state = EnemyState.CHASE;
-                }
-                break;
+            switch (state) {
+                case STATIONARY:
 
-            case CHASE:
-                if (checkGrabRange(this.target.getPosition(), this.getPosition())) {
-                    this.state = EnemyState.ATTACK;
-                }
-                else if (target.getWidth() + ticks % 10 == 0) {
-                    this.state = EnemyState.WANDER;
-                }
-                break;
+                    break;
 
-            case ATTACK:
-                if (checkGrabRange(this.target.getPosition(), this.getPosition())) {
-                    this.state = EnemyState.CHASE;
-                }
-                else {
-                    //game over???
-                }
-                break;
+                case WANDER:
 
-            default:
-                Gdx.app.error("EnemyState", "Illegal enemy state", new IllegalStateException());
+
+                    break;
+
+                case CHASE:
+
+
+                    break;
+
+                case ATTACK:
+
+
+                    break;
+
+                default:
+                    Gdx.app.error("EnemyState", "Illegal enemy state", new IllegalStateException());
+            }
         }
 
-    }
+        /** Returns the direction the robot should move
+         *
+         * @return the direction the robot is moving -1 for left, 1 for right*/
+        public int enemyMovementDirection () {
+            int direction = 0;
+
+            //initialize direction based on the direction the bot is facing
+            if (this.isGrounded()) {
+                if (this.getFaceRight()) {
+                    direction = 1;
+                }
+                else direction = -1;
+            }
+
+            //every five seconds change the direction
+
+            System.out.println(direction);
+            return direction;
+        }
 }
