@@ -210,11 +210,13 @@ public class LevelModel {
 			enemy = enemy.next();
 		}
 
+
+
 		// Create dude
-	    avatar = new DudeModel(world);
-	    avatar.initialize(directory,levelFormat.get("avatar"));
-	    avatar.setDrawScale(scale);
-	    activate(avatar);
+		avatar = new DudeModel(world);
+		avatar.initialize(directory,levelFormat.get("avatar"));
+		avatar.setDrawScale(scale);
+		activate(avatar);
 	}
 
 	
