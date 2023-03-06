@@ -274,14 +274,23 @@ public class DudeModel extends CapsuleObstacle {
 	}
 
 	/**
-	 * Returns the name of the ground sensor
-	 *
+	 * Returns topSensorName when flipped else bottomSensorName
 	 * This is used by ContactListener
 	 *
 	 * @return the name of the ground sensor
 	 */
 	public String getSensorName() {
 		 return (isFlipped) ? topSensorName : bottomSensorName;
+	}
+
+	/**
+	 * Returns bottomSensorName when flipped else topSensorName
+	 * This is used by ContactListener
+	 *
+	 * @return the name of the ground sensor
+	 */
+	public String getSensorName2() {
+		return (isFlipped) ? bottomSensorName : topSensorName;
 	}
 
 	/**

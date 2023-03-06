@@ -369,8 +369,6 @@ public class GameController implements Screen, ContactListener {
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
             avatar.flippedGravity();
-            avatar.setGrounded(false);
-            sensorFixtures.clear();
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
@@ -572,8 +570,8 @@ public class GameController implements Screen, ContactListener {
         Object bd2 = body2.getUserData();
 
         DudeModel avatar = level.getAvatar();
-        if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
+        if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
+                (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
             if (sensorFixtures.size == 0) {
                 avatar.setGrounded(false);
