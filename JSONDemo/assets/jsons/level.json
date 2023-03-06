@@ -38,23 +38,6 @@
     "sensoropacity": 192,
     "topsensorname": "dudeTopSensor"
   },
-  "exit": {
-    "pos": [
-      2.0,
-      10.0
-    ],
-    "size": [
-      1.92,
-      1.92
-    ],
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "texture": "goal",
-    "debugcolor": "yellow",
-    "debugopacity": 200
-  },
   "walls": {
     "wall1": {
       "vertices": 12,
@@ -235,8 +218,25 @@
   },
   "gumProjectile": {
     "offset": 0.4,
-    "speed": 10.0,
+    "speed": 7.0,
     "density": 10.0,
     "texture": "gumProjectile"
+  },
+  "exit": {
+    "pos": [
+      2.0,
+      10.0
+    ],
+    "size": [
+      1.92,
+      1.92
+    ],
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": "goal",
+    "debugcolor": "yellow",
+    "debugopacity": 200
   }
 }
