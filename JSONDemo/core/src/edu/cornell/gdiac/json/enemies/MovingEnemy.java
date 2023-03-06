@@ -29,7 +29,7 @@ public class MovingEnemy  extends Enemy{
     }
 
     /** How far forward this ship can move in a single turn */
-    private static final float MOVE_SPEED = 0.01f;
+    private static float MOVE_SPEED = 0.01f;
     /** How much this ship can turn in a single turn */
     private static final float TURN_SPEED = 15.0f;
     /** Ship velocity */
@@ -57,6 +57,10 @@ public class MovingEnemy  extends Enemy{
         setEnemyState(EnemyState.valueOf(json.get("enemystate").asString()));
         velocity = new Vector2();
         ticks = 5;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        MOVE_SPEED = moveSpeed;
     }
 
     // TODO
@@ -161,8 +165,6 @@ public class MovingEnemy  extends Enemy{
             }
 
             //every five seconds change the direction
-
-            System.out.println(direction);
             return direction;
         }
 }

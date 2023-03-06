@@ -54,12 +54,20 @@ public class DudeModel extends CapsuleObstacle {
 
 	// SENSOR FIELDS
 	/** Ground sensor to represent our feet */
-	private Fixture sensorFixture;
-	private PolygonShape sensorShape;
+	private Fixture bottomSensorFixture;
+	private PolygonShape bottomSensorShape;
 	/** The name of the sensor for detection purposes */
-	private String sensorName;
+	private String bottomSensorName;
 	/** The color to paint the sensor in debug mode */
-	private Color sensorColor;
+	private Color bottomSensorColor;
+
+	/** Top sensor to represent our feet when flipped */
+	private Fixture topSensorFixture;
+	private PolygonShape topSensorShape;
+	/** The name of the sensor for detection purposes */
+	private String topSensorName;
+	/** The color to paint the sensor in debug mode */
+	private Color topSensorColor;
 
 	/** Cache for internal force calculations */
 	private Vector2 forceCache = new Vector2();
@@ -75,6 +83,15 @@ public class DudeModel extends CapsuleObstacle {
 
 	/** Cache for flipping player orientation */
 	private float angle;
+
+	/** Whether this player is flipped */
+	private boolean isFlipped;
+
+	/** The y scale for this player (used for flip effect) */
+	private float yScale;
+
+	/** The physics world */
+	private World world;
 
 	/**
 	 * Returns left/right movement of this character.
@@ -264,7 +281,7 @@ public class DudeModel extends CapsuleObstacle {
 	 * @return the name of the ground sensor
 	 */
 	public String getSensorName() {
-		return sensorName;
+		 return (isFlipped) ? topSensorName : bottomSensorName;
 	}
 
 	/**
@@ -275,7 +292,11 @@ public class DudeModel extends CapsuleObstacle {
 	 * @param name the name of the ground sensor
 	 */
 	public void setSensorName(String name) {
-		sensorName = name;
+		if (isFlipped) {
+			topSensorName = name;
+		} else {
+			bottomSensorName = name;
+		}
 	}
 
 	/**
@@ -292,7 +313,7 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * The main purpose of this constructor is to set the initial capsule orientation.
 	 */
-	public DudeModel() {
+	public DudeModel(World world) {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
 
@@ -301,10 +322,15 @@ public class DudeModel extends CapsuleObstacle {
 		isGrounded = false;
 		isShooting = false;
 		isJumping = false;
-		faceRight = true;
+		faceRight = false;
 
 		shootCooldown = 0;
 		jumpCooldown = 0;
+
+		isFlipped = false;
+		yScale = 1.0f;
+		this.world = world;
+
 	}
 
 	/**
@@ -356,20 +382,36 @@ public class DudeModel extends CapsuleObstacle {
 		// Get the sensor information
 		Vector2 sensorCenter = new Vector2(0, -getHeight()/2);
 		float[] sSize = json.get("sensorsize").asFloatArray();
-		sensorShape = new PolygonShape();
-		sensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
+		bottomSensorShape = new PolygonShape();
+		bottomSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
 
 		// Reflection is best way to convert name to color
 		try {
 			String cname = json.get("sensorcolor").asString().toUpperCase();
 			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-			sensorColor = new Color((Color)field.get(null));
+			bottomSensorColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
-			sensorColor = null; // Not defined
+			bottomSensorColor = null; // Not defined
 		}
 		opacity = json.get("sensoropacity").asInt();
-		sensorColor.mul(opacity/255.0f);
-		sensorName = json.get("sensorname").asString();
+		bottomSensorColor.mul(opacity/255.0f);
+		bottomSensorName = json.get("bottomsensorname").asString();
+
+		sensorCenter = new Vector2(0, getHeight()/2);
+		topSensorShape = new PolygonShape();
+		topSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
+
+		// Reflection is best way to convert name to color
+		try {
+			String cname = json.get("sensorcolor").asString().toUpperCase();
+			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+			topSensorColor = new Color((Color)field.get(null));
+		} catch (Exception e) {
+			topSensorColor = null; // Not defined
+		}
+		opacity = json.get("sensoropacity").asInt();
+		topSensorColor.mul(opacity/255.0f);
+		topSensorName = json.get("topsensorname").asString();
 	}
 
 	/**
@@ -398,9 +440,18 @@ public class DudeModel extends CapsuleObstacle {
 		FixtureDef sensorDef = new FixtureDef();
 		sensorDef.density = getDensity();
 		sensorDef.isSensor = true;
-		sensorDef.shape = sensorShape;
-		sensorFixture = body.createFixture(sensorDef);
-		sensorFixture.setUserData(getSensorName());
+		sensorDef.shape = bottomSensorShape;
+		bottomSensorFixture = body.createFixture(sensorDef);
+		bottomSensorFixture.setUserData(bottomSensorName);
+
+		sensorDef.density = getDensity();
+		sensorDef.isSensor = true;
+		sensorDef.shape = topSensorShape;
+		topSensorFixture = body.createFixture(sensorDef);
+		topSensorFixture.setUserData(topSensorName);
+
+		//actviate physics for raycasts
+		//vision.test(world);
 
 		return true;
 	}
@@ -433,13 +484,6 @@ public class DudeModel extends CapsuleObstacle {
 			forceCache.set(getMovement(),0);
 			body.applyForce(forceCache,getPosition(),true);
 		}
-
-		// remove jumping
-		// Jump!
-//		if (isJumping()) {
-//			forceCache.set(0, getJumpPulse());
-//			body.applyLinearImpulse(forceCache,getPosition(),true);
-//		}
 	}
 
 	/**
@@ -463,6 +507,12 @@ public class DudeModel extends CapsuleObstacle {
 			shootCooldown = Math.max(0, shootCooldown - 1);
 		}
 
+		if (yScale < 1f && !isFlipped) {
+			yScale += 0.1f;
+		} else if (yScale > -1f && isFlipped) {
+			yScale -= 0.1f;
+		}
+
 		super.update(dt);
 	}
 
@@ -474,8 +524,25 @@ public class DudeModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+
+			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+					getY()*drawScale.y,getAngle(),effect,yScale);
+
 		}
+
+	}
+
+
+	/**
+	 * Draws the outline of the physics body, including the field of vision
+	 *
+	 * This method can be helpful for understanding issues with collisions.
+	 *
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void drawDebug(GameCanvas canvas) {
+		super.drawDebug(canvas);
 	}
 
 	/**
@@ -483,8 +550,6 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * */
 	public void flippedGravity(){
-		angle = body.getAngle() == 0 ? 3.14f : 0f;
-		body.setTransform(body.getPosition(), angle);
-		faceRight = !faceRight;
+		isFlipped = !isFlipped;
 	}
 }
