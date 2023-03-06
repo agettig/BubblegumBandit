@@ -773,42 +773,37 @@ public class GameController implements Screen, ContactListener {
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    class SliderListener implements ChangeListener{
+    class SliderListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             JSlider source = (JSlider) e.getSource();
             if (!source.getValueIsAdjusting()) {
                 int val = source.getValue();
                 if (source.getName().equals("gravity")) {
                     setGravity(val);
-                }
-                else if (source.getName().equals("radius")){
-                    for (Enemy enemy : level.getEnemies()){
+                } else if (source.getName().equals("radius")) {
+                    for (Enemy enemy : level.getEnemies()) {
                         enemy.vision.setRadius(val);
                         enemy.updateVision();
                     }
-                }
-                else if (source.getName().equals("range")){
-                    for (Enemy enemy: level.getEnemies()){
-                        enemy.vision.setRange((float) (val * (Math.PI/180f)));
+                } else if (source.getName().equals("range")) {
+                    for (Enemy enemy : level.getEnemies()) {
+                        enemy.vision.setRange((float) (val * (Math.PI / 180f)));
                         enemy.updateVision();
                     }
-                }
-                else if (source.getName().equals("gum gravity scale")) {
+                } else if (source.getName().equals("gum gravity scale")) {
                     gumGravity = val;
-                }
-                else if (source.getName().equals("gum speed")) {
+                } else if (source.getName().equals("gum speed")) {
                     gumSpeed = val;
-                }
-                else if (source.getName().equals("move speed")){
-                    for (Enemy enemy: level.getEnemies()){
-                        if (enemy instanceof MovingEnemy){
-                          ((MovingEnemy) enemy).setMoveSpeed((float)val/100);
+                } else if (source.getName().equals("move speed")) {
+                    for (Enemy enemy : level.getEnemies()) {
+                        if (enemy instanceof MovingEnemy) {
+                            ((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
                         }
                     }
                 }
             }
 
         }
-    }
 
+    }
 }
