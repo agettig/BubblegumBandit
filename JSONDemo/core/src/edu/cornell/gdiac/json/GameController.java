@@ -17,6 +17,7 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -24,10 +25,19 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.json.gum.Bubblegum;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
 /**
  * Gameplay controller for the game.
@@ -75,13 +85,13 @@ public class GameController implements Screen, ContactListener {
      */
     public static final float WORLD_STEP = 1 / 60.0f;
     /**
-     * Number of velocity iterations for the constrain solvers
+     * Number of velocity iterations for the constraint solvers
      */
-    public static final int WORLD_VELOC = 6;
+    public static final int WORLD_VELOC = 8;
     /**
-     * Number of position iterations for the constrain solvers
+     * Number of position iterations for the constraint solvers
      */
-    public static final int WORLD_POSIT = 2;
+    public static final int WORLD_POSIT = 3;
 
     /**
      * Reference to the game canvas
@@ -114,20 +124,21 @@ public class GameController implements Screen, ContactListener {
      */
     private int countdown;
 
-    private TextureRegion gumTexture;
-
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
     protected ObjectSet<Fixture> sensorFixtures;
 
-
-    protected Queue<Bubblegum> gumQueue = new Queue<Bubblegum>();
-
     /**
-     * Queue of Obstacles involved in a gum collision to make static
+     * Queue of gum joints
      */
-    protected Queue<Obstacle> stickyQueue = new Queue<Obstacle>();
+    protected Queue<JointDef> jointsQueue;
+
+    /** Gum gravity scale when creating gum */
+    private float gumGravity;
+
+    /** Gum speed when creating gum */
+    private float gumSpeed;
 
     /**
      * Returns true if the level is completed.
@@ -179,6 +190,7 @@ public class GameController implements Screen, ContactListener {
         failed = value;
     }
 
+
     /**
      * Returns true if this is the active screen
      *
@@ -224,9 +236,20 @@ public class GameController implements Screen, ContactListener {
         active = false;
         countdown = -1;
 
+        jointsQueue = new Queue<JointDef>();
+
         setComplete(false);
         setFailure(false);
         sensorFixtures = new ObjectSet<Fixture>();
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI(new SliderListener());
+            }
+        });
     }
 
     /**
@@ -253,7 +276,8 @@ public class GameController implements Screen, ContactListener {
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
-        gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
+        TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
+        TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
@@ -335,15 +359,9 @@ public class GameController implements Screen, ContactListener {
     public void update(float dt) {
         // Process actions in object model
         DudeModel avatar = level.getAvatar();
-        avatar.setMovement(
-                InputController.getInstance().getHorizontal() * avatar.getForce());
+        avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.applyForce();
-
-        // remove jump
-//		if (avatar.isJumping()) {
-//			jumpId = playSound( jumpSound, jumpId );
-//		}
 
         if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
@@ -351,11 +369,14 @@ public class GameController implements Screen, ContactListener {
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
             avatar.flippedGravity();
+            avatar.setGrounded(false);
+            sensorFixtures.clear();
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
 
         for (Enemy e : level.getEnemies()) e.update();
+
 
         if (InputController.getInstance().didShoot()) {
             // TODO: Visible crosshair?
@@ -364,13 +385,11 @@ public class GameController implements Screen, ContactListener {
 
         level.update(dt);
 
-        // Make everything in the sticky queue static.
-        immobilizeStickyQueue();
-
         // Turn the physics engine crank.
-        level.getWorld().
+        level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
-        step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
+        // Add all of the pending joints to the world.
+        addJointsToWorld();
     }
 
 
@@ -522,7 +541,7 @@ public class GameController implements Screen, ContactListener {
             }
 
             // Check for gum collision
-            handleGumCollision(bd1, bd2);
+            resolveGumCollision(bd1, bd2);
 
             // TODO: Gum interactions
 
@@ -635,14 +654,16 @@ public class GameController implements Screen, ContactListener {
         gum.setDrawScale(level.getScale());
         gum.setTexture(gumTexture);
         gum.setBullet(true);
-        gum.setGravityScale(0);
-        // TODO: For different trajectories: change gravity scale, add various forces
+        gum.setGravityScale(gumGravity);
 
         // Compute position and velocity
-        float speed = gumJV.getFloat("speed", 0);
         Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
         gumVel.nor();
-        gumVel.scl(speed);
+        if (gumSpeed == 0) { // Use default gum speed
+            gumVel.scl(gumJV.getFloat("speed", 0));
+        } else { // Use slider gum speed
+            gumVel.scl(gumSpeed);
+        }
         gum.setVX(gumVel.x);
         gum.setVY(gumVel.y);
         level.activate(gum);
@@ -654,18 +675,17 @@ public class GameController implements Screen, ContactListener {
      * @param gum the gum to remove
      */
     public void removeGum(Obstacle gum) {
-        System.out.println("Gum projectile deleted");
         gum.markRemoved(true);
     }
 
     /**
-     * Adds an Obstacle to the end of the Sticky Queue.
+     * Adds a JointDef to the end of the Joint Queue.
      *
-     * @param o the Obstacle to add.
+     * @param j the JointDef to add.
      */
-    private void enqueueSticky(Obstacle o) {
-        if (o == null) return;
-        stickyQueue.addLast(o);
+    private void enqueueJoint(JointDef j) {
+        if (j == null) return;
+        jointsQueue.addLast(j);
     }
 
     /**
@@ -690,36 +710,105 @@ public class GameController implements Screen, ContactListener {
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
-    private void handleGumCollision(Obstacle bd1, Obstacle bd2) {
+    private void resolveGumCollision(Obstacle bd1, Obstacle bd2) {
 
         //Safety check.
         if (bd1 == null || bd2 == null) return;
 
         if (isGumProjectile(bd1)) {
             bd1.setName("stickyGum");
-            enqueueSticky(bd1);
-            enqueueSticky(bd2);
+            bd1.setVX(0);
+            bd1.setVY(0);
+            enqueueJoint(createGumJoint(bd1, bd2));
         }
-        if (isGumProjectile(bd2)) {
+        else if (isGumProjectile(bd2)) {
             bd2.setName("stickyGum");
-            enqueueSticky(bd1);
-            enqueueSticky(bd2);
+            bd2.setVX(0);
+            bd2.setVY(0);
+            enqueueJoint(createGumJoint(bd2, bd1));
         }
-        if (bd1.getName().equals("stickyGum")) enqueueSticky(bd2);
-        if (bd2.getName().equals("stickyGum")) enqueueSticky(bd1);
+        // Add weld joint between gum and object
+        else if (bd1.getName().equals("stickyGum")) {
+            enqueueJoint(createGumJoint(bd1, bd2));
+        }
+        else if (bd2.getName().equals("stickyGum")) {
+            enqueueJoint(createGumJoint(bd2, bd1));
+        }
     }
 
     /**
-     * Makes every Obstacle's body in the Sticky Queue a StaticBody
-     * before clearing the queue.
+     * Returns a WeldJointDef connecting gum and another obstacle.
      */
-    private void immobilizeStickyQueue() {
-        if (stickyQueue == null) return;
-        if (stickyQueue.isEmpty()) return;
-        for (Obstacle ob : stickyQueue) {
-            if (ob != null) ob.setBodyType(BodyDef.BodyType.StaticBody);
+    private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyB = ob.getBody();
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
+    }
+
+    /**
+     * Adds every joint in the joint queue to the world before clearing the queue.
+     */
+    private void addJointsToWorld() {
+        if (jointsQueue == null || jointsQueue.isEmpty()) return;
+        for (JointDef jointDef: jointsQueue) {
+            if (jointDef != null) {
+                level.getWorld().createJoint(jointDef);
+                // Todo: Keep track so you can remove from the world at some point
+            }
         }
-        stickyQueue.clear();
+        jointsQueue.clear();
+    }
+
+    public void setGravity(float gravity) {
+        float g = gravity;
+        if (level.getWorld().getGravity().y < 0) {
+            g = -g;
+        }
+        level.getWorld().setGravity(new Vector2(0, g));
+    }
+
+    class SliderListener implements ChangeListener{
+        public void stateChanged(ChangeEvent e) {
+            JSlider source = (JSlider) e.getSource();
+            if (!source.getValueIsAdjusting()) {
+                int val = source.getValue();
+                if (source.getName().equals("gravity")) {
+                    setGravity(val);
+                }
+                else if (source.getName().equals("radius")){
+                    for (Enemy enemy : level.getEnemies()){
+                        enemy.vision.setRadius(val);
+                        enemy.updateVision();
+                    }
+                }
+                else if (source.getName().equals("range")){
+                    for (Enemy enemy: level.getEnemies()){
+                        enemy.vision.setRange((float) (val * (Math.PI/180f)));
+                        enemy.updateVision();
+                    }
+                }
+                else if (source.getName().equals("gum gravity scale")) {
+                    gumGravity = val;
+                }
+                else if (source.getName().equals("gum speed")) {
+                    gumSpeed = val;
+                }
+                else if (source.getName().equals("move speed")){
+                    for (Enemy enemy: level.getEnemies()){
+                        if (enemy instanceof MovingEnemy){
+                          ((MovingEnemy) enemy).setMoveSpeed((float)val/100);
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
 }
