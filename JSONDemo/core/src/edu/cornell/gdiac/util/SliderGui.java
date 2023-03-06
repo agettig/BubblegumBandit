@@ -72,6 +72,8 @@ public class SliderGui extends JPanel implements ChangeListener {
         addSlider("gravity", 0, 20, 5, c, 5,1);
         addSlider("radius", 1, 10, 3, c, 1,1);
         addSlider("range", 0, 360, 90, c, 60, 30);
+        addSlider("gum gravity scale", 0, 1, 0, c, 1, 1);
+        addSlider("gum speed", 0, 30, 10, c, 5, 1);
     }
 
     /** Listen to the slider. */

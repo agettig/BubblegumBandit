@@ -123,10 +123,6 @@ public class GameController implements Screen, ContactListener {
      */
     private int countdown;
 
-    private TextureRegion gumTexture;
-
-    private TextureRegion stuckGumTexture;
-
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
@@ -135,7 +131,13 @@ public class GameController implements Screen, ContactListener {
     /**
      * Queue of gum joints
      */
-    protected Queue<JointDef> jointsQueue = new Queue<JointDef>();
+    protected Queue<JointDef> jointsQueue;
+
+    /** Gum gravity scale when creating gum */
+    private float gumGravity;
+
+    /** Gum speed when creating gum */
+    private float gumSpeed;
 
     /**
      * Returns true if the level is completed.
@@ -233,6 +235,8 @@ public class GameController implements Screen, ContactListener {
         active = false;
         countdown = -1;
 
+        jointsQueue = new Queue<JointDef>();
+
         setComplete(false);
         setFailure(false);
         sensorFixtures = new ObjectSet<Fixture>();
@@ -271,8 +275,8 @@ public class GameController implements Screen, ContactListener {
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
-        gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
-        stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
+        TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
+        TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
@@ -649,14 +653,16 @@ public class GameController implements Screen, ContactListener {
         gum.setDrawScale(level.getScale());
         gum.setTexture(gumTexture);
         gum.setBullet(true);
-        gum.setGravityScale(gumJV.getFloat("gravityScale", 0));
-        // TODO: For different trajectories: change gravity scale, add various forces
+        gum.setGravityScale(gumGravity);
 
         // Compute position and velocity
-        float speed = gumJV.getFloat("speed", 0);
         Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
         gumVel.nor();
-        gumVel.scl(speed);
+        if (gumSpeed == 0) { // Use default gum speed
+            gumVel.scl(gumJV.getFloat("speed", 0));
+        } else { // Use slider gum speed
+            gumVel.scl(gumSpeed);
+        }
         gum.setVX(gumVel.x);
         gum.setVY(gumVel.y);
         level.activate(gum);
@@ -770,7 +776,7 @@ public class GameController implements Screen, ContactListener {
         public void stateChanged(ChangeEvent e) {
             JSlider source = (JSlider) e.getSource();
             if (!source.getValueIsAdjusting()) {
-                int val = (int) source.getValue();
+                int val = source.getValue();
                 if (source.getName().equals("gravity")) {
                     setGravity(val);
                 }
@@ -785,6 +791,12 @@ public class GameController implements Screen, ContactListener {
                         enemy.vision.setRange((float) (val * (Math.PI/180f)));
                         enemy.updateVision();
                     }
+                }
+                else if (source.getName().equals("gum gravity scale")) {
+                    gumGravity = val;
+                }
+                else if (source.getName().equals("gum speed")) {
+                    gumSpeed = val;
                 }
             }
 

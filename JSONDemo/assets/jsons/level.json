@@ -237,8 +237,7 @@
     "offset": 0.4,
     "speed": 7.0,
     "density": 10.0,
-    "texture": "gumProjectile",
-    "gravityScale": 1.0
+    "texture": "gumProjectile"
   },
   "exit": {
     "pos": [
