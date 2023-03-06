@@ -76,8 +76,6 @@ public class GameCanvas {
          */
         OPAQUE
     }
-
-
     /**
      * Drawing context to handle textures AND POLYGONS as sprites
      */
@@ -421,9 +419,9 @@ public class GameCanvas {
      */
 
     public void end() {
-        spriteBatch.end();
-        fovRender.end();
-        active = DrawPass.INACTIVE;
+    	spriteBatch.end();
+		fovRender.end();
+    	active = DrawPass.INACTIVE;
     }
 
     /**
@@ -1291,5 +1289,4 @@ public class GameCanvas {
         fovRender.end();
 
     }
-
 }

@@ -6,13 +6,12 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class StationaryEnemy extends Enemy {
 
-    public StationaryEnemy(World world){
+    public StationaryEnemy(World world) {
         super(world);
     }
 
     public void initialize(AssetDirectory directory, JsonValue json) {
         super.initialize(directory, json);
-
     }
 
     @Override

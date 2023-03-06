@@ -95,6 +95,7 @@ public class MovingEnemy  extends Enemy{
         if (ticks % 400 == 0) {
             flipBot();
         }
+
         applyForce();
     }
 
