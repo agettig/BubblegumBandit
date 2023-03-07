@@ -26,13 +26,13 @@ public class Vision {
     private float range;
     /** The length of the FOV. */
     private float radius;
-    /** The number of rays being cast */
-    private int numRays = 25;
+    /** The number of rays being cast per radius unit */
+    private int numRays = 20;
 
     /**
      * Contains the current endpoints of the FOV
      */
-    private Array<Vector2> rays = new Array<>(numRays);
+    private Array<Vector2> rays = new Array<>();
     /**
      * The bodies currently in the FOV
      */
@@ -51,7 +51,6 @@ public class Vision {
         this.radius = radius;
         this.direction = direction;
         this.range = range;
-        for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
     /**
@@ -64,7 +63,6 @@ public class Vision {
         this.radius = radius;
         this.direction = (float) Math.PI/2;
         this.range = (float) Math.PI*2;
-        for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
     }
 
     /**
@@ -74,9 +72,12 @@ public class Vision {
      */
     public void update(World world, Vector2 origin) {
         bodies.clear();
+        int raycount = numRays*(int)radius;
+        rays.clear();
+        for(int i = 0; i<raycount; i++) rays.add(new Vector2());
         float startAngle = direction - range / 2;
-        float incrementAngle = range/(numRays-1);
-        for (int i = 0; i < numRays; i++) {
+        float incrementAngle = range/(raycount-1);
+        for (int i = 0; i <raycount; i++) {
             float angle =  startAngle + i * incrementAngle;
             final int finalI = i;
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
