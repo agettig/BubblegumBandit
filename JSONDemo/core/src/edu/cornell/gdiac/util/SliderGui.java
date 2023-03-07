@@ -39,8 +39,7 @@ import javax.swing.event.*;
  * SliderDemo.java requires all the files in the images/doggy
  * directory.
  */
-public class SliderGui extends JPanel implements ChangeListener {
-
+public class SliderGui extends JPanel{
     public void addSlider(String name, int min, int max, int init, ChangeListener c, int majorTick, int minorTick){
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         JLabel sliderLabel = new JLabel(name, JLabel.CENTER);
@@ -69,21 +68,12 @@ public class SliderGui extends JPanel implements ChangeListener {
     }
 
     public SliderGui(ChangeListener c) {
-        addSlider("gravity", 0, 20, 5, c, 5,1);
+        addSlider("gravity", 0, 20, 10, c, 5,1);
         addSlider("radius", 1, 10, 3, c, 1,1);
         addSlider("range", 0, 360, 90, c, 60, 30);
         addSlider("gum gravity scale", 0, 1, 0, c, 1, 1);
         addSlider("gum speed", 0, 30, 10, c, 5, 1);
-    }
-
-    /** Listen to the slider. */
-    public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider)e.getSource();
-        if (!source.getValueIsAdjusting()) {
-            int fps = (int)source.getValue();
-            System.out.println(fps);
-            System.out.println(source.getName());
-        }
+        addSlider("move speed", 0, 10, 1, c, 5, 1);
     }
 
     /**

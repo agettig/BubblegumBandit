@@ -80,7 +80,7 @@ public class Vision {
             float angle =  startAngle + i * incrementAngle;
             final int finalI = i;
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
-                origin.y + radius * (float) Math.sin(angle));
+                    origin.y + radius * (float) Math.sin(angle));
             rays.get(finalI).set(end);
             RayCastCallback ray = new RayCastCallback() {
                 @Override
@@ -105,8 +105,8 @@ public class Vision {
      * @return whether the obstacle is in view.
      */
     public boolean canSee(Obstacle obstacle) {
-       return bodies.contains(obstacle.getBody(),
-           true);
+        return bodies.contains(obstacle.getBody(),
+                true);
     }
 
 

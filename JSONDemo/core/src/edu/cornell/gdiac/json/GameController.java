@@ -25,6 +25,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
@@ -368,8 +369,6 @@ public class GameController implements Screen, ContactListener {
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
             avatar.flippedGravity();
-            avatar.setGrounded(false);
-            sensorFixtures.clear();
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
@@ -571,8 +570,8 @@ public class GameController implements Screen, ContactListener {
         Object bd2 = body2.getUserData();
 
         DudeModel avatar = level.getAvatar();
-        if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
+        if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
+                (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
             if (sensorFixtures.size == 0) {
                 avatar.setGrounded(false);
@@ -772,36 +771,37 @@ public class GameController implements Screen, ContactListener {
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    class SliderListener implements ChangeListener{
+    class SliderListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             JSlider source = (JSlider) e.getSource();
             if (!source.getValueIsAdjusting()) {
                 int val = source.getValue();
                 if (source.getName().equals("gravity")) {
                     setGravity(val);
-                }
-                else if (source.getName().equals("radius")){
-                    for (Enemy enemy : level.getEnemies()){
+                } else if (source.getName().equals("radius")) {
+                    for (Enemy enemy : level.getEnemies()) {
                         enemy.vision.setRadius(val);
                         enemy.updateVision();
                     }
-                }
-                else if (source.getName().equals("range")){
-                    for (Enemy enemy: level.getEnemies()){
-                        enemy.vision.setRange((float) (val * (Math.PI/180f)));
+                } else if (source.getName().equals("range")) {
+                    for (Enemy enemy : level.getEnemies()) {
+                        enemy.vision.setRange((float) (val * (Math.PI / 180f)));
                         enemy.updateVision();
                     }
-                }
-                else if (source.getName().equals("gum gravity scale")) {
+                } else if (source.getName().equals("gum gravity scale")) {
                     gumGravity = val;
-                }
-                else if (source.getName().equals("gum speed")) {
+                } else if (source.getName().equals("gum speed")) {
                     gumSpeed = val;
+                } else if (source.getName().equals("move speed")) {
+                    for (Enemy enemy : level.getEnemies()) {
+                        if (enemy instanceof MovingEnemy) {
+                            ((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
+                        }
+                    }
                 }
             }
 
         }
+
     }
-
 }
-
