@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -298,6 +299,36 @@ public class LevelModel {
         }
     }
 
+    public float getXTrajectory(float ox, float vx, float t){
+        return ox + vx * t;
+    }
+
+    public float getYTrajectory(float oy, float vy, float t, float g){
+        return oy + vy* t + .5f * g * t *t;
+    }
+
+    public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
+        Vector2 target = InputController.getInstance().getCrossHair();
+        JsonValue gumJV = levelFormat.get("gumProjectile");
+        float offset = gumJV.getFloat("offset", 0);
+        offset *= (target.x > avatar.getX() ? 1 : -1);
+        float startX = avatar.getX() + offset;
+        float startY = avatar.getY();
+
+        Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
+        gumVel.nor();
+        if (gumSpeed == 0) { // Use default gum speed
+            gumVel.scl(gumJV.getFloat("speed", 0));
+        } else { // Use slider gum speed
+            gumVel.scl(gumSpeed);
+        }
+        float x, y;
+        for (int i = 1; i < 10; i++){
+            x = getXTrajectory(startX, gumVel.x, i/10f);
+            y = getYTrajectory(startY, gumVel.y, i/10f, gumGravity * world.getGravity().y);
+            canvas.draw(gumProjectile, Color.WHITE, x*50,y*50,gumProjectile.getRegionWidth(), gumProjectile.getRegionHeight());
+        }
+    }
     /**
      * Draws the level to the given game canvas
      * <p>
@@ -306,13 +337,15 @@ public class LevelModel {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile) {
         canvas.clear();
 
         canvas.begin();
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
+        drawProjectile(levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+
         canvas.end();
 
         if (debug) {

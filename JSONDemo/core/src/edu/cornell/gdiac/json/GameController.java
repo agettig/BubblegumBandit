@@ -140,6 +140,8 @@ public class GameController implements Screen, ContactListener {
     /** Gum speed when creating gum */
     private float gumSpeed;
 
+    private TextureRegion gumProjectile;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -281,6 +283,7 @@ public class GameController implements Screen, ContactListener {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+        gumProjectile = new TextureRegion(directory.getEntry("gumProjectile", Texture.class));
     }
 
     /**
@@ -391,6 +394,7 @@ public class GameController implements Screen, ContactListener {
     }
 
 
+
     /**
      * Draw the physics objects to the canvas
      * <p>
@@ -404,7 +408,8 @@ public class GameController implements Screen, ContactListener {
     public void draw(float delta) {
         canvas.clear();
 
-        level.draw(canvas);
+
+        level.draw(canvas, levelFormat, gumSpeed, gumGravity, gumProjectile);
 
         // Final message
         if (complete && !failed) {
