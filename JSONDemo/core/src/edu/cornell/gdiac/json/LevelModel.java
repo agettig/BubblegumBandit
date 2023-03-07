@@ -326,7 +326,7 @@ public class LevelModel {
         for (int i = 1; i < 10; i++){
             x = getXTrajectory(startX, gumVel.x, i/10f);
             y = getYTrajectory(startY, gumVel.y, i/10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.WHITE, x*50,y*50,gumProjectile.getRegionWidth(), gumProjectile.getRegionHeight());
+            canvas.draw(gumProjectile, Color.WHITE,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f, x*50,y*50,gumProjectile.getRegionWidth(), gumProjectile.getRegionHeight());
         }
     }
     /**
