@@ -58,7 +58,7 @@
       "bodytype": "static",
       "density": 0.0,
       "friction": 0.2,
-      "restitution": 0.1,
+      "restitution": 0.0,
       "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200
@@ -82,7 +82,7 @@
       "bodytype": "static",
       "density": 0.0,
       "friction": 0.4,
-      "restitution": 0.1,
+      "restitution": 0.0,
       "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200
@@ -101,7 +101,7 @@
       "bodytype": "static",
       "density": 0.0,
       "friction": 0.4,
-      "restitution": 0.1,
+      "restitution": 0.0,
       "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200
@@ -118,7 +118,7 @@
       "bodytype": "static",
       "density": 0.0,
       "friction": 0.4,
-      "restitution": 0.1,
+      "restitution": 0.0,
       "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200
@@ -135,7 +135,7 @@
       "bodytype": "static",
       "density": 0.0,
       "friction": 0.4,
-      "restitution": 0.1,
+      "restitution": 0.0,
       "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200

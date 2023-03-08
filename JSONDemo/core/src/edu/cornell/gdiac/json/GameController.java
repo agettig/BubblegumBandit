@@ -645,6 +645,16 @@ public class GameController implements Screen, ContactListener {
         offset *= (target.x > avatar.getX() ? 1 : -1);
         float startX = avatar.getX() + offset;
         float startY = avatar.getY();
+        Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
+        gumVel.nor();
+
+        // Prevent player from shooting themselves by clicking on player
+        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
+        if ((offset > 0 && gumVel.x < 0 && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+            return;
+        } else if (offset < 0 && gumVel.x > 0 && (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+            return;
+        }
 
         String key = gumJV.get("texture").asString();
         TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -661,8 +671,6 @@ public class GameController implements Screen, ContactListener {
         gum.setGravityScale(gumGravity);
 
         // Compute position and velocity
-        Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
-        gumVel.nor();
         if (gumSpeed == 0) { // Use default gum speed
             gumVel.scl(gumJV.getFloat("speed", 0));
         } else { // Use slider gum speed
