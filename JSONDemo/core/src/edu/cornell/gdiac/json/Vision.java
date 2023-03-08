@@ -89,7 +89,6 @@ public class Vision {
                     origin.y + radius * (float) Math.sin(angle));
             rays.get(finalI).set(end);
 
-            final float[] minFraction = {1f};
             RayCastCallback ray = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
@@ -97,10 +96,8 @@ public class Vision {
                     if(bodies.contains(fixture.getBody(), false))
                         bodies.add(fixture.getBody());
                     if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
-                        if (minFraction[0] > fraction) {
-                            minFraction[0] = fraction;
-                            rays.get(finalI).set(point);
-                        }
+                        rays.get(finalI).set(point);
+                        return fraction;
                     }
                     return -1f;
                 }

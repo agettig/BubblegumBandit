@@ -377,12 +377,10 @@ public class LevelModel {
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                 if (!ob.getName().equals("gumProjectile")) {
-                    if (fraction < minFraction[0]) { // Find closest intersection
-                        minFraction[0] = fraction;
-                        intersect.set(point);
-                    }
+                    intersect.set(point);
+                    return fraction;
                 }
-                return -1f;
+                return -1;
             }
         };
         world.rayCast(ray, origin, end);
