@@ -140,7 +140,8 @@ public class GameController implements Screen, ContactListener {
     /** Gum speed when creating gum */
     private float gumSpeed;
 
-    private TextureRegion gumProjectile;
+    /** The texture of the trajectory projectile */
+    private TextureRegion trajectoryProjectile;
 
     /**
      * Returns true if the level is completed.
@@ -283,7 +284,7 @@ public class GameController implements Screen, ContactListener {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
-        gumProjectile = new TextureRegion(directory.getEntry("gumProjectile", Texture.class));
+        trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
     }
 
     /**
@@ -372,6 +373,8 @@ public class GameController implements Screen, ContactListener {
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
             avatar.flippedGravity();
+            avatar.setGrounded(false);
+            sensorFixtures.clear();
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
@@ -380,7 +383,6 @@ public class GameController implements Screen, ContactListener {
 
 
         if (InputController.getInstance().didShoot()) {
-            // TODO: Visible crosshair?
             createGumProjectile(InputController.getInstance().getCrossHair());
         }
 
@@ -408,8 +410,7 @@ public class GameController implements Screen, ContactListener {
     public void draw(float delta) {
         canvas.clear();
 
-
-        level.draw(canvas, levelFormat, gumSpeed, gumGravity, gumProjectile);
+        level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
 
         // Final message
         if (complete && !failed) {
