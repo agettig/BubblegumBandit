@@ -8,6 +8,7 @@
         "dude": "textures/dude.png",
         "goal": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
+        "trajectoryProjectile": "textures/trajectory.png",
         "gum": "textures/gum.png",
         "chewedGum": "textures/chewed_gum.png"
 
