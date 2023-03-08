@@ -287,7 +287,8 @@
     ]
   },
   "gumProjectile": {
-    "offset": 0.4,
+    "offsetX": 0.4,
+    "offsetY": 0.2,
     "speed": 15.0,
     "density": 10.0,
     "texture": "gumProjectile"
