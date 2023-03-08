@@ -323,10 +323,12 @@ public class LevelModel {
     public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
         Vector2 target = InputController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
-        float offset = gumJV.getFloat("offset", 0);
-        offset *= (target.x > avatar.getX() ? 1 : -1);
-        float startX = avatar.getX() + offset;
-        float startY = avatar.getY();
+        float offsetX = gumJV.getFloat("offsetX", 0);
+        offsetX *= (target.x > avatar.getX() ? 1 : -1);
+        float offsetY = gumJV.getFloat("offsetY", 0);
+        offsetY *= avatar.getYScale();
+        float startX = avatar.getX() + offsetX;
+        float startY = avatar.getY() + offsetY;
 
         Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
         gumVel.nor();
@@ -355,10 +357,12 @@ public class LevelModel {
         JsonValue gumJV = levelFormat.get("gumProjectile");
 
         // TODO: The logic for this and createGumProjectile should really be in one place (Gum Controller?)
-        float offset = gumJV.getFloat("offset", 0);
-        offset *= (target.x > avatar.getX() ? 1 : -1);
+        float offsetX = gumJV.getFloat("offsetX", 0);
+        offsetX *= (target.x > avatar.getX() ? 1 : -1);
+        float offsetY = gumJV.getFloat("offsetY", 0);
+        offsetY *= avatar.getYScale();
 
-        Vector2 origin = new Vector2(avatar.getX() + offset, avatar.getY());
+        Vector2 origin = new Vector2(avatar.getX() + offsetX, avatar.getY() + offsetY);
         Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
         dir.nor();
         dir.scl(bounds.width * 2); // Make sure ray will cover the whole screen

@@ -641,18 +641,20 @@ public class GameController implements Screen, ContactListener {
     private void createGumProjectile(Vector2 target) {
         JsonValue gumJV = levelFormat.get("gumProjectile");
         DudeModel avatar = level.getAvatar();
-        float offset = gumJV.getFloat("offset", 0);
-        offset *= (target.x > avatar.getX() ? 1 : -1);
-        float startX = avatar.getX() + offset;
-        float startY = avatar.getY();
+        float offsetX = gumJV.getFloat("offsetX", 0);
+        offsetX *= (target.x > avatar.getX() ? 1 : -1);
+        float offsetY = gumJV.getFloat("offsetY", 0);
+        offsetY *= avatar.getYScale();
+        float startX = avatar.getX() + offsetX;
+        float startY = avatar.getY() + offsetY;
         Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
         gumVel.nor();
 
         // Prevent player from shooting themselves by clicking on player
         // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
-        if ((offset > 0 && gumVel.x < 0 && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+        if ((offsetX > 0 && gumVel.x < 0 && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
             return;
-        } else if (offset < 0 && gumVel.x > 0 && (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+        } else if (offsetX < 0 && gumVel.x > 0 && (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
             return;
         }
 

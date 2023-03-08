@@ -123,6 +123,15 @@ public class DudeModel extends CapsuleObstacle {
 	}
 
 	/**
+	 * Returns the current yScale of the player.
+	 *
+	 * @return the value of the player's yScale.
+	 */
+	public float getYScale() {
+		return yScale;
+	}
+
+	/**
 	 * Sets left/right movement of this character.
 	 *
 	 * This is the result of input times dude force.
