@@ -2,13 +2,11 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import com.badlogic.gdx.utils.Disposable;
+
 
 
 /** Fields of vision for enemies */
@@ -26,8 +24,10 @@ public class Vision {
     private float range;
     /** The length of the FOV. */
     private float radius;
-    /** The number of rays being cast */
-    private int numRays = 25;
+    /** The number of rays being cast per radius unit */
+    private int numRays = 20;
+
+    boolean resetRadius = false;
 
     /**
      * Contains the current endpoints of the FOV
@@ -51,7 +51,7 @@ public class Vision {
         this.radius = radius;
         this.direction = direction;
         this.range = range;
-        for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
+        for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
     }
 
     /**
@@ -64,7 +64,7 @@ public class Vision {
         this.radius = radius;
         this.direction = (float) Math.PI/2;
         this.range = (float) Math.PI*2;
-        for(int i = 0; i<numRays; i++) this.rays.add(new Vector2());
+        for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
     }
 
     /**
@@ -74,13 +74,18 @@ public class Vision {
      */
     public void update(World world, Vector2 origin) {
         bodies.clear();
+        if(resetRadius) {
+            this.rays.clear();
+            for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
+            resetRadius = false;
+        }
         float startAngle = direction - range / 2;
-        float incrementAngle = range/(numRays-1);
-        for (int i = 0; i < numRays; i++) {
+        float incrementAngle = range/(rays.size-1);
+        for (int i = 0; i < rays.size; i++) {
             float angle =  startAngle + i * incrementAngle;
             final int finalI = i;
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
-                origin.y + radius * (float) Math.sin(angle));
+                    origin.y + radius * (float) Math.sin(angle));
             rays.get(finalI).set(end);
             RayCastCallback ray = new RayCastCallback() {
                 @Override
@@ -105,8 +110,8 @@ public class Vision {
      * @return whether the obstacle is in view.
      */
     public boolean canSee(Obstacle obstacle) {
-       return bodies.contains(obstacle.getBody(),
-           true);
+        return bodies.contains(obstacle.getBody(),
+                true);
     }
 
 
@@ -145,5 +150,7 @@ public class Vision {
 
     public void setRadius(float radius) {
         this.radius = radius;
+        resetRadius = true;
+
     }
 }

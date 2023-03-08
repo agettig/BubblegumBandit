@@ -1,5 +1,9 @@
 ## Java
 
+core/resources
+desktop/out/
+out/
+
 *.class
 *.war
 *.ear
