@@ -2,6 +2,7 @@
 
 /core/resources
 /desktop/out/
+desktop/out/
 out/
 
 *.class
