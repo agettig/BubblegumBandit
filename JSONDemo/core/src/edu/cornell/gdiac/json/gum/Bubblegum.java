@@ -2,9 +2,8 @@ package edu.cornell.gdiac.json.gum;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import edu.cornell.gdiac.json.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
@@ -12,12 +11,23 @@ import edu.cornell.gdiac.json.DudeModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
+import java.util.ArrayList;
+
 /**
 * Class to represent a "stuck" Bubblegum. This Bubblegum
 * is not a projectile; instead, it is instantiated when
 * a gum projectile hits an Obstacle.
 */
 public class Bubblegum extends WheelObstacle {
+
+    /**Upper limit on Bubblegum objects */
+    private static final int MAX_GUM = 2;
+
+    /**All active joints created by gum */
+    private static ArrayList<WeldJoint> activeGumJoints;
+
+    /**All active gum objects created by gum */
+    private static ArrayList<Bubblegum> activeGum;
 
     /**Diameter of a Bubblegum projectile */
     private float diameter;
@@ -34,11 +44,38 @@ public class Bubblegum extends WheelObstacle {
     /**
      * Creates a Bubblegum projectile.
      * */
-    public Bubblegum(float x, float y){
-        super(x, y, 2);
-//        Body b = getBody();
-//        System.out.println(b);
-//        b.setType(BodyDef.BodyType.StaticBody);
+    public Bubblegum(float x, float y, float radius){
+        super(x, y, radius);
+        if(activeGum == null) activeGum = new ArrayList<Bubblegum>();
+        activeGum.add(this);
+    }
+
+    /**
+     * Returns true if the player has shot the maximum amount of gum allowed.
+     *
+     * @return true if the player has shot the maximum amount of gum allowed.
+     * */
+    public static boolean atGumLimit(){
+        if(activeGum == null) activeGum = new ArrayList<Bubblegum>();
+        return activeGum.size() >= MAX_GUM;
+    }
+
+    public static void addGumJoint(WeldJoint wj){
+        if(activeGumJoints == null) activeGumJoints = new ArrayList<WeldJoint>();
+        activeGumJoints.add(wj);
+    }
+
+    public static void collectGum(World world){
+        for(WeldJoint j : activeGumJoints){
+            world.destroyJoint(j);
+        }
+        for(Bubblegum b : activeGum){
+            Body gumBody = b.getBody();
+            world.destroyBody(gumBody);
+
+        }
+        activeGum.clear();
+        activeGumJoints.clear();
     }
 
 

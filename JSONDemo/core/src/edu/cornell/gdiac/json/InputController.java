@@ -87,6 +87,10 @@ public class InputController {
 
 	/** If gravity was switched */
 	private boolean switchGravity;
+
+	/** If gum was collected */
+
+	private boolean collect;
 	
 	/** An X-Box controller (if it is connected) */
 	XBoxController xbox;
@@ -129,6 +133,12 @@ public class InputController {
 	}
 
 	public boolean getSwitchGravity(){return switchGravity;};
+
+	/** Returns true if the player inputted some command to collect Bubblegum.
+	 *
+	 * @returns true if the player input maps to collecting Bubblegum.
+	 * */
+	public boolean didCollect(){return collect;}
 
 	/**
 	 * Returns true if the primary action button was pressed.
@@ -328,7 +338,8 @@ public class InputController {
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		switchGravity = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.W)) || (Gdx.input.isKeyJustPressed(Input.Keys.S));
-		
+		collect = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.C));
+
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
