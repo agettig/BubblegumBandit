@@ -641,20 +641,16 @@ public class GameController implements Screen, ContactListener {
     private void createGumProjectile(Vector2 target) {
         JsonValue gumJV = levelFormat.get("gumProjectile");
         DudeModel avatar = level.getAvatar();
-        float offsetX = gumJV.getFloat("offsetX", 0);
-        offsetX *= (target.x > avatar.getX() ? 1 : -1);
-        float offsetY = gumJV.getFloat("offsetY", 0);
-        offsetY *= avatar.getYScale();
-        float startX = avatar.getX() + offsetX;
-        float startY = avatar.getY() + offsetY;
-        Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
+
+        Vector2 origin = level.getProjOrigin(gumJV);
+        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
         gumVel.nor();
 
         // Prevent player from shooting themselves by clicking on player
         // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
-        if ((offsetX > 0 && gumVel.x < 0 && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
             return;
-        } else if (offsetX < 0 && gumVel.x > 0 && (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
             return;
         }
 
@@ -662,7 +658,7 @@ public class GameController implements Screen, ContactListener {
         TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
 
-        WheelObstacle gum = new WheelObstacle(startX, startY, radius);
+        WheelObstacle gum = new WheelObstacle(origin.x, origin.y, radius);
 
         // Physics properties
         gum.setName(gumJV.name());

@@ -312,6 +312,37 @@ public class LevelModel {
         }
     }
 
+    /**
+     * Returns the origin of the gum when fired by the player.
+     *
+     * @param gumJV the JSON Value representing the gum projectile.
+     * @return The origin of the projectile of the gum when fired.
+     */
+    public Vector2 getProjOrigin(JsonValue gumJV) {
+        //  TODO: The logic for this should be in Gum Controller.
+
+        Vector2 target = InputController.getInstance().getCrossHair();
+
+        float offsetX = gumJV.getFloat("offsetX", 0);
+        float offsetY = gumJV.getFloat("offsetY", 0);
+        offsetY *= avatar.getYScale();
+
+        Vector2 origin = new Vector2(avatar.getX(), avatar.getY() + offsetY);
+        Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
+        dir.nor();
+        dir.scl(offsetX);
+
+        // Adjust origin of shot based on target pos
+        // Rotate around top half of player for gravity pulling down, bottom half for gravity pulling up
+        if (dir.y * world.getGravity().y < 0) {
+            origin.x += dir.x;
+        } else {
+            origin.x += (target.x > avatar.getX() ? offsetX : -offsetX);
+        }
+        origin.y += dir.y;
+        return origin;
+    }
+
     public float getXTrajectory(float ox, float vx, float t){
         return ox + vx * t;
     }
@@ -323,14 +354,13 @@ public class LevelModel {
     public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
         Vector2 target = InputController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
-        float offsetX = gumJV.getFloat("offsetX", 0);
-        offsetX *= (target.x > avatar.getX() ? 1 : -1);
-        float offsetY = gumJV.getFloat("offsetY", 0);
-        offsetY *= avatar.getYScale();
-        float startX = avatar.getX() + offsetX;
-        float startY = avatar.getY() + offsetY;
+//        float offsetX = gumJV.getFloat("offsetX", 0);
+//        offsetX *= (target.x > avatar.getX() ? 1 : -1);
+//        float offsetY = gumJV.getFloat("offsetY", 0);
+//        offsetY *= avatar.getYScale();
+        Vector2 origin = getProjOrigin(gumJV);
 
-        Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
+        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
         gumVel.nor();
         if (gumSpeed == 0) { // Use default gum speed
             gumVel.scl(gumJV.getFloat("speed", 0));
@@ -339,9 +369,10 @@ public class LevelModel {
         }
         float x, y;
         for (int i = 1; i < 10; i++){
-            x = getXTrajectory(startX, gumVel.x, i/10f);
-            y = getYTrajectory(startY, gumVel.y, i/10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.WHITE,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f, x*50,y*50,gumProjectile.getRegionWidth(), gumProjectile.getRegionHeight());
+            x = getXTrajectory(origin.x, gumVel.x, i/10f);
+            y = getYTrajectory(origin.y, gumVel.y, i/10f, gumGravity * world.getGravity().y);
+            canvas.draw(gumProjectile, Color.WHITE,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f,
+                    x*50,y*50,gumProjectile.getRegionWidth()*trajectoryScale, gumProjectile.getRegionHeight()*trajectoryScale);
         }
     }
 
@@ -355,21 +386,13 @@ public class LevelModel {
     public void drawProjectileRay(JsonValue levelFormat, TextureRegion asset, GameCanvas canvas){
         Vector2 target = InputController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
-
-        // TODO: The logic for this and createGumProjectile should really be in one place (Gum Controller?)
-        float offsetX = gumJV.getFloat("offsetX", 0);
-        offsetX *= (target.x > avatar.getX() ? 1 : -1);
-        float offsetY = gumJV.getFloat("offsetY", 0);
-        offsetY *= avatar.getYScale();
-
-        Vector2 origin = new Vector2(avatar.getX() + offsetX, avatar.getY() + offsetY);
+        Vector2 origin = getProjOrigin(gumJV);
         Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
         dir.nor();
         dir.scl(bounds.width * 2); // Make sure ray will cover the whole screen
         Vector2 end = new Vector2(origin.x + dir.x, origin.y + dir.y); // Find end point of the ray cast
 
         final Vector2 intersect = new Vector2();
-        final float[] minFraction = {1f}; // This is weird, but has to be like this for the callback
 
         RayCastCallback ray = new RayCastCallback() {
             @Override
