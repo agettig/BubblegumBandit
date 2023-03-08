@@ -129,6 +129,20 @@ public abstract class Enemy extends CapsuleObstacle {
         force = value;
     }
 
+    /** Returns whether or not the dude is facing right
+     *
+     * @return whether or not the enemy is facing right*/
+    public boolean getFaceRight(){
+        return faceRight;
+    }
+
+    /** Changes the direction the dude is facing
+     *
+     *@param isRight whether or not the dude is facing right*/
+    public void setFaceRight(boolean isRight) {
+        faceRight = isRight;
+    }
+
     /**
      * Returns how hard the brakes are applied to get a dude to stop moving
      *
@@ -190,7 +204,7 @@ public abstract class Enemy extends CapsuleObstacle {
     public Enemy( World world) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
-        isGrounded = false;
+        isGrounded = true;
         faceRight = true;
         isFlipped = false;
         yScale = 1f;
