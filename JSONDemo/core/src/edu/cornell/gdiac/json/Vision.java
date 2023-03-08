@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
+import java.util.Objects;
 
 
 /** Fields of vision for enemies */
@@ -87,13 +88,20 @@ public class Vision {
             Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
                     origin.y + radius * (float) Math.sin(angle));
             rays.get(finalI).set(end);
+
+            final float[] minFraction = {1f};
             RayCastCallback ray = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
                     if(bodies.contains(fixture.getBody(), false))
                         bodies.add(fixture.getBody());
-                    rays.get(finalI).set(point);
+                    if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
+                        if (minFraction[0] > fraction) {
+                            minFraction[0] = fraction;
+                            rays.get(finalI).set(point);
+                        }
+                    }
                     return -1f;
                 }
             };
