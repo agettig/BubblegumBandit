@@ -292,6 +292,12 @@
     "density": 10.0,
     "texture": "gumProjectile"
   },
+  "chewedGum": {
+    "offset": 0.4,
+    "speed": 7.0,
+    "density": 10.0,
+    "texture": "chewedGum"
+  },
   "exit": {
     "pos": [
       2.0,
