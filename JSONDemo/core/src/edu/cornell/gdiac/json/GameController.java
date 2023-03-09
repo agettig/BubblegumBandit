@@ -16,7 +16,9 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.profiling.GLErrorListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
@@ -25,6 +27,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.gum.BubblegumController;
+import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
 
@@ -130,6 +134,11 @@ public class GameController implements Screen, ContactListener {
     protected ObjectSet<Fixture> sensorFixtures;
 
     /**
+     * Reference to the Bubblegum controller instance
+     */
+    private BubblegumController bubblegumController;
+
+    /**
      * Queue of gum joints
      */
     protected Queue<JointDef> jointsQueue;
@@ -140,7 +149,8 @@ public class GameController implements Screen, ContactListener {
     /** Gum speed when creating gum */
     private float gumSpeed;
 
-    private TextureRegion gumProjectile;
+    /** The texture of the trajectory projectile */
+    private TextureRegion trajectoryProjectile;
 
     /**
      * Returns true if the level is completed.
@@ -244,6 +254,7 @@ public class GameController implements Screen, ContactListener {
         setFailure(false);
         sensorFixtures = new ObjectSet<Fixture>();
         UIManager.put("swing.boldMetal", Boolean.FALSE);
+        bubblegumController = new BubblegumController();
 
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -283,7 +294,7 @@ public class GameController implements Screen, ContactListener {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
-        gumProjectile = new TextureRegion(directory.getEntry("gumProjectile", Texture.class));
+        trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
     }
 
     /**
@@ -293,6 +304,7 @@ public class GameController implements Screen, ContactListener {
      * reread from the JSON file, allowing us to make changes on the fly.
      */
     public void reset() {
+        bubblegumController.resetAllBubblegum();
         level.dispose();
 
         setComplete(false);
@@ -328,6 +340,7 @@ public class GameController implements Screen, ContactListener {
 
         // Handle resets
         if (input.didReset()) {
+
             reset();
         }
 
@@ -372,15 +385,23 @@ public class GameController implements Screen, ContactListener {
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
             avatar.flippedGravity();
+            avatar.setGrounded(false);
+            sensorFixtures.clear();
 
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
+
+        if(InputController.getInstance().didCollect()){
+            // Commented out because crashes right now.
+            // Bubblegum.collectGum(level.getWorld());
+        }
+
+
 
         for (Enemy e : level.getEnemies()) e.update();
 
 
         if (InputController.getInstance().didShoot()) {
-            // TODO: Visible crosshair?
             createGumProjectile(InputController.getInstance().getCrossHair());
         }
 
@@ -408,8 +429,7 @@ public class GameController implements Screen, ContactListener {
     public void draw(float delta) {
         canvas.clear();
 
-
-        level.draw(canvas, levelFormat, gumSpeed, gumGravity, gumProjectile);
+        level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
 
         // Final message
         if (complete && !failed) {
@@ -638,18 +658,30 @@ public class GameController implements Screen, ContactListener {
      * Add a new gum projectile to the world and send it in the right direction.
      */
     private void createGumProjectile(Vector2 target) {
+
+        if(bubblegumController.gumLimitReached()) return;
+
         JsonValue gumJV = levelFormat.get("gumProjectile");
         DudeModel avatar = level.getAvatar();
-        float offset = gumJV.getFloat("offset", 0);
-        offset *= (target.x > avatar.getX() ? 1 : -1);
-        float startX = avatar.getX() + offset;
-        float startY = avatar.getY();
+
+        Vector2 origin = level.getProjOrigin(gumJV);
+        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+        gumVel.nor();
+
+        // Prevent player from shooting themselves by clicking on player
+        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
+        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+            return;
+        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+            return;
+        }
 
         String key = gumJV.get("texture").asString();
         TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
 
-        WheelObstacle gum = new WheelObstacle(startX, startY, radius);
+        //TODO: PLACE INSTANTIATION LOGIC INSIDE OF BUBBLEGUM CONTROLLER
+        Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
 
         // Physics properties
         gum.setName(gumJV.name());
@@ -659,9 +691,9 @@ public class GameController implements Screen, ContactListener {
         gum.setBullet(true);
         gum.setGravityScale(gumGravity);
 
+        bubblegumController.addNewBubblegum(gum);
+
         // Compute position and velocity
-        Vector2 gumVel = new Vector2(target.x - startX, target.y - startY);
-        gumVel.nor();
         if (gumSpeed == 0) { // Use default gum speed
             gumVel.scl(gumJV.getFloat("speed", 0));
         } else { // Use slider gum speed
@@ -673,25 +705,6 @@ public class GameController implements Screen, ContactListener {
     }
 
     /**
-     * Remove a gum from the world.
-     *
-     * @param gum the gum to remove
-     */
-    public void removeGum(Obstacle gum) {
-        gum.markRemoved(true);
-    }
-
-    /**
-     * Adds a JointDef to the end of the Joint Queue.
-     *
-     * @param j the JointDef to add.
-     */
-    private void enqueueJoint(JointDef j) {
-        if (j == null) return;
-        jointsQueue.addLast(j);
-    }
-
-    /**
      * Returns true if an Obstacle is a gum projectile.
      * <p>
      * An Obstacle is a gum projectile if its name equals
@@ -700,8 +713,9 @@ public class GameController implements Screen, ContactListener {
      * @param o the Obstacle to check
      * @returns true if the Obstacle is a gum projectile
      */
-    private boolean isGumProjectile(Obstacle o) {
-        return o.getName().equals("gumProjectile");
+    private boolean isGumObstacle(Obstacle o) {
+        return o.getName().equals("stickyGum") ||
+                o.getName().equals("gumProjectile");
     }
 
     /**
@@ -718,24 +732,24 @@ public class GameController implements Screen, ContactListener {
         //Safety check.
         if (bd1 == null || bd2 == null) return;
 
-        if (isGumProjectile(bd1)) {
-            bd1.setName("stickyGum");
-            bd1.setVX(0);
-            bd1.setVY(0);
-            enqueueJoint(createGumJoint(bd1, bd2));
+        if (isGumObstacle(bd1)) {
+            Bubblegum gum = (Bubblegum) bd1;
+            gum.setVX(0);
+            gum.setVY(0);
+
+            WeldJointDef weldJointDef = createGumJoint(gum, bd2);
+            GumJointPair pair = new GumJointPair(gum, weldJointDef);
+            bubblegumController.addToAssemblyQueue(pair);
+
         }
-        else if (isGumProjectile(bd2)) {
-            bd2.setName("stickyGum");
-            bd2.setVX(0);
-            bd2.setVY(0);
-            enqueueJoint(createGumJoint(bd2, bd1));
-        }
-        // Add weld joint between gum and object
-        else if (bd1.getName().equals("stickyGum")) {
-            enqueueJoint(createGumJoint(bd1, bd2));
-        }
-        else if (bd2.getName().equals("stickyGum")) {
-            enqueueJoint(createGumJoint(bd2, bd1));
+        else if (isGumObstacle(bd2)) {
+            Bubblegum gum = (Bubblegum) bd2;
+            gum.setVX(0);
+            gum.setVY(0);
+
+            WeldJointDef weldJointDef = createGumJoint(gum, bd1);
+            GumJointPair pair = new GumJointPair(gum, weldJointDef);
+            bubblegumController.addToAssemblyQueue(pair);
         }
     }
 
@@ -758,14 +772,13 @@ public class GameController implements Screen, ContactListener {
      * Adds every joint in the joint queue to the world before clearing the queue.
      */
     private void addJointsToWorld() {
-        if (jointsQueue == null || jointsQueue.isEmpty()) return;
-        for (JointDef jointDef: jointsQueue) {
-            if (jointDef != null) {
-                level.getWorld().createJoint(jointDef);
-                // Todo: Keep track so you can remove from the world at some point
-            }
+        for(int i = 0; i < bubblegumController.numActivePairsToAssemble(); i++){
+            GumJointPair pairToAssemble = bubblegumController.dequeueAssembly();
+            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
+            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
+            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
+            bubblegumController.addToStuckBubblegum(activePair);
         }
-        jointsQueue.clear();
     }
 
     public void setGravity(float gravity) {
