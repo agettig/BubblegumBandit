@@ -14,8 +14,8 @@
       1
     ],
     "size": [
-      0.45,
-      0.61
+      1,
+      1.75
     ],
     "bodytype": "dynamic",
     "density": 1.0,
@@ -152,8 +152,8 @@
           5.0
         ],
         "size": [
-          0.45,
-          0.61
+          0.5,
+          0.9
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -161,7 +161,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "dude",
+        "texture": "robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -222,8 +222,8 @@
           5.0
         ],
         "size": [
-          0.45,
-          0.61
+          0.5,
+          0.9
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -231,7 +231,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "dude",
+        "texture": "robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
