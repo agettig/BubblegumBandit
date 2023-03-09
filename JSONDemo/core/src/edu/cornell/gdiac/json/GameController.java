@@ -152,6 +152,8 @@ public class GameController implements Screen, ContactListener {
     /** The texture of the trajectory projectile */
     private TextureRegion trajectoryProjectile;
 
+    private TextureRegion chewedGum;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -294,7 +296,9 @@ public class GameController implements Screen, ContactListener {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
-        trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+
+        gumProjectile = new TextureRegion(directory.getEntry("gumProjectile", Texture.class));
+        chewedGum = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
     }
 
     /**
@@ -758,6 +762,22 @@ public class GameController implements Screen, ContactListener {
      */
     private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
         WeldJointDef jointDef = new WeldJointDef();
+//        Vector2 p = gum.getPosition();
+//        removeGum(gum);
+//        float radius = chewedGum.getRegionWidth() / (2.0f * level.getScale().x);
+//        WheelObstacle cGum = new WheelObstacle(p.x, p.y, radius);
+//        cGum.setDrawScale(new Vector2(0.001f, 0.001f));
+//        cGum.setTexture(chewedGum);
+//        JsonValue gumJV = levelFormat.get("chewedGum");
+//
+//        // Physics properties
+//        cGum.setName(gumJV.name());
+//        cGum.setDensity(gumJV.getFloat("density", 0));
+//        cGum.setDrawScale(level.getScale());
+//        cGum.setBullet(true);
+//        cGum.setGravityScale(gumGravity);
+//        level.activate(cGum);
+
         jointDef.bodyA = gum.getBody();
         jointDef.bodyB = ob.getBody();
         jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
@@ -768,6 +788,25 @@ public class GameController implements Screen, ContactListener {
         return jointDef;
     }
 
+    /**Create stuckGum when gum hits obstacle*/
+    private Body createStuckGum(Obstacle ob) {
+        Vector2 p = ob.getPosition();
+        float radius = chewedGum.getRegionWidth() / (2f * level.getScale().x);
+        WheelObstacle cGum = new WheelObstacle(p.x, p.y, radius);
+        cGum.setDrawScale(level.getScale());
+        cGum.setTexture(chewedGum);
+        JsonValue gumJV = levelFormat.get("chewedGum");
+
+        // Physics properties
+        cGum.setName(gumJV.name());
+        cGum.setDensity(gumJV.getFloat("density", 0));
+        cGum.setDrawScale(level.getScale());
+        cGum.setBullet(true);
+        cGum.setGravityScale(gumGravity);
+        level.activate(cGum);
+        removeGum(ob);
+        return cGum.getBody();
+    }
     /**
      * Adds every joint in the joint queue to the world before clearing the queue.
      */
@@ -778,6 +817,21 @@ public class GameController implements Screen, ContactListener {
             WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             bubblegumController.addToStuckBubblegum(activePair);
+
+        if (jointsQueue == null || jointsQueue.isEmpty()) return;
+        for (JointDef jointDef: jointsQueue) {
+            if (jointDef != null) {
+                Obstacle ob1 = (Obstacle) jointDef.bodyA.getUserData();
+                Obstacle ob2 = (Obstacle) jointDef.bodyB.getUserData();
+                if (ob1.getName().equals("stickyGum")) {
+                    jointDef.bodyA = createStuckGum(ob1);
+                }
+               else if (ob2.getName().equals("stickyGum")) {
+                    jointDef.bodyB = createStuckGum(ob2);
+                }
+                level.getWorld().createJoint(jointDef);
+                // Todo: Keep track so you can remove from the world at some point
+            }
         }
     }
 
