@@ -72,7 +72,7 @@ public class SliderGui extends JPanel{
         addSlider("radius", 1, 10, 3, c, 1,1);
         addSlider("range", 0, 360, 90, c, 60, 30);
         addSlider("gum gravity scale", 0, 1, 0, c, 1, 1);
-        addSlider("gum speed", 0, 30, 10, c, 5, 1);
+        addSlider("gum speed", 0, 30, 15, c, 5, 1);
         addSlider("move speed", 0, 10, 1, c, 5, 1);
     }
 

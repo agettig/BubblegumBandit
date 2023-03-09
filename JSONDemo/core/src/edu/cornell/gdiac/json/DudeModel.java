@@ -123,6 +123,15 @@ public class DudeModel extends CapsuleObstacle {
 	}
 
 	/**
+	 * Returns the current yScale of the player.
+	 *
+	 * @return the value of the player's yScale.
+	 */
+	public float getYScale() {
+		return yScale;
+	}
+
+	/**
 	 * Sets left/right movement of this character.
 	 *
 	 * This is the result of input times dude force.
@@ -485,7 +494,12 @@ public class DudeModel extends CapsuleObstacle {
 		// Velocity too high, clamp it
 		if (Math.abs(getVX()) >= getMaxSpeed()) {
 			setVX(Math.signum(getVX())*getMaxSpeed());
-		} else {
+			if (getVX() * getMovement() < 0) { // Velocity and movement in opposite directions
+				forceCache.set(getMovement(),0);
+				body.applyForce(forceCache,getPosition(),true);
+			}
+		}
+		else {
 			// TODO: This seems to create an issue where you can't slow down a jump
 			// once you hit top speed. Should check both directions independently
 			// and let you move the opposite direction even if at top speed.
