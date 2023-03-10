@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"edu.cornell.gdiac.assets"},{"l":"edu.cornell.gdiac.audio"},{"l":"edu.cornell.gdiac.json"},{"l":"edu.cornell.gdiac.json.desktop"},{"l":"edu.cornell.gdiac.json.enemies"},{"l":"edu.cornell.gdiac.json.gum"},{"l":"edu.cornell.gdiac.physics.obstacle"},{"l":"edu.cornell.gdiac.util"}];updateSearchResults();
