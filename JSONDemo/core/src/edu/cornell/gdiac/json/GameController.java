@@ -297,7 +297,7 @@ public class GameController implements Screen, ContactListener {
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
 
-        gumProjectile = new TextureRegion(directory.getEntry("gumProjectile", Texture.class));
+        trajectoryProjectile = new TextureRegion(directory.getEntry("gumProjectile", Texture.class));
         chewedGum = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
     }
 
@@ -686,7 +686,6 @@ public class GameController implements Screen, ContactListener {
 
         //TODO: PLACE INSTANTIATION LOGIC INSIDE OF BUBBLEGUM CONTROLLER
         Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
-
         // Physics properties
         gum.setName(gumJV.name());
         gum.setDensity(gumJV.getFloat("density", 0));
@@ -740,6 +739,7 @@ public class GameController implements Screen, ContactListener {
             Bubblegum gum = (Bubblegum) bd1;
             gum.setVX(0);
             gum.setVY(0);
+            //gum.setName("stickyGum");
 
             WeldJointDef weldJointDef = createGumJoint(gum, bd2);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
@@ -750,6 +750,7 @@ public class GameController implements Screen, ContactListener {
             Bubblegum gum = (Bubblegum) bd2;
             gum.setVX(0);
             gum.setVY(0);
+            //gum.setName("stickyGum");
 
             WeldJointDef weldJointDef = createGumJoint(gum, bd1);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
@@ -762,21 +763,6 @@ public class GameController implements Screen, ContactListener {
      */
     private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
         WeldJointDef jointDef = new WeldJointDef();
-//        Vector2 p = gum.getPosition();
-//        removeGum(gum);
-//        float radius = chewedGum.getRegionWidth() / (2.0f * level.getScale().x);
-//        WheelObstacle cGum = new WheelObstacle(p.x, p.y, radius);
-//        cGum.setDrawScale(new Vector2(0.001f, 0.001f));
-//        cGum.setTexture(chewedGum);
-//        JsonValue gumJV = levelFormat.get("chewedGum");
-//
-//        // Physics properties
-//        cGum.setName(gumJV.name());
-//        cGum.setDensity(gumJV.getFloat("density", 0));
-//        cGum.setDrawScale(level.getScale());
-//        cGum.setBullet(true);
-//        cGum.setGravityScale(gumGravity);
-//        level.activate(cGum);
 
         jointDef.bodyA = gum.getBody();
         jointDef.bodyB = ob.getBody();
@@ -795,6 +781,7 @@ public class GameController implements Screen, ContactListener {
         WheelObstacle cGum = new WheelObstacle(p.x, p.y, radius);
         cGum.setDrawScale(level.getScale());
         cGum.setTexture(chewedGum);
+        cGum.setName("stuckGum");
         JsonValue gumJV = levelFormat.get("chewedGum");
 
         // Physics properties
@@ -804,34 +791,43 @@ public class GameController implements Screen, ContactListener {
         cGum.setBullet(true);
         cGum.setGravityScale(gumGravity);
         level.activate(cGum);
-        removeGum(ob);
+        ob.markRemoved(true);
         return cGum.getBody();
     }
     /**
      * Adds every joint in the joint queue to the world before clearing the queue.
      */
     private void addJointsToWorld() {
-        for(int i = 0; i < bubblegumController.numActivePairsToAssemble(); i++){
+        for (int i = 0; i < bubblegumController.numActivePairsToAssemble(); i++) {
             GumJointPair pairToAssemble = bubblegumController.dequeueAssembly();
             WeldJointDef weldJointDef = pairToAssemble.getJointDef();
-            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
-            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
-            bubblegumController.addToStuckBubblegum(activePair);
-
-        if (jointsQueue == null || jointsQueue.isEmpty()) return;
-        for (JointDef jointDef: jointsQueue) {
-            if (jointDef != null) {
-                Obstacle ob1 = (Obstacle) jointDef.bodyA.getUserData();
-                Obstacle ob2 = (Obstacle) jointDef.bodyB.getUserData();
-                if (ob1.getName().equals("stickyGum")) {
-                    jointDef.bodyA = createStuckGum(ob1);
+            if (weldJointDef != null) {
+                Obstacle ob1 = (Obstacle) weldJointDef.bodyA.getUserData();
+                Obstacle ob2 = (Obstacle) weldJointDef.bodyB.getUserData();
+                if (ob1.getName().equals("gumProjectile")) {
+                    weldJointDef.bodyA = createStuckGum(ob1);
+                } else if (ob2.getName().equals("gumProjectile")) {
+                    weldJointDef.bodyB = createStuckGum(ob2);
                 }
-               else if (ob2.getName().equals("stickyGum")) {
-                    jointDef.bodyB = createStuckGum(ob2);
-                }
-                level.getWorld().createJoint(jointDef);
-                // Todo: Keep track so you can remove from the world at some point
+                WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
+                GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
+                bubblegumController.addToStuckBubblegum(activePair);
             }
+
+            //if (jointsQueue == null || jointsQueue.isEmpty()) return;
+//            for (JointDef jointDef : jointsQueue) {
+//                if (jointDef != null) {
+//                    Obstacle ob1 = (Obstacle) jointDef.bodyA.getUserData();
+//                    Obstacle ob2 = (Obstacle) jointDef.bodyB.getUserData();
+//                    if (ob1.getName().equals("stickyGum")) {
+//                        jointDef.bodyA = createStuckGum(ob1);
+//                    } else if (ob2.getName().equals("stickyGum")) {
+//                        jointDef.bodyB = createStuckGum(ob2);
+//                    }
+//                    level.getWorld().createJoint(jointDef);
+//                    // Todo: Keep track so you can remove from the world at some point
+//                }
+//            }
         }
     }
 
