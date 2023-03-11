@@ -7,6 +7,7 @@
         },
         "dude": "textures/player_draft.png",
         "robot": "textures/robo_draft.png",
+        "background": "textures/background.png",
         "goal": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
