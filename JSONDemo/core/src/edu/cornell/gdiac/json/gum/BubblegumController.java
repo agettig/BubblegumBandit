@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Queue;
 public class BubblegumController {
 
     /**Maximum amount of Bubblegum on screen at the same time. */
-    private static final int MAX_GUM = 10;
+    private static final int MAX_GUM = 30;
 
     /**Amount of active gum. */
     private static int ACTIVE_GUM;
@@ -139,7 +139,5 @@ public class BubblegumController {
         if(midAirBubblegumQueue.isEmpty()) return;
         midAirBubblegumQueue.removeFirst();
     }
-
-
 
 }
