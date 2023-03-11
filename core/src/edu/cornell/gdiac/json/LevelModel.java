@@ -18,9 +18,6 @@ package edu.cornell.gdiac.json;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -78,7 +75,7 @@ public class LevelModel {
     /**
      * Reference to the character avatar
      */
-    private DudeModel avatar;
+    private PlayerModel avatar;
     /**
      * Reference to the goalDoor (for collision detection)
      */
@@ -135,7 +132,7 @@ public class LevelModel {
      *
      * @return a reference to the player avatar
      */
-    public DudeModel getAvatar() {
+    public PlayerModel getAvatar() {
         return avatar;
     }
 
@@ -256,7 +253,7 @@ public class LevelModel {
 
         // Create dude
 
-        avatar = new DudeModel(world);
+        avatar = new PlayerModel(world);
         avatar.initialize(directory, levelFormat.get("avatar"));
         avatar.setDrawScale(scale);
         activate(avatar);
@@ -378,7 +375,7 @@ public class LevelModel {
         for (int i = 1; i < 10; i++){
             x = getXTrajectory(origin.x, gumVel.x, i/10f);
             y = getYTrajectory(origin.y, gumVel.y, i/10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.WHITE,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f,
+            canvas.draw(gumProjectile, Color.PINK,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f,
                     x*50,y*50,gumProjectile.getRegionWidth()*trajectoryScale, gumProjectile.getRegionHeight()*trajectoryScale);
         }
     }
@@ -423,7 +420,7 @@ public class LevelModel {
         for (int i = 0; i < numSegments + 1; i++) {
             x = origin.x + (dir.x * i * trajectoryGap);
             y = origin.y + (dir.y * i * trajectoryGap);
-            canvas.draw(asset, Color.WHITE,asset.getRegionWidth()/2f, asset.getRegionHeight()/2f, x * scale.x,
+            canvas.draw(asset, Color.PINK,asset.getRegionWidth()/2f, asset.getRegionHeight()/2f, x * scale.x,
                     y * scale.y,asset.getRegionWidth() * trajectoryScale, asset.getRegionHeight() * trajectoryScale);
         }
     }

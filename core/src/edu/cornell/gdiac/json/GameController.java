@@ -16,7 +16,6 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.profiling.GLErrorListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -35,8 +34,6 @@ import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.json.gum.Bubblegum;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -374,7 +371,7 @@ public class GameController implements Screen, ContactListener {
      */
     public void update(float dt) {
         // Process actions in object model
-        DudeModel avatar = level.getAvatar();
+        PlayerModel avatar = level.getAvatar();
         avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.applyForce();
@@ -547,7 +544,7 @@ public class GameController implements Screen, ContactListener {
             Obstacle bd1 = (Obstacle) body1.getUserData();
             Obstacle bd2 = (Obstacle) body2.getUserData();
 
-            DudeModel avatar = level.getAvatar();
+            PlayerModel avatar = level.getAvatar();
             BoxObstacle door = level.getExit();
 
             // See if we have landed on the ground.
@@ -594,7 +591,7 @@ public class GameController implements Screen, ContactListener {
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
 
-        DudeModel avatar = level.getAvatar();
+        PlayerModel avatar = level.getAvatar();
         if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
                 (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
@@ -662,7 +659,7 @@ public class GameController implements Screen, ContactListener {
         if(bubblegumController.gumLimitReached()) return;
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
-        DudeModel avatar = level.getAvatar();
+        PlayerModel avatar = level.getAvatar();
 
         Vector2 origin = level.getProjOrigin(gumJV);
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
