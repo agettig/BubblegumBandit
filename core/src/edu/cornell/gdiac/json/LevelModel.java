@@ -18,9 +18,6 @@ package edu.cornell.gdiac.json;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -78,7 +75,7 @@ public class LevelModel {
     /**
      * Reference to the character avatar
      */
-    private DudeModel avatar;
+    private PlayerModel avatar;
     /**
      * Reference to the goalDoor (for collision detection)
      */
@@ -135,7 +132,7 @@ public class LevelModel {
      *
      * @return a reference to the player avatar
      */
-    public DudeModel getAvatar() {
+    public PlayerModel getAvatar() {
         return avatar;
     }
 
@@ -256,7 +253,7 @@ public class LevelModel {
 
         // Create dude
 
-        avatar = new DudeModel(world);
+        avatar = new PlayerModel(world);
         avatar.initialize(directory, levelFormat.get("avatar"));
         avatar.setDrawScale(scale);
         activate(avatar);

@@ -1,15 +1,10 @@
 package edu.cornell.gdiac.json.gum;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
-import edu.cornell.gdiac.json.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
-import edu.cornell.gdiac.json.DudeModel;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import edu.cornell.gdiac.json.PlayerModel;
 
 import java.util.ArrayList;
 
@@ -39,7 +34,7 @@ public class Bubblegum extends WheelObstacle {
     public float vy;
 
     /** Reference to the character avatar */
-    private DudeModel avatar;
+    private PlayerModel avatar;
 
     /**
      * Creates a Bubblegum projectile.
