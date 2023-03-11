@@ -7,6 +7,7 @@
     800,
     600
   ],
+  "background": "background",
   "gravity": -9.8,
   "avatar": {
     "pos": [
@@ -287,8 +288,8 @@
     ]
   },
   "gumProjectile": {
-    "offsetX": 0.4,
-    "offsetY": 0.17,
+    "offsetX": 0.6,
+    "offsetY": 0.5,
     "speed": 15.0,
     "density": 10.0,
     "texture": "gumProjectile"
