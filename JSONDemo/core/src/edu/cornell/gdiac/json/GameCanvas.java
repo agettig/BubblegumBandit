@@ -289,7 +289,7 @@ public class GameCanvas {
      * This method raises an IllegalStateException if called while drawing is
      * active (e.g. in-between a begin-end pair).
      *
-     * @param fullscreen Whether this canvas should change to fullscreen.
+     * @param value Whether this canvas should change to fullscreen.
      * @param desktop    Whether to use the current desktop resolution
      */
     public void setFullscreen(boolean value, boolean desktop) {
@@ -313,6 +313,7 @@ public class GameCanvas {
     public void resize() {
         // Resizing screws up the spriteBatch projection matrix
         spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
+
     }
 
     /**
@@ -412,6 +413,7 @@ public class GameCanvas {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
         active = DrawPass.STANDARD;
+       //height, width are accurate here, so something goes wrong during drawing..
     }
 
     /**
@@ -435,7 +437,6 @@ public class GameCanvas {
      * at the given coordinates.
      *
      * @param image The texture to draw
-     * @param tint  The color tint
      * @param x     The x-coordinate of the bottom left corner
      * @param y     The y-coordinate of the bottom left corner
      */
@@ -497,9 +498,11 @@ public class GameCanvas {
      * @param width  The texture width
      * @param height The texture height
      */
-    public void draw(Texture image, Color tint, float ox, float oy, float x, float y, float width, float height) {
+    public void draw(Texture image, Color tint, float ox, float oy, float x, float y,
+                     float width, float height) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -535,7 +538,8 @@ public class GameCanvas {
     public void draw(Texture image, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -565,7 +569,8 @@ public class GameCanvas {
      */
     public void draw(Texture image, Color tint, float ox, float oy, Affine2 transform) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -588,13 +593,13 @@ public class GameCanvas {
      * at the given coordinates.
      *
      * @param region The texture to draw
-     * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
      */
     public void draw(TextureRegion region, float x, float y) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -614,7 +619,7 @@ public class GameCanvas {
      * at the given coordinates.
      * region
      *
-     * @param image  The texture to draw
+     * @param region  The texture to draw
      * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
@@ -623,7 +628,8 @@ public class GameCanvas {
      */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -651,9 +657,11 @@ public class GameCanvas {
      * @param width  The texture width
      * @param height The texture height
      */
-    public void draw(TextureRegion region, Color tint, float ox, float oy, float x, float y, float width, float height) {
+    public void draw(TextureRegion region, Color tint, float ox, float oy,
+                     float x, float y, float width, float height) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -691,9 +699,11 @@ public class GameCanvas {
     public void draw(TextureRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
+
 
         // BUG: The draw command for texture regions does not work properly.
         // There is a workaround, but it will break if the bug is fixed.
@@ -716,15 +726,16 @@ public class GameCanvas {
      * The local transformations in this method are applied in the following order:
      * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
      *
-     * @param image     The region to draw
+     * @param region     The texture region (image) to draw
      * @param tint      The color tint
      * @param ox        The x-coordinate of texture origin (in pixels)
      * @param oy        The y-coordinate of texture origin (in pixels)
-     * @param transform The image transform
+     * @param affine The image transform
      */
     public void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -751,7 +762,6 @@ public class GameCanvas {
      * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
      *
      * @param region The polygon to draw
-     * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
      */
@@ -865,7 +875,8 @@ public class GameCanvas {
     public void draw(PolygonRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -896,11 +907,12 @@ public class GameCanvas {
      * @param tint      The color tint
      * @param ox        The x-coordinate of texture origin (in pixels)
      * @param oy        The y-coordinate of texture origin (in pixels)
-     * @param transform The image transform
+     * @param affine The image transform
      */
     public void draw(PolygonRegion region, Color tint, float ox, float oy, Affine2 affine) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -938,7 +950,8 @@ public class GameCanvas {
      */
     public void drawText(String text, BitmapFont font, float x, float y) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
         GlyphLayout layout = new GlyphLayout(font, text);
@@ -954,7 +967,8 @@ public class GameCanvas {
      */
     public void drawTextCentered(String text, BitmapFont font, float offset) {
         if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()",
+                new IllegalStateException());
             return;
         }
 
@@ -1032,7 +1046,8 @@ public class GameCanvas {
      */
     public void drawPhysics(PolygonShape shape, Color color, float x, float y) {
         if (active != DrawPass.DEBUG) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()",
+                new IllegalStateException());
             return;
         }
 
@@ -1068,7 +1083,8 @@ public class GameCanvas {
      */
     public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle) {
         if (active != DrawPass.DEBUG) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()",
+                new IllegalStateException());
             return;
         }
 
@@ -1111,9 +1127,11 @@ public class GameCanvas {
      * @param sx    The amount to scale the x-axis
      * @param sx    The amount to scale the y-axis
      */
-    public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
+    public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle,
+                            float sx, float sy) {
         if (active != DrawPass.DEBUG) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()",
+                new IllegalStateException());
             return;
         }
 
@@ -1159,7 +1177,8 @@ public class GameCanvas {
      */
     public void drawPhysics(CircleShape shape, Color color, float x, float y) {
         if (active != DrawPass.DEBUG) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()",
+                new IllegalStateException());
             return;
         }
 
@@ -1182,7 +1201,8 @@ public class GameCanvas {
      */
     public void drawPhysics(CircleShape shape, Color color, float x, float y, float sx, float sy) {
         if (active != DrawPass.DEBUG) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()",
+                new IllegalStateException());
             return;
         }
 
@@ -1205,7 +1225,8 @@ public class GameCanvas {
      * @param sx    The x-axis scaling factor
      * @param sy    The y-axis scaling factor
      */
-    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy) {
+    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx,
+                                  float sy) {
         local.setToTranslation(x, y);
         local.rotate(180.0f * angle / (float) Math.PI);
         local.scale(sx, sy);
@@ -1266,15 +1287,15 @@ public class GameCanvas {
      * @param ends
      * @param x
      * @param y
-     * @param radius
      * @param scalex
      * @param scaley
      */
     public void drawRays(Color color, Array<Vector2> ends, float x, float y,
-                         float radius, float scalex, float scaley) {
+                        float scalex, float scaley) {
 
         if (active != DrawPass.DEBUG) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()",
+                new IllegalStateException());
             return;
         }
 
@@ -1283,7 +1304,8 @@ public class GameCanvas {
         fovRender.setColor(color);
 
         for (Vector2 end : ends) {
-            fovRender.line(x * scalex, y * scaley, (end.x + x) * scalex, (end.y + y) * scaley);
+            fovRender.line(x * scalex, y * scaley, (end.x + x) * scalex,
+                (end.y + y) * scaley);
         }
 
         fovRender.end();

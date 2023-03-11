@@ -420,7 +420,7 @@ public class GameController implements Screen, ContactListener {
      * Draw the physics objects to the canvas
      * <p>
      * For simple worlds, this method is enough by itself.  It will need
-     * to be overriden if the world needs fancy backgrounds or the like.
+     * to be overridden if the world needs fancy backgrounds or the like.
      * <p>
      * The method draws all objects in the order that they were added.
      *
@@ -456,7 +456,9 @@ public class GameController implements Screen, ContactListener {
      */
     public void resize(int width, int height) {
         // IGNORE FOR NOW
+        //ummm??
     }
+
 
     /**
      * Called when the Screen should render itself.

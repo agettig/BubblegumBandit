@@ -32,7 +32,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	AssetDirectory directory;
 	/** Drawing context to display graphics (VIEW CLASS) */
-	private GameCanvas canvas; 
+	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
@@ -80,7 +80,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		super.dispose();
 	}
-	
+
+
+	@Override
 	/**
 	 * Called when the Application is resized. 
 	 *
@@ -93,6 +95,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void resize(int width, int height) {
 		canvas.resize();
 		super.resize(width,height);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(),
+				Gdx.graphics.getBackBufferHeight());
 	}
 	
 	/**

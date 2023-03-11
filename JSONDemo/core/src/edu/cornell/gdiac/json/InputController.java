@@ -76,8 +76,8 @@ public class InputController {
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
-	/** How much did we move vertically? */
-	private float vertical;
+	///** How much did we move vertically? */
+	//private float vertical;
 	/** The crosshair position (for raddoll) */
 	private Vector2 crosshair;
 	/** The crosshair cache (for using as a return value) */
@@ -113,9 +113,9 @@ public class InputController {
 	 *
 	 * @return the amount of vertical movement. 
 	 */
-	public float getVertical() {
-		return vertical;
-	}
+	//public float getVertical() {
+	//	return vertical;
+	//}
 	
 	/**
 	 * Returns the current position of the crosshairs on the screen.
@@ -300,7 +300,7 @@ public class InputController {
 
 		// Increase animation frame, but only if trying to move
 		horizontal = xbox.getLeftX();
-		vertical   = xbox.getLeftY();
+		//vertical   = xbox.getLeftY();
 		secondPressed = xbox.getRightTrigger() > 0.6f;
 		
 		// Move the crosshairs with the right stick.
@@ -337,8 +337,9 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		switchGravity = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.W)) || (Gdx.input.isKeyJustPressed(Input.Keys.S));
-		collect = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.C));
+		switchGravity = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W))
+				|| (Gdx.input.isKeyJustPressed(Input.Keys.S));
+		collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
@@ -350,13 +351,13 @@ public class InputController {
 		}
 
 		
-		vertical = (secondary ? vertical : 0.0f);
-		if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-			vertical += 1.0f;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-			vertical -= 1.0f;
-		}
+	//	vertical = (secondary ? vertical : 0.0f);
+		//if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
+		//	vertical += 1.0f;
+		///}
+		//if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
+		//	vertical -= 1.0f;
+		//}
 
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
 			secondPressed = true;

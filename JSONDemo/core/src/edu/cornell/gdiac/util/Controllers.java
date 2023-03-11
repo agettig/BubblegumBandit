@@ -108,7 +108,7 @@ public class Controllers {
      */
     public Array<XBoxController> getXBoxControllers () {
         Array<XBoxController> xBoxControllers = new Array<XBoxController>();
-        if (active) {
+       /* if (active) {
             try {
                 for(Controller controller: com.badlogic.gdx.controllers.Controllers.getControllers()) {
                     String name = controller.getName().toLowerCase();
@@ -119,7 +119,7 @@ public class Controllers {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return xBoxControllers;
     }
 
