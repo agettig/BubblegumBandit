@@ -1,5 +1,5 @@
 /*
- * DudeModel.java
+ * PlayerModel.java
  *
  * This is a refactored version of DudeModel that allows us to read its properties
  * from a JSON file.  As a result, it has a lot more getter and setter "hooks" than
@@ -28,7 +28,7 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * Note that the constructor does very little.  The true initialization happens
  * by reading the JSON value.
  */
-public class DudeModel extends CapsuleObstacle {
+public class PlayerModel extends CapsuleObstacle {
 	// Physics constants
 	/** The factor to multiply by the input */
 	private float force;
@@ -331,7 +331,7 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * The main purpose of this constructor is to set the initial capsule orientation.
 	 */
-	public DudeModel(World world) {
+	public PlayerModel(World world) {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
 
