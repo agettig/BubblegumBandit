@@ -285,7 +285,8 @@ public abstract class Enemy extends CapsuleObstacle {
             float[] sCenter = sensor.get("sensorcenter").asFloatArray();
             float[] printLoc = sensor.get("printOffset").asFloatArray();
             sensorName = sensor.name();
-            sensors[i] = new Sensor(new Vector2(sCenter[0], sCenter[1]), sSize[0], sSize[1], sensorName, printLoc[0], printLoc[1]);
+            sensors[i] = new Sensor(new Vector2(sCenter[0], sCenter[1]), sSize[0],
+                sSize[1], sensorName, printLoc[0], printLoc[1]);
             sensor = sensor.next();
         }
     }
@@ -311,7 +312,8 @@ public abstract class Enemy extends CapsuleObstacle {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
             float yFlip = isFlipped ? -1 : 1;
-            canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), effect, yScale);
+            canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                getY() * drawScale.y, getAngle(), effect, yScale);
             vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
@@ -331,7 +333,8 @@ public abstract class Enemy extends CapsuleObstacle {
                 y -= s.printY();
                 x += s.printX();
             }
-            canvas.drawPhysics(s.getSensorShape(), sensorColor, x, y, getAngle(), drawScale.x, drawScale.y);
+            canvas.drawPhysics(s.getSensorShape(), sensorColor,
+                x, y, getAngle(), drawScale.x, drawScale.y);
         }
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }

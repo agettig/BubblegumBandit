@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
@@ -87,6 +88,8 @@ public class LevelModel {
      * Whether or not the level is in debug more (showing off physics)
      */
     private boolean debug;
+
+    private TextureRegion background;
 
     /**
      * All the objects in the world.
@@ -203,6 +206,10 @@ public class LevelModel {
         goalDoor.initialize(directory, levelFormat.get("exit"));
         goalDoor.setDrawScale(scale);
         activate(goalDoor);
+
+        String key = levelFormat.get("background").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        background = texture;
 
         JsonValue wall = levelFormat.get("walls").child();
         while (wall != null) {
@@ -371,7 +378,7 @@ public class LevelModel {
         for (int i = 1; i < 10; i++){
             x = getXTrajectory(origin.x, gumVel.x, i/10f);
             y = getYTrajectory(origin.y, gumVel.y, i/10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.WHITE,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f,
+            canvas.draw(gumProjectile, Color.PINK,gumProjectile.getRegionWidth()/2f, gumProjectile.getRegionHeight()/2f,
                     x*50,y*50,gumProjectile.getRegionWidth()*trajectoryScale, gumProjectile.getRegionHeight()*trajectoryScale);
         }
     }
@@ -416,7 +423,7 @@ public class LevelModel {
         for (int i = 0; i < numSegments + 1; i++) {
             x = origin.x + (dir.x * i * trajectoryGap);
             y = origin.y + (dir.y * i * trajectoryGap);
-            canvas.draw(asset, Color.WHITE,asset.getRegionWidth()/2f, asset.getRegionHeight()/2f, x * scale.x,
+            canvas.draw(asset, Color.PINK,asset.getRegionWidth()/2f, asset.getRegionHeight()/2f, x * scale.x,
                     y * scale.y,asset.getRegionWidth() * trajectoryScale, asset.getRegionHeight() * trajectoryScale);
         }
     }
@@ -433,6 +440,7 @@ public class LevelModel {
         canvas.clear();
 
         canvas.begin();
+        if(background!=null) canvas.draw(background,0,0);
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
