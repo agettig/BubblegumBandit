@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
@@ -87,6 +88,8 @@ public class LevelModel {
      * Whether or not the level is in debug more (showing off physics)
      */
     private boolean debug;
+
+    private TextureRegion background;
 
     /**
      * All the objects in the world.
@@ -203,6 +206,10 @@ public class LevelModel {
         goalDoor.initialize(directory, levelFormat.get("exit"));
         goalDoor.setDrawScale(scale);
         activate(goalDoor);
+
+        String key = levelFormat.get("background").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        background = texture;
 
         JsonValue wall = levelFormat.get("walls").child();
         while (wall != null) {
@@ -433,6 +440,7 @@ public class LevelModel {
         canvas.clear();
 
         canvas.begin();
+        if(background!=null) canvas.draw(background,0,0);
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }

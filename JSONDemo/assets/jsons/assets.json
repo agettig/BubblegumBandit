@@ -5,6 +5,7 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+      "background": "textures/background.png",
         "dude": "textures/dude.png",
         "goal": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
