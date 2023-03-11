@@ -440,7 +440,11 @@ public class LevelModel {
         canvas.clear();
 
         canvas.begin();
-        if(background!=null) canvas.draw(background,0,0);
+
+        if(background!=null) {
+            canvas.draw(background, Color.WHITE, 0, 0, canvas.getWidth(),
+                canvas.getHeight());
+        }
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
