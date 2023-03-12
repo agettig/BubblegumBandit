@@ -426,16 +426,12 @@ public class GameCanvas {
 
     /**
      * Draws the tinted texture at the given position.
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
      * Unless otherwise transformed by the global transform (@see begin(Affine2)),
      * the texture will be unscaled.  The bottom left of the texture will be positioned
      * at the given coordinates.
      *
      * @param image The texture to draw
-     * @param tint  The color tint
+
      * @param x     The x-coordinate of the bottom left corner
      * @param y     The y-coordinate of the bottom left corner
      */
