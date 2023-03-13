@@ -582,7 +582,7 @@ public class GameCanvas {
      * @param transform The image transform
      */
     public void draw(Texture image, Color tint, float ox, float oy, Affine2 transform) {
-        //viewport.apply();
+
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -710,7 +710,7 @@ public class GameCanvas {
      */
     public void draw(TextureRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
-        //viewport.apply();
+
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
