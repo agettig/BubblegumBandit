@@ -24,6 +24,9 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import javax.swing.ViewportLayout;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -117,6 +120,7 @@ public class GameCanvas {
      */
     int height;
 
+
     // CACHE OBJECTS
     /**
      * Affine cache for current sprite to draw
@@ -132,6 +136,8 @@ public class GameCanvas {
      */
     private TextureRegion holder;
 
+    private FitViewport viewport;
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -145,9 +151,12 @@ public class GameCanvas {
         debugRender = new ShapeRenderer();
         fovRender = new ShapeRenderer();
 
+
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
+        viewport = new FitViewport(getWidth(), getHeight(), camera);
+        viewport.apply();
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
         fovRender.setProjectionMatrix(camera.combined);
@@ -247,6 +256,17 @@ public class GameCanvas {
     }
 
     /**
+     * Returns world coordinates given screen coordinates.
+     * Helpful for mapping mouse input.
+     * @param screenCoords screen coordinates
+     * @return world coordinates
+     */
+    public Vector2 unproject(Vector2 screenCoords) {
+        return viewport.unproject(screenCoords);
+    }
+
+
+    /**
      * Changes the width and height of this canvas
      * <p>
      * This method raises an IllegalStateException if called while drawing is
@@ -289,7 +309,7 @@ public class GameCanvas {
      * This method raises an IllegalStateException if called while drawing is
      * active (e.g. in-between a begin-end pair).
      *
-     * @param fullscreen Whether this canvas should change to fullscreen.
+     * @param value Whether this canvas should change to fullscreen.
      * @param desktop    Whether to use the current desktop resolution
      */
     public void setFullscreen(boolean value, boolean desktop) {
@@ -313,6 +333,7 @@ public class GameCanvas {
     public void resize() {
         // Resizing screws up the spriteBatch projection matrix
         spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
+        viewport.update(getWidth(), getHeight());
     }
 
     /**
@@ -363,7 +384,8 @@ public class GameCanvas {
      */
     public void clear() {
         // Clear the screen
-        Gdx.gl.glClearColor(0.39f, 0.58f, 0.93f, 1.0f);  // Homage to the XNA years
+        Gdx.gl.glClearColor(0,0,0,1);  // Homage to the XNA years: cute but no
+        // blue gutters look awful.
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
@@ -560,6 +582,7 @@ public class GameCanvas {
      * @param transform The image transform
      */
     public void draw(Texture image, Color tint, float ox, float oy, Affine2 transform) {
+        //viewport.apply();
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -584,11 +607,12 @@ public class GameCanvas {
      * at the given coordinates.
      *
      * @param region The texture to draw
-     * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
      */
     public void draw(TextureRegion region, float x, float y) {
+        //
+        // viewport.apply();
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -610,7 +634,6 @@ public class GameCanvas {
      * at the given coordinates.
      * region
      *
-     * @param image  The texture to draw
      * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
@@ -618,6 +641,7 @@ public class GameCanvas {
      * @param height The texture height
      */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
+       // viewport.apply();
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -686,6 +710,7 @@ public class GameCanvas {
      */
     public void draw(TextureRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
+        //viewport.apply();
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -712,11 +737,11 @@ public class GameCanvas {
      * The local transformations in this method are applied in the following order:
      * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
      *
-     * @param image     The region to draw
+     * @param region     The region to draw
      * @param tint      The color tint
      * @param ox        The x-coordinate of texture origin (in pixels)
      * @param oy        The y-coordinate of texture origin (in pixels)
-     * @param transform The image transform
+     * @param affine The image transform
      */
     public void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
         if (active != DrawPass.STANDARD) {
@@ -747,7 +772,6 @@ public class GameCanvas {
      * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
      *
      * @param region The polygon to draw
-     * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
      */
@@ -892,7 +916,7 @@ public class GameCanvas {
      * @param tint      The color tint
      * @param ox        The x-coordinate of texture origin (in pixels)
      * @param oy        The y-coordinate of texture origin (in pixels)
-     * @param transform The image transform
+     * @param affine The image transform
      */
     public void draw(PolygonRegion region, Color tint, float ox, float oy, Affine2 affine) {
         if (active != DrawPass.STANDARD) {
@@ -1283,6 +1307,18 @@ public class GameCanvas {
         }
 
         fovRender.end();
+
+    }
+
+    public void drawBackground(TextureRegion texture) {
+        draw(texture, Color.WHITE, 0, 0, viewport.getWorldWidth(),
+       viewport.getWorldHeight());
+
+
+    }
+
+    public void drawGutters(TextureRegion texture) {
+        //draw
 
     }
 }

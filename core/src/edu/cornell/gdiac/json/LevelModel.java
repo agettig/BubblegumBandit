@@ -15,6 +15,8 @@
 
 package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -322,10 +324,17 @@ public class LevelModel {
      * @param gumJV the JSON Value representing the gum projectile.
      * @return The origin of the projectile of the gum when fired.
      */
-    public Vector2 getProjOrigin(JsonValue gumJV) {
+    public Vector2 getProjOrigin(JsonValue gumJV, GameCanvas canvas) {
         //  TODO: The logic for this should be in Gum Controller.
 
-        Vector2 target = InputController.getInstance().getCrossHair();
+        Vector2 cross = canvas.unproject(InputController.getInstance().getCrossHair());
+        cross.scl(1/scale.x,1/scale.y);
+
+        cross.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, cross.x));
+        cross.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, cross.y));
+
+
+        Vector2 target = cross;
 
         float offsetX = gumJV.getFloat("offsetX", 0);
         float offsetY = gumJV.getFloat("offsetY", 0);
@@ -362,7 +371,7 @@ public class LevelModel {
 //        offsetX *= (target.x > avatar.getX() ? 1 : -1);
 //        float offsetY = gumJV.getFloat("offsetY", 0);
 //        offsetY *= avatar.getYScale();
-        Vector2 origin = getProjOrigin(gumJV);
+        Vector2 origin = getProjOrigin(gumJV, canvas);
 
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
         gumVel.nor();
@@ -390,7 +399,7 @@ public class LevelModel {
     public void drawProjectileRay(JsonValue levelFormat, TextureRegion asset, GameCanvas canvas){
         Vector2 target = InputController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
-        Vector2 origin = getProjOrigin(gumJV);
+        Vector2 origin = getProjOrigin(gumJV, canvas);
         Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
         dir.nor();
         dir.scl(bounds.width * 2); // Make sure ray will cover the whole screen
@@ -439,8 +448,7 @@ public class LevelModel {
         canvas.begin();
 
         if(background!=null) {
-            canvas.draw(background, Color.WHITE, 0, 0, canvas.getWidth(),
-                canvas.getHeight());
+            canvas.drawBackground(background);
         }
         for (Obstacle obj : objects) {
             obj.draw(canvas);
@@ -463,6 +471,8 @@ public class LevelModel {
 
 
     }
+
+
 
     public Enemy[] getEnemies() {
         return enemies;

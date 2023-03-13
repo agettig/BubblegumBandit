@@ -91,6 +91,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(),
+				Gdx.graphics.getBackBufferHeight());
 		canvas.resize();
 		super.resize(width,height);
 	}
