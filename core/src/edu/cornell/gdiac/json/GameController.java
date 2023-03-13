@@ -668,7 +668,6 @@ public class GameController implements Screen, ContactListener {
         Vector2 origin = level.getProjOrigin(gumJV, canvas);
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
         gumVel.nor();
-        System.out.println(gumVel);
 
         // Prevent player from shooting themselves by clicking on player
         // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player

@@ -377,7 +377,6 @@ public class LevelModel {
     }
 
     public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
-        System.out.println("here");
         Vector2 target = InputController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
 //        float offsetX = gumJV.getFloat("offsetX", 0);
@@ -393,7 +392,6 @@ public class LevelModel {
         } else { // Use slider gum speed
             gumVel.scl(gumSpeed);
         }
-        System.out.println(gumVel);
         float x, y;
         for (int i = 1; i < 10; i++){
             x = getXTrajectory(origin.x, gumVel.x, i/10f);
