@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -325,7 +326,7 @@ public class GameController implements Screen, ContactListener {
      */
     public boolean preUpdate(float dt) {
         InputController input = InputController.getInstance();
-        input.readInput(level.getBounds(), level.getScale());
+        input.readInput();
         if (listener == null) {
             return true;
         }
@@ -399,7 +400,10 @@ public class GameController implements Screen, ContactListener {
 
 
         if (InputController.getInstance().didShoot()) {
-            createGumProjectile(InputController.getInstance().getCrossHair());
+
+            Vector2 cross = level.getProjTarget(canvas);
+
+            createGumProjectile(cross);
         }
 
         level.update(dt);
@@ -661,7 +665,7 @@ public class GameController implements Screen, ContactListener {
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
 
-        Vector2 origin = level.getProjOrigin(gumJV);
+        Vector2 origin = level.getProjOrigin(gumJV, canvas);
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
         gumVel.nor();
 

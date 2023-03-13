@@ -252,14 +252,12 @@ public class InputController {
 	/**
 	 * Reads the input for the player and converts the result into game logic.
 	 *
-	 * The method provides both the input bounds and the drawing scale.  It needs
-	 * the drawing scale to convert screen coordinates to world coordinates.  The
-	 * bounds are for the crosshair.  They cannot go outside of this zone.
+	 * Saves crosshairs as screen coordinates, as they cannot be properly converted
+	 * into physics coordinates without reference to the current camera.
 	 *
-	 * @param bounds The input bounds for the crosshair.  
-	 * @param scale  The drawing scale
+
 	 */
-	public void readInput(Rectangle bounds, Vector2 scale) {
+	public void readInput() {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
 		primePrevious  = primePressed;
@@ -273,24 +271,21 @@ public class InputController {
 		
 		// Check to see if a GamePad is connected
 		if (xbox != null && xbox.isConnected()) {
-			readGamepad(bounds, scale);
-			readKeyboard(bounds, scale, true); // Read as a back-up
+			readGamepad();
+			readKeyboard( true); // Read as a back-up
 		} else {
-			readKeyboard(bounds, scale, false);
+			readKeyboard(false);
 		}
 	}
 
 	/**
 	 * Reads input from an X-Box controller connected to this computer.
+	 * * Saves crosshairs as screen coordinates, as they cannot be properly converted
+	 * 	 * into physics coordinates without reference to the current camera.
 	 *
-	 * The method provides both the input bounds and the drawing scale.  It needs
-	 * the drawing scale to convert screen coordinates to world coordinates.  The
-	 * bounds are for the crosshair.  They cannot go outside of this zone.
-	 *
-	 * @param bounds The input bounds for the crosshair.  
-	 * @param scale  The drawing scale
+
 	 */
-	private void readGamepad(Rectangle bounds, Vector2 scale) {
+	private void readGamepad() {
 		resetPressed = xbox.getStart();
 		exitPressed  = xbox.getBack();
 		nextPressed  = xbox.getRBumper();
@@ -310,12 +305,12 @@ public class InputController {
 			momentum += GP_ACCELERATE;
 			momentum = Math.min(momentum, GP_MAX_SPEED);
 			crosscache.scl(momentum);
-			crosscache.scl(1/scale.x,1/scale.y);
+			//crosscache.scl(1/scale.x,1/scale.y);
 			crosshair.add(crosscache);
 		} else {
 			momentum = 0;
 		}
-		clampPosition(bounds);
+
 	}
 
 	/**
@@ -327,7 +322,7 @@ public class InputController {
 	 *
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
-	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
+	private void readKeyboard( boolean secondary) {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
@@ -377,19 +372,8 @@ public class InputController {
 		// Mouse results
 		shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
-		crosshair.scl(1/scale.x,-1/scale.y);
-		crosshair.y += bounds.height;
-		clampPosition(bounds);
+
 	}
 	
-	/**
-	 * Clamp the cursor position so that it does not go outside the window
-	 *
-	 * While this is not usually a problem with mouse control, this is critical 
-	 * for the gamepad controls.
-	 */
-	private void clampPosition(Rectangle bounds) {
-		crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
-		crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
-	}
+
 }
