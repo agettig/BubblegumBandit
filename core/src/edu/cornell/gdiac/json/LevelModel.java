@@ -33,6 +33,7 @@ import edu.cornell.gdiac.json.enemies.StationaryEnemy;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
+import java.awt.Font;
 import java.util.Iterator;
 
 /**
@@ -88,7 +89,10 @@ public class LevelModel {
      */
     private boolean debug;
 
+    /** The background of the level */
     private TextureRegion background;
+
+
 
     /**
      * All the objects in the world.
@@ -182,7 +186,9 @@ public class LevelModel {
         bounds = new Rectangle(0, 0, 1, 1);
         scale = new Vector2(1, 1);
         debug = false;
+
     }
+
 
     /**
      * Lays out the game geography from the given JSON file
@@ -446,6 +452,7 @@ public class LevelModel {
         }
     }
 
+
     /**
      * Draws the level to the given game canvas
      * <p>
@@ -470,6 +477,7 @@ public class LevelModel {
         } else {
             drawProjectileRay(levelFormat, gumProjectile, canvas);
         }
+
 
         canvas.end();
 
