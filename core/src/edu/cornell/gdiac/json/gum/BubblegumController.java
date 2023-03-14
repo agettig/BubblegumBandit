@@ -1,7 +1,12 @@
 package edu.cornell.gdiac.json.gum;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.json.LevelModel;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 
 /**
@@ -138,6 +143,35 @@ public class BubblegumController {
     private void dequeueMidAir(){
         if(midAirBubblegumQueue.isEmpty()) return;
         midAirBubblegumQueue.removeFirst();
+    }
+
+    /**
+     * Returns a WeldJointDef connecting gum and another obstacle.
+     */
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyB = ob.getBody();
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
+    }
+
+
+    /**
+     * Adds every joint in the joint queue to the world before clearing the queue.
+     */
+    public void addJointsToWorld(LevelModel level) {
+        for(int i = 0; i < numActivePairsToAssemble(); i++){
+            GumJointPair pairToAssemble = dequeueAssembly();
+            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
+            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
+            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
+            addToStuckBubblegum(activePair);
+        }
     }
 
 }

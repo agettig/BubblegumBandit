@@ -138,11 +138,6 @@ public class GameController implements Screen{
      */
     private BubblegumController bubblegumController;
 
-    /**
-     * Queue of gum joints
-     */
-    protected Queue<JointDef> jointsQueue;
-
     /** Gum gravity scale when creating gum */
     private float gumGravity;
 
@@ -248,7 +243,6 @@ public class GameController implements Screen{
         active = false;
         countdown = -1;
         sensorFixtures = new ObjectSet<Fixture>();
-        jointsQueue = new Queue<JointDef>();
 
         setComplete(false);
         setFailure(false);
@@ -289,8 +283,6 @@ public class GameController implements Screen{
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
-        TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
-        TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
@@ -376,7 +368,6 @@ public class GameController implements Screen{
         // Process actions in object model
         PlayerModel avatar = level.getAvatar();
         avatar.setMovement(PlayerController.getInstance().getHorizontal() * avatar.getForce());
-        avatar.setJumping(PlayerController.getInstance().didPrimary());
         avatar.applyForce();
 
         if (PlayerController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
@@ -416,8 +407,8 @@ public class GameController implements Screen{
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
         // Add all of the pending joints to the world.
-        addJointsToWorld();
 
+        bubblegumController.addJointsToWorld(level);
     }
 
 
@@ -615,20 +606,6 @@ public class GameController implements Screen{
         level.activate(gum);
     }
 
-
-    /**
-     * Adds every joint in the joint queue to the world before clearing the queue.
-     */
-    private void addJointsToWorld() {
-        for(int i = 0; i < bubblegumController.numActivePairsToAssemble(); i++){
-            GumJointPair pairToAssemble = bubblegumController.dequeueAssembly();
-            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
-            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
-            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
-            bubblegumController.addToStuckBubblegum(activePair);
-        }
-    }
-
     public void setGravity(float gravity) {
         float g = gravity;
         if (level.getWorld().getGravity().y < 0) {
@@ -752,7 +729,7 @@ public class GameController implements Screen{
                 gum.setVX(0);
                 gum.setVY(0);
 
-                WeldJointDef weldJointDef = createGumJoint(gum, bd2);
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd2);
                 GumJointPair pair = new GumJointPair(gum, weldJointDef);
                 bubblegumController.addToAssemblyQueue(pair);
 
@@ -762,7 +739,7 @@ public class GameController implements Screen{
                 gum.setVX(0);
                 gum.setVY(0);
 
-                WeldJointDef weldJointDef = createGumJoint(gum, bd1);
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd1);
                 GumJointPair pair = new GumJointPair(gum, weldJointDef);
                 bubblegumController.addToAssemblyQueue(pair);
             }
@@ -781,20 +758,6 @@ public class GameController implements Screen{
                     o.getName().equals("gumProjectile");
         }
 
-        /**
-         * Returns a WeldJointDef connecting gum and another obstacle.
-         */
-        private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
-            WeldJointDef jointDef = new WeldJointDef();
-            jointDef.bodyA = gum.getBody();
-            jointDef.bodyB = ob.getBody();
-            jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
-            Vector2 anchor = new Vector2();
-            jointDef.localAnchorA.set(anchor);
-            anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
-            jointDef.localAnchorB.set(anchor);
-            return jointDef;
-        }
 
     }
 
