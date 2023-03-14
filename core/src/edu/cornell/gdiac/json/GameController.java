@@ -66,6 +66,8 @@ public class GameController implements Screen, ContactListener {
      * The JSON defining the level model
      */
     private JsonValue levelFormat;
+
+    private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
      */
@@ -292,7 +294,9 @@ public class GameController implements Screen, ContactListener {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        hud = new HUDController(directory);
     }
 
     /**
@@ -431,6 +435,7 @@ public class GameController implements Screen, ContactListener {
         canvas.clear();
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
+        hud.draw(level, canvas);
 
         // Final message
         if (complete && !failed) {
