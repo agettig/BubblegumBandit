@@ -15,8 +15,6 @@
 
 package edu.cornell.gdiac.json;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,6 +25,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
@@ -327,7 +326,7 @@ public class LevelModel {
     public Vector2 getProjOrigin(JsonValue gumJV, GameCanvas canvas) {
         //  TODO: The logic for this should be in Gum Controller.
 
-        Vector2 cross = canvas.unproject(InputController.getInstance().getCrossHair());
+        Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
         cross.scl(1/scale.x,1/scale.y);
 
         cross.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, cross.x));
@@ -358,7 +357,7 @@ public class LevelModel {
 
 
     public Vector2 getProjTarget(GameCanvas canvas) {
-        Vector2 cross = canvas.unproject(InputController.getInstance().getCrossHair());
+        Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
         cross.scl(1/scale.x,1/scale.y);
 
         cross.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, cross.x));
@@ -377,7 +376,7 @@ public class LevelModel {
     }
 
     public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
-        Vector2 target = InputController.getInstance().getCrossHair();
+        Vector2 target = PlayerController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
 //        float offsetX = gumJV.getFloat("offsetX", 0);
 //        offsetX *= (target.x > avatar.getX() ? 1 : -1);
@@ -409,7 +408,7 @@ public class LevelModel {
      * @param canvas The GameCanvas to draw the trajectory on.
      */
     public void drawProjectileRay(JsonValue levelFormat, TextureRegion asset, GameCanvas canvas){
-        Vector2 target = InputController.getInstance().getCrossHair();
+        Vector2 target = PlayerController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
         Vector2 origin = getProjOrigin(gumJV, canvas);
         Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
