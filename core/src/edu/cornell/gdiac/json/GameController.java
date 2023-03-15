@@ -62,6 +62,9 @@ public class GameController implements Screen, ContactListener {
      * The font for giving messages to the player
      */
     protected BitmapFont displayFont;
+
+    /**The font for showing how much gum is left */
+    private BitmapFont counterFont;
     /**
      * The JSON defining the level model
      */
@@ -286,12 +289,14 @@ public class GameController implements Screen, ContactListener {
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
+        counterFont = directory.getEntry("times", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
         TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+        bubblegumController.initialize(levelFormat.get("gumProjectile"));
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
     }
 
@@ -432,6 +437,10 @@ public class GameController implements Screen, ContactListener {
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
 
+        canvas.begin();
+        String message = "Gum left: " + bubblegumController.getMAX_GUM();
+        canvas.drawText(message, counterFont, 5f, canvas.getHeight()-5f);
+        canvas.end();
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
@@ -661,6 +670,7 @@ public class GameController implements Screen, ContactListener {
     private void createGumProjectile(Vector2 target) {
 
         if(bubblegumController.gumLimitReached()) return;
+        bubblegumController.reduceMAX_GUM();
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
