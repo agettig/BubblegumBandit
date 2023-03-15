@@ -413,6 +413,10 @@ public class GameController implements Screen, ContactListener {
 
         // Add all of the pending joints to the world.
         addJointsToWorld();
+
+        // Update the camera
+        canvas.getCamera().position.set(avatar.getX()*level.getScale().x, avatar.getY()*level.getScale().y, 0);
+        canvas.getCamera().update();
     }
 
 
