@@ -184,6 +184,11 @@ public class GameCanvas {
         holder = null;
     }
 
+    /** Returns the camera for this GameCanvas
+     * @return the camera of this canvas
+     */
+    public OrthographicCamera getCamera() { return camera; }
+
     /**
      * Returns the width of this canvas
      * <p>
