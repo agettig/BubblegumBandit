@@ -12,7 +12,8 @@
         "gumProjectile": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
         "gum": "textures/gum.png",
-        "chewedGum": "textures/chewed_gum.png"
+        "chewedGum": "textures/chewed_gum.png",
+        "floatingGum": "textures/gum.png"
 
     },
     "fonts": {

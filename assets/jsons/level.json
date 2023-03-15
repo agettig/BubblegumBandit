@@ -294,6 +294,13 @@
     "density": 10.0,
     "texture": "gumProjectile"
   },
+  "floatingGum": {
+    "density": 10.0,
+    "texture": "floatingGum",
+    "pos": [
+      100, 100
+    ]
+  },
   "exit": {
     "pos": [
       2.0,
