@@ -19,6 +19,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -212,7 +213,6 @@ public class LevelModel {
 
         floatingGum = new FloatingGum();
         floatingGum.initialize(directory, levelFormat.get("floatingGum"));
-        //floatingGum.setDrawScale(scale);
         activate(floatingGum);
 
         String key2 = levelFormat.get("background").asString();

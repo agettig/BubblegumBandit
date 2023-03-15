@@ -20,6 +20,14 @@
         "display": {
             "file": 	"fonts/RetroGame.ttf",
             "size": 	64
+        },
+        "lucida": {
+            "file": "fonts/LucidaGrande.ttf",
+            "size": 16
+        },
+        "times": {
+            "file": "fonts/TimesRoman.ttf",
+            "size": 32
         }
     },
 	"soundfx": {

@@ -1,7 +1,9 @@
 package edu.cornell.gdiac.json.gum;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.assets.AssetDirectory;
 
 
 /**
@@ -10,7 +12,7 @@ import com.badlogic.gdx.utils.Queue;
 public class BubblegumController {
 
     /**Maximum amount of Bubblegum on screen at the same time. */
-    private static final int MAX_GUM = 30;
+    private int MAX_GUM;
 
     /**Amount of active gum. */
     private static int ACTIVE_GUM;
@@ -33,7 +35,20 @@ public class BubblegumController {
         midAirBubblegumQueue = new Queue<Bubblegum>();
     }
 
+    /** Initialize bublegumController stats */
+    public void initialize(JsonValue json) {
+        MAX_GUM = json.get("starting_gum").asInt();
+    }
 
+    /**gets the amounut of bubblegum player has */
+    public int getMAX_GUM() {
+        return MAX_GUM;
+    }
+
+    /** reduces max gum by 1 */
+    public void reduceMAX_GUM() {
+        MAX_GUM -= 1;
+    }
     /**
      * Adds a GumJointPair to the assembly queue if possible.
      * */
@@ -114,7 +129,7 @@ public class BubblegumController {
      * @returns true if the gum limit has been reached
      * */
     public boolean gumLimitReached(){
-        return ACTIVE_GUM >= MAX_GUM;
+        return MAX_GUM == 0;
     }
 
     /**
