@@ -30,6 +30,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -82,6 +83,9 @@ public class LevelModel {
      * Reference to the goalDoor (for collision detection)
      */
     private ExitModel goalDoor;
+
+    /**Reference to floating gum in the game, to be collected */
+    private FloatingGum floatingGum;
 
     /**
      * Whether or not the level is in debug more (showing off physics)
@@ -206,8 +210,13 @@ public class LevelModel {
         goalDoor.setDrawScale(scale);
         activate(goalDoor);
 
-        String key = levelFormat.get("background").asString();
-        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        floatingGum = new FloatingGum();
+        floatingGum.initialize(directory, levelFormat.get("floatingGum"));
+        //floatingGum.setDrawScale(scale);
+        activate(floatingGum);
+
+        String key2 = levelFormat.get("background").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key2, Texture.class));
         background = texture;
 
         JsonValue wall = levelFormat.get("walls").child();
