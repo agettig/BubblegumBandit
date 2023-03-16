@@ -14,6 +14,8 @@ public class BubblegumController {
     /**Maximum amount of Bubblegum on screen at the same time. */
     private int MAX_GUM;
 
+    private int starting_gum;
+
     /**Amount of active gum. */
     private static int ACTIVE_GUM;
 
@@ -38,8 +40,12 @@ public class BubblegumController {
     /** Initialize bublegumController stats */
     public void initialize(JsonValue json) {
         MAX_GUM = json.get("starting_gum").asInt();
+        starting_gum = MAX_GUM;
     }
 
+    public void resetMAX_GUM() {
+        MAX_GUM = starting_gum;
+    }
     /**gets the amounut of bubblegum player has */
     public int getMAX_GUM() {
         return MAX_GUM;

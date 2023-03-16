@@ -403,7 +403,9 @@ public class GameController implements Screen, ContactListener {
             // Bubblegum.collectGum(level.getWorld());
         }
 
-
+        if (InputController.getInstance().didReset()) {
+            bubblegumController.resetMAX_GUM();
+        }
 
         for (Enemy e : level.getEnemies()) e.update();
 
