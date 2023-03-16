@@ -96,7 +96,6 @@ public class EnemyController implements InputController {
         if (state == EnemyState.ATTACK && canShootTarget()) {
             action |= CONTROL_FIRE;
         }
-
         return action;
     }
 
@@ -194,17 +193,4 @@ public class EnemyController implements InputController {
         return false;
         //#endregion
     }
-
-    // Pathfinding Code (MODIFY ALL THE FOLLOWING METHODS)
-
-
-
-
-
-
-    // Add any auxiliary methods or data structures here
-    //#region PUT YOUR CODE HERE
-
-
-
 }

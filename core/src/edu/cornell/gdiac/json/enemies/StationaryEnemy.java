@@ -15,10 +15,6 @@ public class StationaryEnemy extends Enemy {
         super.initialize(directory, json);
     }
 
-    @Override
-    public void applyForce() {
-
-    }
 
     @Override
     public void update(int controlCode) {
