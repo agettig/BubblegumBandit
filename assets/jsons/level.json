@@ -295,13 +295,27 @@
     "density": 10.0,
     "texture": "gumProjectile"
   },
-  "floatingGum": {
-    "density": 10.0,
+  "floatingGums": {
+    "numGums": 2,
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
     "texture": "floatingGum",
-    "pos": [
-      500, 100
-    ],
-    "force": 10.0
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "positions": [
+      {
+        "pos": [
+          10,
+          10
+        ] },
+      {
+        "pos": [
+          5,
+          10
+        ]
+      }
+      ]
   },
   "exit": {
     "pos": [
