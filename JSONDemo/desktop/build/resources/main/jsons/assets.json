@@ -1,0 +1,30 @@
+{
+    "textures": {
+        "earth": {
+            "file":	 "textures/earthtile.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "dude": "textures/player_draft.png",
+        "robot": "textures/robo_draft.png",
+        "background": "textures/background.png",
+        "goal": "textures/goaldoor.png",
+        "gumProjectile": "textures/gum.png",
+        "trajectoryProjectile": "textures/trajectory.png",
+        "gum": "textures/gum.png",
+        "chewedGum": "textures/chewed_gum.png"
+
+    },
+    "fonts": {
+        "display": {
+            "file": 	"fonts/RetroGame.ttf",
+            "size": 	64
+        }
+    },
+	"soundfx": {
+  		"jump" : "sounds/jump.mp3"
+	},
+	"jsons" : {
+		"level1" : "jsons/level.json"
+    }
+}
