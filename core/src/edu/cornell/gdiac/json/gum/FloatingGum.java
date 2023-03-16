@@ -18,11 +18,19 @@ import java.lang.reflect.Field;
 
 public class FloatingGum extends BoxObstacle {
 
+    private boolean collected;
+
     public FloatingGum() {
         super(0, 0, 1, 1);
         setSensor(true);
     }
+    public void setCollected(boolean bool) {
+        collected = bool;
+    }
 
+    public boolean getCollected() {
+        return collected;
+    }
     public void initialize(AssetDirectory directory, JsonValue json) {
         setName(json.name());
         setDensity(json.get("density").asFloat());
