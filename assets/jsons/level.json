@@ -299,8 +299,9 @@
     "density": 10.0,
     "texture": "floatingGum",
     "pos": [
-      100, 100
-    ]
+      500, 100
+    ],
+    "force": 10.0
   },
   "exit": {
     "pos": [

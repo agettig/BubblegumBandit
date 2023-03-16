@@ -49,6 +49,13 @@ public class BubblegumController {
     public void reduceMAX_GUM() {
         MAX_GUM -= 1;
     }
+
+    /** increases max gum by 1 */
+    public void increaseMAX_GUM() {
+        MAX_GUM += 1;
+    }
+
+
     /**
      * Adds a GumJointPair to the assembly queue if possible.
      * */
