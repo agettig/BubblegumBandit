@@ -580,6 +580,8 @@ public class GameController implements Screen, ContactListener {
                 setComplete(true);
             }
 
+            //collect floating gum
+            //counter double counts if gum is not marked as collected
             for (FloatingGum gum : floatingGum) {
                 if (bd1 == gum && bd2 == avatar && !gum.getCollected()) {
                     collectGum(bd1);
@@ -766,6 +768,7 @@ public class GameController implements Screen, ContactListener {
         //Safety check.
         if (bd1 == null || bd2 == null) return;
         if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
+        if (bd1.getName().equals("floatingGums") || bd2.getName().equals("floatingGums")) return;
 
         if (isGumObstacle(bd1)) {
             Bubblegum gum = (Bubblegum) bd1;
