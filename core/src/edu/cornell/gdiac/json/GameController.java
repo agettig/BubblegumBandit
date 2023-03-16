@@ -391,7 +391,7 @@ public class GameController implements Screen{
             Enemy enemy = level.getEnemies()[i];
 
             //get action from controller
-            int action = InputController.CONTROL_MOVE_LEFT;
+            int action = controller.getAction();
 
             //pass to enemy, update the enemy with that action
             enemy.update(action);
@@ -791,7 +791,7 @@ public class GameController implements Screen{
                 } else if (source.getName().equals("move speed")) {
                     for (Enemy enemy : level.getEnemies()) {
                         if (enemy instanceof MovingEnemy) {
-                            ((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
+                            //((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
                         }
                     }
                 }

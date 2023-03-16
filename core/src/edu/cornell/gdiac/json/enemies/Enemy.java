@@ -220,8 +220,6 @@ public abstract class Enemy extends CapsuleObstacle {
         vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
     }
 
-
-
     /**
      * Initializes the dude via the given JSON value
      * <p>
@@ -301,8 +299,6 @@ public abstract class Enemy extends CapsuleObstacle {
         }
     }
 
-
-    public abstract void applyForce();
 
     public void update(int controlCode) {
         if (yScale < 1f && !isFlipped) {
