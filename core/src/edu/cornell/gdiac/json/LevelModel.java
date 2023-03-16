@@ -213,6 +213,7 @@ public class LevelModel {
 
         floatingGum = new FloatingGum();
         floatingGum.initialize(directory, levelFormat.get("floatingGum"));
+        floatingGum.setRadius(floatingGum.getTexture().getRegionWidth() / (2.0f * getScale().x));
         activate(floatingGum);
 
         String key2 = levelFormat.get("background").asString();
@@ -493,7 +494,7 @@ public class LevelModel {
 
     }
 
-
+    public FloatingGum getFloatingGum() {return floatingGum; }
 
     public Enemy[] getEnemies() {
         return enemies;

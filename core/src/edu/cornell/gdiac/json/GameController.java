@@ -28,6 +28,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.gum.BubblegumController;
+import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
@@ -382,6 +383,7 @@ public class GameController implements Screen, ContactListener {
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.applyForce();
 
+
         if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
@@ -559,6 +561,7 @@ public class GameController implements Screen, ContactListener {
 
             PlayerModel avatar = level.getAvatar();
             BoxObstacle door = level.getExit();
+            FloatingGum floatingGum = level.getFloatingGum();
 
             // See if we have landed on the ground.
             if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
@@ -573,9 +576,19 @@ public class GameController implements Screen, ContactListener {
                 setComplete(true);
             }
 
+            if (bd1 == floatingGum) {
+                System.out.println("bd1 is gum");
+            }
+
+            if (bd2 == floatingGum) {
+                System.out.println("bd2 is gum");
+            }
             // Check for gum collision
             resolveGumCollision(bd1, bd2);
 
+
+            //Check for floating gum
+            collectGum(bd1, bd2);
             // TODO: Gum interactions
 
         } catch (Exception e) {
@@ -729,6 +742,18 @@ public class GameController implements Screen, ContactListener {
                 o.getName().equals("gumProjectile");
     }
 
+    /** Collects floating gum */
+    private void collectGum(Obstacle bd1, Obstacle bd2) {
+        System.out.println("hi");
+        if (bd1.getName().equals("floatingGum") && bd2.getName().equals("avatar")) {
+            bubblegumController.increaseMAX_GUM();
+            bd1.markRemoved(true);
+        }
+        else if (bd2.getName().equals("floatingGum") && bd1.getName().equals("avatar")) {
+            bubblegumController.increaseMAX_GUM();
+            bd2.markRemoved(true);
+        }
+    }
     /**
      * Handles a gum projectile's collision in the Box2D world.
      * <p>
@@ -742,6 +767,7 @@ public class GameController implements Screen, ContactListener {
 
         //Safety check.
         if (bd1 == null || bd2 == null) return;
+        if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
 
         if (isGumObstacle(bd1)) {
             Bubblegum gum = (Bubblegum) bd1;
