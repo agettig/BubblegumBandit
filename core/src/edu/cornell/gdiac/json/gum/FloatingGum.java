@@ -21,8 +21,9 @@ public class FloatingGum extends BoxObstacle {
     private boolean collected;
 
     public FloatingGum() {
-        super(0, 0, 1, 1);
+        super(0, 0, 0.5f, 0.5f);
         setSensor(true);
+        collected = false;
     }
     public void setCollected(boolean bool) {
         collected = bool;
@@ -34,7 +35,7 @@ public class FloatingGum extends BoxObstacle {
     public void initialize(AssetDirectory directory, JsonValue json) {
         setName(json.name());
         setDensity(json.get("density").asFloat());
-        setBodyType(BodyDef.BodyType.StaticBody);
+        setBodyType(BodyDef.BodyType.KinematicBody);
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
 
