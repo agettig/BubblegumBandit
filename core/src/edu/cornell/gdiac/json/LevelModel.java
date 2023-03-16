@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.enemies.EnemyController;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -98,6 +99,16 @@ public class LevelModel {
      * All enemies in the world
      */
     private Enemy[] enemies;
+
+    public EnemyController[] getEnemyControllers() {
+        return enemyControllers;
+    }
+
+    /**
+     * All enemy controllers in the world
+     */
+    private EnemyController[] enemyControllers;
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -240,9 +251,9 @@ public class LevelModel {
         for (int i = 0; i < numEnemies; i++) {
             Enemy a;
             if (enemy.get("type").asString().equals("moving")) {
-                a = new MovingEnemy(world);
+                a = new MovingEnemy(world, i);
             } else {
-                a = new StationaryEnemy(world);
+                a = new StationaryEnemy(world, i);
             }
             a.initialize(directory, enemy);
             a.setDrawScale(scale);
@@ -252,7 +263,7 @@ public class LevelModel {
         }
 
 
-        // Create dude
+        // Create bandit
 
         avatar = new PlayerModel(world);
         avatar.initialize(directory, levelFormat.get("avatar"));
