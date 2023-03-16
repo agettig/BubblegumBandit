@@ -31,7 +31,6 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
-import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -86,7 +85,7 @@ public class LevelModel {
     private ExitModel goalDoor;
 
     /**Reference to floating gum in the game, to be collected */
-    private FloatingGum floatingGum;
+    private FloatingGum[] floatingGum;
 
     /**
      * Whether or not the level is in debug more (showing off physics)
@@ -211,11 +210,6 @@ public class LevelModel {
         goalDoor.setDrawScale(scale);
         activate(goalDoor);
 
-        floatingGum = new FloatingGum();
-        floatingGum.initialize(directory, levelFormat.get("floatingGum"));
-        floatingGum.setRadius(floatingGum.getTexture().getRegionWidth() / (2.0f * getScale().x));
-        activate(floatingGum);
-
         String key2 = levelFormat.get("background").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key2, Texture.class));
         background = texture;
@@ -260,6 +254,24 @@ public class LevelModel {
             enemies[i] = a;
             activate(a);
             enemy = enemy.next();
+        }
+
+        // get number of floating gums
+        int numGums = levelFormat.get("floatingGums").get("numGums").asInt();
+        JsonValue position = levelFormat.get("floatingGums").get("positions").child();
+        floatingGum = new FloatingGum[numGums];
+
+        // json of gums
+        JsonValue gums = levelFormat.get("floatingGums");
+
+        for (int i = 0; i < numGums; i++) {
+            FloatingGum gum = new FloatingGum();
+            gum.initialize(directory, gums);
+            gum.setPosition(position);
+            gum.setDrawScale(scale);
+            activate(gum);
+            floatingGum[i] = gum;
+            position = position.next();
         }
 
 
@@ -494,7 +506,7 @@ public class LevelModel {
 
     }
 
-    public FloatingGum getFloatingGum() {return floatingGum; }
+    public FloatingGum[] getFloatingGum() {return floatingGum; }
 
     public Enemy[] getEnemies() {
         return enemies;
