@@ -81,17 +81,24 @@ public class PlayerModel extends CapsuleObstacle {
 	/** Cooldown (in animation frames) for shooting */
 	private final int shotLimit;
 
-	/** Cache for flipping player orientation */
-	private float angle;
-
 	/** Whether this player is flipped */
 	private boolean isFlipped;
 
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
 
-	/** The physics world */
-	private World world;
+	/** Camera target for player */
+	private final Vector2 cameraTarget;
+
+	/**
+	 * Returns the camera target for the player.
+	 *
+	 * This is based on the player's position, velocity, and gravity.
+	 *
+	 * @return the camera target for the player
+	 */
+	public Vector2 getCameraTarget() { return cameraTarget; }
+
 
 	/**
 	 * Returns left/right movement of this character.
@@ -347,8 +354,8 @@ public class PlayerModel extends CapsuleObstacle {
 
 		isFlipped = false;
 		yScale = 1.0f;
-		this.world = world;
 
+		cameraTarget = new Vector2();
 	}
 
 	/**
@@ -365,6 +372,7 @@ public class PlayerModel extends CapsuleObstacle {
 		float[] pos  = json.get("pos").asFloatArray();
 		float[] size = json.get("size").asFloatArray();
 		setPosition(pos[0],pos[1]);
+		cameraTarget.set(pos[0]*drawScale.x, pos[1]*drawScale.y);
 		setDimension(size[0],size[1]);
 
 		// Technically, we should do error checking here.
@@ -500,10 +508,6 @@ public class PlayerModel extends CapsuleObstacle {
 			}
 		}
 		else {
-			// TODO: This seems to create an issue where you can't slow down a jump
-			// once you hit top speed. Should check both directions independently
-			// and let you move the opposite direction even if at top speed.
-			// Might not be a problem without jumping, but it might be.
 			forceCache.set(getMovement(),0);
 			body.applyForce(forceCache,getPosition(),true);
 		}
@@ -535,6 +539,10 @@ public class PlayerModel extends CapsuleObstacle {
 		} else if (yScale > -1f && isFlipped) {
 			yScale -= 0.1f;
 		}
+
+		// Change camera target
+		cameraTarget.x = getX()*drawScale.x;
+		cameraTarget.y = getY()*drawScale.y;
 
 		super.update(dt);
 	}

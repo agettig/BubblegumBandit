@@ -17,6 +17,7 @@
  */
 package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -109,7 +110,7 @@ public class GameCanvas {
     /**
      * Camera for the underlying SpriteBatch
      */
-    private OrthographicCamera camera;
+    private GameCamera camera;
 
     /**
      * Value to cache window width (if we are currently full screen)
@@ -153,7 +154,7 @@ public class GameCanvas {
 
 
         // Set the projection matrix (for proper scaling)
-        camera = new OrthographicCamera(getWidth(), getHeight());
+        camera = new GameCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
         viewport = new FitViewport(getWidth(), getHeight(), camera);
         viewport.apply();
@@ -187,7 +188,7 @@ public class GameCanvas {
     /** Returns the camera for this GameCanvas
      * @return the camera of this canvas
      */
-    public OrthographicCamera getCamera() { return camera; }
+    public GameCamera getCamera() { return camera; }
 
     /**
      * Returns the width of this canvas
