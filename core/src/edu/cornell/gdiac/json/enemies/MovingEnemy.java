@@ -44,7 +44,7 @@ public class MovingEnemy  extends Enemy{
     // TODO
     @Override
     public void applyForce() {
-//        body.applyForce(new Vector2(5, 0),getPosition(),true);
+        body.applyForceToCenter(new Vector2(5,0),true);
     }
 
     // TODO

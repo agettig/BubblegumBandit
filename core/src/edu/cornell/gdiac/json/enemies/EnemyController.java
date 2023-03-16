@@ -1,9 +1,9 @@
 
 package edu.cornell.gdiac.json.enemies;
 import com.badlogic.gdx.math.Vector2;
+import edu.cornell.gdiac.json.Board;
 import edu.cornell.gdiac.json.PlayerModel;
 import edu.cornell.gdiac.json.controllers.InputController;
-import edu.cornell.gdiac.json.Graph;
 
 public class EnemyController implements InputController {
 
@@ -29,8 +29,20 @@ public class EnemyController implements InputController {
     private PlayerModel player;
 
     /**graph for pathfinding */
-    private Graph graph;
+    private Board board;
 
+    private Vector2 target;
+
+    public EnemyController(Enemy enemy, PlayerModel player, Board board){
+        this.board = board;
+        this.enemy = enemy;
+        this.player = player;
+        state = EnemyState.STATIONARY;
+        move = CONTROL_NO_ACTION;
+        ticks = 0;
+
+        target = null;
+    }
 
     private enum EnemyState{
             /**
@@ -75,7 +87,7 @@ public class EnemyController implements InputController {
             changeStateIfApplicable();
 
             //markGoalTiles();
-            move = graph.getMoveAlongPathToGoalTile();
+            move = board.getMoveAlongPathToGoalTile(enemy.getPosition(), player.getPosition(), true);
         }
 
         int action = move;

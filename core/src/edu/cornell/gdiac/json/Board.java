@@ -87,13 +87,16 @@ public class Board {
     public Board(int width, int height, JsonValue board) {
         this.width = width;
         this.height = height;
+        JsonValue row = board.child;
         tiles = new TileState[height][width];
-        for (int i= 0; i < width; i++) {
-            for (int j = 0; j < height; j++){
+        for (int i= 0; i < height; i++) {
+            int[] rowVals = row.asIntArray();
+            for (int j = 0; j < width; j++){
                 TileState tile = new TileState();
-                tile.value = 0;
+                tile.value = rowVals[j];
                 tiles[i][j] = tile;
             }
+            row = row.next;
         }
         resetTiles();
     }
@@ -161,7 +164,7 @@ public class Board {
 
         }
 
-        return CONTROL_NO_ACTION;
+        return CONTROL_MOVE_LEFT;
     }
 
     /**
@@ -199,8 +202,8 @@ public class Board {
      * Resets the values of all the tiles on screen.
      */
     public void resetTiles() {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int x = 0; x < height; x++) {
+            for (int y = 0; y < width; y++) {
                 TileState tile = tiles[x][y];
                 tile.goal = false;
                 tile.visited = false;
@@ -279,7 +282,7 @@ public class Board {
      * @return true if the given position is a valid tile
      */
     public boolean inBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < width && y < height;
+        return x >= 0 && y >= 0 && x < height && y < width;
     }
 
     /**

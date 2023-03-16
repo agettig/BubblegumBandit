@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.json.controllers.InputController;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.enemies.EnemyController;
@@ -390,7 +391,7 @@ public class GameController implements Screen{
             Enemy enemy = level.getEnemies()[i];
 
             //get action from controller
-            int action = controller.getAction();
+            int action = InputController.CONTROL_MOVE_LEFT;
 
             //pass to enemy, update the enemy with that action
             enemy.update(action);
