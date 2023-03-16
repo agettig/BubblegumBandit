@@ -408,15 +408,17 @@ public class GameController implements Screen, ContactListener {
 
         level.update(dt);
 
+        // Update the camera
+        Vector2 target = canvas.unproject(InputController.getInstance().getCrossHair());
+        canvas.getCamera().setTarget(avatar.getCameraTarget());
+        canvas.getCamera().setSecondaryTarget(target);
+        canvas.getCamera().update(dt);
+
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
         // Add all of the pending joints to the world.
         addJointsToWorld();
-
-        // Update the camera
-        canvas.getCamera().position.set(avatar.getX()*level.getScale().x, avatar.getY()*level.getScale().y, 0);
-        canvas.getCamera().update();
     }
 
 
