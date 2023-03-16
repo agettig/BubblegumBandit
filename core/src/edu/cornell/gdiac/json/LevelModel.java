@@ -86,7 +86,7 @@ public class LevelModel {
     private ExitModel goalDoor;
 
     /**Reference to floating gum in the game, to be collected */
-    private ArrayList<BoxObstacle> floatingGum;
+    private FloatingGum[] floatingGum;
 
     /**
      * Whether or not the level is in debug more (showing off physics)
@@ -260,7 +260,7 @@ public class LevelModel {
         // get number of floating gums
         int numGums = levelFormat.get("floatingGums").get("numGums").asInt();
         JsonValue position = levelFormat.get("floatingGums").get("positions").child();
-        floatingGum = new ArrayList<BoxObstacle>(numGums);
+        floatingGum = new FloatingGum[numGums];
 
         // json of gums
         JsonValue gums = levelFormat.get("floatingGums");
@@ -271,7 +271,7 @@ public class LevelModel {
             gum.setPosition(position);
             gum.setDrawScale(scale);
             activate(gum);
-            floatingGum.add(gum);
+            floatingGum[i] = gum;
             position = position.next();
         }
 
@@ -507,7 +507,7 @@ public class LevelModel {
 
     }
 
-    public ArrayList<BoxObstacle> getFloatingGum() {return floatingGum; }
+    public FloatingGum[] getFloatingGum() {return floatingGum; }
 
     public Enemy[] getEnemies() {
         return enemies;

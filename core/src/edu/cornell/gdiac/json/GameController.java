@@ -28,6 +28,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.gum.BubblegumController;
+import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
@@ -562,7 +563,7 @@ public class GameController implements Screen, ContactListener {
 
             PlayerModel avatar = level.getAvatar();
             BoxObstacle door = level.getExit();
-            ArrayList<BoxObstacle> floatingGum = level.getFloatingGum();
+            FloatingGum[] floatingGum = level.getFloatingGum();
 
             // See if we have landed on the ground.
             if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
@@ -577,14 +578,14 @@ public class GameController implements Screen, ContactListener {
                 setComplete(true);
             }
 
-            for (BoxObstacle gum : floatingGum) {
-                if (bd1 == gum && bd2 == avatar) {
+            for (FloatingGum gum : floatingGum) {
+                if (bd1 == gum && bd2 == avatar && !gum.getCollected()) {
                     collectGum(bd1);
-                    floatingGum.remove(bd1);
+                    gum.setCollected(true);
                 }
-                else if (bd2 == gum && bd1 == avatar) {
+                else if (bd2 == gum && bd1 == avatar && !gum.getCollected()) {
                     collectGum(bd2);
-                    floatingGum.remove(bd2);
+                    gum.setCollected(true);
                 }
             }
 
