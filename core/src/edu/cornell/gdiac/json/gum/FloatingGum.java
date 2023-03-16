@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.json.gum;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;

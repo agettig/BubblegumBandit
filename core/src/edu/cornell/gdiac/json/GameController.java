@@ -39,6 +39,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import java.util.ArrayList;
+
 import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
 /**
@@ -560,7 +562,7 @@ public class GameController implements Screen, ContactListener {
 
             PlayerModel avatar = level.getAvatar();
             BoxObstacle door = level.getExit();
-            BoxObstacle[] floatingGum = level.getFloatingGum();
+            ArrayList<BoxObstacle> floatingGum = level.getFloatingGum();
 
             // See if we have landed on the ground.
             if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
@@ -578,9 +580,11 @@ public class GameController implements Screen, ContactListener {
             for (BoxObstacle gum : floatingGum) {
                 if (bd1 == gum && bd2 == avatar) {
                     collectGum(bd1);
+                    floatingGum.remove(bd1);
                 }
                 else if (bd2 == gum && bd1 == avatar) {
                     collectGum(bd2);
+                    floatingGum.remove(bd2);
                 }
             }
 
@@ -742,8 +746,8 @@ public class GameController implements Screen, ContactListener {
 
     /** Collects floating gum */
     private void collectGum(Obstacle bd1) {
-            bubblegumController.increaseMAX_GUM();
-            bd1.markRemoved(true);
+        bd1.markRemoved(true);
+        bubblegumController.increaseMAX_GUM();
     }
     /**
      * Handles a gum projectile's collision in the Box2D world.
