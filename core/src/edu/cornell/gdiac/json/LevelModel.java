@@ -17,6 +17,7 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -108,6 +109,8 @@ public class LevelModel {
      * All enemy controllers in the world
      */
     private EnemyController[] enemyControllers;
+
+    private Board board;
 
 
     /**
@@ -243,9 +246,19 @@ public class LevelModel {
 
         // initialize enemies list
         enemies = new Enemy[numEnemies];
+        enemyControllers = new EnemyController[numEnemies];
 
         // json of enemy
         JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
+
+        // Create bandit
+
+        avatar = new PlayerModel(world);
+        avatar.initialize(directory, levelFormat.get("avatar"));
+        avatar.setDrawScale(scale);
+        activate(avatar);
+
+        board = new Board(16, 12, levelFormat.get("board"));
 
         // initialize each enemy
         for (int i = 0; i < numEnemies; i++) {
@@ -260,15 +273,13 @@ public class LevelModel {
             enemies[i] = a;
             activate(a);
             enemy = enemy.next();
+            enemyControllers[i] = new EnemyController(a, avatar, board);
         }
 
 
-        // Create bandit
 
-        avatar = new PlayerModel(world);
-        avatar.initialize(directory, levelFormat.get("avatar"));
-        avatar.setDrawScale(scale);
-        activate(avatar);
+
+
     }
 
 
@@ -456,6 +467,20 @@ public class LevelModel {
         }
     }
 
+    public void drawGrid(GameCanvas canvas){
+        PolygonShape s = new PolygonShape();
+        s.setAsBox(400, .5f);
+
+        for (int i = 25; i < 800; i+=25){
+            canvas.drawPhysics(s, Color.BLACK, 400, i);
+        }
+        s.setAsBox(.5f, 300);
+
+        for (int i = 25; i < 800; i+=25){
+            canvas.drawPhysics(s, Color.BLACK, i, 300);
+        }
+    }
+
     /**
      * Draws the level to the given game canvas
      * <p>
@@ -488,7 +513,9 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
+            drawGrid(canvas);
             canvas.endDebug();
+
         }
 
 
