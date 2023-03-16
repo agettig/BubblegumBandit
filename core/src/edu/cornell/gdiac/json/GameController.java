@@ -27,6 +27,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.enemies.EnemyController;
 import edu.cornell.gdiac.json.gum.BubblegumController;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
@@ -137,6 +138,7 @@ public class GameController implements Screen{
      * Reference to the Bubblegum controller instance
      */
     private BubblegumController bubblegumController;
+
 
     /** Gum gravity scale when creating gum */
     private float gumGravity;
@@ -383,15 +385,17 @@ public class GameController implements Screen{
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
 
-        if(PlayerController.getInstance().didCollect()){
-            // Commented out because crashes right now.
-            //TODO
-            // Bubblegum.collectGum(level.getWorld());
+        for(int i = 0; i < level.getEnemies().length; i++){
+            EnemyController controller = level.getEnemyControllers()[i];
+            Enemy enemy = level.getEnemies()[i];
+
+            //get action from controller
+            int action = controller.getAction();
+
+            //pass to enemy, update the enemy with that action
+            enemy.update(action);
         }
 
-
-
-        for (Enemy e : level.getEnemies()) e.update();
 
 
         if (PlayerController.getInstance().didShoot()) {
