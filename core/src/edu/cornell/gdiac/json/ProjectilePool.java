@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 /**
  * Manages the projectiles fired by the enemies
  */
-public class ProjectilePool implements Iterable<ProjectileModel>{
+public class ProjectilePool{
 
     /** The maximum number of projectile objects we support */
     private static final int MAX_PROJECTILE = 1024;
@@ -22,9 +22,6 @@ public class ProjectilePool implements Iterable<ProjectileModel>{
     protected int tail;
     /** Number of elements currently in the queue */
     protected int size;
-
-    /** Custom iterator so we can use this object in for-each loops */
-    private ProjectileIterator iterator = new ProjectileIterator();
 
     /**
      * Creates a (pre-allocated) pool of photons with the MAX_PHOTONS capacity.
@@ -51,6 +48,11 @@ public class ProjectilePool implements Iterable<ProjectileModel>{
      * It moves projectiles forward
      */
     public void update() {
+        for (int i = 0; i < queue.length; i++){
+            ProjectileModel p = queue[i];
+            p.getPosition().add(p.getLinearVelocity());
+        }
+
         // Remove dead photons
         while (size > 0 && !queue[head].isAlive()) {
             // As photons are predeclared, all we have to do is move head forward.
@@ -96,55 +98,5 @@ public class ProjectilePool implements Iterable<ProjectileModel>{
         p.destroy();
         size--;
     }
-
-    /**
-     * Returns a projectile iterator, satisfying the Iterable interface.
-     *
-     * This method allows us to use this object in for-each loops.
-     *
-     * @return a projectile iterator.
-     */
-    public Iterator<ProjectileModel> iterator() {
-        // Take a snapshot of the current state and return iterator.
-        iterator.limit = size;
-        iterator.pos = head;
-        iterator.cnt = 0;
-        return iterator;
-    }
-
-    /**
-     * Implementation of a custom iterator.
-     */
-    private class ProjectileIterator implements Iterator<ProjectileModel>{
-        /** The current position in the photon queue */
-        public int pos = 0;
-        /** The number of photons shown already */
-        public int cnt = 0;
-
-        /** The number of photons to iterator over (snapshot to allow deletion) */
-        public int limit =0;
-
-        /**
-         * @return true if there are still items left to iterate
-         */
-        public boolean hasNext() {
-            return cnt < limit;
-        }
-
-        public ProjectileModel next(){
-            if (cnt > limit) {
-                throw new NoSuchElementException();
-            }
-            int idx = pos;
-            while (!queue[pos].isAlive()){
-                pos = ((pos+1) % queue.length);
-            }
-            cnt++;
-            return queue[idx];
-        }
-    }
-
-
-
 
 }
