@@ -17,7 +17,6 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
@@ -25,10 +24,9 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
-import edu.cornell.gdiac.json.controllers.InputController;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
-import edu.cornell.gdiac.json.enemies.EnemyController;
+import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.gum.BubblegumController;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
@@ -54,8 +52,14 @@ import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
  * You will notice that asset loading is very different.  It relies on the
  * singleton asset manager to manage the various assets.
  */
-public class GameController implements Screen{
+public class GameController implements Screen {
     // ASSETS
+
+    /** How close to the center of the tile we need to be to stop drifting */
+    private static final float DRIFT_TOLER = .2f;
+    /** How fast we drift to the tile center when paused */
+    private static final float DRIFT_SPEED = 0.325f;
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -141,13 +145,19 @@ public class GameController implements Screen{
     private BubblegumController bubblegumController;
 
 
-    /** Gum gravity scale when creating gum */
+    /**
+     * Gum gravity scale when creating gum
+     */
     private float gumGravity;
 
-    /** Gum speed when creating gum */
+    /**
+     * Gum speed when creating gum
+     */
     private float gumSpeed;
 
-    /** The texture of the trajectory projectile */
+    /**
+     * The texture of the trajectory projectile
+     */
     private TextureRegion trajectoryProjectile;
 
     /**
@@ -386,17 +396,17 @@ public class GameController implements Screen{
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
 
-        for(int i = 0; i < level.getEnemies().length; i++){
-            EnemyController controller = level.getEnemyControllers()[i];
+        for (int i = 0; i < level.getEnemies().length; i++) {
+            AIController controller = level.getEnemyControllers()[i];
             Enemy enemy = level.getEnemies()[i];
+            adjustForDrift(enemy);
 
             //get action from controller
-            int action = controller.getAction();
+            int action = controller.getAction(avatar.isFlipped());
 
             //pass to enemy, update the enemy with that action
             enemy.update(action);
         }
-
 
 
         if (PlayerController.getInstance().didShoot()) {
@@ -566,7 +576,7 @@ public class GameController implements Screen{
      */
     private void createGumProjectile(Vector2 target) {
 
-        if(bubblegumController.gumLimitReached()) return;
+        if (bubblegumController.gumLimitReached()) return;
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
@@ -619,7 +629,36 @@ public class GameController implements Screen{
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    private class CollisionController implements ContactListener{
+    /**
+     * Nudges the ship back to the center of a tile if it is not moving.
+     *
+     * @param enemy The Enemy to adjust
+     */
+    private void adjustForDrift(Enemy enemy) {
+        // Drift to line up vertically with the grid.
+
+        if (enemy.getVX() == 0.0f) {
+            float offset = level.getBoard().centerOffset(enemy.getX());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setX(enemy.getX()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setX(enemy.getX()-DRIFT_SPEED);
+            }
+        }
+
+        // Drift to line up horizontally with the grid.
+        if (enemy.getVY() == 0.0f) {
+            float offset = level.getBoard().centerOffset(enemy.getY());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setY(enemy.getY()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setY(enemy.getY()-DRIFT_SPEED);
+            }
+        }
+    }
+
+
+    private class CollisionController implements ContactListener {
 
         /**
          * Callback method for the start of a collision
@@ -738,8 +777,7 @@ public class GameController implements Screen{
                 GumJointPair pair = new GumJointPair(gum, weldJointDef);
                 bubblegumController.addToAssemblyQueue(pair);
 
-            }
-            else if (isGumObstacle(bd2)) {
+            } else if (isGumObstacle(bd2)) {
                 Bubblegum gum = (Bubblegum) bd2;
                 gum.setVX(0);
                 gum.setVY(0);
@@ -762,8 +800,6 @@ public class GameController implements Screen{
             return o.getName().equals("stickyGum") ||
                     o.getName().equals("gumProjectile");
         }
-
-
     }
 
 

@@ -15,7 +15,7 @@ public class MovingEnemy  extends Enemy{
     private static float MAX_SPEED = 1f;
 
     /**Force to apply to MovingEnemies for movement.*/
-    private final float MOVEMENT_FORCE = 5f;
+    private final float MOVEMENT_FORCE = 6.3f;
 
     /**Impulse to apply to MovingEnemies for jumping.*/
     private final float JUMPING_IMPULSE = 3f;
@@ -92,22 +92,69 @@ public class MovingEnemy  extends Enemy{
         super.update(controlCode);
 
         ticks++;
-        switch(controlCode){
-            case InputController.CONTROL_MOVE_LEFT: //chase left
-                moveLeft();
-                //moveRight();
-                //jump();
-                break;
-            case InputController.CONTROL_MOVE_RIGHT: //chase right
-                moveRight();
-                break;
-            case InputController.CONTROL_FIRE: //shoot
-                break;
-            case InputController.CONTROL_MOVE_UP: //jump
-                jump();
-                break;
-            default: break;
+        // Determine how we are moving.
+        boolean movingLeft  = (controlCode & InputController.CONTROL_MOVE_LEFT) != 0;
+        boolean movingRight = (controlCode & InputController.CONTROL_MOVE_RIGHT) != 0;
+        boolean movingUp    = (controlCode & InputController.CONTROL_MOVE_UP) != 0;
+        boolean movingDown  = (controlCode & InputController.CONTROL_MOVE_DOWN) != 0;
+
+        // Process movement command.
+        if (movingLeft) {
+            setVX(-1.5f);
+            setVY(0);
+        } else if (movingRight) {
+            setVX(2f);
+            setVY(0);
+        } else if (movingUp) {
+            if (!isFlipped){
+                setVY(4f);
+                body.applyForceToCenter(0, 5,true);
+            }
+            else{
+                setVY(0);
+            }
+            setVX(0);
+        } else if (movingDown) {
+            if (isFlipped){
+                setVY(-4f);
+                body.applyForceToCenter(0, -5,true);
+
+            }
+            else{
+                setVY(0);
+            }
+            setVX(0);
+        } else {
+//            // NOT MOVING, SO SLOW DOWN
+//            velocity.x *= SPEED_DAMPNING;
+//            velocity.y *= SPEED_DAMPNING;
+//            if (Math.abs(velocity.x) < EPSILON_CLAMP) {
+//                velocity.x = 0.0f;
+//            }
+//            if (Math.abs(velocity.y) < EPSILON_CLAMP) {
+//                velocity.y = 0.0f;
+//            }
+            setVX(0);
+
         }
+//        switch(controlCode){
+//            case InputController.CONTROL_MOVE_LEFT: //chase left
+////                moveLeft();
+//                //moveRight();
+//                //jump();
+//                setVX(-1);
+//                break;
+//            case InputController.CONTROL_MOVE_RIGHT: //chase right
+//                setVX(1.2f);
+//                break;
+//            case InputController.CONTROL_FIRE: //shoot
+//                break;
+//            case InputController.CONTROL_MOVE_UP: //jump
+//                setVY(2);
+//                setVX(0);
+//                break;
+//            default: break;
+//        }
 
     }
 
@@ -115,11 +162,11 @@ public class MovingEnemy  extends Enemy{
      * Makes the Enemy jump if it has not done so in 60 ticks.
      */
     private void jump(){
-        System.out.println(ticks);
-        if(ticks % 60 != 0) return;
+//        System.out.println(ticks);
+        if(ticks % 20 != 0) return;
 
         this.vision.setDirection(.5f);
-        Vector2 imp = new Vector2(0, 3f);
+        Vector2 imp = new Vector2(0, 3);
         getBody().applyLinearImpulse(imp, getPosition(), true);
     }
 
@@ -129,7 +176,7 @@ public class MovingEnemy  extends Enemy{
      * */
     private void moveLeft(){
         //adjust force
-        this.vision.setDirection(-1);
+        this.vision.setDirection(0);
 
         //if we didn't need to clamp velocity, increase it.
         if(!ClampVelocity()) getBody().applyForceToCenter(-MOVEMENT_FORCE, 0, true);
@@ -141,7 +188,7 @@ public class MovingEnemy  extends Enemy{
      * */
     private void moveRight(){
         //adjust force
-        this.vision.setDirection(1);
+        this.vision.setDirection((float) Math.PI);
 
         //if we didn't need to clamp velocity, increase it.
         if(!ClampVelocity()) getBody().applyForceToCenter(MOVEMENT_FORCE, 0, true);

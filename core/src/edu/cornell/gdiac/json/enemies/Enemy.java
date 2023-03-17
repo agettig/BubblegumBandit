@@ -74,7 +74,7 @@ public abstract class Enemy extends CapsuleObstacle {
     /**
      * Whether this enemy is flipped
      */
-    private boolean isFlipped;
+    protected boolean isFlipped;
 
     /**
      * The y scale of this enemy (for flipping when gravity swaps)

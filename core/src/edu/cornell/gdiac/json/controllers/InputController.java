@@ -41,6 +41,6 @@ public interface InputController {
      *
      * @return the action of this ship
      */
-    public int getAction();
+    public int getAction(boolean isFlipped);
 }
 
