@@ -7,16 +7,16 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 public class GameCamera  extends OrthographicCamera {
     // CAMERA CONSTANTS
     /** The horizontal speed at which the camera converges on the target. */
-    private final float xSpeed = 3f;
+    private final float xSpeed = 4f;
 
     /** The vertical speed at which the camera converges on the target. */
-    private final float ySpeed = 3f;
+    private final float ySpeed = 4f;
 
     /** The weight of the secondary target */
     private final float secondaryWeight = 0.2f;
 
     /** Whether the secondary target is enabled */
-    private final boolean useSecondaryTarget = true;
+    private final boolean useSecondaryTarget = false;
 
     /** Defines how far the target y can be from the camera position y, as a proportion of the screen height. */
     private final float yClampFactor = 0.25f;
