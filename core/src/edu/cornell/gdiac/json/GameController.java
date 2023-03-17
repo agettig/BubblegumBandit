@@ -855,23 +855,11 @@ public class GameController implements Screen, ContactListener {
         TextureRegion projTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         float radius = projTexture.getRegionWidth() / (2.0f * level.getScale().x);
 
-        ProjectileModel p = new ProjectileModel(e.getX(), e.getY(), radius);
+        ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY(), radius, e.getFaceRight());
 
         //Physics Constants
-        p.setName(projJV.name());
-        p.setDensity(projJV.getFloat("density", 0));
         p.setDrawScale(level.getScale());
         p.setTexture(projTexture);
-        p.setGravityScale(0);
-        p.setBullet(true);
-
-        // set velocity
-        float vx = 10f;
-
-        if (!e.getFaceRight()) {
-            vx *= -1;
-        }
-        p.setVX(vx);
 
         projectiles.addToQueue(p);
         level.activate(p);
