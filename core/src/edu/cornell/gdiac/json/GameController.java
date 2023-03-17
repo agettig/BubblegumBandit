@@ -400,16 +400,14 @@ public class GameController implements Screen, ContactListener {
         }
 
 
+        projectiles.update();
 
         for (Enemy e : level.getEnemies()){
             e.update();
-
             // see if enemies can shoot
             // TODO: move this to AI controller
             if (e.canFire()){
                 fireWeapon(e);
-//                System.out.println("pew pew");
-//                e.coolDown(false);
             } else {
                 e.coolDown(true);
             }
@@ -680,6 +678,7 @@ public class GameController implements Screen, ContactListener {
         if(bubblegumController.gumLimitReached()) return;
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
+//        JsonValue gumJV = levelFormat.get("projectile");
         PlayerModel avatar = level.getAvatar();
 
         Vector2 origin = level.getProjOrigin(gumJV, canvas);
@@ -845,61 +844,38 @@ public class GameController implements Screen, ContactListener {
     /**
      * Creates Projectiles and updates the ship's cooldown.
      *
-     * TODO: Move this elsewhere
+     * TODO: Move this elsewhere once it works
      * @param e The enemy that is firing
      */
     private void fireWeapon(Enemy e){
+
+        JsonValue projJV = levelFormat.get("projectile");
+
+        String key = projJV.get("texture").asString();
+        TextureRegion projTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+        float radius = projTexture.getRegionWidth() / (2.0f * level.getScale().x);
+
+        ProjectileModel p = new ProjectileModel(e.getX(), e.getY(), radius);
+
+        //Physics Constants
+        p.setName(projJV.name());
+        p.setDensity(projJV.getFloat("density", 0));
+        p.setDrawScale(level.getScale());
+        p.setTexture(projTexture);
+        p.setGravityScale(0);
+        p.setBullet(true);
+
+        // set velocity
         float vx = 10f;
 
         if (!e.getFaceRight()) {
             vx *= -1;
         }
+        p.setVX(vx);
 
-        System.out.println("pew pew");
-//        projectiles.allocate(e.getX(), e.getY(), vx, 0);
+        projectiles.addToQueue(p);
+        level.activate(p);
         e.coolDown(false);
-//
-//
-//        JsonValue gumJV = levelFormat.get("gumProjectile");
-////        PlayerModel avatar = level.getAvatar();
-//
-//        Vector2 origin = level.getProjOrigin(gumJV, canvas);
-////        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-//        Vector2 vel = new Vector2(vx, 0);
-//        vel.nor();
-//
-//        String key = gumJV.get("texture").asString();
-//        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-//        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
-
-//        Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
-//
-//        // Physics properties
-//        gum.setName(gumJV.name());
-//        gum.setDensity(gumJV.getFloat("density", 0));
-//        gum.setDrawScale(level.getScale());
-//        gum.setTexture(gumTexture);
-//        gum.setBullet(true);
-//        gum.setGravityScale(gumGravity);
-
-//        bubblegumController.addNewBubblegum(gum);
-
-
-
-//        projectiles.activatePhysics(gumJV.name(),gumJV.getFloat("density", 0),level.getScale(), gumTexture, gumGravity );
-
-        // Compute position and velocity
-//        if (gumSpeed == 0) { // Use default gum speed
-//            gumVel.scl(gumJV.getFloat("speed", 0));
-//        } else { // Use slider gum speed
-//            gumVel.scl(gumSpeed);
-//        }
-//        gum.setVX(gumVel.x);
-//        gum.setVY(gumVel.y);
-
-
-
-//        level.activate(projectiles.lastadded());
 
     }
 }

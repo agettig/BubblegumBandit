@@ -16,29 +16,28 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     /** Marks whether this projectile is still alive */
     private boolean alive;
 
-    /**
-     * Creates an empty Projectile.
-     *
-     * This constructor is used in memory allocation.
-     */
-    public ProjectileModel(){
-        super(0, 0, 0);
-        this.setRadius(radius);
-        alive = false;
-    }
+//    /**
+//     * Creates an empty Projectile.
+//     *
+//     * This constructor is used in memory allocation.
+//     */
+//    public ProjectileModel(){
+//        super(0, 0, 0);
+//        this.setRadius(radius);
+//        alive = false;
+//
+//        //physics attributes
+//        this.setBullet(true);
+//    }
 
     /**
-     * "Allocates" a new photon with the given attributes. Should only be called by ProjectilePool.
+     * Creates a new projectile with the given attributes. Should only be called by ProjectilePool.
      *
      * @param x  The initial x-coordinate of the photon
      * @param y  The initial y-coordinate of the photon
-     * @param vx The x-value of the photon velocity
-     * @param vy The y-value of the photon velocity
      */
-    public void set(float x, float y, float vx, float vy){
-        this.setPosition(x, y);
-        Vector2 vel = new Vector2(vx, vy);
-        this.setLinearVelocity(vel);
+    public ProjectileModel(float x, float y, float radius){
+        super(x, y, radius);
     }
 
     /**
