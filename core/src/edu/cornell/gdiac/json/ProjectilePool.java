@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.json;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import java.util.Iterator;
@@ -97,6 +99,19 @@ public class ProjectilePool{
     public void destroy(ProjectileModel p) {
         p.destroy();
         size--;
+    }
+
+
+    /** Applies physics properties most recently added projectile
+     *
+     * must be called directly after allocate
+     * */
+    public void activatePhysics(String name, float density, Vector2 scale, TextureRegion texture, float gravity){
+        queue[tail].activatePhysics(name, density,scale, texture, gravity);
+    }
+
+    public ProjectileModel lastadded(){
+        return queue[tail];
     }
 
 }

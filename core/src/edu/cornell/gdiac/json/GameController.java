@@ -136,6 +136,10 @@ public class GameController implements Screen, ContactListener {
      */
     private BubblegumController bubblegumController;
 
+
+    /** A collection of the active projectiles on screen */
+    private ProjectilePool projectiles;
+
     /**
      * Queue of gum joints
      */
@@ -253,6 +257,7 @@ public class GameController implements Screen, ContactListener {
         sensorFixtures = new ObjectSet<Fixture>();
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
+//        projectiles = new ProjectilePool();
 
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -396,7 +401,19 @@ public class GameController implements Screen, ContactListener {
 
 
 
-        for (Enemy e : level.getEnemies()) e.update();
+        for (Enemy e : level.getEnemies()){
+            e.update();
+
+            // see if enemies can shoot
+            // TODO: move this to AI controller
+            if (e.canFire()){
+//                fireWeapon(e);
+                System.out.println("pew pew");
+                e.coolDown(false);
+            } else {
+                e.coolDown(true);
+            }
+        }
 
 
         if (InputController.getInstance().didShoot()) {
@@ -821,6 +838,62 @@ public class GameController implements Screen, ContactListener {
             }
 
         }
+
+    }
+
+
+    /**
+     * Creates Projectiles and updates the ship's cooldown.
+     *
+     * TODO: Move this elsewhere
+     * @param e The enemy that is firing
+     */
+    private void fireWeapon(Enemy e){
+        float vx = 10f;
+
+        if (!e.getFaceRight()) {
+            vx *= -1;
+        }
+
+        System.out.println("pew pew");
+        projectiles.allocate(e.getX(), e.getY(), vx, 0);
+        e.coolDown(false);
+
+
+        JsonValue gumJV = levelFormat.get("gumProjectile");
+//        PlayerModel avatar = level.getAvatar();
+
+        Vector2 origin = level.getProjOrigin(gumJV, canvas);
+//        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+        Vector2 vel = new Vector2(vx, 0);
+        vel.nor();
+
+        String key = gumJV.get("texture").asString();
+        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
+
+//        Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
+//
+//        // Physics properties
+//        gum.setName(gumJV.name());
+//        gum.setDensity(gumJV.getFloat("density", 0));
+//        gum.setDrawScale(level.getScale());
+//        gum.setTexture(gumTexture);
+//        gum.setBullet(true);
+//        gum.setGravityScale(gumGravity);
+
+//        bubblegumController.addNewBubblegum(gum);
+        projectiles.activatePhysics(gumJV.name(),gumJV.getFloat("density", 0),level.getScale(), gumTexture, gumGravity );
+
+        // Compute position and velocity
+//        if (gumSpeed == 0) { // Use default gum speed
+//            gumVel.scl(gumJV.getFloat("speed", 0));
+//        } else { // Use slider gum speed
+//            gumVel.scl(gumSpeed);
+//        }
+//        gum.setVX(gumVel.x);
+//        gum.setVY(gumVel.y);
+        level.activate(projectiles.lastadded());
 
     }
 }
