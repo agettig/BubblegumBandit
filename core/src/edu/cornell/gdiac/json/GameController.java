@@ -28,6 +28,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.gum.BubblegumController;
+import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
@@ -38,6 +39,8 @@ import edu.cornell.gdiac.json.gum.Bubblegum;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import java.util.ArrayList;
 
 import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
@@ -62,6 +65,9 @@ public class GameController implements Screen, ContactListener {
      * The font for giving messages to the player
      */
     protected BitmapFont displayFont;
+
+    /**The font for showing how much gum is left */
+    private BitmapFont counterFont;
     /**
      * The JSON defining the level model
      */
@@ -286,12 +292,14 @@ public class GameController implements Screen, ContactListener {
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
+        counterFont = directory.getEntry("times", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
         TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+        bubblegumController.initialize(levelFormat.get("gumProjectile"));
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
     }
 
@@ -377,6 +385,7 @@ public class GameController implements Screen, ContactListener {
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.applyForce();
 
+
         if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
@@ -394,7 +403,9 @@ public class GameController implements Screen, ContactListener {
             // Bubblegum.collectGum(level.getWorld());
         }
 
-
+        if (InputController.getInstance().didReset()) {
+            bubblegumController.resetMAX_GUM();
+        }
 
         for (Enemy e : level.getEnemies()) e.update();
 
@@ -432,6 +443,10 @@ public class GameController implements Screen, ContactListener {
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
 
+        canvas.begin();
+        String message = "Gum left: " + bubblegumController.getMAX_GUM();
+        canvas.drawText(message, counterFont, 5f, canvas.getHeight()-5f);
+        canvas.end();
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
@@ -550,6 +565,7 @@ public class GameController implements Screen, ContactListener {
 
             PlayerModel avatar = level.getAvatar();
             BoxObstacle door = level.getExit();
+            FloatingGum[] floatingGum = level.getFloatingGum();
 
             // See if we have landed on the ground.
             if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
@@ -562,6 +578,19 @@ public class GameController implements Screen, ContactListener {
             if ((bd1 == avatar && bd2 == door) ||
                     (bd1 == door && bd2 == avatar)) {
                 setComplete(true);
+            }
+
+            //collect floating gum
+            //counter double counts if gum is not marked as collected
+            for (FloatingGum gum : floatingGum) {
+                if (bd1 == gum && bd2 == avatar && !gum.getCollected()) {
+                    collectGum(bd1);
+                    gum.setCollected(true);
+                }
+                else if (bd2 == gum && bd1 == avatar && !gum.getCollected()) {
+                    collectGum(bd2);
+                    gum.setCollected(true);
+                }
             }
 
             // Check for gum collision
@@ -661,6 +690,7 @@ public class GameController implements Screen, ContactListener {
     private void createGumProjectile(Vector2 target) {
 
         if(bubblegumController.gumLimitReached()) return;
+        bubblegumController.reduceMAX_GUM();
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
@@ -719,6 +749,11 @@ public class GameController implements Screen, ContactListener {
                 o.getName().equals("gumProjectile");
     }
 
+    /** Collects floating gum */
+    private void collectGum(Obstacle bd1) {
+        bd1.markRemoved(true);
+        bubblegumController.increaseMAX_GUM();
+    }
     /**
      * Handles a gum projectile's collision in the Box2D world.
      * <p>
@@ -732,6 +767,8 @@ public class GameController implements Screen, ContactListener {
 
         //Safety check.
         if (bd1 == null || bd2 == null) return;
+        if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
+        if (bd1.getName().equals("floatingGums") || bd2.getName().equals("floatingGums")) return;
 
         if (isGumObstacle(bd1)) {
             Bubblegum gum = (Bubblegum) bd1;

@@ -15,8 +15,6 @@
 
 package edu.cornell.gdiac.json;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,14 +23,18 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.json.gum.FloatingGum;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -82,6 +84,9 @@ public class LevelModel {
      * Reference to the goalDoor (for collision detection)
      */
     private ExitModel goalDoor;
+
+    /**Reference to floating gum in the game, to be collected */
+    private FloatingGum[] floatingGum;
 
     /**
      * Whether or not the level is in debug more (showing off physics)
@@ -206,8 +211,8 @@ public class LevelModel {
         goalDoor.setDrawScale(scale);
         activate(goalDoor);
 
-        String key = levelFormat.get("background").asString();
-        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        String key2 = levelFormat.get("background").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key2, Texture.class));
         background = texture;
 
         JsonValue wall = levelFormat.get("walls").child();
@@ -250,6 +255,24 @@ public class LevelModel {
             enemies[i] = a;
             activate(a);
             enemy = enemy.next();
+        }
+
+        // get number of floating gums
+        int numGums = levelFormat.get("floatingGums").get("numGums").asInt();
+        JsonValue position = levelFormat.get("floatingGums").get("positions").child();
+        floatingGum = new FloatingGum[numGums];
+
+        // json of gums
+        JsonValue gums = levelFormat.get("floatingGums");
+
+        for (int i = 0; i < numGums; i++) {
+            FloatingGum gum = new FloatingGum();
+            gum.initialize(directory, gums);
+            gum.setPosition(position);
+            gum.setDrawScale(scale);
+            activate(gum);
+            floatingGum[i] = gum;
+            position = position.next();
         }
 
 
@@ -484,7 +507,7 @@ public class LevelModel {
 
     }
 
-
+    public FloatingGum[] getFloatingGum() {return floatingGum; }
 
     public Enemy[] getEnemies() {
         return enemies;
