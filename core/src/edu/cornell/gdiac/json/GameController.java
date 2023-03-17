@@ -257,7 +257,7 @@ public class GameController implements Screen, ContactListener {
         sensorFixtures = new ObjectSet<Fixture>();
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
-//        projectiles = new ProjectilePool();
+        projectiles = new ProjectilePool();
 
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -407,9 +407,9 @@ public class GameController implements Screen, ContactListener {
             // see if enemies can shoot
             // TODO: move this to AI controller
             if (e.canFire()){
-//                fireWeapon(e);
-                System.out.println("pew pew");
-                e.coolDown(false);
+                fireWeapon(e);
+//                System.out.println("pew pew");
+//                e.coolDown(false);
             } else {
                 e.coolDown(true);
             }
@@ -856,21 +856,21 @@ public class GameController implements Screen, ContactListener {
         }
 
         System.out.println("pew pew");
-        projectiles.allocate(e.getX(), e.getY(), vx, 0);
+//        projectiles.allocate(e.getX(), e.getY(), vx, 0);
         e.coolDown(false);
-
-
-        JsonValue gumJV = levelFormat.get("gumProjectile");
-//        PlayerModel avatar = level.getAvatar();
-
-        Vector2 origin = level.getProjOrigin(gumJV, canvas);
-//        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-        Vector2 vel = new Vector2(vx, 0);
-        vel.nor();
-
-        String key = gumJV.get("texture").asString();
-        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
+//
+//
+//        JsonValue gumJV = levelFormat.get("gumProjectile");
+////        PlayerModel avatar = level.getAvatar();
+//
+//        Vector2 origin = level.getProjOrigin(gumJV, canvas);
+////        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+//        Vector2 vel = new Vector2(vx, 0);
+//        vel.nor();
+//
+//        String key = gumJV.get("texture").asString();
+//        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+//        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
 
 //        Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
 //
@@ -883,7 +883,10 @@ public class GameController implements Screen, ContactListener {
 //        gum.setGravityScale(gumGravity);
 
 //        bubblegumController.addNewBubblegum(gum);
-        projectiles.activatePhysics(gumJV.name(),gumJV.getFloat("density", 0),level.getScale(), gumTexture, gumGravity );
+
+
+
+//        projectiles.activatePhysics(gumJV.name(),gumJV.getFloat("density", 0),level.getScale(), gumTexture, gumGravity );
 
         // Compute position and velocity
 //        if (gumSpeed == 0) { // Use default gum speed
@@ -893,7 +896,10 @@ public class GameController implements Screen, ContactListener {
 //        }
 //        gum.setVX(gumVel.x);
 //        gum.setVY(gumVel.y);
-        level.activate(projectiles.lastadded());
+
+
+
+//        level.activate(projectiles.lastadded());
 
     }
 }
