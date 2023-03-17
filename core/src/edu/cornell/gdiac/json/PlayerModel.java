@@ -76,6 +76,10 @@ public class PlayerModel extends CapsuleObstacle {
 	/** Cache for flipping player orientation */
 	private float angle;
 
+	public boolean isFlipped() {
+		return isFlipped;
+	}
+
 	/** Whether this player is flipped */
 	private boolean isFlipped;
 

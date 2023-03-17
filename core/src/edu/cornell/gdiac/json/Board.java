@@ -29,6 +29,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 
@@ -39,7 +40,7 @@ import static edu.cornell.gdiac.json.controllers.InputController.*;
 
 /**
  * Class represents a 2D grid of tiles.
- *
+ * <p>
  * Most of the work is done by the internal Tile class.  The outer class is
  * really just a container.
  */
@@ -53,9 +54,13 @@ public class Board {
      */
     private static class TileState {
 
-        /** Is this a goal tiles */
+        /**
+         * Is this a goal tiles
+         */
         public boolean goal = false;
-        /** Has this tile been visited (used for pathfinding)? */
+        /**
+         * Has this tile been visited (used for pathfinding)?
+         */
         public boolean visited = false;
 
         public int value;
@@ -64,64 +69,70 @@ public class Board {
 
     // Constants
 
-    private static final Color BASIC_COLOR = new Color(0.25f, 0.25f, 0.25f, 0.5f);
-    /** Highlight color for power tiles */
-    private static final Color POWER_COLOR = new Color( 0.0f,  1.0f,  1.0f, 0.5f);
+    private static final int GRAVITY_DOWN_TILE = 1;
+
+    private static final int GRAVITY_UP_TILE = 2;
+
+    private static final int BOTH_GRAVITY_TILE = 3;
+
+    private Queue<Vector3> queue = new Queue<>();
+
 
     private TileState[][] tiles;
 
     // Instance attributes
-    /** The board width (in number of tiles) */
+    /**
+     * The board width (in number of tiles)
+     */
     private int width;
-    /** The board height (in number of tiles) */
-    private int height;
-
-    private float tileSize =25f;
+    /**
+     * The board height (in number of tiles)
+     */
+    private int length;
 
     /**
      * Creates a new board of the given size
      *
-     * @param width Board width in tiles
-     * @param height Board height in tiles
+     * @param boardJson json representation of board
      */
-    public Board(int width, int height, JsonValue board) {
-        this.width = width;
-        this.height = height;
-        JsonValue row = board.child;
-        tiles = new TileState[height][width];
-        for (int i= 0; i < height; i++) {
+    public Board(JsonValue boardJson) {
+        this.width = boardJson.getInt("width");
+        this.length = boardJson.getInt("length");
+        JsonValue row = boardJson.get("values").child;
+        tiles = new TileState[length][width];
+        for (int i = 0; i < length; i++) {
             int[] rowVals = row.asIntArray();
-            for (int j = 0; j < width; j++){
+            for (int j = 0; j < width; j++) {
                 TileState tile = new TileState();
                 tile.value = rowVals[j];
                 tiles[i][j] = tile;
             }
             row = row.next;
         }
-        resetTiles();
     }
 
 
     /**
      * Mark all desirable tiles to move to.
-     *
+     * <p>
      * This method implements pathfinding through the use of goal tiles.
      * It searches for all desirable tiles to move to (there may be more than
      * one), and marks each one as a goal. Then, the pathfinding method
      * getMoveAlongPathToGoalTile() moves the ship towards the closest one.
-     *
+     * <p>
      * POSTCONDITION: There is guaranteed to be at least one goal tile
      * when completed.
      */
-    public int getMoveAlongPathToGoalTile(Vector2 startPos, Vector2 targetPos, boolean gravityFlipped) {
+    public int getMoveAlongPathToGoalTile(Vector2 startPos, boolean gravityFlipped) {
         //#region PUT YOUR CODE HERE
 
+        queue.clear();
         int x = (int) startPos.x;
         int y = (int) startPos.y;
-        int capacity = 16;
-        Queue<Vector3> queue = new Queue<>();
-        queue.addLast(new Vector3(startPos.x, startPos.y, CONTROL_NO_ACTION));
-        setVisited((int)startPos.x, (int)startPos.y);
+
+        if (!isValidMove(x, y, gravityFlipped)) return CONTROL_NO_ACTION;
+        queue.addLast(new Vector3(x, y, CONTROL_NO_ACTION));
+        setVisited(x, y);
 
         Vector3 tile;
         int xCoor, yCoor, direction;
@@ -132,6 +143,7 @@ public class Board {
         directions.add(CONTROL_MOVE_RIGHT);
         directions.add(CONTROL_MOVE_DOWN);
 
+
         while (queue.notEmpty()) {
 
             tile = queue.removeFirst();
@@ -139,6 +151,9 @@ public class Board {
             y = (int) tile.y;
 
             if (isGoal(x, y)) {
+                if ((gravityFlipped && tile.z == CONTROL_MOVE_UP) || (!gravityFlipped && tile.z == CONTROL_MOVE_DOWN)) {
+                    return CONTROL_NO_ACTION;
+                }
                 return (int) tile.z;
             }
 
@@ -153,10 +168,7 @@ public class Board {
                     direction = (int) tile.z;
                 }
 
-                if (inBounds(xCoor, yCoor) && !isVisited(xCoor, yCoor)) {
-                    // double queue capacity if queue is full
-                    if (queue.size > capacity) queue.ensureCapacity(capacity);
-                    capacity *= 2;
+                if (!isVisited(xCoor, yCoor) && isValidMove(xCoor, yCoor, gravityFlipped)) {
                     queue.addLast(new Vector3(xCoor, yCoor, direction));
                     setVisited(xCoor, yCoor);
                 }
@@ -164,7 +176,7 @@ public class Board {
 
         }
 
-        return CONTROL_MOVE_LEFT;
+        return CONTROL_NO_ACTION;
     }
 
     /**
@@ -191,9 +203,9 @@ public class Board {
      */
     private int getNeighborY(int direction, int y) {
         if (direction == CONTROL_MOVE_UP) {
-            return y - 1;
-        } else if (direction == CONTROL_MOVE_DOWN) {
             return y + 1;
+        } else if (direction == CONTROL_MOVE_DOWN) {
+            return y - 1;
         }
         return y;
     }
@@ -202,7 +214,7 @@ public class Board {
      * Resets the values of all the tiles on screen.
      */
     public void resetTiles() {
-        for (int x = 0; x < height; x++) {
+        for (int x = 0; x < length; x++) {
             for (int y = 0; y < width; y++) {
                 TileState tile = tiles[x][y];
                 tile.goal = false;
@@ -225,47 +237,9 @@ public class Board {
      *
      * @return the number of tiles vertically across the board.
      */
-    public int getHeight() {
-        return height;
+    public int getLength() {
+        return length;
     }
-
-    // METHODS FOR LAB 2
-
-    // CONVERSION METHODS (OPTIONAL)
-    // Use these methods to convert between tile coordinates (int) and
-    // world coordinates (float).
-
-    /**
-     * Returns the board cell index for a screen position.
-     *
-     * While all positions are 2-dimensional, the dimensions to
-     * the board are symmetric. This allows us to use the same
-     * method to convert an x coordinate or a y coordinate to
-     * a cell index.
-     *
-     * @param f Screen position coordinate
-     *
-     * @return the board cell index for a screen position.
-     */
-    public int screenToBoard(float f) {
-        return (int)(f / tileSize);
-    }
-
-//    /**
-//     * Returns the screen position coordinate for a board cell index.
-//     *
-//     * While all positions are 2-dimensional, the dimensions to
-//     * the board are symmetric. This allows us to use the same
-//     * method to convert an x coordinate or a y coordinate to
-//     * a cell index.
-//     *
-//     * @param n Tile cell index
-//     *
-//     * @return the screen position coordinate for a board cell index.
-//     */
-//    public float boardToScreen(int n) {
-//        return (float) (n + 0.5f) * (getTileSize());
-//    }
 
 
     // PATHFINDING METHODS (REQUIRED)
@@ -273,26 +247,24 @@ public class Board {
 
     /**
      * Returns true if the given position is a valid tile
-     *
+     * <p>
      * It does not check whether the tile is live or not.  Dead tiles are still valid.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the given position is a valid tile
      */
     public boolean inBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < height && y < width;
+        return x >= 0 && y >= 0 && x < length && y < width;
     }
 
     /**
      * Returns true if the tile has been visited.
-     *
+     * <p>
      * A tile position that is not on the board will always evaluate to false.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the tile has been visited.
      */
     public boolean isVisited(int x, int y) {
@@ -305,15 +277,15 @@ public class Board {
 
     /**
      * Marks a tile as visited.
-     *
+     * <p>
      * A marked tile will return true for isVisited(), until a call to clearMarks().
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
     public void setVisited(int x, int y) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         tiles[x][y].visited = true;
@@ -321,12 +293,11 @@ public class Board {
 
     /**
      * Returns true if the tile is a goal.
-     *
+     * <p>
      * A tile position that is not on the board will always evaluate to false.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the tile is a goal.
      */
     public boolean isGoal(int x, int y) {
@@ -339,32 +310,53 @@ public class Board {
 
     /**
      * Marks a tile as a goal.
-     *
+     * <p>
      * A marked tile will return true for isGoal(), until a call to clearMarks().
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
     public void setGoal(int x, int y) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         tiles[x][y].goal = true;
     }
 
-    /**
-     * Clears all marks on the board.
-     *
-     * This method should be done at the beginning of any pathfinding round.
-     */
-    public void clearMarks() {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                TileState state = tiles[x][y];
-                state.visited = false;
-                state.goal = false;
+    private boolean isValidMove(int x, int y, boolean isGravityFipped) {
+        int val = tiles[x][y].value;
+        if (val == BOTH_GRAVITY_TILE) return true;
+        if (isGravityFipped) {
+            if (val == GRAVITY_UP_TILE) return true;
+        } else if (val == GRAVITY_DOWN_TILE) return true;
+        return false;
+    }
+
+    public void drawBoard(GameCanvas canvas) {
+        PolygonShape s = new PolygonShape();
+        s.setAsBox(20, 20);
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                int val = tiles[i][j].value;
+                if (val != 0) {
+                    Color x;
+                    if (val == 1) x = Color.BLUE;
+                    else if (val == 2) {
+                        x = Color.RED;
+                    } else {
+                        x = Color.GREEN;
+                    }
+                    canvas.drawPhysics(s, x, i * 50 + 25, j * 50 + 25);
+                }
             }
         }
     }
+
+    public float centerOffset(float f) {
+        int tile = (int) f;
+        float nearestCenter = tile + .5f;
+        return f - nearestCenter;
+    }
+
 }

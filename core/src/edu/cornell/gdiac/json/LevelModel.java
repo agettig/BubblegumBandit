@@ -17,7 +17,6 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -28,7 +27,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
-import edu.cornell.gdiac.json.enemies.EnemyController;
+import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -101,14 +100,14 @@ public class LevelModel {
      */
     private Enemy[] enemies;
 
-    public EnemyController[] getEnemyControllers() {
-        return enemyControllers;
+    public AIController[] getEnemyControllers() {
+        return AIControllers;
     }
 
     /**
      * All enemy controllers in the world
      */
-    private EnemyController[] enemyControllers;
+    private AIController[] AIControllers;
 
     private Board board;
 
@@ -197,6 +196,10 @@ public class LevelModel {
         debug = false;
     }
 
+    public Board getBoard() {
+        return board;
+    }
+
     /**
      * Lays out the game geography from the given JSON file
      *
@@ -246,7 +249,7 @@ public class LevelModel {
 
         // initialize enemies list
         enemies = new Enemy[numEnemies];
-        enemyControllers = new EnemyController[numEnemies];
+        AIControllers = new AIController[numEnemies];
 
         // json of enemy
         JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
@@ -258,7 +261,7 @@ public class LevelModel {
         avatar.setDrawScale(scale);
         activate(avatar);
 
-        board = new Board(16, 12, levelFormat.get("board"));
+        board = new Board (levelFormat.get("board"));
 
         // initialize each enemy
         for (int i = 0; i < numEnemies; i++) {
@@ -273,7 +276,7 @@ public class LevelModel {
             enemies[i] = a;
             activate(a);
             enemy = enemy.next();
-            enemyControllers[i] = new EnemyController(a, avatar, board);
+            AIControllers[i] = new AIController(a, avatar, board);
         }
 
 
@@ -471,12 +474,12 @@ public class LevelModel {
         PolygonShape s = new PolygonShape();
         s.setAsBox(400, .5f);
 
-        for (int i = 25; i < 800; i+=25){
+        for (int i = 50; i < 800; i+=50){
             canvas.drawPhysics(s, Color.BLACK, 400, i);
         }
         s.setAsBox(.5f, 300);
 
-        for (int i = 25; i < 800; i+=25){
+        for (int i = 50; i < 800; i+=50){
             canvas.drawPhysics(s, Color.BLACK, i, 300);
         }
     }
@@ -513,7 +516,8 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
-            drawGrid(canvas);
+//            drawGrid(canvas);
+            board.drawBoard(canvas);
             canvas.endDebug();
 
         }
