@@ -4,9 +4,12 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.math.*;
 
 
 import javax.print.attribute.standard.JobImpressionsSupported;
+import java.lang.reflect.Array;
 
 public class CollisionController {
 
@@ -45,6 +48,19 @@ public class CollisionController {
             //Stick logic.
         }
     }
+
+
+    /**
+     * This is the main collision handling method
+     */
+    public void resolveCollisions(Obstacle o1, Obstacle o2){
+        //TODO: implement obstacleType so we can pattern match like in the optimization lab?
+    }
+
+
+
+
+
 
 
 

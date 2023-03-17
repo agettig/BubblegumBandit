@@ -399,7 +399,7 @@ public class GameController implements Screen, ContactListener {
             // Bubblegum.collectGum(level.getWorld());
         }
 
-
+//        projectiles.update(level.getWorld());
         projectiles.update();
 
         for (Enemy e : level.getEnemies()){
@@ -428,6 +428,20 @@ public class GameController implements Screen, ContactListener {
 
         // Add all of the pending joints to the world.
         addJointsToWorld();
+    }
+
+    /**
+     * Processes physics
+     *
+     * Once the update phase is over, but before we draw, we are ready to handle
+     * physics.  The primary method is the step() method in world.  This implementation
+     * works for all applications and should not need to be overwritten.
+     *
+     * @param dt	Number of seconds since last animation frame
+     */
+    public void postUpdate(float dt) {
+
+
     }
 
 
@@ -486,6 +500,7 @@ public class GameController implements Screen, ContactListener {
         if (active) {
             if (preUpdate(delta)) {
                 update(delta);
+                postUpdate(delta);
             }
             draw(delta);
         }
@@ -583,6 +598,19 @@ public class GameController implements Screen, ContactListener {
             resolveGumCollision(bd1, bd2);
 
             // TODO: Gum interactions
+
+            // Projectile Interactions
+            // Test bullet collision with world
+            if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
+                ((ProjectileModel) bd1).destroy();
+            }
+
+            if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
+                ((ProjectileModel) bd2).destroy();
+            }
+
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
