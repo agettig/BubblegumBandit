@@ -82,10 +82,6 @@ public class LevelModel {
      * Reference to the goalDoor (for collision detection)
      */
     private ExitModel goalDoor;
-
-    /** Projectile Pool model */
-    private ProjectilePool projectiles;
-
     /**
      * Whether or not the level is in debug more (showing off physics)
      */
@@ -262,10 +258,6 @@ public class LevelModel {
         avatar.initialize(directory, levelFormat.get("avatar"));
         avatar.setDrawScale(scale);
         activate(avatar);
-
-
-        // initialize projectile pool
-        projectiles = new ProjectilePool();
     }
 
 
