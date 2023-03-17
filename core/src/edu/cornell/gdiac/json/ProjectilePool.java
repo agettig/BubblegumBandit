@@ -60,9 +60,14 @@ public class ProjectilePool{
         // Remove dead projectiles
         while (queue.notEmpty() && !queue.first().isAlive()) {
             queue.removeFirst();
-//            ProjectileModel dead = queue.removeFirst();
-//            dead.deactivatePhysics(world);
         }
+        System.out.println(queue.size);
+    }
+
+
+    /** Clears all projectiles from the queue */
+    public void reset(){
+        queue.clear();
     }
 
 

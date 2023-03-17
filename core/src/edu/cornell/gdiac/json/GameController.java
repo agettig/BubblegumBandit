@@ -308,6 +308,8 @@ public class GameController implements Screen, ContactListener {
      */
     public void reset() {
         bubblegumController.resetAllBubblegum();
+        projectiles.reset();
+
         level.dispose();
 
         setComplete(false);
@@ -431,22 +433,6 @@ public class GameController implements Screen, ContactListener {
     }
 
     /**
-     * Processes physics
-     *
-     * Once the update phase is over, but before we draw, we are ready to handle
-     * physics.  The primary method is the step() method in world.  This implementation
-     * works for all applications and should not need to be overwritten.
-     *
-     * @param dt	Number of seconds since last animation frame
-     */
-    public void postUpdate(float dt) {
-
-
-    }
-
-
-
-    /**
      * Draw the physics objects to the canvas
      * <p>
      * For simple worlds, this method is enough by itself.  It will need
@@ -500,7 +486,6 @@ public class GameController implements Screen, ContactListener {
         if (active) {
             if (preUpdate(delta)) {
                 update(delta);
-                postUpdate(delta);
             }
             draw(delta);
         }

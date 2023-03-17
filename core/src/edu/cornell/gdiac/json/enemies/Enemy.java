@@ -89,6 +89,9 @@ public abstract class Enemy extends CapsuleObstacle {
     /** The number of frames until we can fire again */
     private int firecool;
 
+    /** Whether this enemy is currently firing */
+    private boolean firing = false;
+
     // endRegion
 
     /**
@@ -403,10 +406,19 @@ public abstract class Enemy extends CapsuleObstacle {
     }
 
      /**
-     * @return whether this robot can fire its weapon.
+     * @return whether this robot can fire its weapon and is actively firing.
      */
     public boolean canFire() {
-        return firecool <= 0;
+        return firing && firecool <= 0;
+    }
+
+    /**
+     * Sets whether the robot is actively firing.
+     *
+     * @param value whether the robot is actively firing.
+     */
+    public void setFiring(boolean value) {
+        firing = value;
     }
 
     /**
