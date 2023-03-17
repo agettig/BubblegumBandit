@@ -423,7 +423,7 @@ public abstract class Enemy extends CapsuleObstacle {
         } else if (!flag) {
             firecool = COOLDOWN;
         }
-        System.out.println(firecool);
+//        System.out.println(firecool);
     }
 
 
