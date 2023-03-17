@@ -2,6 +2,7 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
@@ -16,19 +17,11 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     /** Marks whether this projectile is still alive */
     private boolean alive;
 
-//    /**
-//     * Creates an empty Projectile.
-//     *
-//     * This constructor is used in memory allocation.
-//     */
-//    public ProjectileModel(){
-//        super(0, 0, 0);
-//        this.setRadius(radius);
-//        alive = false;
-//
-//        //physics attributes
-//        this.setBullet(true);
-//    }
+    /** Gravity scale of bullets */
+    private float gravity = 0;
+
+    /** Speed that bullets move */
+    private float speed = 10;
 
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectilePool.
@@ -36,8 +29,15 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
      * @param x  The initial x-coordinate of the photon
      * @param y  The initial y-coordinate of the photon
      */
-    public ProjectileModel(float x, float y, float radius){
+    public ProjectileModel(JsonValue data, float x, float y, float radius, boolean direction){
         super(x, y, radius);
+        activatePhysics(data);
+
+        //set velocity
+        if (direction)
+            this.setVX(speed);
+        else
+            this.setVX(-speed);
     }
 
     /**
@@ -71,13 +71,13 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
         alive = false;
     }
 
-//    /** Applies physics properties to this projectile */
-//    public void activatePhysics(String name, float density, Vector2 scale, TextureRegion texture, float gravity){
-//        this.setName(name);
-//        this.setDensity(density);
+    /** Applies physics properties to this projectile */
+    private void activatePhysics(JsonValue data){
+        this.setName(data.name());
+        this.setDensity(data.getFloat("density", 0));
 //        this.setDrawScale(scale);
 //        this.setTexture(texture);
-//        this.setBullet(true);
-//        this.setGravityScale(gravity);
-//    }
+        this.setBullet(true);
+        this.setGravityScale(gravity);
+    }
 }
