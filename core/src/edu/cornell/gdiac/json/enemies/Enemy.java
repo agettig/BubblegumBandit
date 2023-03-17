@@ -314,6 +314,9 @@ public abstract class Enemy extends CapsuleObstacle {
             yScale -= 0.1f;
         }
         updateVision();
+
+
+
     }
 
     /**
@@ -420,6 +423,7 @@ public abstract class Enemy extends CapsuleObstacle {
         } else if (!flag) {
             firecool = COOLDOWN;
         }
+        System.out.println(firecool);
     }
 
 

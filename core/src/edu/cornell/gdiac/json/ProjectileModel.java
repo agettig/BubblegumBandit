@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
@@ -58,5 +59,15 @@ public class ProjectileModel extends WheelObstacle {
      */
     public boolean isAlive() {
         return !dirty;
+    }
+
+    /** Applies physics properties to this projectile */
+    public void activatePhysics(String name, float density, Vector2 scale, TextureRegion texture, float gravity){
+        this.setName(name);
+        this.setDensity(density);
+        this.setDrawScale(scale);
+        this.setTexture(texture);
+        this.setBullet(true);
+        this.setGravityScale(gravity);
     }
 }
