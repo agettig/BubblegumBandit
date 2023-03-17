@@ -32,6 +32,7 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     public ProjectileModel(JsonValue data, float x, float y, float radius, boolean direction){
         super(x, y, radius);
         activatePhysics(data);
+        alive = true;
 
         //set velocity
         if (direction)
@@ -79,5 +80,17 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
 //        this.setTexture(texture);
         this.setBullet(true);
         this.setGravityScale(gravity);
+    }
+
+
+    /**
+     * Returns whether this projectile should be removed.
+     *
+     * Dead photons are not drawn, and are not processed in collision detection.
+     *
+     * @return whether this projectile is still alive.
+     */
+    public boolean isRemoved() {
+        return !alive;
     }
 }
