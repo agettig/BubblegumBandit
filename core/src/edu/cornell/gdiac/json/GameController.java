@@ -391,7 +391,7 @@ public class GameController implements Screen, ContactListener {
 
         if(InputController.getInstance().didCollect()){
             // Commented out because crashes right now.
-            // Bubblegum.collectGum(level.getWorld());
+//             Bubblegum.collectGum(level.getWorld());
         }
 
 
