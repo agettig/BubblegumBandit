@@ -2,28 +2,29 @@ package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pool;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
 /**
  * Class to represent a projectile object.
  */
-public class ProjectileModel extends WheelObstacle {
+public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
 
     /** Size of the projectiles radius */
     private float radius = 10;
 
-    /** Marks whether this photon is dead, but not deallocated */
-    private boolean dirty;
+    /** Marks whether this projectile is still alive */
+    private boolean alive;
 
     /**
-     * Creates an empty Photon.
+     * Creates an empty Projectile.
      *
      * This constructor is used in memory allocation.
      */
     public ProjectileModel(){
         super(0, 0, 0);
         this.setRadius(radius);
-        dirty = false;
+        alive = false;
     }
 
     /**
@@ -43,11 +44,11 @@ public class ProjectileModel extends WheelObstacle {
     /**
      * Destroy this photon immediately, removing it from the screen.
      *
-     * This method will mark the photon as dirty, so that it can be processed
+     * This method will mark the photon as dead, so that it can be processed
      * properly later
      */
     public void destroy() {
-        dirty = true;
+        alive = false;
     }
 
     /**
@@ -58,16 +59,26 @@ public class ProjectileModel extends WheelObstacle {
      * @return whether this projectile is still alive.
      */
     public boolean isAlive() {
-        return !dirty;
+        return alive;
     }
 
-    /** Applies physics properties to this projectile */
-    public void activatePhysics(String name, float density, Vector2 scale, TextureRegion texture, float gravity){
-        this.setName(name);
-        this.setDensity(density);
-        this.setDrawScale(scale);
-        this.setTexture(texture);
-        this.setBullet(true);
-        this.setGravityScale(gravity);
+    /**
+     * Callback method when the object is freed. It is automatically called by Pool.free()
+     * Must reset every meaningful field of this projectile.
+     */
+    @Override
+    public void reset() {
+        this.setPosition(0,0);
+        alive = false;
     }
+
+//    /** Applies physics properties to this projectile */
+//    public void activatePhysics(String name, float density, Vector2 scale, TextureRegion texture, float gravity){
+//        this.setName(name);
+//        this.setDensity(density);
+//        this.setDrawScale(scale);
+//        this.setTexture(texture);
+//        this.setBullet(true);
+//        this.setGravityScale(gravity);
+//    }
 }
