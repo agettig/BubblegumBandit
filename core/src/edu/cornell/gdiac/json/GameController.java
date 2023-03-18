@@ -16,7 +16,6 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -435,7 +434,7 @@ public class GameController implements Screen, ContactListener {
         canvas.clear();
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
-        hud.draw(level, canvas);
+        hud.draw(level);
 
         // Final message
         if (complete && !failed) {
