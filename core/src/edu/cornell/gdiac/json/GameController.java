@@ -81,6 +81,8 @@ public class GameController implements Screen {
      * The JSON defining the level model
      */
     private JsonValue levelFormat;
+
+    private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
      */
@@ -313,8 +315,11 @@ public class GameController implements Screen {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+
         bubblegumController.initialize(levelFormat.get("gumProjectile"));
+
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        hud = new HUDController(directory);
     }
 
     /**
@@ -423,11 +428,6 @@ public class GameController implements Screen {
             enemy.update(action);
         }
 
-//        if(PlayerController.getInstance().didCollect()){
-//            // Commented out because crashes right now.
-//         Bubblegum.collectGum(level.getWorld());
-//        }
-
         if (PlayerController.getInstance().didReset()) {
             bubblegumController.resetMAX_GUM();
         }
@@ -471,11 +471,8 @@ public class GameController implements Screen {
         canvas.clear();
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
+        hud.draw(level, bubblegumController);
 
-        canvas.begin();
-        String message = "Gum left: " + bubblegumController.getMAX_GUM();
-        canvas.drawText(message, counterFont, 5f, canvas.getHeight()-5f);
-        canvas.end();
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);

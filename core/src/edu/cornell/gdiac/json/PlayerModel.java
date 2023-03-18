@@ -99,6 +99,32 @@ public class PlayerModel extends CapsuleObstacle {
 	public Vector2 getCameraTarget() { return cameraTarget; }
 
 
+	/** The max amount of health the player can have */
+	private final float MAX_HEALTH = 10;
+
+	/** The current amount of health the player has */
+	private float health;
+
+	/** Returns the player's current health for the HUD */
+	public float getHealth() {return health;}
+
+	/** Returns the player's max health for the HUD */
+	public float getMaxHealth() {return MAX_HEALTH;}
+
+	/** Decreases the player's health
+	 * @param damage The amount of damage done to the player
+	 */
+	public void hitPlayer(float damage) {health = Math.max(0,health-damage); }
+
+	/** Increases the player's health
+	 * @param heal The amount of healing done to the player
+	 */
+	public void healPlayer(float heal) {
+		health = Math.min(MAX_HEALTH,health+heal);
+	}
+
+
+
 	/**
 	 * Returns left/right movement of this character.
 	 *
@@ -298,6 +324,8 @@ public class PlayerModel extends CapsuleObstacle {
 
 		isFlipped = false;
 		yScale = 1.0f;
+
+		health = MAX_HEALTH;
 
 		cameraTarget = new Vector2();
 	}
