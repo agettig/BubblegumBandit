@@ -1,5 +1,5 @@
 /*
- * PlayerModel.java
+ * BanditModel.java
  *
  * This is a refactored version of DudeModel that allows us to read its properties
  * from a JSON file.  As a result, it has a lot more getter and setter "hooks" than
@@ -9,7 +9,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * JSON version, 3/2/2016
  */
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit.models.player;
 
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.lang.reflect.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
 
 /**
@@ -28,7 +29,7 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * Note that the constructor does very little.  The true initialization happens
  * by reading the JSON value.
  */
-public class PlayerModel extends CapsuleObstacle {
+public class BanditModel extends CapsuleObstacle {
 	// Physics constants
 	/** The factor to multiply by the input */
 	private float force;
@@ -331,7 +332,7 @@ public class PlayerModel extends CapsuleObstacle {
 	 *
 	 * The main purpose of this constructor is to set the initial capsule orientation.
 	 */
-	public PlayerModel(World world) {
+	public BanditModel(World world) {
 		super(0,0,0.5f,1.0f);
 		setFixedRotation(true);
 

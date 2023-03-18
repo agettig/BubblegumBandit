@@ -1,35 +1,36 @@
-package edu.cornell.gdiac.json.gum;
+package edu.cornell.gdiac.bubblegumbandit.helpers;
 
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
 
 
 /**
- * Represents a tuple of a Bubblegum object and the joint it
+ * Represents a tuple of a GumModel object and the joint it
  * created when it collided with a body. The joint is either
  * a Joint or JointDef object.
  * */
 public class GumJointPair {
 
-    /**The Bubblegum object */
-    private Bubblegum gum;
+    /**The GumModel object */
+    private GumModel gum;
 
-    /**The WeldJoint attached to the Bubblegum in this GumJointPair */
+    /**The WeldJoint attached to the GumModel in this GumJointPair */
     private WeldJoint joint;
 
-    /**The WeldJointDef attached to the Bubblegum in this GumJointPair */
+    /**The WeldJointDef attached to the GumModel in this GumJointPair */
     private WeldJointDef jointDef;
 
 
-    /**Instantiates a GumJointPair with a Bubblegum object and a WeldJoint
+    /**Instantiates a GumJointPair with a GumModel object and a WeldJoint
      * object.
      *
-     * @param gum The Bubblegum object in the pair
-     * @param joint the WeldJoint attached to the Bubblegum object passed into
+     * @param gum The GumModel object in the pair
+     * @param joint the WeldJoint attached to the GumModel object passed into
      *              this constructor
      *
      * */
-    public GumJointPair(Bubblegum gum, WeldJoint joint){
+    public GumJointPair(GumModel gum, WeldJoint joint){
         assert gum != null;
         assert joint != null;
 
@@ -37,15 +38,15 @@ public class GumJointPair {
         this.joint = joint;
     }
 
-    /**Instantiates a GumJointPair with a Bubblegum object and a WeldJointDef
+    /**Instantiates a GumJointPair with a GumModel object and a WeldJointDef
      * object.
      *
-     * @param gum The Bubblegum object in the pair
-     * @param jointDef the WeldJointDef attached to the Bubblegum object passed into
+     * @param gum The GumModel object in the pair
+     * @param jointDef the WeldJointDef attached to the GumModel object passed into
      *              this constructor
      *
      * */
-    public GumJointPair(Bubblegum gum, WeldJointDef jointDef){
+    public GumJointPair(GumModel gum, WeldJointDef jointDef){
         assert gum != null;
         assert jointDef != null;
 
@@ -54,11 +55,11 @@ public class GumJointPair {
     }
 
     /**
-     * Returns the Bubblegum object in this GumJointPair.
+     * Returns the GumModel object in this GumJointPair.
      *
-     * @returns the Bubblegum object in this GumJointPair.
+     * @returns the GumModel object in this GumJointPair.
      * */
-    public Bubblegum getGum() {
+    public GumModel getGum() {
         return gum;
     }
 

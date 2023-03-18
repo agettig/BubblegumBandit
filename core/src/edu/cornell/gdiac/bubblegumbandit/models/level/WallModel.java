@@ -8,7 +8,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * JSON version, 3/2/2016
  */
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;

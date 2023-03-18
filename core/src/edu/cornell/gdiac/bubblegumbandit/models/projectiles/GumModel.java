@@ -1,47 +1,47 @@
-package edu.cornell.gdiac.json.gum;
+package edu.cornell.gdiac.bubblegumbandit.models.projectiles;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
-import edu.cornell.gdiac.json.PlayerModel;
 
 import java.util.ArrayList;
 
 /**
-* Class to represent a "stuck" Bubblegum. This Bubblegum
+* Class to represent a "stuck" GumModel. This GumModel
 * is not a projectile; instead, it is instantiated when
 * a gum projectile hits an Obstacle.
 */
-public class Bubblegum extends WheelObstacle {
+public class GumModel extends WheelObstacle {
 
-    /**Upper limit on Bubblegum objects */
+    /**Upper limit on GumModel objects */
     private static final int MAX_GUM = 2;
 
     /**All active joints created by gum */
     private static ArrayList<WeldJoint> activeGumJoints;
 
     /**All active gum objects created by gum */
-    private static ArrayList<Bubblegum> activeGum;
+    private static ArrayList<GumModel> activeGum;
 
-    /**Diameter of a Bubblegum projectile */
+    /**Diameter of a GumModel projectile */
     private float diameter;
 
-    /**X-coordinate of Bubblegum velocity */
+    /**X-coordinate of GumModel velocity */
     public float vx;
 
-    /**Y-coordinate of Bubblegum velocity */
+    /**Y-coordinate of GumModel velocity */
     public float vy;
 
     /** Reference to the character avatar */
-    private PlayerModel avatar;
+    private BanditModel avatar;
 
     /**
-     * Creates a Bubblegum projectile.
+     * Creates a GumModel projectile.
      * */
-    public Bubblegum(float x, float y, float radius){
+    public GumModel(float x, float y, float radius){
         super(x, y, radius);
-        if(activeGum == null) activeGum = new ArrayList<Bubblegum>();
+        if(activeGum == null) activeGum = new ArrayList<GumModel>();
         activeGum.add(this);
     }
 
@@ -51,7 +51,7 @@ public class Bubblegum extends WheelObstacle {
      * @return true if the player has shot the maximum amount of gum allowed.
      * */
     public static boolean atGumLimit(){
-        if(activeGum == null) activeGum = new ArrayList<Bubblegum>();
+        if(activeGum == null) activeGum = new ArrayList<GumModel>();
         return activeGum.size() >= MAX_GUM;
     }
 
@@ -64,7 +64,7 @@ public class Bubblegum extends WheelObstacle {
         for(WeldJoint j : activeGumJoints){
             world.destroyJoint(j);
         }
-        for(Bubblegum b : activeGum){
+        for(GumModel b : activeGum){
             Body gumBody = b.getBody();
             world.destroyBody(gumBody);
 
@@ -75,27 +75,27 @@ public class Bubblegum extends WheelObstacle {
 
 
     /**
-     * Returns the diameter of this Bubblegum projectile.
+     * Returns the diameter of this GumModel projectile.
      *
-     * @return the diameter of this Bubblegum
+     * @return the diameter of this GumModel
      * */
     public float getDiameter(){
         return diameter;
     }
 
     /**
-     * Returns the radius of this Bubblegum.
+     * Returns the radius of this GumModel.
      *
-     * @returns the radius of this Bubblegum (its diameter halved)
+     * @returns the radius of this GumModel (its diameter halved)
      * */
     public float getRadius(){
         return diameter / 2;
     }
 
     /**
-     * Returns the velocity of this Bubblegum.
+     * Returns the velocity of this GumModel.
      *
-     * @return the velocity of this Bubblegum
+     * @return the velocity of this GumModel
      * */
     public Vector2 getVelocity(){
         //Return a new object to avoid corruption
@@ -103,17 +103,17 @@ public class Bubblegum extends WheelObstacle {
     }
 
     /**
-     * Sets the X-coordinate of this Bubblegum's velocity.
+     * Sets the X-coordinate of this GumModel's velocity.
      *
-     * @param vx the new X-velocity of this Bubblegum
+     * @param vx the new X-velocity of this GumModel
      */
     public void setVx(float vx) { this.vx = vx; }
 
 
     /**
-     * Sets the Y-coordinate of this Bubblegum's velocity.
+     * Sets the Y-coordinate of this GumModel's velocity.
      *
-     * @param vy the new Y-velocity of this Bubblegum
+     * @param vy the new Y-velocity of this GumModel
      */
     public void setVy(float vy) { this.vy = vy; }
 
