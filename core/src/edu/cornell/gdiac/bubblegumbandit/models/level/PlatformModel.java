@@ -14,7 +14,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * JSON version, 3/2/2016
  */
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -25,7 +25,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.lang.reflect.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.util.*;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
 
 /**

@@ -1,12 +1,12 @@
-package edu.cornell.gdiac.json.enemies;
+package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
-public class StationaryEnemy extends Enemy {
+public class StationaryEnemyModel extends EnemyModel {
 
-    public StationaryEnemy(World world) {
+    public StationaryEnemyModel(World world) {
         super(world);
     }
 

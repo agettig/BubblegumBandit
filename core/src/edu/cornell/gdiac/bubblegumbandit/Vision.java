@@ -1,13 +1,12 @@
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-
-import java.util.Objects;
 
 
 /** Fields of vision for enemies */

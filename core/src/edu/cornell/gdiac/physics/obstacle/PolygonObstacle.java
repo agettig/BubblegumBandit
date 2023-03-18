@@ -21,7 +21,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
-import edu.cornell.gdiac.json.*;  // For GameCanvas
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 
 /**

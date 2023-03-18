@@ -11,7 +11,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
@@ -134,9 +134,9 @@ public class InputController {
 
 	public boolean getSwitchGravity(){return switchGravity;};
 
-	/** Returns true if the player inputted some command to collect Bubblegum.
+	/** Returns true if the player inputted some command to collect GumModel.
 	 *
-	 * @returns true if the player input maps to collecting Bubblegum.
+	 * @returns true if the player input maps to collecting GumModel.
 	 * */
 	public boolean didCollect(){return collect;}
 

@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.json.enemies;
+package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.json.GameCanvas;
-import edu.cornell.gdiac.json.Sensor;
-import edu.cornell.gdiac.json.Vision;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.bubblegumbandit.Sensor;
+import edu.cornell.gdiac.bubblegumbandit.Vision;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
  * Initialization is done by reading the json
  * Note, enemies can only be initiated as stationary or moving enemies
  */
-public abstract class Enemy extends CapsuleObstacle {
+public abstract class EnemyModel extends CapsuleObstacle {
 
     // Physics constants
 
@@ -201,7 +201,7 @@ public abstract class Enemy extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public Enemy( World world) {
+    public EnemyModel(World world) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
         isGrounded = true;

@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.json.enemies;
+package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
-public class MovingEnemy  extends Enemy{
+public class MovingEnemyModel extends EnemyModel {
 
     private enum EnemyState{
         /**
@@ -47,7 +47,7 @@ public class MovingEnemy  extends Enemy{
         this.state = state;
     }
 
-    public MovingEnemy(World world){
+    public MovingEnemyModel(World world){
         super(world);
     }
 

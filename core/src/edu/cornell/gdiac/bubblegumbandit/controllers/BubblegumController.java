@@ -1,36 +1,37 @@
-package edu.cornell.gdiac.json.gum;
+package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 
 
 /**
- * Controls Bubblegum objects on the screen.
+ * Controls GumModel objects on the screen.
  * */
 public class BubblegumController {
 
-    /**Maximum amount of Bubblegum on screen at the same time. */
+    /**Maximum amount of GumModel on screen at the same time. */
     private static final int MAX_GUM = 30;
 
     /**Amount of active gum. */
     private static int ACTIVE_GUM;
 
-    /**The queue of stuck Bubblegum obstacles and their joints. */
+    /**The queue of stuck GumModel obstacles and their joints. */
     private static Queue<GumJointPair> stuckBubblegumQueue;
 
-    /**The queue of non-assembled Bubblegum obstacles and their jointDefs. */
+    /**The queue of non-assembled GumModel obstacles and their jointDefs. */
     private static Queue<GumJointPair> bubblegumAssemblyQueue;
 
-    /**The queue of mid-air Bubblegum obstacles. */
-    private static Queue<Bubblegum> midAirBubblegumQueue;
+    /**The queue of mid-air GumModel obstacles. */
+    private static Queue<GumModel> midAirBubblegumQueue;
 
     /**
-     * Instantiates the Bubblegum controller and its queues.
+     * Instantiates the GumModel controller and its queues.
      * */
     public BubblegumController(){
         stuckBubblegumQueue = new Queue<GumJointPair>();
         bubblegumAssemblyQueue = new Queue<GumJointPair>();
-        midAirBubblegumQueue = new Queue<Bubblegum>();
+        midAirBubblegumQueue = new Queue<GumModel>();
     }
 
 
@@ -60,7 +61,7 @@ public class BubblegumController {
     }
 
     /**
-     * Adds a GumJointPair to the queue of active Bubblegum.
+     * Adds a GumJointPair to the queue of active GumModel.
      * */
     public void addToStuckBubblegum(GumJointPair pair){
 
@@ -74,7 +75,7 @@ public class BubblegumController {
     }
 
     /**
-     * Clears all Bubblegum queues and sets the amount of active gum to 0.
+     * Clears all GumModel queues and sets the amount of active gum to 0.
      * */
     public void resetAllBubblegum(){
         if(ACTIVE_GUM == 0) return;
@@ -108,7 +109,7 @@ public class BubblegumController {
     }
 
     /**
-     * Returns true if the number of active Bubblegum objects is
+     * Returns true if the number of active GumModel objects is
      * equal to or greater than the gum limit.
      *
      * @returns true if the gum limit has been reached
@@ -118,12 +119,12 @@ public class BubblegumController {
     }
 
     /**
-     * Adds a new Bubblegum to
+     * Adds a new GumModel to
      * equal to or greater than the gum limit.
      *
      * @returns true if the gum limit has been reached
      * */
-    public void addNewBubblegum(Bubblegum gum){
+    public void addNewBubblegum(GumModel gum){
         ACTIVE_GUM++;
         midAirBubblegumQueue.addLast(gum);
     }

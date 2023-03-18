@@ -13,10 +13,8 @@
  * JSON version, 3/2/2016
  */
 
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit.models.level;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,11 +23,16 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.json.enemies.Enemy;
-import edu.cornell.gdiac.json.enemies.MovingEnemy;
-import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.StationaryEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -77,7 +80,7 @@ public class LevelModel {
     /**
      * Reference to the character avatar
      */
-    private PlayerModel avatar;
+    private BanditModel avatar;
     /**
      * Reference to the goalDoor (for collision detection)
      */
@@ -95,10 +98,8 @@ public class LevelModel {
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
-    /**
-     * All enemies in the world
-     */
-    private Enemy[] enemies;
+    private AIController[] aiControllers;
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -134,7 +135,7 @@ public class LevelModel {
      *
      * @return a reference to the player avatar
      */
-    public PlayerModel getAvatar() {
+    public BanditModel getAvatar() {
         return avatar;
     }
 
@@ -191,6 +192,42 @@ public class LevelModel {
      * @param levelFormat the JSON file defining the level
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat) {
+        initialzeWorld(directory, levelFormat);
+        initialzeEnemies(directory, levelFormat);
+        initializeBandit(directory, levelFormat);
+    }
+
+
+    public void dispose() {
+        for (Obstacle obj : objects) {
+            obj.deactivatePhysics(world);
+        }
+        objects.clear();
+        if (world != null) {
+            world.dispose();
+            world = null;
+        }
+    }
+
+    private void initializeBandit(AssetDirectory directory, JsonValue levelFormat){
+        avatar = new BanditModel(world);
+        avatar.initialize(directory, levelFormat.get("avatar"));
+        avatar.setDrawScale(scale);
+        activate(avatar);
+    }
+
+    /**
+     * Initializes the game world based on the provided level format.
+     * Reads world data from the level format JSON and creates instances of
+     * the appropriate world objects, such as
+     * goal doors, background, walls, and platforms.
+     *
+     * @param directory    The AssetDirectory containing the assets required for
+     *                    world object initialization.
+     * @param levelFormat  A JsonValue containing the level format data,
+     *                     including world object definitions.
+     */
+    private void initialzeWorld(AssetDirectory directory, JsonValue levelFormat){
         float gravity = levelFormat.getFloat("gravity");
         float[] pSize = levelFormat.get("physicsSize").asFloatArray();
         int[] gSize = levelFormat.get("graphicSize").asIntArray();
@@ -227,49 +264,41 @@ public class LevelModel {
             activate(obj);
             floor = floor.next();
         }
-
-        // get number of enemies
-        int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
-
-        // initialize enemies list
-        enemies = new Enemy[numEnemies];
-
-        // json of enemy
-        JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
-
-        // initialize each enemy
-        for (int i = 0; i < numEnemies; i++) {
-            Enemy a;
-            if (enemy.get("type").asString().equals("moving")) {
-                a = new MovingEnemy(world);
-            } else {
-                a = new StationaryEnemy(world);
-            }
-            a.initialize(directory, enemy);
-            a.setDrawScale(scale);
-            enemies[i] = a;
-            activate(a);
-            enemy = enemy.next();
-        }
-
-
-        // Create dude
-
-        avatar = new PlayerModel(world);
-        avatar.initialize(directory, levelFormat.get("avatar"));
-        avatar.setDrawScale(scale);
-        activate(avatar);
     }
 
+    /**
+     * Initializes the enemies in the game based on the provided level format.
+     * Reads enemy data from the level format JSON and creates instances
+     * of the appropriate enemy models.
+     * Also initializes AIControllers for each enemy.
+     *
+     * @param directory    The AssetDirectory containing the
+     *                     assets required for enemy initialization.
+     * @param levelFormat  A JsonValue containing the level format data,
+     *                     including enemy definitions.
+     */
+    private void initialzeEnemies(AssetDirectory directory, JsonValue levelFormat){
 
-    public void dispose() {
-        for (Obstacle obj : objects) {
-            obj.deactivatePhysics(world);
-        }
-        objects.clear();
-        if (world != null) {
-            world.dispose();
-            world = null;
+        //Make AIControllers from JSON data.
+        int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
+        aiControllers = new AIController[numEnemies];
+        JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
+
+        //Spawn EnemyModels and assign them to their AIControllers.
+        for (int i = 0; i < numEnemies; i++) {
+            EnemyModel newEnemy;
+
+            String enemyType = enemy.get("type").asString();
+            if(enemyType.equals("moving")) newEnemy = new MovingEnemyModel(world);
+            else newEnemy = new StationaryEnemyModel(world);
+
+            newEnemy.initialize(directory, enemy);
+            newEnemy.setDrawScale(scale);
+            activate(newEnemy);
+            AIController newEnemyController = new AIController(newEnemy);
+            aiControllers[i] = newEnemyController;
+
+            enemy = enemy.next();
         }
     }
 
@@ -278,7 +307,7 @@ public class LevelModel {
      *
      * @param obj The object to add
      */
-    protected void activate(Obstacle obj) {
+    public void activate(Obstacle obj) {
         assert inBounds(obj) : "Object is not in bounds";
         objects.add(obj);
         obj.activatePhysics(world);
@@ -379,10 +408,6 @@ public class LevelModel {
     public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
         Vector2 target = InputController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
-//        float offsetX = gumJV.getFloat("offsetX", 0);
-//        offsetX *= (target.x > avatar.getX() ? 1 : -1);
-//        float offsetY = gumJV.getFloat("offsetY", 0);
-//        offsetY *= avatar.getYScale();
         Vector2 origin = getProjOrigin(gumJV, canvas);
 
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
@@ -484,9 +509,7 @@ public class LevelModel {
 
     }
 
-
-
-    public Enemy[] getEnemies() {
-        return enemies;
+    public AIController[] getEnemies() {
+        return aiControllers;
     }
 }

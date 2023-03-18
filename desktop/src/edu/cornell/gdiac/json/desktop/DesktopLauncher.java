@@ -14,7 +14,7 @@ package edu.cornell.gdiac.json.desktop;
 
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
-import edu.cornell.gdiac.json.GDXRoot;
+import edu.cornell.gdiac.bubblegumbandit.controllers.GDXRoot;
 
 /**
  * The main class of the game.
