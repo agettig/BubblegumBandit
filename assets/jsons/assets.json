@@ -5,7 +5,7 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "background": "textures/background2.png",
+        "background": "textures/background4.png",
         "dude": "textures/player_draft.png",
         "robot": "textures/robo_draft.png",
         "goal": "textures/goaldoor.png",
@@ -13,8 +13,9 @@
         "trajectoryProjectile": "textures/trajectory.png",
         "gum": "textures/gum.png",
         "chewedGum": "textures/chewed_gum.png",
+        "health_bar": "textures/health_bar.png",
+        "health_fill": "textures/health_fill.png",
         "floatingGum": "textures/gum.png"
-
     },
     "fonts": {
         "display": {

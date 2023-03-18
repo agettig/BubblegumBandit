@@ -35,8 +35,6 @@ import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
-
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -95,7 +93,10 @@ public class LevelModel {
      */
     private boolean debug;
 
+    /** The background of the level */
     private TextureRegion background;
+
+
 
     /**
      * All the objects in the world.
@@ -201,6 +202,7 @@ public class LevelModel {
         bounds = new Rectangle(0, 0, 1, 1);
         scale = new Vector2(1, 1);
         debug = false;
+
     }
 
     public Board getBoard() {
@@ -495,6 +497,7 @@ public class LevelModel {
         }
     }
 
+
     public void drawGrid(GameCanvas canvas){
         PolygonShape s = new PolygonShape();
         s.setAsBox(400, .5f);
@@ -533,6 +536,7 @@ public class LevelModel {
         } else {
             drawProjectileRay(levelFormat, gumProjectile, canvas);
         }
+
 
         canvas.end();
 
