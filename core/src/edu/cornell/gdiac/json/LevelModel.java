@@ -29,6 +29,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.json.gum.CollisionController;
 import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -221,6 +222,7 @@ public class LevelModel {
             obj.initialize(directory, wall);
             obj.setDrawScale(scale);
             activate(obj);
+            obj.setFilter(CollisionController.CATEGORY_TERRAIN, CollisionController.MASK_TERRAIN);
             wall = wall.next();
         }
 
@@ -230,6 +232,7 @@ public class LevelModel {
             obj.initialize(directory, floor);
             obj.setDrawScale(scale);
             activate(obj);
+            obj.setFilter(CollisionController.CATEGORY_TERRAIN, CollisionController.MASK_TERRAIN);
             floor = floor.next();
         }
 
@@ -254,6 +257,7 @@ public class LevelModel {
             a.setDrawScale(scale);
             enemies[i] = a;
             activate(a);
+            a.setFilter(CollisionController.CATEGORY_ENEMY, CollisionController.MASK_ENEMY);
             enemy = enemy.next();
         }
 
@@ -282,6 +286,7 @@ public class LevelModel {
         avatar.initialize(directory, levelFormat.get("avatar"));
         avatar.setDrawScale(scale);
         activate(avatar);
+        avatar.setFilter(CollisionController.CATEGORY_PLAYER, CollisionController.MASK_PLAYER);
     }
 
 
