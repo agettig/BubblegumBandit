@@ -27,14 +27,11 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.enemies.Enemy;
-import edu.cornell.gdiac.json.gum.BubblegumController;
-import edu.cornell.gdiac.json.gum.FloatingGum;
-import edu.cornell.gdiac.json.gum.GumJointPair;
+import edu.cornell.gdiac.json.gum.*;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.json.gum.Bubblegum;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -739,6 +736,7 @@ public class GameController implements Screen, ContactListener {
         gum.setVX(gumVel.x);
         gum.setVY(gumVel.y);
         level.activate(gum);
+        gum.setFilter(CollisionController.CATEGORY_GUM, CollisionController.MASK_GUM);
     }
 
     /**
@@ -774,6 +772,7 @@ public class GameController implements Screen, ContactListener {
         //Safety check.
         if (bd1 == null || bd2 == null) return;
         if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
+        if (isGumObstacle(bd1) && isGumObstacle(bd2)) return;
         if (bd1.getName().equals("floatingGums") || bd2.getName().equals("floatingGums")) return;
 
         if (isGumObstacle(bd1)) {
