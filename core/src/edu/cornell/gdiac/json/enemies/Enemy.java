@@ -24,6 +24,8 @@ public abstract class Enemy extends CapsuleObstacle {
 
     // Physics constants
 
+    private int id;
+
     /**
      * The factor to multiply by the input
      */
@@ -72,7 +74,7 @@ public abstract class Enemy extends CapsuleObstacle {
     /**
      * Whether this enemy is flipped
      */
-    private boolean isFlipped;
+    protected boolean isFlipped;
 
     /**
      * The y scale of this enemy (for flipping when gravity swaps)
@@ -117,6 +119,11 @@ public abstract class Enemy extends CapsuleObstacle {
     public float getForce() {
         return force;
     }
+
+    /**Returns this enemy's ID
+     *
+     * @returns the id of this enemy*/
+    public int getId(){ return id; };
 
     /**
      * Sets how much force to apply to get the dude moving
@@ -201,7 +208,7 @@ public abstract class Enemy extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public Enemy( World world) {
+    public Enemy( World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
         isGrounded = true;
@@ -209,6 +216,7 @@ public abstract class Enemy extends CapsuleObstacle {
         isFlipped = false;
         yScale = 1f;
         this.world = world;
+        this.id = id;
         vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
     }
 
@@ -292,9 +300,7 @@ public abstract class Enemy extends CapsuleObstacle {
     }
 
 
-    public abstract void applyForce();
-
-    public void update() {
+    public void update(int controlCode) {
         if (yScale < 1f && !isFlipped) {
             yScale += 0.1f;
         } else if (yScale > -1f && isFlipped) {
@@ -302,6 +308,8 @@ public abstract class Enemy extends CapsuleObstacle {
         }
         updateVision();
     }
+
+
 
     /**
      * Draws the physics object.
@@ -377,6 +385,15 @@ public abstract class Enemy extends CapsuleObstacle {
             sensor.getFixture().setUserData(sensor.getSensorName());
         }
         return true;
+    }
+
+    /**
+     * Shoots at a target position.
+     *
+     * @param targetPosition the screen position to shoot at.
+     * */
+    public void shoot(Vector2 targetPosition){
+        return;
     }
 
     /**
