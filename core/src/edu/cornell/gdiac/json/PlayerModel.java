@@ -36,10 +36,6 @@ public class PlayerModel extends CapsuleObstacle {
 	private float damping;
 	/** The maximum character speed */
 	private float maxspeed;
-	/** The impulse for the character jump */
-	private float jumppulse;
-	/** Cooldown (in animation frames) for jumping */
-	private int jumpLimit;
 
 	/** The current horizontal movement of the character */
 	private float   movement;
@@ -47,10 +43,6 @@ public class PlayerModel extends CapsuleObstacle {
 	private boolean faceRight;
 	/** Whether our feet are on the ground */
 	private boolean isGrounded;
-	/** How long until we can jump again */
-	private int jumpCooldown;
-	/** Whether we are actively jumping */
-	private boolean isJumping;
 
 	// SENSOR FIELDS
 	/** Ground sensor to represent our feet */
@@ -80,6 +72,13 @@ public class PlayerModel extends CapsuleObstacle {
 
 	/** Cooldown (in animation frames) for shooting */
 	private final int shotLimit;
+
+	/** Cache for flipping player orientation */
+	private float angle;
+
+	public boolean isFlipped() {
+		return isFlipped;
+	}
 
 	/** Whether this player is flipped */
 	private boolean isFlipped;
@@ -155,23 +154,6 @@ public class PlayerModel extends CapsuleObstacle {
 		}
 	}
 
-	/**
-	 * Returns true if the dude is actively jumping.
-	 *
-	 * @return true if the dude is actively jumping.
-	 */
-	public boolean isJumping() {
-		return isJumping && jumpCooldown <= 0 && isGrounded;
-	}
-
-	/**
-	 * Sets whether the dude is actively jumping.
-	 *
-	 * @param value whether the dude is actively jumping.
-	 */
-	public void setJumping(boolean value) {
-		isJumping = value;
-	}
 
 	/**
 	 * Returns true if the dude is on the ground.
@@ -254,42 +236,6 @@ public class PlayerModel extends CapsuleObstacle {
 	}
 
 	/**
-	 * Returns the upward impulse for a jump.
-	 *
-	 * @return the upward impulse for a jump.
-	 */
-	public float getJumpPulse() {
-		return jumppulse;
-	}
-
-	/**
-	 * Sets the upward impulse for a jump.
-	 *
-	 * @param value	the upward impulse for a jump.
-	 */
-	public void setJumpPulse(float value) {
-		jumppulse = value;
-	}
-
-	/**
-	 * Returns the cooldown limit between jumps
-	 *
-	 * @return the cooldown limit between jumps
-	 */
-	public int getJumpLimit() {
-		return jumpLimit;
-	}
-
-	/**
-	 * Sets the cooldown limit between jumps
-	 *
-	 * @param value	the cooldown limit between jumps
-	 */
-	public void setJumpLimit(int value) {
-		jumpLimit = value;
-	}
-
-	/**
 	 * Returns topSensorName when flipped else bottomSensorName
 	 * This is used by ContactListener
 	 *
@@ -346,11 +292,9 @@ public class PlayerModel extends CapsuleObstacle {
 		// Gameplay attributes
 		isGrounded = false;
 		isShooting = false;
-		isJumping = false;
 		faceRight = false;
 
 		shootCooldown = 0;
-		jumpCooldown = 0;
 
 		isFlipped = false;
 		yScale = 1.0f;
@@ -384,8 +328,6 @@ public class PlayerModel extends CapsuleObstacle {
 		setForce(json.get("force").asFloat());
 		setDamping(json.get("damping").asFloat());
 		setMaxSpeed(json.get("maxspeed").asFloat());
-		setJumpPulse(json.get("jumppulse").asFloat());
-		setJumpLimit(json.get("jumplimit").asInt());
 
 		// Reflection is best way to convert name to color
 		Color debugColor;
@@ -521,12 +463,6 @@ public class PlayerModel extends CapsuleObstacle {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		// Apply cooldowns
-		if (isJumping()) {
-			jumpCooldown = getJumpLimit();
-		} else {
-			jumpCooldown = Math.max(0, jumpCooldown - 1);
-		}
 
 		if (isShooting()) {
 			shootCooldown = shotLimit;
