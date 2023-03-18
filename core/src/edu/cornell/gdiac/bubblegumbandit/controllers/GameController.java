@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.bubblegumbandit.models.level.PlatformModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -53,7 +54,7 @@ import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
  * You will notice that asset loading is very different.  It relies on the
  * singleton asset manager to manage the various assets.
  */
-public class GameController implements Screen, ContactListener {
+public class GameController implements Screen {
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -129,19 +130,10 @@ public class GameController implements Screen, ContactListener {
     private int countdown;
 
     /**
-     * Mark set to handle more sophisticated collision callbacks
-     */
-    protected ObjectSet<Fixture> sensorFixtures;
-
-    /**
      * Reference to the GumModel controller instance
      */
     private BubblegumController bubblegumController;
 
-    /**
-     * Reference to the Player controller instance
-     */
-    private PlayerController playerController;
 
     /**
      * Reference to the Collision controller instance
@@ -263,10 +255,9 @@ public class GameController implements Screen, ContactListener {
 
         //Data Structures && Classes
         level = new LevelModel();
-        sensorFixtures = new ObjectSet<Fixture>();
         jointsQueue = new Queue<JointDef>();
         bubblegumController = new BubblegumController();
-        collisionController = new CollisionController();
+        collisionController = new CollisionController(level);
 
         //GUI
         UIManager.put("swing.boldMetal", Boolean.FALSE);
@@ -326,7 +317,7 @@ public class GameController implements Screen, ContactListener {
 
         // Reload the json each time
         level.populate(directory, levelFormat);
-        level.getWorld().setContactListener(this);
+        level.getWorld().setContactListener(collisionController);
     }
 
     /**
@@ -363,8 +354,7 @@ public class GameController implements Screen, ContactListener {
             return false;
         }
 
-        //Make PlayerController after LevelModel has created it.
-        playerController = new PlayerController(level.getAvatar());
+
 
         return true;
     }
@@ -381,21 +371,28 @@ public class GameController implements Screen, ContactListener {
      */
     public void update(float dt) {
 
+        if(collisionController.isWinConditionMet()) setComplete(true);
+
         InputController inputResults = InputController.getInstance();
 
         //Update Controllers.
-        playerController.update();
+        BanditModel bandit = level.getAvatar();
         for(AIController ai : level.getEnemies()) ai.update();
 
+        //move bandit
+        float movement = inputResults.getHorizontal() * bandit.getForce();
+        bandit.setMovement(movement);
+        bandit.applyForce();
 
         //Perform actions when the player flips gravity.
-        if (inputResults.getSwitchGravity() && playerController.banditGrounded()) {
+        if (inputResults.getSwitchGravity() && bandit.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = playSound(jumpSound, jumpId);
             level.getWorld().setGravity(currentGravity);
-            playerController.flipBandit();
-            sensorFixtures.clear();
+            bandit.flippedGravity();
+            bandit.setGrounded(false);
+            collisionController.clearSensorFixtures();
 
             for (AIController ai : level.getEnemies()) ai.flipEnemy();
         }
@@ -413,8 +410,6 @@ public class GameController implements Screen, ContactListener {
 
         addJointsToWorld();
     }
-
-
 
     /**
      * Draw the physics objects to the canvas
@@ -523,100 +518,6 @@ public class GameController implements Screen, ContactListener {
     }
 
     /**
-     * Callback method for the start of a collision
-     * <p>
-     * This method is called when we first get a collision between two objects.  We use
-     * this method to test if it is the "right" kind of collision.  In particular, we
-     * use it to test if we made it to the win door.
-     * <p>
-     * This is where we check for gum collisions
-     *
-     * @param contact The two bodies that collided
-     */
-    public void beginContact(Contact contact) {
-        Fixture fix1 = contact.getFixtureA();
-        Fixture fix2 = contact.getFixtureB();
-
-        Body body1 = fix1.getBody();
-        Body body2 = fix2.getBody();
-
-        Object fd1 = fix1.getUserData();
-        Object fd2 = fix2.getUserData();
-
-        try {
-            Obstacle bd1 = (Obstacle) body1.getUserData();
-            Obstacle bd2 = (Obstacle) body2.getUserData();
-
-            BanditModel avatar = level.getAvatar();
-            BoxObstacle door = level.getExit();
-
-            // See if we have landed on the ground.
-            if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-                    (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-                avatar.setGrounded(true);
-                sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
-            }
-
-            // Check for win condition
-            if ((bd1 == avatar && bd2 == door) ||
-                    (bd1 == door && bd2 == avatar)) {
-                setComplete(true);
-            }
-
-            // Check for gum collision
-            resolveGumCollision(bd1, bd2);
-
-            // TODO: Gum interactions
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Callback method for the start of a collision
-     * <p>
-     * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
-     * double jumping.
-     */
-    public void endContact(Contact contact) {
-        Fixture fix1 = contact.getFixtureA();
-        Fixture fix2 = contact.getFixtureB();
-
-        Body body1 = fix1.getBody();
-        Body body2 = fix2.getBody();
-
-        Object fd1 = fix1.getUserData();
-        Object fd2 = fix2.getUserData();
-
-        Object bd1 = body1.getUserData();
-        Object bd2 = body2.getUserData();
-
-        BanditModel avatar = level.getAvatar();
-        if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
-            sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0) {
-                avatar.setGrounded(false);
-            }
-        }
-    }
-
-    /**
-     * Unused ContactListener method
-     */
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-    }
-
-    /**
-     * Unused ContactListener method
-     */
-    public void preSolve(Contact contact, Manifold oldManifold) {
-    }
-
-    /**
      * Method to ensure that a sound asset is only played once.
      * <p>
      * Every time you play a sound asset, it makes a new instance of that sound.
@@ -699,70 +600,6 @@ public class GameController implements Screen, ContactListener {
         gum.setVX(gumVel.x);
         gum.setVY(gumVel.y);
         level.activate(gum);
-    }
-
-    /**
-     * Returns true if an Obstacle is a gum projectile.
-     * <p>
-     * An Obstacle is a gum projectile if its name equals
-     * "gumProjectile".
-     *
-     * @param o the Obstacle to check
-     * @returns true if the Obstacle is a gum projectile
-     */
-    private boolean isGumObstacle(Obstacle o) {
-        return o.getName().equals("stickyGum") ||
-                o.getName().equals("gumProjectile");
-    }
-
-    /**
-     * Handles a gum projectile's collision in the Box2D world.
-     * <p>
-     * Examines two Obstacles in a collision. If either is a
-     * gum projectile, adds it to the Sticky Queue.
-     *
-     * @param bd1 The first Obstacle in the collision.
-     * @param bd2 The second Obstacle in the collision.
-     */
-    private void resolveGumCollision(Obstacle bd1, Obstacle bd2) {
-
-        //Safety check.
-        if (bd1 == null || bd2 == null) return;
-
-        if (isGumObstacle(bd1)) {
-            GumModel gum = (GumModel) bd1;
-            gum.setVX(0);
-            gum.setVY(0);
-
-            WeldJointDef weldJointDef = createGumJoint(gum, bd2);
-            GumJointPair pair = new GumJointPair(gum, weldJointDef);
-            bubblegumController.addToAssemblyQueue(pair);
-
-        }
-        else if (isGumObstacle(bd2)) {
-            GumModel gum = (GumModel) bd2;
-            gum.setVX(0);
-            gum.setVY(0);
-
-            WeldJointDef weldJointDef = createGumJoint(gum, bd1);
-            GumJointPair pair = new GumJointPair(gum, weldJointDef);
-            bubblegumController.addToAssemblyQueue(pair);
-        }
-    }
-
-    /**
-     * Returns a WeldJointDef connecting gum and another obstacle.
-     */
-    private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
-        WeldJointDef jointDef = new WeldJointDef();
-        jointDef.bodyA = gum.getBody();
-        jointDef.bodyB = ob.getBody();
-        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
-        Vector2 anchor = new Vector2();
-        jointDef.localAnchorA.set(anchor);
-        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
-        jointDef.localAnchorB.set(anchor);
-        return jointDef;
     }
 
     /**
