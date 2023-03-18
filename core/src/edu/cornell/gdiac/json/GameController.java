@@ -28,6 +28,7 @@ import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.gum.BubblegumController;
+import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
@@ -38,6 +39,8 @@ import edu.cornell.gdiac.json.gum.Bubblegum;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import java.util.ArrayList;
 
 import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
@@ -55,6 +58,9 @@ import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 public class GameController implements Screen {
     // ASSETS
 
+    // TODO remove
+    private boolean enableGUI = false;
+
     /** How close to the center of the tile we need to be to stop drifting */
     private static final float DRIFT_TOLER = .2f;
     /** How fast we drift to the tile center when paused */
@@ -68,6 +74,9 @@ public class GameController implements Screen {
      * The font for giving messages to the player
      */
     protected BitmapFont displayFont;
+
+    /**The font for showing how much gum is left */
+    private BitmapFont counterFont;
     /**
      * The JSON defining the level model
      */
@@ -261,15 +270,19 @@ public class GameController implements Screen {
         setFailure(false);
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
+        collisionController = new CollisionController();
 
+        if (enableGUI){
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    createAndShowGUI(new SliderListener());
+                }
+            });
+        }
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI(new SliderListener());
-            }
-        });
-        collisionController = new CollisionController();
+
+
     }
 
     /**
@@ -295,10 +308,12 @@ public class GameController implements Screen {
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
+        counterFont = directory.getEntry("times", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+        bubblegumController.initialize(levelFormat.get("gumProjectile"));
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
     }
 
@@ -408,6 +423,15 @@ public class GameController implements Screen {
             enemy.update(action);
         }
 
+//        if(PlayerController.getInstance().didCollect()){
+//            // Commented out because crashes right now.
+//         Bubblegum.collectGum(level.getWorld());
+//        }
+
+        if (PlayerController.getInstance().didReset()) {
+            bubblegumController.resetMAX_GUM();
+        }
+
 
         if (PlayerController.getInstance().didShoot()) {
 
@@ -417,6 +441,12 @@ public class GameController implements Screen {
         }
 
         level.update(dt);
+
+        // Update the camera
+        Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
+        canvas.getCamera().setTarget(avatar.getCameraTarget());
+        canvas.getCamera().setSecondaryTarget(target);
+        canvas.getCamera().update(dt);
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
@@ -442,6 +472,10 @@ public class GameController implements Screen {
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
 
+        canvas.begin();
+        String message = "Gum left: " + bubblegumController.getMAX_GUM();
+        canvas.drawText(message, counterFont, 5f, canvas.getHeight()-5f);
+        canvas.end();
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
@@ -533,7 +567,7 @@ public class GameController implements Screen {
         this.listener = listener;
     }
 
-    /**
+ /**
      * Method to ensure that a sound asset is only played once.
      * <p>
      * Every time you play a sound asset, it makes a new instance of that sound.
@@ -576,7 +610,9 @@ public class GameController implements Screen {
      */
     private void createGumProjectile(Vector2 target) {
 
-        if (bubblegumController.gumLimitReached()) return;
+        if(bubblegumController.gumLimitReached()) return;
+        bubblegumController.reduceMAX_GUM();
+
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
@@ -620,7 +656,6 @@ public class GameController implements Screen {
         gum.setVY(gumVel.y);
         level.activate(gum);
     }
-
     public void setGravity(float gravity) {
         float g = gravity;
         if (level.getWorld().getGravity().y < 0) {
@@ -684,6 +719,7 @@ public class GameController implements Screen {
             try {
                 Obstacle bd1 = (Obstacle) body1.getUserData();
                 Obstacle bd2 = (Obstacle) body2.getUserData();
+                FloatingGum[] floatingGum = level.getFloatingGum();
 
                 PlayerModel avatar = level.getAvatar();
                 BoxObstacle door = level.getExit();
@@ -701,6 +737,14 @@ public class GameController implements Screen {
                     setComplete(true);
                 }
 
+                if (bd1 instanceof FloatingGum && bd2 == avatar && !((FloatingGum) bd1).getCollected()){
+                    collectGum(bd1);
+                    ((FloatingGum) bd1).setCollected(true);
+                } else if (bd2 instanceof FloatingGum && bd1 == avatar && !((FloatingGum) bd2).getCollected()) {
+                    collectGum(bd2);
+                    ((FloatingGum) bd2).setCollected(true);
+                }
+
                 // Check for gum collision
                 resolveGumCollision(bd1, bd2);
 
@@ -710,6 +754,12 @@ public class GameController implements Screen {
                 e.printStackTrace();
             }
 
+        }
+
+        /** Collects floating gum */
+        private void collectGum(Obstacle bd1) {
+            bd1.markRemoved(true);
+            bubblegumController.increaseMAX_GUM();
         }
 
         /**
