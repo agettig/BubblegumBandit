@@ -400,7 +400,7 @@ public class GameController implements Screen, ContactListener {
 
         if(InputController.getInstance().didCollect()){
             // Commented out because crashes right now.
-            // Bubblegum.collectGum(level.getWorld());
+//             Bubblegum.collectGum(level.getWorld());
         }
 
         if (InputController.getInstance().didReset()) {
@@ -418,6 +418,12 @@ public class GameController implements Screen, ContactListener {
         }
 
         level.update(dt);
+
+        // Update the camera
+        Vector2 target = canvas.unproject(InputController.getInstance().getCrossHair());
+        canvas.getCamera().setTarget(avatar.getCameraTarget());
+        canvas.getCamera().setSecondaryTarget(target);
+        canvas.getCamera().update(dt);
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
