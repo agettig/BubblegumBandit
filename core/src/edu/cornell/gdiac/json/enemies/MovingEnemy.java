@@ -102,9 +102,11 @@ public class MovingEnemy  extends Enemy{
         if (movingLeft) {
             setVX(-1.5f);
             setVY(0);
+            setFaceRight(false);
         } else if (movingRight) {
             setVX(2f);
             setVY(0);
+            setFaceRight(true);
         } else if (movingUp) {
             if (!isFlipped){
                 setVY(4f);

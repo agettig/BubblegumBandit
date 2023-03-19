@@ -15,6 +15,7 @@
 
 package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -31,6 +32,7 @@ import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.json.gum.CollisionController;
 import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -241,6 +243,7 @@ public class LevelModel {
             obj.initialize(directory, wall);
             obj.setDrawScale(scale);
             activate(obj);
+            obj.setFilter(GameController.CollisionController.CATEGORY_TERRAIN, GameController.CollisionController.MASK_TERRAIN);
             wall = wall.next();
         }
 
@@ -250,6 +253,7 @@ public class LevelModel {
             obj.initialize(directory, floor);
             obj.setDrawScale(scale);
             activate(obj);
+            obj.setFilter(GameController.CollisionController.CATEGORY_TERRAIN, GameController.CollisionController.MASK_TERRAIN);
             floor = floor.next();
         }
 
@@ -264,11 +268,11 @@ public class LevelModel {
         JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
 
         // Create bandit
-
         avatar = new PlayerModel(world);
         avatar.initialize(directory, levelFormat.get("avatar"));
         avatar.setDrawScale(scale);
         activate(avatar);
+        avatar.setFilter(GameController.CollisionController.CATEGORY_PLAYER, GameController.CollisionController.MASK_PLAYER);
 
         board = new Board (levelFormat.get("board"));
 
@@ -284,6 +288,7 @@ public class LevelModel {
             a.setDrawScale(scale);
             enemies[i] = a;
             activate(a);
+            a.setFilter(GameController.CollisionController.CATEGORY_ENEMY, GameController.CollisionController.MASK_ENEMY);
             enemy = enemy.next();
             AIControllers[i] = new AIController(a, avatar, board);
         }
@@ -305,10 +310,6 @@ public class LevelModel {
             floatingGum[i] = gum;
             position = position.next();
         }
-
-
-
-
 
     }
 
