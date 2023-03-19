@@ -25,6 +25,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.controllers.PlayerController;
+import edu.cornell.gdiac.json.controllers.ProjectileController;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.gum.*;
 import edu.cornell.gdiac.json.controllers.AIController;
@@ -39,8 +40,6 @@ import edu.cornell.gdiac.physics.obstacle.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import java.util.ArrayList;
 
 import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
@@ -157,7 +156,7 @@ public class GameController implements Screen {
 
 
     /** A collection of the active projectiles on screen */
-    private ProjectileController projectiles;
+    private ProjectileController projectileController;
 
     /**
      * Gum gravity scale when creating gum
@@ -276,7 +275,7 @@ public class GameController implements Screen {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController();
-        projectiles = new ProjectileController();
+        projectileController = new ProjectileController();
 
         if (enableGUI){
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -334,7 +333,7 @@ public class GameController implements Screen {
      */
     public void reset() {
         bubblegumController.resetAllBubblegum();
-        projectiles.reset();
+        projectileController.reset();
 
         level.dispose();
 
@@ -346,6 +345,7 @@ public class GameController implements Screen {
         // Reload the json each time
         level.populate(directory, levelFormat);
         level.getWorld().setContactListener(collisionController);
+        projectileController.initialize(levelFormat.get("projectile"), directory, level.getScale().x, level.getScale().y);
     }
 
     /**
@@ -419,7 +419,6 @@ public class GameController implements Screen {
             avatar.setGrounded(false);
             sensorFixtures.clear();
 
-
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
 
@@ -431,36 +430,24 @@ public class GameController implements Screen {
             //get action from controller
             int action = controller.getAction(avatar.isFlipped());
 
+            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getAvatar().getX(), level.getAvatar().getY());
+                level.activate(newProj);
+            } else {
+                controller.coolDown(true);
+            }
+
             //pass to enemy, update the enemy with that action
             enemy.update(action);
-
-            //TODO: Remove
-
-
-//        for (Enemy e : level.getEnemies()){
-//            e.update();
-            // see if enemies can shoot
-            // TODO: move this to AI controller
-            if (enemy.canFire()){
-                fireWeapon(enemy);
-//                System.out.println("pew pew");
-            } else {
-                enemy.coolDown(true);
-            }
-//        }
-
-            projectiles.update();
-
         }
 
         if (PlayerController.getInstance().didShoot()) {
-
             Vector2 cross = level.getProjTarget(canvas);
-
             createGumProjectile(cross);
         }
 
         level.update(dt);
+        projectileController.update();
 
         // Update the camera
         Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
@@ -972,19 +959,6 @@ public class GameController implements Screen {
                     o.getName().equals("gumProjectile");
         }
 
-
-        //    // Projectile Interactions
-//    // Test bullet collision with world
-//            if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
-//        ((ProjectileModel) bd1).destroy();
-//    }
-//
-//            if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
-//        ((ProjectileModel) bd2).destroy();
-
-
-//    }
-
         /**
          * Checks if there was an enemy projectile collision in the Box2D world.
          * <p>
@@ -1012,6 +986,7 @@ public class GameController implements Screen {
          * @param o
          */
         private void resolveProjectileCollision(ProjectileModel p, Obstacle o){
+            if (p.isRemoved()) return;
             if (o.getName().equals("avatar")){
                 level.getAvatar().hitPlayer(p.getDamage());
             }
@@ -1054,33 +1029,6 @@ public class GameController implements Screen {
             }
 
         }
-
-    }
-
-
-    /**
-     * Creates Projectiles and updates the ship's cooldown.
-     *
-     * TODO: Move this elsewhere once it works
-     * @param e The enemy that is firing
-     */
-    private void fireWeapon(Enemy e){
-
-        JsonValue projJV = levelFormat.get("projectile");
-
-        String key = projJV.get("texture").asString();
-        TextureRegion projTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-        float radius = projTexture.getRegionWidth() / (2.0f * level.getScale().x);
-
-        ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY(), radius, e.getFaceRight());
-
-        //Physics Constants
-        p.setDrawScale(level.getScale());
-        p.setTexture(projTexture);
-
-        projectiles.addToQueue(p);
-        level.activate(p);
-        e.coolDown(false);
 
     }
 }
