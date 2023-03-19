@@ -16,7 +16,6 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,14 +24,19 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.enemies.StationaryEnemy;
+import edu.cornell.gdiac.json.gum.CollisionController;
+import edu.cornell.gdiac.json.gum.FloatingGum;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
-
 import java.util.Iterator;
 
 /**
@@ -82,12 +86,19 @@ public class LevelModel {
      * Reference to the goalDoor (for collision detection)
      */
     private ExitModel goalDoor;
+
+    /**Reference to floating gum in the game, to be collected */
+    private FloatingGum[] floatingGum;
+
     /**
      * Whether or not the level is in debug more (showing off physics)
      */
     private boolean debug;
 
+    /** The background of the level */
     private TextureRegion background;
+
+
 
     /**
      * All the objects in the world.
@@ -98,6 +109,18 @@ public class LevelModel {
      * All enemies in the world
      */
     private Enemy[] enemies;
+
+    public AIController[] getEnemyControllers() {
+        return AIControllers;
+    }
+
+    /**
+     * All enemy controllers in the world
+     */
+    private AIController[] AIControllers;
+
+    private Board board;
+
 
     /**
      * Returns the bounding rectangle for the physics world
@@ -181,6 +204,11 @@ public class LevelModel {
         bounds = new Rectangle(0, 0, 1, 1);
         scale = new Vector2(1, 1);
         debug = false;
+
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     /**
@@ -205,8 +233,8 @@ public class LevelModel {
         goalDoor.setDrawScale(scale);
         activate(goalDoor);
 
-        String key = levelFormat.get("background").asString();
-        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        String key2 = levelFormat.get("background").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key2, Texture.class));
         background = texture;
 
         JsonValue wall = levelFormat.get("walls").child();
@@ -215,6 +243,7 @@ public class LevelModel {
             obj.initialize(directory, wall);
             obj.setDrawScale(scale);
             activate(obj);
+            obj.setFilter(GameController.CollisionController.CATEGORY_TERRAIN, GameController.CollisionController.MASK_TERRAIN);
             wall = wall.next();
         }
 
@@ -224,6 +253,7 @@ public class LevelModel {
             obj.initialize(directory, floor);
             obj.setDrawScale(scale);
             activate(obj);
+            obj.setFilter(GameController.CollisionController.CATEGORY_TERRAIN, GameController.CollisionController.MASK_TERRAIN);
             floor = floor.next();
         }
 
@@ -232,32 +262,55 @@ public class LevelModel {
 
         // initialize enemies list
         enemies = new Enemy[numEnemies];
+        AIControllers = new AIController[numEnemies];
 
         // json of enemy
         JsonValue enemy = levelFormat.get("enemies").get("enemylist").child();
+
+        // Create bandit
+        avatar = new PlayerModel(world);
+        avatar.initialize(directory, levelFormat.get("avatar"));
+        avatar.setDrawScale(scale);
+        activate(avatar);
+        avatar.setFilter(GameController.CollisionController.CATEGORY_PLAYER, GameController.CollisionController.MASK_PLAYER);
+
+        board = new Board (levelFormat.get("board"));
 
         // initialize each enemy
         for (int i = 0; i < numEnemies; i++) {
             Enemy a;
             if (enemy.get("type").asString().equals("moving")) {
-                a = new MovingEnemy(world);
+                a = new MovingEnemy(world, i);
             } else {
-                a = new StationaryEnemy(world);
+                a = new StationaryEnemy(world, i);
             }
             a.initialize(directory, enemy);
             a.setDrawScale(scale);
             enemies[i] = a;
             activate(a);
+            a.setFilter(GameController.CollisionController.CATEGORY_ENEMY, GameController.CollisionController.MASK_ENEMY);
             enemy = enemy.next();
+            AIControllers[i] = new AIController(a, avatar, board);
         }
 
+        // get number of floating gums
+        int numGums = levelFormat.get("floatingGums").get("numGums").asInt();
+        JsonValue position = levelFormat.get("floatingGums").get("positions").child();
+        floatingGum = new FloatingGum[numGums];
 
-        // Create dude
+        // json of gums
+        JsonValue gums = levelFormat.get("floatingGums");
 
-        avatar = new PlayerModel(world);
-        avatar.initialize(directory, levelFormat.get("avatar"));
-        avatar.setDrawScale(scale);
-        activate(avatar);
+        for (int i = 0; i < numGums; i++) {
+            FloatingGum gum = new FloatingGum();
+            gum.initialize(directory, gums);
+            gum.setPosition(position);
+            gum.setDrawScale(scale);
+            activate(gum);
+            floatingGum[i] = gum;
+            position = position.next();
+        }
+
     }
 
 
@@ -326,7 +379,7 @@ public class LevelModel {
     public Vector2 getProjOrigin(JsonValue gumJV, GameCanvas canvas) {
         //  TODO: The logic for this should be in Gum Controller.
 
-        Vector2 cross = canvas.unproject(InputController.getInstance().getCrossHair());
+        Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
         cross.scl(1/scale.x,1/scale.y);
 
         cross.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, cross.x));
@@ -357,7 +410,7 @@ public class LevelModel {
 
 
     public Vector2 getProjTarget(GameCanvas canvas) {
-        Vector2 cross = canvas.unproject(InputController.getInstance().getCrossHair());
+        Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
         cross.scl(1/scale.x,1/scale.y);
 
         cross.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, cross.x));
@@ -375,9 +428,16 @@ public class LevelModel {
         return oy + vy* t + .5f * g * t *t;
     }
 
-    public void drawProjectile(String type, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
-        Vector2 target = InputController.getInstance().getCrossHair();
-        JsonValue gumJV = levelFormat.get(type);
+    public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
+        Vector2 target = PlayerController.getInstance().getCrossHair();
+        JsonValue gumJV = levelFormat.get("gumProjectile");
+
+        //TODO: Resolve drawing projectile
+//    public void drawProjectile(String type, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
+//        Vector2 target = InputController.getInstance().getCrossHair();
+//        JsonValue gumJV = levelFormat.get(type);
+
+
 //        float offsetX = gumJV.getFloat("offsetX", 0);
 //        offsetX *= (target.x > avatar.getX() ? 1 : -1);
 //        float offsetY = gumJV.getFloat("offsetY", 0);
@@ -408,7 +468,7 @@ public class LevelModel {
      * @param canvas The GameCanvas to draw the trajectory on.
      */
     public void drawProjectileRay(JsonValue levelFormat, TextureRegion asset, GameCanvas canvas){
-        Vector2 target = InputController.getInstance().getCrossHair();
+        Vector2 target = PlayerController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
         Vector2 origin = getProjOrigin(gumJV, canvas);
         Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
@@ -445,6 +505,21 @@ public class LevelModel {
         }
     }
 
+
+    public void drawGrid(GameCanvas canvas){
+        PolygonShape s = new PolygonShape();
+        s.setAsBox(400, .5f);
+
+        for (int i = 50; i < 800; i+=50){
+            canvas.drawPhysics(s, Color.BLACK, 400, i);
+        }
+        s.setAsBox(.5f, 300);
+
+        for (int i = 50; i < 800; i+=50){
+            canvas.drawPhysics(s, Color.BLACK, i, 300);
+        }
+    }
+
     /**
      * Draws the level to the given game canvas
      * <p>
@@ -465,12 +540,15 @@ public class LevelModel {
             obj.draw(canvas);
         }
         if (gumGravity != 0) {
-            drawProjectile("gumProjectile", levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
-            drawProjectile("projectile", levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+            drawProjectile(levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+            //TODO: Resolve drawing Projectile
+//            drawProjectile("gumProjectile", levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+//            drawProjectile("projectile", levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
 
         } else {
             drawProjectileRay(levelFormat, gumProjectile, canvas);
         }
+
 
         canvas.end();
 
@@ -479,13 +557,16 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
+//            drawGrid(canvas);
+            board.drawBoard(canvas);
             canvas.endDebug();
+
         }
 
 
     }
 
-
+    public FloatingGum[] getFloatingGum() {return floatingGum; }
 
     public Enemy[] getEnemies() {
         return enemies;
