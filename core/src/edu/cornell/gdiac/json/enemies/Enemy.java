@@ -348,22 +348,22 @@ public abstract class Enemy extends CapsuleObstacle {
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        for (Sensor s : sensors) {
-            float y = getY();
-            float x = getX();
-            if (angle == 3.14f) {
-                y += s.printY();
-                x -= s.printX();
-            }
-
-            else {
-                y -= s.printY();
-                x += s.printX();
-            }
-            canvas.drawPhysics(s.getSensorShape(), sensorColor,
-                x, y, getAngle(), drawScale.x, drawScale.y);
-        }
-        vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//        for (Sensor s : sensors) {
+//            float y = getY();
+//            float x = getX();
+//            if (angle == 3.14f) {
+//                y += s.printY();
+//                x -= s.printX();
+//            }
+//
+//            else {
+//                y -= s.printY();
+//                x += s.printX();
+//            }
+//            canvas.drawPhysics(s.getSensorShape(), sensorColor,
+//                x, y, getAngle(), drawScale.x, drawScale.y);
+//        }
+//        vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
     public void updateVision() {
