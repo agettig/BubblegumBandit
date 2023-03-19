@@ -137,7 +137,7 @@ public class Vision {
      */
     public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
         canvas.drawFOV(color, rays, x, y, scalex, scaley);
-//            canvas.drawRays(color, rays, x, y, radius, scalex, scaley);
+//        canvas.drawRays(color, rays, x, y, radius, scalex, scaley);
     }
 
     /**

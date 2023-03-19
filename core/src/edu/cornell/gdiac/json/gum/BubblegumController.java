@@ -1,7 +1,11 @@
 package edu.cornell.gdiac.json.gum;
-
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.json.LevelModel;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import com.badlogic.gdx.utils.JsonValue;
 
 
 /**
@@ -10,7 +14,9 @@ import com.badlogic.gdx.utils.Queue;
 public class BubblegumController {
 
     /**Maximum amount of Bubblegum on screen at the same time. */
-    private static final int MAX_GUM = 30;
+    private int MAX_GUM;
+
+    private int starting_gum;
 
     /**Amount of active gum. */
     private static int ACTIVE_GUM;
@@ -31,6 +37,30 @@ public class BubblegumController {
         stuckBubblegumQueue = new Queue<GumJointPair>();
         bubblegumAssemblyQueue = new Queue<GumJointPair>();
         midAirBubblegumQueue = new Queue<Bubblegum>();
+    }
+
+    /** Initialize bublegumController stats */
+    public void initialize(JsonValue json) {
+        MAX_GUM = json.get("starting_gum").asInt();
+        starting_gum = MAX_GUM;
+    }
+
+    public void resetMAX_GUM() {
+        MAX_GUM = starting_gum;
+    }
+    /**gets the amounut of bubblegum player has */
+    public int getMAX_GUM() {
+        return MAX_GUM;
+    }
+
+    /** reduces max gum by 1 */
+    public void reduceMAX_GUM() {
+        MAX_GUM -= 1;
+    }
+
+    /** increases max gum by 1 */
+    public void increaseMAX_GUM() {
+        MAX_GUM += 1;
     }
 
 
@@ -114,7 +144,7 @@ public class BubblegumController {
      * @returns true if the gum limit has been reached
      * */
     public boolean gumLimitReached(){
-        return ACTIVE_GUM >= MAX_GUM;
+        return MAX_GUM == 0;
     }
 
     /**
@@ -138,6 +168,35 @@ public class BubblegumController {
     private void dequeueMidAir(){
         if(midAirBubblegumQueue.isEmpty()) return;
         midAirBubblegumQueue.removeFirst();
+    }
+
+    /**
+     * Returns a WeldJointDef connecting gum and another obstacle.
+     */
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyB = ob.getBody();
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
+    }
+
+
+    /**
+     * Adds every joint in the joint queue to the world before clearing the queue.
+     */
+    public void addJointsToWorld(LevelModel level) {
+        for(int i = 0; i < numActivePairsToAssemble(); i++){
+            GumJointPair pairToAssemble = dequeueAssembly();
+            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
+            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
+            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
+            addToStuckBubblegum(activePair);
+        }
     }
 
 }
