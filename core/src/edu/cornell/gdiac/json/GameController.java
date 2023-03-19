@@ -628,7 +628,7 @@ public class GameController implements Screen {
 
         String key = gumJV.get("texture").asString();
         TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
+        float radius = gumTexture.getRegionWidth() / (2f * level.getScale().x);
 
         //TODO: PLACE INSTANTIATION LOGIC INSIDE OF BUBBLEGUM CONTROLLER
         Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
@@ -814,6 +814,8 @@ public class GameController implements Screen {
 
             // Check that obstacles are not null and not the player
             if (bd1 == null || bd2 == null) return;
+            if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
+            if (bd1.getName().equals("floatingGums") || bd2.getName().equals("floatingGums")) return;
 
             if (isGumObstacle(bd1)) {
                 Bubblegum gum = (Bubblegum) bd1;
