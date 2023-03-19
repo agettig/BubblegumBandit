@@ -851,17 +851,16 @@ public class GameController implements Screen {
                 }
 
                 // Projectile Interactions
+                checkProjectileCollision(bd1, bd2);
 
-                //TODO: move to projectile controller
-
-                // Test bullet collision with world
-                if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
-                    ((ProjectileModel) bd1).destroy();
-                }
-
-                if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
-                    ((ProjectileModel) bd2).destroy();
-                }
+//                // Test bullet collision with world
+//                if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
+//                    ((ProjectileModel) bd1).destroy();
+//                }
+//
+//                if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
+//                    ((ProjectileModel) bd2).destroy();
+//                }
 
 
 
@@ -991,38 +990,39 @@ public class GameController implements Screen {
 //    }
 
         /**
-         * Handles an enemy projectile's collision in the Box2D world.
+         * Checks if there was an enemy projectile collision in the Box2D world.
          * <p>
          * Examines two Obstacles in a collision.
          * *
          * @param bd1 The first Obstacle in the collision.
          * @param bd2 The second Obstacle in the collision.
          */
-        private void resolveProjectileCollision(Obstacle bd1, Obstacle bd2) {
+        private void checkProjectileCollision(Obstacle bd1, Obstacle bd2) {
 
             // Check that obstacles are not null and not an enemy
             if (bd1 == null || bd2 == null) return;
             if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
 
-            if (isGumObstacle(bd1)) {
-                Bubblegum gum = (Bubblegum) bd1;
-                gum.setVX(0);
-                gum.setVY(0);
-
-                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd2);
-                GumJointPair pair = new GumJointPair(gum, weldJointDef);
-                bubblegumController.addToAssemblyQueue(pair);
-
-            } else if (isGumObstacle(bd2)) {
-                Bubblegum gum = (Bubblegum) bd2;
-                gum.setVX(0);
-                gum.setVY(0);
-
-                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd1);
-                GumJointPair pair = new GumJointPair(gum, weldJointDef);
-                bubblegumController.addToAssemblyQueue(pair);
+            if (bd1.getName().equals("projectile")) {
+                resolveProjectileCollision((ProjectileModel) bd1, bd2);
+            } else if (bd2.getName().equals("projectile")) {
+                resolveProjectileCollision((ProjectileModel) bd2, bd1);
             }
         }
+
+        /**
+         * Resolves the effects of a projectile collision
+         * @param p
+         * @param o
+         */
+        private void resolveProjectileCollision(ProjectileModel p, Obstacle o){
+            if (o.getName().equals("avatar")){
+                level.getAvatar().hitPlayer(p.getDamage());
+            }
+            p.destroy();
+        }
+
+
 
     }
 

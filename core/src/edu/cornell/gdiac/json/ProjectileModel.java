@@ -23,6 +23,9 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     /** Speed that bullets move */
     private float speed = 10;
 
+    /** damage that the bullet deals upon impact with player */
+    private float damage = 1;
+
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectilePool.
      *
@@ -80,6 +83,14 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
 //        this.setTexture(texture);
         this.setBullet(true);
         this.setGravityScale(gravity);
+    }
+
+    /**
+     *
+     * @return the damage that this bullet deals to the player
+     */
+    public float getDamage(){
+        return damage;
     }
 
 
