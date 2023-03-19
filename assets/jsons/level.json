@@ -4,8 +4,8 @@
     24.0
   ],
   "graphicSize": [
-    800,
-    600
+    2400,
+    1200
   ],
   "background": "background",
   "gravity": -9.8,
@@ -48,7 +48,7 @@
         12.0,
         23.0,
         1.0,
-        20.0,
+        23.0,
         1.0,
         0.0,
         0.0,
@@ -103,17 +103,17 @@
       "density": 0.0,
       "friction": 0.4,
       "restitution": 0.0,
-      "texture": "gum",
+      "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200
     },
-    "floor7": {
+    "floor2": {
       "pos": [
-        10,
-        4.5
+        2,
+        2
       ],
       "size": [
-        12,
+        2,
         1
       ],
       "bodytype": "static",
@@ -124,14 +124,65 @@
       "debugcolor": "yellow",
       "debugopacity": 200
     },
-    "floor10": {
+    "floor3": {
       "pos": [
-        2.5,
-        8.5
+        2,
+        8
       ],
       "size": [
-        11.0,
+        2,
         1
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor4": {
+      "pos": [
+        8,
+        4
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor5": {
+      "pos": [
+        25,
+        15
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor6": {
+      "pos": [
+        2,
+        15
+      ],
+      "size": [
+        1,
+        20
       ],
       "bodytype": "static",
       "density": 0.0,
@@ -149,8 +200,8 @@
         "name": "enemy1",
         "type": "moving",
         "pos": [
-          4.5,
-          5.0
+          8.0,
+          6.0
         ],
         "size": [
           0.5,
@@ -330,8 +381,8 @@
   },
   "exit": {
     "pos": [
-      2.0,
-      10.0
+      46,
+      1.92
     ],
     "size": [
       1.92,

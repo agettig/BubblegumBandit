@@ -1323,8 +1323,8 @@ public class GameCanvas {
     }
 
     public void drawBackground(TextureRegion texture) {
-        draw(texture, Color.WHITE, 0, 0, viewport.getWorldWidth(),
-       viewport.getWorldHeight());
+        draw(texture, Color.WHITE, 0, 0, viewport.getWorldWidth() * 3,
+       viewport.getWorldHeight() * 2);
 
 
     }
