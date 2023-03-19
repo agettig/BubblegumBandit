@@ -156,6 +156,9 @@ public class GameController implements Screen {
     private BubblegumController bubblegumController;
 
 
+    /** A collection of the active projectiles on screen */
+    private ProjectileController projectiles;
+
     /**
      * Gum gravity scale when creating gum
      */
@@ -273,6 +276,7 @@ public class GameController implements Screen {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController();
+        projectiles = new ProjectileController();
 
         if (enableGUI){
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -330,6 +334,8 @@ public class GameController implements Screen {
      */
     public void reset() {
         bubblegumController.resetAllBubblegum();
+        projectiles.reset();
+
         level.dispose();
 
         setComplete(false);
@@ -426,6 +432,24 @@ public class GameController implements Screen {
 
             //pass to enemy, update the enemy with that action
             enemy.update(action);
+
+            //TODO: Remove
+
+
+//        for (Enemy e : level.getEnemies()){
+//            e.update();
+            // see if enemies can shoot
+            // TODO: move this to AI controller
+            if (enemy.canFire()){
+                fireWeapon(enemy);
+//                System.out.println("pew pew");
+            } else {
+                enemy.coolDown(true);
+            }
+//        }
+
+            projectiles.update();
+
         }
 
         if (PlayerController.getInstance().didReset()) {
@@ -826,10 +850,28 @@ public class GameController implements Screen {
                     ((FloatingGum) bd2).setCollected(true);
                 }
 
+                // Projectile Interactions
+                checkProjectileCollision(bd1, bd2);
+
+//                // Test bullet collision with world
+//                if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
+//                    ((ProjectileModel) bd1).destroy();
+//                }
+//
+//                if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
+//                    ((ProjectileModel) bd2).destroy();
+//                }
+
+
+
                 // Check for gum collision
                 resolveGumCollision(bd1, bd2);
 
                 // TODO: Gum interactions
+
+
+
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -933,6 +975,55 @@ public class GameController implements Screen {
             return o.getName().equals("stickyGum") ||
                     o.getName().equals("gumProjectile");
         }
+
+
+        //    // Projectile Interactions
+//    // Test bullet collision with world
+//            if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
+//        ((ProjectileModel) bd1).destroy();
+//    }
+//
+//            if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
+//        ((ProjectileModel) bd2).destroy();
+
+
+//    }
+
+        /**
+         * Checks if there was an enemy projectile collision in the Box2D world.
+         * <p>
+         * Examines two Obstacles in a collision.
+         * *
+         * @param bd1 The first Obstacle in the collision.
+         * @param bd2 The second Obstacle in the collision.
+         */
+        private void checkProjectileCollision(Obstacle bd1, Obstacle bd2) {
+
+            // Check that obstacles are not null and not an enemy
+            if (bd1 == null || bd2 == null) return;
+            if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
+
+            if (bd1.getName().equals("projectile")) {
+                resolveProjectileCollision((ProjectileModel) bd1, bd2);
+            } else if (bd2.getName().equals("projectile")) {
+                resolveProjectileCollision((ProjectileModel) bd2, bd1);
+            }
+        }
+
+        /**
+         * Resolves the effects of a projectile collision
+         * @param p
+         * @param o
+         */
+        private void resolveProjectileCollision(ProjectileModel p, Obstacle o){
+            if (o.getName().equals("avatar")){
+                level.getAvatar().hitPlayer(p.getDamage());
+            }
+            p.destroy();
+        }
+
+
+
     }
 
 
@@ -967,6 +1058,33 @@ public class GameController implements Screen {
             }
 
         }
+
+    }
+
+
+    /**
+     * Creates Projectiles and updates the ship's cooldown.
+     *
+     * TODO: Move this elsewhere once it works
+     * @param e The enemy that is firing
+     */
+    private void fireWeapon(Enemy e){
+
+        JsonValue projJV = levelFormat.get("projectile");
+
+        String key = projJV.get("texture").asString();
+        TextureRegion projTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+        float radius = projTexture.getRegionWidth() / (2.0f * level.getScale().x);
+
+        ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY(), radius, e.getFaceRight());
+
+        //Physics Constants
+        p.setDrawScale(level.getScale());
+        p.setTexture(projTexture);
+
+        projectiles.addToQueue(p);
+        level.activate(p);
+        e.coolDown(false);
 
     }
 }

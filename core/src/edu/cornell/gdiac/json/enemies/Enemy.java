@@ -62,6 +62,8 @@ public abstract class Enemy extends CapsuleObstacle {
     private Sensor[] sensors;
     private Color sensorColor;
 
+    //endRegion
+
     public Vision vision;
 
     private World world;
@@ -80,6 +82,19 @@ public abstract class Enemy extends CapsuleObstacle {
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
+
+    // Shooting Attributes & Constants
+
+    /** How long an enemy must wait until it can fire its weapon again */
+    private static final int COOLDOWN = 60; //in ticks
+
+    /** The number of frames until we can fire again */
+    private int firecool;
+
+    /** Whether this enemy is currently firing */
+    private boolean firing = true;
+
+    // endRegion
 
     /**
      * Returns left/right movement of this character.
@@ -218,6 +233,7 @@ public abstract class Enemy extends CapsuleObstacle {
         this.world = world;
         this.id = id;
         vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
+        firecool = 0;
     }
 
     /**
@@ -307,6 +323,9 @@ public abstract class Enemy extends CapsuleObstacle {
             yScale -= 0.1f;
         }
         updateVision();
+
+
+
     }
 
 
@@ -329,22 +348,22 @@ public abstract class Enemy extends CapsuleObstacle {
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        for (Sensor s : sensors) {
-            float y = getY();
-            float x = getX();
-            if (angle == 3.14f) {
-                y += s.printY();
-                x -= s.printX();
-            }
-
-            else {
-                y -= s.printY();
-                x += s.printX();
-            }
-            canvas.drawPhysics(s.getSensorShape(), sensorColor,
-                x, y, getAngle(), drawScale.x, drawScale.y);
-        }
-        vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//        for (Sensor s : sensors) {
+//            float y = getY();
+//            float x = getX();
+//            if (angle == 3.14f) {
+//                y += s.printY();
+//                x -= s.printX();
+//            }
+//
+//            else {
+//                y -= s.printY();
+//                x += s.printX();
+//            }
+//            canvas.drawPhysics(s.getSensorShape(), sensorColor,
+//                x, y, getAngle(), drawScale.x, drawScale.y);
+//        }
+//        vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
     public void updateVision() {
@@ -402,4 +421,40 @@ public abstract class Enemy extends CapsuleObstacle {
     public void flippedGravity() {
         isFlipped = !isFlipped;
     }
+
+     /**
+     * @return whether this robot can fire its weapon and is actively firing.
+     */
+    public boolean canFire() {
+        return firing && firecool <= 0;
+    }
+
+    /**
+     * Sets whether the robot is actively firing.
+     *
+     * @param value whether the robot is actively firing.
+     */
+    public void setFiring(boolean value) {
+        firing = value;
+    }
+
+    /**
+     * Reset or cool down the ship weapon.
+     *
+     * If flag is true, the weapon will cool down by one animation frame.  Otherwise
+     * it will reset to its maximum cooldown.
+     *
+     * @param flag whether to cooldown or reset
+     */
+    public void coolDown(boolean flag) {
+        if (flag && firecool > 0) {
+            firecool--;
+        } else if (!flag) {
+            firecool = COOLDOWN;
+        }
+//        System.out.println(firecool);
+    }
+
+
+
 }
