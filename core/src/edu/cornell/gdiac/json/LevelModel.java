@@ -93,6 +93,8 @@ public class LevelModel {
     /** The background of the level */
     private TextureRegion background;
 
+    private int[] graphicsSize;
+
 
 
     /**
@@ -215,12 +217,12 @@ public class LevelModel {
     public void populate(AssetDirectory directory, JsonValue levelFormat) {
         float gravity = levelFormat.getFloat("gravity");
         float[] pSize = levelFormat.get("physicsSize").asFloatArray();
-        int[] gSize = levelFormat.get("graphicSize").asIntArray();
+        graphicsSize = levelFormat.get("graphicSize").asIntArray();
 
         world = new World(new Vector2(0, gravity), false);
         bounds = new Rectangle(0, 0, pSize[0], pSize[1]);
-        scale.x = gSize[0] / pSize[0];
-        scale.y = gSize[1] / pSize[1];
+        scale.x = graphicsSize[0] / pSize[0];
+        scale.y = graphicsSize[1] / pSize[1];
 
         // Add level goal
         goalDoor = new ExitModel();
@@ -504,15 +506,17 @@ public class LevelModel {
 
     public void drawGrid(GameCanvas canvas){
         PolygonShape s = new PolygonShape();
-        s.setAsBox(400, .5f);
+        int halfWidth = graphicsSize[0]/2;
+        int halfHeight = graphicsSize[1]/2;
+        s.setAsBox(halfWidth, .5f);
 
-        for (int i = 50; i < 800; i+=50){
-            canvas.drawPhysics(s, Color.BLACK, 400, i);
+        for (int i = 50; i < graphicsSize[1]; i+=50){
+            canvas.drawPhysics(s, Color.RED, halfWidth, i);
         }
-        s.setAsBox(.5f, 300);
+        s.setAsBox(.5f, graphicsSize[1]/2);
 
-        for (int i = 50; i < 800; i+=50){
-            canvas.drawPhysics(s, Color.BLACK, i, 300);
+        for (int i = 50; i < graphicsSize[0]; i+=50){
+            canvas.drawPhysics(s, Color.RED, i, halfHeight);
         }
     }
 
@@ -553,7 +557,7 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
-//            drawGrid(canvas);
+            drawGrid(canvas);
             board.drawBoard(canvas);
             canvas.endDebug();
 
