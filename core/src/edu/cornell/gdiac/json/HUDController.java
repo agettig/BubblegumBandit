@@ -117,6 +117,7 @@ public class HUDController {
 
 
     /// update the text
+    gumCount.setText("x"+bubblegumController.getAmmo());
 
     stage.draw();
 
