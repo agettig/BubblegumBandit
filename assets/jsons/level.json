@@ -191,6 +191,40 @@
       "texture": "earth",
       "debugcolor": "yellow",
       "debugopacity": 200
+    },
+    "floor7": {
+      "pos": [
+        29,
+        1
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor8": {
+      "pos": [
+        5,
+        19
+      ],
+      "size": [
+        10,
+        1
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
     }
   },
   "enemies": {
