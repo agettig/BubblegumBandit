@@ -431,6 +431,13 @@ public class LevelModel {
     public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
         Vector2 target = PlayerController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
+
+        //TODO: Resolve drawing projectile
+//    public void drawProjectile(String type, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion gumProjectile, GameCanvas canvas){
+//        Vector2 target = InputController.getInstance().getCrossHair();
+//        JsonValue gumJV = levelFormat.get(type);
+
+
 //        float offsetX = gumJV.getFloat("offsetX", 0);
 //        offsetX *= (target.x > avatar.getX() ? 1 : -1);
 //        float offsetY = gumJV.getFloat("offsetY", 0);
@@ -534,6 +541,10 @@ public class LevelModel {
         }
         if (gumGravity != 0) {
             drawProjectile(levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+            //TODO: Resolve drawing Projectile
+//            drawProjectile("gumProjectile", levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+//            drawProjectile("projectile", levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
+
         } else {
             drawProjectileRay(levelFormat, gumProjectile, canvas);
         }
