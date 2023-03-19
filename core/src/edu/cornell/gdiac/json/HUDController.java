@@ -101,7 +101,7 @@ public class HUDController {
       lastFrac = healthFraction;
     }
     healthFill.setWidth((health.getWidth()-2*margin)*healthFraction);
-    scoreLabel.setText("Gum left: " + bubblegumController.getMAX_GUM());
+    scoreLabel.setText("Gum left: " + bubblegumController.getAmmo());
 
 
     stage.draw();
