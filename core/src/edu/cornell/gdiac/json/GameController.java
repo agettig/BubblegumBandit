@@ -428,7 +428,7 @@ public class GameController implements Screen {
             adjustForDrift(enemy);
 
             //get action from controller
-            int action = controller.getAction(avatar.isFlipped());
+            int action = 0;
 
             //pass to enemy, update the enemy with that action
             enemy.update(action);

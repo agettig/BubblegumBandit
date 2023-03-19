@@ -1,7 +1,7 @@
 {
   "physicsSize": [
-    16.0,
-    12.0
+    48.0,
+    24.0
   ],
   "graphicSize": [
     800,
@@ -11,8 +11,8 @@
   "gravity": -9.8,
   "avatar": {
     "pos": [
-      12.5,
-      1
+      5,
+      5
     ],
     "size": [
       1,
@@ -43,18 +43,18 @@
     "wall1": {
       "vertices": 12,
       "boundary": [
-        8.0,
         12.0,
-        8.0,
-        11,
-        1,
-        11,
-        1,
+        24.0,
+        12.0,
+        23.0,
+        1.0,
+        20.0,
+        1.0,
         0.0,
         0.0,
         0.0,
         0.0,
-        12.0
+        24.0
       ],
       "bodytype": "static",
       "density": 0.0,
@@ -67,18 +67,18 @@
     "wall2": {
       "vertices": 12,
       "boundary": [
-        16.0,
+        48.0,
+        24.0,
+        48.0,
+        0.0,
+        47.0,
+        0.0,
+        47.0,
+        23.0,
         12.0,
-        16.0,
-        0.0,
-        15,
-        0.0,
-        15,
-        11,
-        8.0,
-        11,
-        8.0,
-        12.0
+        23.0,
+        12.0,
+        24.0
       ],
       "bodytype": "static",
       "density": 0.0,
@@ -92,18 +92,18 @@
   "platforms": {
     "floor1": {
       "pos": [
-        2,
-        0.5
+        24,
+        0
       ],
       "size": [
-        30,
+        48,
         1
       ],
       "bodytype": "static",
       "density": 0.0,
       "friction": 0.4,
       "restitution": 0.0,
-      "texture": "earth",
+      "texture": "gum",
       "debugcolor": "yellow",
       "debugopacity": 200
     },
