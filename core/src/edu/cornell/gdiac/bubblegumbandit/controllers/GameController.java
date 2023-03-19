@@ -15,27 +15,25 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
-import edu.cornell.gdiac.bubblegumbandit.models.level.PlatformModel;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
-import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.util.*;
-
-import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.util.ScreenListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -401,8 +399,14 @@ public class GameController implements Screen {
         if (inputResults.didShoot()) {
 
             Vector2 cross = level.getProjTarget(canvas);
-
-            createGumProjectile(cross);
+            JsonValue gumJV = levelFormat.get("gumProjectile");
+            BanditModel avatar = level.getAvatar();
+            Vector2 origin = level.getProjOrigin(gumJV, canvas);
+            String key = gumJV.get("texture").asString();
+            Vector2 scale = level.getScale();
+            TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumSpeed, gumGravity, gumTexture);
+            level.activate(gum);
         }
 
         level.update(dt);
@@ -555,52 +559,52 @@ public class GameController implements Screen {
         return sound.play(volume);
     }
 
-    /**
-     * Add a new gum projectile to the world and send it in the right direction.
-     */
-    private void createGumProjectile(Vector2 target) {
-
-        if(bubblegumController.gumLimitReached()) return;
-
-        JsonValue gumJV = levelFormat.get("gumProjectile");
-        BanditModel avatar = level.getAvatar();
-
-        Vector2 origin = level.getProjOrigin(gumJV, canvas);
-        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-        gumVel.nor();
-
-        // Prevent player from shooting themselves by clicking on player
-        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
-        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
-            return;
-        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
-            return;
-        }
-
-        String key = gumJV.get("texture").asString();
-        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
-
-        //Create a new GumModel and assign it to the BubblegumController.
-        GumModel gum = new GumModel(origin.x, origin.y, radius);
-        gum.setName(gumJV.name());
-        gum.setDensity(gumJV.getFloat("density", 0));
-        gum.setDrawScale(level.getScale());
-        gum.setTexture(gumTexture);
-        gum.setBullet(true);
-        gum.setGravityScale(gumGravity);
-        bubblegumController.addNewBubblegum(gum);
-
-        // Compute position and velocity
-        if (gumSpeed == 0) { // Use default gum speed
-            gumVel.scl(gumJV.getFloat("speed", 0));
-        } else { // Use slider gum speed
-            gumVel.scl(gumSpeed);
-        }
-        gum.setVX(gumVel.x);
-        gum.setVY(gumVel.y);
-        level.activate(gum);
-    }
+//    /**
+//     * Add a new gum projectile to the world and send it in the right direction.
+//     */
+//    private void createGumProjectile(Vector2 target) {
+//
+//        if(bubblegumController.gumLimitReached()) return;
+//
+//        JsonValue gumJV = levelFormat.get("gumProjectile");
+//        BanditModel avatar = level.getAvatar();
+//
+//        Vector2 origin = level.getProjOrigin(gumJV, canvas);
+//        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+//        gumVel.nor();
+//
+//        // Prevent player from shooting themselves by clicking on player
+//        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
+//        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+//            return;
+//        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+//            return;
+//        }
+//
+//        String key = gumJV.get("texture").asString();
+//        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+//        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
+//
+//        //Create a new GumModel and assign it to the BubblegumController.
+//        GumModel gum = new GumModel(origin.x, origin.y, radius);
+//        gum.setName(gumJV.name());
+//        gum.setDensity(gumJV.getFloat("density", 0));
+//        gum.setDrawScale(level.getScale());
+//        gum.setTexture(gumTexture);
+//        gum.setBullet(true);
+//        gum.setGravityScale(gumGravity);
+//        bubblegumController.addNewBubblegum(gum);
+//
+//        // Compute position and velocity
+//        if (gumSpeed == 0) { // Use default gum speed
+//            gumVel.scl(gumJV.getFloat("speed", 0));
+//        } else { // Use slider gum speed
+//            gumVel.scl(gumSpeed);
+//        }
+//        gum.setVX(gumVel.x);
+//        gum.setVY(gumVel.y);
+//        level.activate(gum);
+//    }
 
     /**
      * Adds every joint in the joint queue to the world before clearing the queue.

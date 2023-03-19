@@ -1,8 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
-import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
 
 
 /**
@@ -24,6 +28,12 @@ public class BubblegumController {
 
     /**The queue of mid-air GumModel obstacles. */
     private static Queue<GumModel> midAirBubblegumQueue;
+
+    /** Gum gravity scale when creating gum */
+    private float gumGravity;
+
+    /** Gum speed when creating gum */
+    private float gumSpeed;
 
     /**
      * Instantiates the GumModel controller and its queues.
@@ -72,6 +82,49 @@ public class BubblegumController {
         if(pair.getJointDef() != null) return;
 
         stuckBubblegumQueue.addLast(pair);
+    }
+
+    /**
+     * Add a new gum projectile to the world and send it in the right direction.
+     */
+    public GumModel createGumProjectile(Vector2 target, JsonValue gumJV, BanditModel avatar, Vector2 origin, Vector2 scale,
+                                    float gumSpeed, float gumGravity, TextureRegion texture) {
+
+        if(gumLimitReached()) return null;
+
+        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+        gumVel.nor();
+
+        // Prevent player from shooting themselves by clicking on player
+        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
+        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+            return null;
+        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+            return null;
+        }
+
+        float radius = texture.getRegionWidth() / (2.0f * scale.x);
+
+        //Create a new GumModel and assign it to the BubblegumController.
+        GumModel gum = new GumModel(origin.x, origin.y, radius);
+        gum.setName(gumJV.name());
+        gum.setDensity(gumJV.getFloat("density", 0));
+        gum.setDrawScale(scale);
+        gum.setTexture(texture);
+        gum.setBullet(true);
+        gum.setGravityScale(gumGravity);
+        addNewBubblegum(gum);
+
+        // Compute position and velocity
+        if (gumSpeed == 0) { // Use default gum speed
+            gumVel.scl(gumJV.getFloat("speed", 0));
+        } else { // Use slider gum speed
+            gumVel.scl(gumSpeed);
+        }
+        gum.setVX(gumVel.x);
+        gum.setVY(gumVel.y);
+
+        return gum;
     }
 
     /**
