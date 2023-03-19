@@ -1,21 +1,11 @@
 package edu.cornell.gdiac.json;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.Queue;
-import edu.cornell.gdiac.json.gum.GumJointPair;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import com.badlogic.gdx.utils.Queue;
 
 
 /**
  * Manages the projectiles fired by the enemies
  */
-public class ProjectilePool{
+public class ProjectileController{
 
     /** The maximum number of projectile objects we support */
     private static final int MAX_PROJECTILE = 1024;
@@ -28,7 +18,7 @@ public class ProjectilePool{
      *
      * The game will never support more than MAX_PROJECTILES projectiles on screen at a time.
      */
-    public ProjectilePool(){
+    public ProjectileController(){
         queue = new Queue<ProjectileModel>();
     }
 

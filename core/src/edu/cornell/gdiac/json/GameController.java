@@ -157,7 +157,7 @@ public class GameController implements Screen {
 
 
     /** A collection of the active projectiles on screen */
-    private ProjectilePool projectiles;
+    private ProjectileController projectiles;
 
     /**
      * Gum gravity scale when creating gum
@@ -276,7 +276,7 @@ public class GameController implements Screen {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController();
-        projectiles = new ProjectilePool();
+        projectiles = new ProjectileController();
 
         if (enableGUI){
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
