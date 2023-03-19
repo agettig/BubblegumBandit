@@ -61,7 +61,7 @@ public class ProjectilePool{
         while (queue.notEmpty() && !queue.first().isAlive()) {
             queue.removeFirst();
         }
-        System.out.println(queue.size);
+//        System.out.println(queue.size);
     }
 
 

@@ -432,28 +432,29 @@ public class GameController implements Screen {
 
             //pass to enemy, update the enemy with that action
             enemy.update(action);
+
+            //TODO: Remove
+
+
+//        for (Enemy e : level.getEnemies()){
+//            e.update();
+            // see if enemies can shoot
+            // TODO: move this to AI controller
+            if (enemy.canFire()){
+                fireWeapon(enemy);
+//                System.out.println("pew pew");
+            } else {
+                enemy.coolDown(true);
+            }
+//        }
+
+            projectiles.update();
+
         }
 
         if (PlayerController.getInstance().didReset()) {
             bubblegumController.resetMAX_GUM();
         }
-
-
-
-        //TODO: Remove
-        //        projectiles.update(level.getWorld());
-//        projectiles.update();
-//
-//        for (Enemy e : level.getEnemies()){
-//            e.update();
-//            // see if enemies can shoot
-//            // TODO: move this to AI controller
-//            if (e.canFire()){
-//                fireWeapon(e);
-//            } else {
-//                e.coolDown(true);
-//            }
-//        }
 
 
         if (PlayerController.getInstance().didShoot()) {
@@ -586,17 +587,6 @@ public class GameController implements Screen {
     public void setScreenListener(ScreenListener listener) {
         this.listener = listener;
     }
-
-    //TODO: move to collisionController
-//    // Projectile Interactions
-//    // Test bullet collision with world
-//            if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
-//        ((ProjectileModel) bd1).destroy();
-//    }
-//
-//            if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
-//        ((ProjectileModel) bd2).destroy();
-//    }
 
  /**
      * Method to ensure that a sound asset is only played once.
@@ -860,10 +850,31 @@ public class GameController implements Screen {
                     ((FloatingGum) bd2).setCollected(true);
                 }
 
+                // Projectile Interactions
+
+                //TODO: move to projectile controller
+
+                // Test bullet collision with world
+                if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
+                    ((ProjectileModel) bd1).destroy();
+                }
+
+                if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
+                    ((ProjectileModel) bd2).destroy();
+                }
+
+
+
+
+
                 // Check for gum collision
                 resolveGumCollision(bd1, bd2);
 
                 // TODO: Gum interactions
+
+
+
+
 
             } catch (Exception e) {
                 e.printStackTrace();
