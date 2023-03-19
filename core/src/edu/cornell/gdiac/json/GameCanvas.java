@@ -17,6 +17,7 @@
  */
 package edu.cornell.gdiac.json;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -109,7 +110,7 @@ public class GameCanvas {
     /**
      * Camera for the underlying SpriteBatch
      */
-    private OrthographicCamera camera;
+    private GameCamera camera;
 
     /**
      * Value to cache window width (if we are currently full screen)
@@ -138,6 +139,8 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
+      private FitViewport UIviewport;
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -153,10 +156,11 @@ public class GameCanvas {
 
 
         // Set the projection matrix (for proper scaling)
-        camera = new OrthographicCamera(getWidth(), getHeight());
+        camera = new GameCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
         viewport = new FitViewport(getWidth(), getHeight(), camera);
         viewport.apply();
+        UIviewport = new FitViewport(getWidth(), getHeight());
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
         fovRender.setProjectionMatrix(camera.combined);
@@ -167,6 +171,8 @@ public class GameCanvas {
         global = new Matrix4();
         vertex = new Vector2();
     }
+
+    public FitViewport getUIviewport() {return UIviewport;}
 
     /**
      * Eliminate any resources that should be garbage collected manually.
@@ -183,6 +189,11 @@ public class GameCanvas {
         vertex = null;
         holder = null;
     }
+
+    /** Returns the camera for this GameCanvas
+     * @return the camera of this canvas
+     */
+    public GameCamera getCamera() { return camera; }
 
     /**
      * Returns the width of this canvas
@@ -433,6 +444,7 @@ public class GameCanvas {
     public void begin() {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
+        viewport.apply();
         active = DrawPass.STANDARD;
     }
 
