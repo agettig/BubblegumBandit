@@ -33,9 +33,6 @@ public class Bubblegum extends WheelObstacle {
     /**Y-coordinate of Bubblegum velocity */
     public float vy;
 
-    /** Reference to the character avatar */
-    private PlayerModel avatar;
-
     /**
      * Creates a Bubblegum projectile.
      * */
