@@ -18,12 +18,28 @@ import java.lang.reflect.Field;
 
 public class FloatingGum extends BoxObstacle {
 
+    /** Whether the gum has been collected */
     private boolean collected;
+
+    /** The timer used to bob the gum */
+    private float counter;
+
+    /** The base y position of the floating gum */
+    private float initialY;
+
+    // FLOATING GUM CONSTANTS
+    /** The amount the gum bobs in physics coordinates */
+    private float bobAmount;
+
+    /** The speed the gum bobs */
+    private float bobSpeed;
 
     public FloatingGum() {
         super(0, 0, 0.5f, 0.5f);
         setSensor(true);
         collected = false;
+        // Start at random time so gum doesn't always bob together
+        counter = (float) (Math.random() * Math.PI * 2);
     }
     public void setCollected(boolean bool) {
         collected = bool;
@@ -38,6 +54,8 @@ public class FloatingGum extends BoxObstacle {
         setBodyType(BodyDef.BodyType.KinematicBody);
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
+        bobAmount = json.get("bobAmount").asFloat();
+        bobSpeed = json.get("bobSpeed").asFloat();
 
         // Reflection is best way to convert name to color
         Color debugColor;
@@ -60,5 +78,17 @@ public class FloatingGum extends BoxObstacle {
     public void setPosition(JsonValue pos) {
         int[] p = pos.get("pos").asIntArray();
         setPosition(p[0] ,p[1]);
+        initialY = p[1];
     }
+
+    public void update(float dt) {
+        counter += dt * bobSpeed;
+        setY(initialY + bobAmount * (float) Math.sin(counter));
+
+        // Just roll over to prevent overflow
+        if (counter >= Math.PI * 20) {
+            counter -= Math.PI * 20;
+        }
+    }
+
 }
