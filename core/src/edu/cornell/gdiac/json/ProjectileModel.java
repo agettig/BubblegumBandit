@@ -11,9 +11,6 @@ import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
  */
 public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
 
-    /** Size of the projectiles radius */
-    private float radius = 10;
-
     /** Marks whether this projectile is still alive */
     private boolean alive;
 
@@ -21,27 +18,21 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     private float gravity = 0;
 
     /** Speed that bullets move */
-    private float speed = 10;
+    private float speed = 7;
 
     /** damage that the bullet deals upon impact with player */
     private float damage = 1;
 
     /**
-     * Creates a new projectile with the given attributes. Should only be called by ProjectilePool.
+     * Creates a new projectile with the given attributes. Should only be called by ProjectileController.
      *
-     * @param x  The initial x-coordinate of the photon
-     * @param y  The initial y-coordinate of the photon
+     * @param x  The initial x-coordinate of the projectile
+     * @param y  The initial y-coordinate of the projectile
      */
-    public ProjectileModel(JsonValue data, float x, float y, float radius, boolean direction){
+    public ProjectileModel(JsonValue data, float x, float y, float radius){
         super(x, y, radius);
         activatePhysics(data);
         alive = true;
-
-        //set velocity
-        if (direction)
-            this.setVX(speed);
-        else
-            this.setVX(-speed);
     }
 
     /**
@@ -79,8 +70,6 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     private void activatePhysics(JsonValue data){
         this.setName(data.name());
         this.setDensity(data.getFloat("density", 0));
-//        this.setDrawScale(scale);
-//        this.setTexture(texture);
         this.setBullet(true);
         this.setGravityScale(gravity);
     }
