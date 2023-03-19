@@ -15,27 +15,30 @@
  */
 package edu.cornell.gdiac.json;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.controllers.ProjectileController;
 import edu.cornell.gdiac.json.enemies.Enemy;
-import edu.cornell.gdiac.json.gum.*;
-import edu.cornell.gdiac.json.controllers.AIController;
+import edu.cornell.gdiac.json.enemies.MovingEnemy;
+import edu.cornell.gdiac.json.gum.Bubblegum;
 import edu.cornell.gdiac.json.gum.BubblegumController;
 import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.json.gum.GumJointPair;
-import edu.cornell.gdiac.json.enemies.MovingEnemy;
-import edu.cornell.gdiac.util.*;
-
-import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.util.ScreenListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -205,9 +208,7 @@ public class GameController implements Screen {
      *
      * @return true if the level is failed.
      */
-    public boolean isFailure() {
-        return failed;
-    }
+    public boolean getFailure() {return failed;}
 
     /**
      * Sets whether the level is failed.
@@ -386,7 +387,7 @@ public class GameController implements Screen {
             reset();
         }
 
-        if (!isFailure() && level.getAvatar().getY() < -1) {
+        if (!getFailure() && level.getAvatar().getHealth() <= 0) {
             setFailure(true);
             return false;
         }
