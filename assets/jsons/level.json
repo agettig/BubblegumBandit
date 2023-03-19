@@ -303,6 +303,8 @@
     "texture": "floatingGum",
     "debugcolor": "yellow",
     "debugopacity": 200,
+    "bobAmount":  0.1,
+    "bobSpeed": 3,
     "positions": [
       {
         "pos": [

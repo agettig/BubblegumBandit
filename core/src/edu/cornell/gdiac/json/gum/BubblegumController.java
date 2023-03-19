@@ -13,13 +13,13 @@ import com.badlogic.gdx.utils.JsonValue;
  * */
 public class BubblegumController {
 
-    /**Maximum amount of Bubblegum on screen at the same time. */
-    private int MAX_GUM;
+    /** The current amount of gum ammo of the player. */
+    private int gumAmmo;
 
-    private int starting_gum;
+    private int startingGum;
 
     /**Amount of active gum. */
-    private static int ACTIVE_GUM;
+    private static int activeGum;
 
     /**The queue of stuck Bubblegum obstacles and their joints. */
     private static Queue<GumJointPair> stuckBubblegumQueue;
@@ -41,26 +41,26 @@ public class BubblegumController {
 
     /** Initialize bublegumController stats */
     public void initialize(JsonValue json) {
-        MAX_GUM = json.get("starting_gum").asInt();
-        starting_gum = MAX_GUM;
+        gumAmmo = json.get("starting_gum").asInt();
+        startingGum = gumAmmo;
     }
 
-    public void resetMAX_GUM() {
-        MAX_GUM = starting_gum;
+    public void resetAmmo() {
+        gumAmmo = startingGum;
     }
     /**gets the amounut of bubblegum player has */
-    public int getMAX_GUM() {
-        return MAX_GUM;
+    public int getAmmo() {
+        return gumAmmo;
     }
 
     /** reduces max gum by 1 */
-    public void reduceMAX_GUM() {
-        MAX_GUM -= 1;
+    public void fireGum() {
+        gumAmmo -= 1;
     }
 
     /** increases max gum by 1 */
-    public void increaseMAX_GUM() {
-        MAX_GUM += 1;
+    public void collectGumAmmo() {
+        gumAmmo += 1;
     }
 
 
@@ -107,7 +107,7 @@ public class BubblegumController {
      * Clears all Bubblegum queues and sets the amount of active gum to 0.
      * */
     public void resetAllBubblegum(){
-        if(ACTIVE_GUM == 0) return;
+        if(activeGum == 0) return;
         if(bubblegumAssemblyQueue == null) return;
         if(stuckBubblegumQueue == null) return;
         if(midAirBubblegumQueue == null) return;
@@ -115,7 +115,7 @@ public class BubblegumController {
         bubblegumAssemblyQueue.clear();
         stuckBubblegumQueue.clear();
         midAirBubblegumQueue.clear();
-        ACTIVE_GUM = 0;
+        activeGum = 0;
     }
 
     /**
@@ -144,7 +144,7 @@ public class BubblegumController {
      * @returns true if the gum limit has been reached
      * */
     public boolean gumLimitReached(){
-        return MAX_GUM == 0;
+        return gumAmmo == 0;
     }
 
     /**
@@ -154,7 +154,7 @@ public class BubblegumController {
      * @returns true if the gum limit has been reached
      * */
     public void addNewBubblegum(Bubblegum gum){
-        ACTIVE_GUM++;
+        activeGum++;
         midAirBubblegumQueue.addLast(gum);
     }
 
