@@ -26,6 +26,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.gum.*;
 import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.gum.BubblegumController;
 import edu.cornell.gdiac.json.gum.FloatingGum;
@@ -34,7 +35,6 @@ import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
 
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.json.gum.Bubblegum;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -610,7 +610,6 @@ public class GameController implements Screen {
         if(bubblegumController.gumLimitReached()) return;
         bubblegumController.reduceMAX_GUM();
 
-
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
 
@@ -652,7 +651,82 @@ public class GameController implements Screen {
         gum.setVX(gumVel.x);
         gum.setVY(gumVel.y);
         level.activate(gum);
+        gum.setFilter(CollisionController.CATEGORY_GUM, CollisionController.MASK_GUM);
     }
+
+
+    /**
+     * Returns true if an Obstacle is a gum projectile.
+     * <p>
+     * An Obstacle is a gum projectile if its name equals
+     * "gumProjectile".
+     *
+     * @param o the Obstacle to check
+     * @returns true if the Obstacle is a gum projectile
+     */
+    private boolean isGumObstacle(Obstacle o) {
+        return o.getName().equals("stickyGum") ||
+                o.getName().equals("gumProjectile");
+    }
+
+    /** Collects floating gum */
+    private void collectGum(Obstacle bd1) {
+        bd1.markRemoved(true);
+        bubblegumController.increaseMAX_GUM();
+    }
+    /**
+     * Handles a gum projectile's collision in the Box2D world.
+     * <p>
+     * Examines two Obstacles in a collision. If either is a
+     * gum projectile, adds it to the Sticky Queue.
+     *
+     * @param bd1 The first Obstacle in the collision.
+     * @param bd2 The second Obstacle in the collision.
+     */
+    private void resolveGumCollision(Obstacle bd1, Obstacle bd2) {
+
+        //Safety check.
+        if (bd1 == null || bd2 == null) return;
+        if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
+        if (isGumObstacle(bd1) && isGumObstacle(bd2)) return;
+        if (bd1.getName().equals("floatingGums") || bd2.getName().equals("floatingGums")) return;
+
+        if (isGumObstacle(bd1)) {
+            Bubblegum gum = (Bubblegum) bd1;
+            gum.setVX(0);
+            gum.setVY(0);
+
+            WeldJointDef weldJointDef = createGumJoint(gum, bd2);
+            GumJointPair pair = new GumJointPair(gum, weldJointDef);
+            bubblegumController.addToAssemblyQueue(pair);
+
+        }
+        else if (isGumObstacle(bd2)) {
+            Bubblegum gum = (Bubblegum) bd2;
+            gum.setVX(0);
+            gum.setVY(0);
+
+            WeldJointDef weldJointDef = createGumJoint(gum, bd1);
+            GumJointPair pair = new GumJointPair(gum, weldJointDef);
+            bubblegumController.addToAssemblyQueue(pair);
+        }
+    }
+
+    /**
+     * Returns a WeldJointDef connecting gum and another obstacle.
+     */
+    private WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyB = ob.getBody();
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
+    }
+
     public void setGravity(float gravity) {
         float g = gravity;
         if (level.getWorld().getGravity().y < 0) {
@@ -690,7 +764,17 @@ public class GameController implements Screen {
     }
 
 
-    private class CollisionController implements ContactListener {
+    public class CollisionController implements ContactListener {
+
+        public static final short CATEGORY_PLAYER = 0x0001;
+        public static final short CATEGORY_ENEMY = 0x0002;
+        public static final short CATEGORY_TERRAIN = 0x0004;
+        public static final short CATEGORY_GUM = 0x0008;
+
+        public static final short MASK_PLAYER = ~CATEGORY_GUM;
+        public static final short MASK_ENEMY = ~(CATEGORY_ENEMY | CATEGORY_PLAYER);
+        public static final short MASK_TERRAIN = -1; // Collides with everything
+        public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
 
         /**
          * Callback method for the start of a collision
