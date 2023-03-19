@@ -865,8 +865,6 @@ public class GameController implements Screen {
 
 
 
-
-
                 // Check for gum collision
                 resolveGumCollision(bd1, bd2);
 
@@ -978,6 +976,54 @@ public class GameController implements Screen {
             return o.getName().equals("stickyGum") ||
                     o.getName().equals("gumProjectile");
         }
+
+
+        //    // Projectile Interactions
+//    // Test bullet collision with world
+//            if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
+//        ((ProjectileModel) bd1).destroy();
+//    }
+//
+//            if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
+//        ((ProjectileModel) bd2).destroy();
+
+
+//    }
+
+        /**
+         * Handles an enemy projectile's collision in the Box2D world.
+         * <p>
+         * Examines two Obstacles in a collision.
+         * *
+         * @param bd1 The first Obstacle in the collision.
+         * @param bd2 The second Obstacle in the collision.
+         */
+        private void resolveProjectileCollision(Obstacle bd1, Obstacle bd2) {
+
+            // Check that obstacles are not null and not an enemy
+            if (bd1 == null || bd2 == null) return;
+            if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
+
+            if (isGumObstacle(bd1)) {
+                Bubblegum gum = (Bubblegum) bd1;
+                gum.setVX(0);
+                gum.setVY(0);
+
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd2);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+
+            } else if (isGumObstacle(bd2)) {
+                Bubblegum gum = (Bubblegum) bd2;
+                gum.setVX(0);
+                gum.setVY(0);
+
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd1);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+            }
+        }
+
     }
 
 
