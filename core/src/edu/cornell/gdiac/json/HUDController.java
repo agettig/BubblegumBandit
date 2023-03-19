@@ -110,8 +110,10 @@ public class HUDController {
       }
       lastFrac = healthFraction;
     }
+    
     healthFill.setWidth(healthFillRegion.getRegionWidth());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
+
 
     /// update the text
 
