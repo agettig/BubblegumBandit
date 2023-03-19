@@ -18,11 +18,22 @@
         "health_icon": "textures/UI_heart.png",
         "bubblegum_icon": "textures/bubble_icon.png"
 
+        "health_fill": "textures/health_fill.png",
+        "floatingGum": "textures/gum.png",
+        "bullet": "textures/bullet.png"
     },
     "fonts": {
         "display": {
             "file": 	"fonts/RetroGame.ttf",
             "size": 	64
+        },
+        "lucida": {
+            "file": "fonts/LucidaGrande.ttf",
+            "size": 16
+        },
+        "times": {
+            "file": "fonts/TimesRoman.ttf",
+            "size": 32
         }
     },
 	"soundfx": {

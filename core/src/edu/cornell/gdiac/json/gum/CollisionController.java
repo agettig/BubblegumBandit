@@ -4,11 +4,24 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.math.*;
 
 
 import javax.print.attribute.standard.JobImpressionsSupported;
+import java.lang.reflect.Array;
 
 public class CollisionController {
+
+//    public static final short CATEGORY_PLAYER = 0x0001;
+//    public static final short CATEGORY_ENEMY = 0x0002;
+//    public static final short CATEGORY_TERRAIN = 0x0004;
+//    public static final short CATEGORY_GUM = 0x0008;
+//
+//    public static final short MASK_PLAYER = ~CATEGORY_GUM;
+//    public static final short MASK_ENEMY = ~(CATEGORY_ENEMY | CATEGORY_PLAYER);
+//    public static final short MASK_TERRAIN = -1; // Collides with everything
+//    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
 
     /** Caching object for computing normal */
     private Vector2 normal;
@@ -45,6 +58,19 @@ public class CollisionController {
             //Stick logic.
         }
     }
+
+
+    /**
+     * This is the main collision handling method
+     */
+    public void resolveCollisions(Obstacle o1, Obstacle o2){
+        //TODO: implement obstacleType so we can pattern match like in the optimization lab?
+    }
+
+
+
+
+
 
 
 
