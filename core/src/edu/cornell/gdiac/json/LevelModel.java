@@ -15,7 +15,6 @@
 
 package edu.cornell.gdiac.json;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,17 +23,13 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
-import edu.cornell.gdiac.json.enemies.StationaryEnemy;
-import edu.cornell.gdiac.json.gum.CollisionController;
 import edu.cornell.gdiac.json.gum.FloatingGum;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.Iterator;
@@ -282,7 +277,8 @@ public class LevelModel {
             if (enemy.get("type").asString().equals("moving")) {
                 a = new MovingEnemy(world, i);
             } else {
-                a = new StationaryEnemy(world, i);
+                // TODO Change to the second enemy type when we add
+                a = new MovingEnemy(world, i);
             }
             a.initialize(directory, enemy);
             a.setDrawScale(scale);
