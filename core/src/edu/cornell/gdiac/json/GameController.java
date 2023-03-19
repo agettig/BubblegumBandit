@@ -15,32 +15,34 @@
  */
 package edu.cornell.gdiac.json;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
-import edu.cornell.gdiac.json.controllers.PlayerController;
-import edu.cornell.gdiac.json.enemies.Enemy;
-import edu.cornell.gdiac.json.gum.*;
 import edu.cornell.gdiac.json.controllers.AIController;
+import edu.cornell.gdiac.json.controllers.PlayerController;
+import edu.cornell.gdiac.json.controllers.ProjectileController;
+import edu.cornell.gdiac.json.enemies.Enemy;
+import edu.cornell.gdiac.json.enemies.MovingEnemy;
+import edu.cornell.gdiac.json.gum.Bubblegum;
 import edu.cornell.gdiac.json.gum.BubblegumController;
 import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.json.gum.GumJointPair;
-import edu.cornell.gdiac.json.enemies.MovingEnemy;
-import edu.cornell.gdiac.util.*;
-
-import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.util.ScreenListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import java.util.ArrayList;
 
 import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
@@ -157,7 +159,7 @@ public class GameController implements Screen {
 
 
     /** A collection of the active projectiles on screen */
-    private ProjectileController projectiles;
+    private ProjectileController projectileController;
 
     /**
      * Gum gravity scale when creating gum
@@ -206,9 +208,7 @@ public class GameController implements Screen {
      *
      * @return true if the level is failed.
      */
-    public boolean isFailure() {
-        return failed;
-    }
+    public boolean getFailure() {return failed;}
 
     /**
      * Sets whether the level is failed.
@@ -276,7 +276,7 @@ public class GameController implements Screen {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController();
-        projectiles = new ProjectileController();
+        projectileController = new ProjectileController();
 
         if (enableGUI){
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -334,17 +334,19 @@ public class GameController implements Screen {
      */
     public void reset() {
         bubblegumController.resetAllBubblegum();
-        projectiles.reset();
+        projectileController.reset();
 
         level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
+        bubblegumController.resetAmmo();
 
         // Reload the json each time
         level.populate(directory, levelFormat);
         level.getWorld().setContactListener(collisionController);
+        projectileController.initialize(levelFormat.get("projectile"), directory, level.getScale().x, level.getScale().y);
     }
 
     /**
@@ -385,7 +387,7 @@ public class GameController implements Screen {
             reset();
         }
 
-        if (!isFailure() && level.getAvatar().getY() < -1) {
+        if (!getFailure() && level.getAvatar().getHealth() <= 0) {
             setFailure(true);
             return false;
         }
@@ -418,7 +420,6 @@ public class GameController implements Screen {
             avatar.setGrounded(false);
             sensorFixtures.clear();
 
-
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
 
@@ -430,41 +431,24 @@ public class GameController implements Screen {
             //get action from controller
             int action = 0;
 
+            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getAvatar().getX(), level.getAvatar().getY());
+                level.activate(newProj);
+            } else {
+                controller.coolDown(true);
+            }
+
             //pass to enemy, update the enemy with that action
             enemy.update(action);
-
-            //TODO: Remove
-
-
-//        for (Enemy e : level.getEnemies()){
-//            e.update();
-            // see if enemies can shoot
-            // TODO: move this to AI controller
-            if (enemy.canFire()){
-                fireWeapon(enemy);
-//                System.out.println("pew pew");
-            } else {
-                enemy.coolDown(true);
-            }
-//        }
-
-            projectiles.update();
-
         }
-
-        if (PlayerController.getInstance().didReset()) {
-            bubblegumController.resetMAX_GUM();
-        }
-
 
         if (PlayerController.getInstance().didShoot()) {
-
             Vector2 cross = level.getProjTarget(canvas);
-
             createGumProjectile(cross);
         }
 
         level.update(dt);
+        projectileController.update();
 
         // Update the camera
         Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
@@ -632,7 +616,7 @@ public class GameController implements Screen {
     private void createGumProjectile(Vector2 target) {
 
         if(bubblegumController.gumLimitReached()) return;
-        bubblegumController.reduceMAX_GUM();
+        bubblegumController.fireGum();
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
@@ -696,7 +680,7 @@ public class GameController implements Screen {
     /** Collects floating gum */
     private void collectGum(Obstacle bd1) {
         bd1.markRemoved(true);
-        bubblegumController.increaseMAX_GUM();
+        bubblegumController.collectGumAmmo();
     }
     /**
      * Handles a gum projectile's collision in the Box2D world.
@@ -882,7 +866,7 @@ public class GameController implements Screen {
         /** Collects floating gum */
         private void collectGum(Obstacle bd1) {
             bd1.markRemoved(true);
-            bubblegumController.increaseMAX_GUM();
+            bubblegumController.collectGumAmmo();
         }
 
         /**
@@ -976,19 +960,6 @@ public class GameController implements Screen {
                     o.getName().equals("gumProjectile");
         }
 
-
-        //    // Projectile Interactions
-//    // Test bullet collision with world
-//            if (bd1.getName().equals("projectile") && !bd2.getName().contains("enemy")) {
-//        ((ProjectileModel) bd1).destroy();
-//    }
-//
-//            if (bd2.getName().equals("projectile") && !bd1.getName().contains("enemy")) {
-//        ((ProjectileModel) bd2).destroy();
-
-
-//    }
-
         /**
          * Checks if there was an enemy projectile collision in the Box2D world.
          * <p>
@@ -1016,6 +987,7 @@ public class GameController implements Screen {
          * @param o
          */
         private void resolveProjectileCollision(ProjectileModel p, Obstacle o){
+            if (p.isRemoved()) return;
             if (o.getName().equals("avatar")){
                 level.getAvatar().hitPlayer(p.getDamage());
             }
@@ -1058,33 +1030,6 @@ public class GameController implements Screen {
             }
 
         }
-
-    }
-
-
-    /**
-     * Creates Projectiles and updates the ship's cooldown.
-     *
-     * TODO: Move this elsewhere once it works
-     * @param e The enemy that is firing
-     */
-    private void fireWeapon(Enemy e){
-
-        JsonValue projJV = levelFormat.get("projectile");
-
-        String key = projJV.get("texture").asString();
-        TextureRegion projTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-        float radius = projTexture.getRegionWidth() / (2.0f * level.getScale().x);
-
-        ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY(), radius, e.getFaceRight());
-
-        //Physics Constants
-        p.setDrawScale(level.getScale());
-        p.setTexture(projTexture);
-
-        projectiles.addToQueue(p);
-        level.activate(p);
-        e.coolDown(false);
 
     }
 }

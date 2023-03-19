@@ -336,7 +336,7 @@
       },
       {
         "name": "enemy2",
-        "type": "stationary",
+        "type": "moving",
         "pos": [
           5.0,
           20.0
@@ -692,7 +692,7 @@
     "offsetY": 0.5,
     "speed": 15.0,
     "density": 10.0,
-    "texture": "gumProjectile"
+    "texture": "gum"
   },
   "floatingGums": {
     "numGums": 2,
@@ -702,6 +702,8 @@
     "texture": "floatingGum",
     "debugcolor": "yellow",
     "debugopacity": 200,
+    "bobAmount":  0.1,
+    "bobSpeed": 3,
     "positions": [
       {
         "pos": [
@@ -758,7 +760,7 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 15.0,
+    "speed": 7.0,
     "density": 10.0,
     "texture": "bullet"
   }

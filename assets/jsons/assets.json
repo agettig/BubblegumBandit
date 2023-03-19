@@ -11,10 +11,11 @@
         "goal": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
-        "gum": "textures/bubblegum.png",
-        "chewedGum": "textures/chewed_gum.png",
+        "gum": "textures/gum.png",
         "health_bar": "textures/health_bar.png",
         "health_fill": "textures/health_fill.png",
+        "health_icon": "textures/UI_heart.png",
+        "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png"
     },
