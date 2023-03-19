@@ -92,7 +92,7 @@ public abstract class Enemy extends CapsuleObstacle {
     private int firecool;
 
     /** Whether this enemy is currently firing */
-    private boolean firing = false;
+    private boolean firing = true;
 
     // endRegion
 
