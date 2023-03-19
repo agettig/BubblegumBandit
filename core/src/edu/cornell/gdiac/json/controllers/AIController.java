@@ -1,8 +1,12 @@
 
 package edu.cornell.gdiac.json.controllers;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.json.Board;
 import edu.cornell.gdiac.json.PlayerModel;
+import edu.cornell.gdiac.json.ProjectileModel;
 import edu.cornell.gdiac.json.enemies.Enemy;
 
 public class AIController implements InputController {
@@ -23,7 +27,7 @@ public class AIController implements InputController {
     private EnemyState state;
 
     /**reference to enemy */
-    private Enemy enemy;
+    public Enemy enemy;
 
     /**reference to player / target */
     private PlayerModel player;
@@ -32,6 +36,17 @@ public class AIController implements InputController {
     private Board board;
 
     private Vector2 target;
+    // Shooting Attributes & Constants
+
+    /** How long an enemy must wait until it can fire its weapon again */
+    private static final int COOLDOWN = 120; //in ticks
+
+    /** The number of frames until we can fire again */
+    private int firecool;
+
+    /** Whether this enemy is currently firing */
+    private boolean firing = true;
+
 
     public AIController(Enemy enemy, PlayerModel player, Board board){
         this.board = board;
@@ -40,7 +55,7 @@ public class AIController implements InputController {
         state = EnemyState.CHASE;
         move = CONTROL_NO_ACTION;
         ticks = 0;
-
+        firecool = 0;
         target = null;
     }
 
@@ -220,7 +235,7 @@ public class AIController implements InputController {
 
                 //#region PUT YOUR CODE HERE
 
-                 pos = player.getPosition();
+                pos = player.getPosition();
                 board.setGoal((int) pos.x, (int) pos.y);
                 setGoal = true;
                 //#endregion
@@ -238,23 +253,6 @@ public class AIController implements InputController {
     }
 
     /**
-     * Returns true if we can hit a target from here.
-     *
-     * Insert code to return true if a shot fired from the given (x,y) would
-     * be likely to hit the target. We can hit a target if it is in a straight
-     * line from this tile and within attack range. The implementation must take
-     * into consideration whether or not the source tile is a Power Tile.
-     *
-     * @param x The x-index of the source tile
-     * @param y The y-index of the source tile
-     *
-     * @return true if we can hit a target from here.
-     */
-    private boolean canShootTargetFrom(int x, int y) {
-        return true;
-    }
-
-    /**
      * Returns true if we can both fire and hit our target
      *
      * If we can fire now, and we could hit the target from where we are,
@@ -263,9 +261,38 @@ public class AIController implements InputController {
      * @return true if we can both fire and hit our target
      */
     private boolean canShootTarget() {
-        //#region PUT YOUR CODE HERE
+        return canFire() && enemy.vision.canSee(player);
+    }
 
-        return false;
-        //#endregion
+    /**
+     * @return whether this robot can fire its weapon and is actively firing.
+     */
+    public boolean canFire() {
+        return firing && firecool <= 0;
+    }
+
+    /**
+     * Sets whether the robot is actively firing.
+     *
+     * @param value whether the robot is actively firing.
+     */
+    public void setFiring(boolean value) {
+        firing = value;
+    }
+
+    /**
+     * Reset or cool down the ship weapon.
+     *
+     * If flag is true, the weapon will cool down by one animation frame.  Otherwise
+     * it will reset to its maximum cooldown.
+     *
+     * @param flag whether to cooldown or reset
+     */
+    public void coolDown(boolean flag) {
+        if (flag && firecool > 0) {
+            firecool--;
+        } else if (!flag) {
+            firecool = COOLDOWN;
+        }
     }
 }
