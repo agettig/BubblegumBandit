@@ -341,6 +341,7 @@ public class GameController implements Screen {
         setComplete(false);
         setFailure(false);
         countdown = -1;
+        bubblegumController.resetAmmo();
 
         // Reload the json each time
         level.populate(directory, levelFormat);
@@ -451,11 +452,6 @@ public class GameController implements Screen {
             projectiles.update();
 
         }
-
-        if (PlayerController.getInstance().didReset()) {
-            bubblegumController.resetMAX_GUM();
-        }
-
 
         if (PlayerController.getInstance().didShoot()) {
 
@@ -632,7 +628,7 @@ public class GameController implements Screen {
     private void createGumProjectile(Vector2 target) {
 
         if(bubblegumController.gumLimitReached()) return;
-        bubblegumController.reduceMAX_GUM();
+        bubblegumController.fireGum();
 
         JsonValue gumJV = levelFormat.get("gumProjectile");
         PlayerModel avatar = level.getAvatar();
@@ -696,7 +692,7 @@ public class GameController implements Screen {
     /** Collects floating gum */
     private void collectGum(Obstacle bd1) {
         bd1.markRemoved(true);
-        bubblegumController.increaseMAX_GUM();
+        bubblegumController.collectGumAmmo();
     }
     /**
      * Handles a gum projectile's collision in the Box2D world.
@@ -882,7 +878,7 @@ public class GameController implements Screen {
         /** Collects floating gum */
         private void collectGum(Obstacle bd1) {
             bd1.markRemoved(true);
-            bubblegumController.increaseMAX_GUM();
+            bubblegumController.collectGumAmmo();
         }
 
         /**
