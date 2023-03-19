@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.json.gum.BubblegumController;
+
 import java.awt.Font;
 
 public class HUDController {
@@ -94,11 +96,10 @@ public class HUDController {
 
   }
 
-  public void draw(LevelModel level) {
+  public void draw(LevelModel level, BubblegumController bubblegumController) {
 
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getAvatar().getHealth()/ level.getAvatar().getMaxHealth();
-    healthFraction = 0.9f;
 
     if(healthFraction!=lastFrac) {
       if(healthFraction==0) {
@@ -113,6 +114,7 @@ public class HUDController {
     
     healthFill.setWidth(healthFillRegion.getRegionWidth());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
+    gumCount.setText("x" + bubblegumController.getAmmo() );
 
 
     /// update the text
