@@ -11,7 +11,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.json.controllers;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
@@ -27,23 +27,23 @@ import edu.cornell.gdiac.util.XBoxController;
  * a controller via the new XBox360Controller class.
  */
 
-public class InputController {
+public class PlayerController{
 	// Sensitivity for moving crosshair with gameplay
 	private static final float GP_ACCELERATE = 1.0f;
 	private static final float GP_MAX_SPEED  = 10.0f;
 	private static final float GP_THRESHOLD  = 0.01f;
 
 	/** The singleton instance of the input controller */
-	private static InputController theController = null;
+	private static PlayerController theController = null;
 	
 	/** 
 	 * Return the singleton instance of the input controller
 	 *
 	 * @return the singleton instance of the input controller
 	 */
-	public static InputController getInstance() {
+	public static PlayerController getInstance() {
 		if (theController == null) {
-			theController = new InputController();
+			theController = new PlayerController();
 		}
 		return theController;
 	}
@@ -237,7 +237,7 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController() {
+	public PlayerController() {
 		// If we have a game-pad for id, then use it.
 		Array<XBoxController> controllers = Controllers.get().getXBoxControllers();
 		if (controllers.size > 0) {
@@ -357,23 +357,10 @@ public class InputController {
 			secondPressed = true;
 			secondPrevious = false;
 		}
-
-
-		// remove vertical controls
-//		vertical = (secondary ? vertical : 0.0f);
-//		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-//			vertical += 1.0f;
-//		}
-//		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-//			vertical -= 1.0f;
-//		}
-
 		
 		// Mouse results
 		shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
 	}
-	
-
 }

@@ -10,15 +10,15 @@ import javax.print.attribute.standard.JobImpressionsSupported;
 
 public class CollisionController {
 
-    public static final short CATEGORY_PLAYER = 0x0001;
-    public static final short CATEGORY_ENEMY = 0x0002;
-    public static final short CATEGORY_TERRAIN = 0x0004;
-    public static final short CATEGORY_GUM = 0x0008;
-
-    public static final short MASK_PLAYER = ~CATEGORY_GUM;
-    public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
-    public static final short MASK_TERRAIN = -1; // Collides with everything
-    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
+//    public static final short CATEGORY_PLAYER = 0x0001;
+//    public static final short CATEGORY_ENEMY = 0x0002;
+//    public static final short CATEGORY_TERRAIN = 0x0004;
+//    public static final short CATEGORY_GUM = 0x0008;
+//
+//    public static final short MASK_PLAYER = ~CATEGORY_GUM;
+//    public static final short MASK_ENEMY = ~(CATEGORY_ENEMY | CATEGORY_PLAYER);
+//    public static final short MASK_TERRAIN = -1; // Collides with everything
+//    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
 
     /** Caching object for computing normal */
     private Vector2 normal;

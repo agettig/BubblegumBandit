@@ -16,9 +16,7 @@
 package edu.cornell.gdiac.json;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.graphics.*;
@@ -26,8 +24,13 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.json.controllers.PlayerController;
 import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.gum.*;
+import edu.cornell.gdiac.json.controllers.AIController;
+import edu.cornell.gdiac.json.gum.BubblegumController;
+import edu.cornell.gdiac.json.gum.FloatingGum;
+import edu.cornell.gdiac.json.gum.GumJointPair;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.util.*;
 
@@ -52,8 +55,17 @@ import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
  * You will notice that asset loading is very different.  It relies on the
  * singleton asset manager to manage the various assets.
  */
-public class GameController implements Screen, ContactListener {
+public class GameController implements Screen {
     // ASSETS
+
+    // TODO remove
+    private boolean enableGUI = false;
+
+    /** How close to the center of the tile we need to be to stop drifting */
+    private static final float DRIFT_TOLER = .2f;
+    /** How fast we drift to the tile center when paused */
+    private static final float DRIFT_SPEED = 0.325f;
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -69,6 +81,8 @@ public class GameController implements Screen, ContactListener {
      * The JSON defining the level model
      */
     private JsonValue levelFormat;
+
+    private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
      */
@@ -107,6 +121,13 @@ public class GameController implements Screen, ContactListener {
      */
     private ScreenListener listener;
 
+    private CollisionController collisionController;
+
+    /**
+     * Mark set to handle more sophisticated collision callbacks
+     */
+    protected ObjectSet<Fixture> sensorFixtures;
+
     /**
      * Reference to the game level
      */
@@ -130,27 +151,24 @@ public class GameController implements Screen, ContactListener {
     private int countdown;
 
     /**
-     * Mark set to handle more sophisticated collision callbacks
-     */
-    protected ObjectSet<Fixture> sensorFixtures;
-
-    /**
      * Reference to the Bubblegum controller instance
      */
     private BubblegumController bubblegumController;
 
-    /**
-     * Queue of gum joints
-     */
-    protected Queue<JointDef> jointsQueue;
 
-    /** Gum gravity scale when creating gum */
+    /**
+     * Gum gravity scale when creating gum
+     */
     private float gumGravity;
 
-    /** Gum speed when creating gum */
+    /**
+     * Gum speed when creating gum
+     */
     private float gumSpeed;
 
-    /** The texture of the trajectory projectile */
+    /**
+     * The texture of the trajectory projectile
+     */
     private TextureRegion trajectoryProjectile;
 
     /**
@@ -248,22 +266,25 @@ public class GameController implements Screen, ContactListener {
         failed = false;
         active = false;
         countdown = -1;
-
-        jointsQueue = new Queue<JointDef>();
+        sensorFixtures = new ObjectSet<Fixture>();
 
         setComplete(false);
         setFailure(false);
-        sensorFixtures = new ObjectSet<Fixture>();
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
+        collisionController = new CollisionController();
 
+        if (enableGUI){
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    createAndShowGUI(new SliderListener());
+                }
+            });
+        }
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI(new SliderListener());
-            }
-        });
+
+
     }
 
     /**
@@ -291,13 +312,14 @@ public class GameController implements Screen, ContactListener {
         displayFont = directory.getEntry("display", BitmapFont.class);
         counterFont = directory.getEntry("times", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
-        TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
-        TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+
         bubblegumController.initialize(levelFormat.get("gumProjectile"));
+
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        hud = new HUDController(directory);
     }
 
     /**
@@ -316,7 +338,7 @@ public class GameController implements Screen, ContactListener {
 
         // Reload the json each time
         level.populate(directory, levelFormat);
-        level.getWorld().setContactListener(this);
+        level.getWorld().setContactListener(collisionController);
     }
 
     /**
@@ -330,7 +352,7 @@ public class GameController implements Screen, ContactListener {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
-        InputController input = InputController.getInstance();
+        PlayerController input = PlayerController.getInstance();
         input.readInput();
         if (listener == null) {
             return true;
@@ -378,12 +400,10 @@ public class GameController implements Screen, ContactListener {
     public void update(float dt) {
         // Process actions in object model
         PlayerModel avatar = level.getAvatar();
-        avatar.setMovement(InputController.getInstance().getHorizontal() * avatar.getForce());
-        avatar.setJumping(InputController.getInstance().didPrimary());
+        avatar.setMovement(PlayerController.getInstance().getHorizontal() * avatar.getForce());
         avatar.applyForce();
 
-
-        if (InputController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
+        if (PlayerController.getInstance().getSwitchGravity() && avatar.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = playSound(jumpSound, jumpId);
@@ -392,22 +412,28 @@ public class GameController implements Screen, ContactListener {
             avatar.setGrounded(false);
             sensorFixtures.clear();
 
+
             for (Enemy e : level.getEnemies()) e.flippedGravity();
         }
 
-        if(InputController.getInstance().didCollect()){
-            // Commented out because crashes right now.
-//             Bubblegum.collectGum(level.getWorld());
+        for (int i = 0; i < level.getEnemies().length; i++) {
+            AIController controller = level.getEnemyControllers()[i];
+            Enemy enemy = level.getEnemies()[i];
+            adjustForDrift(enemy);
+
+            //get action from controller
+            int action = controller.getAction(avatar.isFlipped());
+
+            //pass to enemy, update the enemy with that action
+            enemy.update(action);
         }
 
-        if (InputController.getInstance().didReset()) {
+        if (PlayerController.getInstance().didReset()) {
             bubblegumController.resetMAX_GUM();
         }
 
-        for (Enemy e : level.getEnemies()) e.update();
 
-
-        if (InputController.getInstance().didShoot()) {
+        if (PlayerController.getInstance().didShoot()) {
 
             Vector2 cross = level.getProjTarget(canvas);
 
@@ -417,7 +443,7 @@ public class GameController implements Screen, ContactListener {
         level.update(dt);
 
         // Update the camera
-        Vector2 target = canvas.unproject(InputController.getInstance().getCrossHair());
+        Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
         canvas.getCamera().setTarget(avatar.getCameraTarget());
         canvas.getCamera().setSecondaryTarget(target);
         canvas.getCamera().update(dt);
@@ -426,9 +452,9 @@ public class GameController implements Screen, ContactListener {
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
         // Add all of the pending joints to the world.
-        addJointsToWorld();
-    }
 
+        bubblegumController.addJointsToWorld(level);
+    }
 
 
     /**
@@ -445,11 +471,8 @@ public class GameController implements Screen, ContactListener {
         canvas.clear();
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
+        hud.draw(level, bubblegumController);
 
-        canvas.begin();
-        String message = "Gum left: " + bubblegumController.getMAX_GUM();
-        canvas.drawText(message, counterFont, 5f, canvas.getHeight()-5f);
-        canvas.end();
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
@@ -541,115 +564,7 @@ public class GameController implements Screen, ContactListener {
         this.listener = listener;
     }
 
-    /**
-     * Callback method for the start of a collision
-     * <p>
-     * This method is called when we first get a collision between two objects.  We use
-     * this method to test if it is the "right" kind of collision.  In particular, we
-     * use it to test if we made it to the win door.
-     * <p>
-     * This is where we check for gum collisions
-     *
-     * @param contact The two bodies that collided
-     */
-    public void beginContact(Contact contact) {
-        Fixture fix1 = contact.getFixtureA();
-        Fixture fix2 = contact.getFixtureB();
-
-        Body body1 = fix1.getBody();
-        Body body2 = fix2.getBody();
-
-        Object fd1 = fix1.getUserData();
-        Object fd2 = fix2.getUserData();
-
-        try {
-            Obstacle bd1 = (Obstacle) body1.getUserData();
-            Obstacle bd2 = (Obstacle) body2.getUserData();
-
-            PlayerModel avatar = level.getAvatar();
-            BoxObstacle door = level.getExit();
-            FloatingGum[] floatingGum = level.getFloatingGum();
-
-            // See if we have landed on the ground.
-            if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-                    (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-                avatar.setGrounded(true);
-                sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
-            }
-
-            // Check for win condition
-            if ((bd1 == avatar && bd2 == door) ||
-                    (bd1 == door && bd2 == avatar)) {
-                setComplete(true);
-            }
-
-            //collect floating gum
-            //counter double counts if gum is not marked as collected
-            for (FloatingGum gum : floatingGum) {
-                if (bd1 == gum && bd2 == avatar && !gum.getCollected()) {
-                    collectGum(bd1);
-                    gum.setCollected(true);
-                }
-                else if (bd2 == gum && bd1 == avatar && !gum.getCollected()) {
-                    collectGum(bd2);
-                    gum.setCollected(true);
-                }
-            }
-
-            // Check for gum collision
-            resolveGumCollision(bd1, bd2);
-
-            // TODO: Gum interactions
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Callback method for the start of a collision
-     * <p>
-     * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
-     * double jumping.
-     */
-    public void endContact(Contact contact) {
-        Fixture fix1 = contact.getFixtureA();
-        Fixture fix2 = contact.getFixtureB();
-
-        Body body1 = fix1.getBody();
-        Body body2 = fix2.getBody();
-
-        Object fd1 = fix1.getUserData();
-        Object fd2 = fix2.getUserData();
-
-        Object bd1 = body1.getUserData();
-        Object bd2 = body2.getUserData();
-
-        PlayerModel avatar = level.getAvatar();
-        if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
-            sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0) {
-                avatar.setGrounded(false);
-            }
-        }
-    }
-
-    /**
-     * Unused ContactListener method
-     */
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-    }
-
-    /**
-     * Unused ContactListener method
-     */
-    public void preSolve(Contact contact, Manifold oldManifold) {
-    }
-
-    /**
+ /**
      * Method to ensure that a sound asset is only played once.
      * <p>
      * Every time you play a sound asset, it makes a new instance of that sound.
@@ -712,7 +627,7 @@ public class GameController implements Screen, ContactListener {
 
         String key = gumJV.get("texture").asString();
         TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
+        float radius = gumTexture.getRegionWidth() / (2f * level.getScale().x);
 
         //TODO: PLACE INSTANTIATION LOGIC INSIDE OF BUBBLEGUM CONTROLLER
         Bubblegum gum = new Bubblegum(origin.x, origin.y, radius);
@@ -738,6 +653,7 @@ public class GameController implements Screen, ContactListener {
         level.activate(gum);
         gum.setFilter(CollisionController.CATEGORY_GUM, CollisionController.MASK_GUM);
     }
+
 
     /**
      * Returns true if an Obstacle is a gum projectile.
@@ -811,19 +727,6 @@ public class GameController implements Screen, ContactListener {
         return jointDef;
     }
 
-    /**
-     * Adds every joint in the joint queue to the world before clearing the queue.
-     */
-    private void addJointsToWorld() {
-        for(int i = 0; i < bubblegumController.numActivePairsToAssemble(); i++){
-            GumJointPair pairToAssemble = bubblegumController.dequeueAssembly();
-            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
-            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
-            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
-            bubblegumController.addToStuckBubblegum(activePair);
-        }
-    }
-
     public void setGravity(float gravity) {
         float g = gravity;
         if (level.getWorld().getGravity().y < 0) {
@@ -831,6 +734,207 @@ public class GameController implements Screen, ContactListener {
         }
         level.getWorld().setGravity(new Vector2(0, g));
     }
+
+    /**
+     * Nudges the ship back to the center of a tile if it is not moving.
+     *
+     * @param enemy The Enemy to adjust
+     */
+    private void adjustForDrift(Enemy enemy) {
+        // Drift to line up vertically with the grid.
+
+        if (enemy.getVX() == 0.0f) {
+            float offset = level.getBoard().centerOffset(enemy.getX());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setX(enemy.getX()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setX(enemy.getX()-DRIFT_SPEED);
+            }
+        }
+
+        // Drift to line up horizontally with the grid.
+        if (enemy.getVY() == 0.0f) {
+            float offset = level.getBoard().centerOffset(enemy.getY());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setY(enemy.getY()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setY(enemy.getY()-DRIFT_SPEED);
+            }
+        }
+    }
+
+
+    public class CollisionController implements ContactListener {
+
+        public static final short CATEGORY_PLAYER = 0x0001;
+        public static final short CATEGORY_ENEMY = 0x0002;
+        public static final short CATEGORY_TERRAIN = 0x0004;
+        public static final short CATEGORY_GUM = 0x0008;
+
+        public static final short MASK_PLAYER = ~CATEGORY_GUM;
+        public static final short MASK_ENEMY = ~(CATEGORY_ENEMY | CATEGORY_PLAYER);
+        public static final short MASK_TERRAIN = -1; // Collides with everything
+        public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
+
+        /**
+         * Callback method for the start of a collision
+         * <p>
+         * This method is called when we first get a collision between two objects.  We use
+         * this method to test if it is the "right" kind of collision.  In particular, we
+         * use it to test if we made it to the win door.
+         * <p>
+         * This is where we check for gum collisions
+         *
+         * @param contact The two bodies that collided
+         */
+        public void beginContact(Contact contact) {
+            Fixture fix1 = contact.getFixtureA();
+            Fixture fix2 = contact.getFixtureB();
+
+            Body body1 = fix1.getBody();
+            Body body2 = fix2.getBody();
+
+            Object fd1 = fix1.getUserData();
+            Object fd2 = fix2.getUserData();
+
+            try {
+                Obstacle bd1 = (Obstacle) body1.getUserData();
+                Obstacle bd2 = (Obstacle) body2.getUserData();
+                FloatingGum[] floatingGum = level.getFloatingGum();
+
+                PlayerModel avatar = level.getAvatar();
+                BoxObstacle door = level.getExit();
+
+                // See if we have landed on the ground.
+                if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
+                        (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
+                    avatar.setGrounded(true);
+                    sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
+                }
+
+                // Check for win condition
+                if ((bd1 == avatar && bd2 == door) ||
+                        (bd1 == door && bd2 == avatar)) {
+                    setComplete(true);
+                }
+
+                if (bd1 instanceof FloatingGum && bd2 == avatar && !((FloatingGum) bd1).getCollected()){
+                    collectGum(bd1);
+                    ((FloatingGum) bd1).setCollected(true);
+                } else if (bd2 instanceof FloatingGum && bd1 == avatar && !((FloatingGum) bd2).getCollected()) {
+                    collectGum(bd2);
+                    ((FloatingGum) bd2).setCollected(true);
+                }
+
+                // Check for gum collision
+                resolveGumCollision(bd1, bd2);
+
+                // TODO: Gum interactions
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        /** Collects floating gum */
+        private void collectGum(Obstacle bd1) {
+            bd1.markRemoved(true);
+            bubblegumController.increaseMAX_GUM();
+        }
+
+        /**
+         * Callback method for the start of a collision
+         * <p>
+         * This method is called when two objects cease to touch.  The main use of this method
+         * is to determine when the characer is NOT on the ground.  This is how we prevent
+         * double jumping.
+         */
+        public void endContact(Contact contact) {
+            Fixture fix1 = contact.getFixtureA();
+            Fixture fix2 = contact.getFixtureB();
+
+            Body body1 = fix1.getBody();
+            Body body2 = fix2.getBody();
+
+            Object fd1 = fix1.getUserData();
+            Object fd2 = fix2.getUserData();
+
+            Object bd1 = body1.getUserData();
+            Object bd2 = body2.getUserData();
+
+            PlayerModel avatar = level.getAvatar();
+            if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
+                    (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
+                sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
+                if (sensorFixtures.size == 0) {
+                    avatar.setGrounded(false);
+                }
+            }
+        }
+
+        /**
+         * Unused ContactListener method
+         */
+        public void postSolve(Contact contact, ContactImpulse impulse) {
+        }
+
+        /**
+         * Unused ContactListener method
+         */
+        public void preSolve(Contact contact, Manifold oldManifold) {
+        }
+
+        /**
+         * Handles a gum projectile's collision in the Box2D world.
+         * <p>
+         * Examines two Obstacles in a collision. If either is a
+         * gum projectile, adds it to the Sticky Queue.
+         *
+         * @param bd1 The first Obstacle in the collision.
+         * @param bd2 The second Obstacle in the collision.
+         */
+        private void resolveGumCollision(Obstacle bd1, Obstacle bd2) {
+
+            // Check that obstacles are not null and not the player
+            if (bd1 == null || bd2 == null) return;
+            if (bd1.getName().equals("avatar") || bd2.getName().equals("avatar")) return;
+            if (bd1.getName().equals("floatingGums") || bd2.getName().equals("floatingGums")) return;
+
+            if (isGumObstacle(bd1)) {
+                Bubblegum gum = (Bubblegum) bd1;
+                gum.setVX(0);
+                gum.setVY(0);
+
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd2);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+
+            } else if (isGumObstacle(bd2)) {
+                Bubblegum gum = (Bubblegum) bd2;
+                gum.setVX(0);
+                gum.setVY(0);
+
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bd1);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+            }
+        }
+        /**
+         * Returns true if an Obstacle is a gum projectile.
+         * <p>
+         * An Obstacle is a gum projectile if its name equals
+         * "gumProjectile".
+         *
+         * @param o the Obstacle to check
+         * @returns true if the Obstacle is a gum projectile
+         */
+        private boolean isGumObstacle(Obstacle o) {
+            return o.getName().equals("stickyGum") ||
+                    o.getName().equals("gumProjectile");
+        }
+    }
+
 
     class SliderListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
@@ -856,7 +960,7 @@ public class GameController implements Screen, ContactListener {
                 } else if (source.getName().equals("move speed")) {
                     for (Enemy enemy : level.getEnemies()) {
                         if (enemy instanceof MovingEnemy) {
-                            ((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
+                            //((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
                         }
                     }
                 }
