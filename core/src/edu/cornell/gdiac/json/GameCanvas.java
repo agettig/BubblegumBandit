@@ -1280,16 +1280,10 @@ public class GameCanvas {
         pix.fill();
         textureSolid = new Texture(pix);
 
-        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
-                vertices, indices);
+        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid), vertices, indices);
 
-
-        draw(polyReg, Color.WHITE, x * scalex,
-                y * scaley, scalex, scaley);
-
-
+        draw(polyReg, Color.WHITE, x * scalex, y * scaley, scalex, scaley);
     }
-
 
     /**
      * Draw the individual rays of the field of vision
@@ -1298,18 +1292,15 @@ public class GameCanvas {
      * @param ends
      * @param x
      * @param y
-     * @param radius
      * @param scalex
      * @param scaley
      */
-    public void drawRays(Color color, Array<Vector2> ends, float x, float y,
-                         float radius, float scalex, float scaley) {
-
+    public void drawRays(Color color, Array<Vector2> ends, float x, float y, float scalex, float scaley) {
         if (active != DrawPass.DEBUG) {
             Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
             return;
         }
-
+        fovRender.setProjectionMatrix(camera.combined);
         fovRender.begin(ShapeRenderer.ShapeType.Line);
         local.applyTo(vertex);
         fovRender.setColor(color);

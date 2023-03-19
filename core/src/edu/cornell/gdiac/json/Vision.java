@@ -93,8 +93,9 @@ public class Vision {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
-                    if(bodies.contains(fixture.getBody(), false))
+                    if(!bodies.contains(fixture.getBody(), true)) {
                         bodies.add(fixture.getBody());
+                    }
                     if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
                         rays.get(finalI).set(point);
                         return fraction;
@@ -115,8 +116,7 @@ public class Vision {
      * @return whether the obstacle is in view.
      */
     public boolean canSee(Obstacle obstacle) {
-        return bodies.contains(obstacle.getBody(),
-                true);
+        return bodies.contains(obstacle.getBody(), true);
     }
 
 
@@ -144,9 +144,9 @@ public class Vision {
      * Draws the outline of the physics object.
      */
     public void drawDebug(GameCanvas canvas, float x, float y, float scalex, float scaley) {
-
+//        canvas.drawFOV(color, rays, x, y, scalex, scaley);
 //        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
-        canvas.drawRays(DEBUGCOLOR, rays, x, y, radius, scalex, scaley);
+        canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
     }
 
     public void setRange(float range) {
