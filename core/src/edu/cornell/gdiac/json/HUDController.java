@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.json.gum.BubblegumController;
 
-import java.awt.Font;
-
 public class HUDController {
 
 
@@ -115,9 +113,6 @@ public class HUDController {
     healthFill.setWidth(healthFillRegion.getRegionWidth());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
     gumCount.setText("x" + bubblegumController.getAmmo() );
-
-
-    /// update the text
 
     stage.draw();
 
