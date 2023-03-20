@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 public abstract class Enemy extends CapsuleObstacle {
 
     // Physics constants
-
     private int id;
 
     /**
