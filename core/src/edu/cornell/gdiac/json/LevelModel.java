@@ -557,7 +557,7 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
-            drawGrid(canvas);
+//            drawGrid(canvas);
             board.drawBoard(canvas);
             canvas.endDebug();
 

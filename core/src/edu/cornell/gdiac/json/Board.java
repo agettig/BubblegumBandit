@@ -324,7 +324,11 @@ public class Board {
         tiles[x][y].goal = true;
     }
 
-    private boolean isValidMove(int x, int y, boolean isGravityFipped) {
+    public boolean isValidMove(int x, int y, boolean isGravityFipped) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return false;
+        }
         int val = tiles[x][y].value;
         if (val == BOTH_GRAVITY_TILE) return true;
         if (isGravityFipped) {

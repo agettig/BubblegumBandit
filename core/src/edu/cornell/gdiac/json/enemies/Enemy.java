@@ -154,6 +154,10 @@ public abstract class Enemy extends CapsuleObstacle {
         faceRight = isRight;
     }
 
+    public boolean isFlipped() {
+        return isFlipped;
+    }
+
     /**
      * Returns how hard the brakes are applied to get a dude to stop moving
      *
