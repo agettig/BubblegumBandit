@@ -15,9 +15,7 @@
         "health_bar": "textures/health_bar.png",
         "health_fill": "textures/health_fill.png",
         "health_icon": "textures/UI_heart.png",
-        "bubblegum_icon": "textures/bubble_icon.png"
-
-        "health_fill": "textures/health_fill.png",
+        "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png"
     },
