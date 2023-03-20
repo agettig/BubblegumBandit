@@ -11,81 +11,103 @@ import edu.cornell.gdiac.json.enemies.Enemy;
 
 public class AIController implements InputController {
 
-    /**ticks in update loop */
+    /**
+     * ticks in update loop
+     */
     private int ticks;
 
-    /**move for enemy to make */
+    /**
+     * move for enemy to make
+     */
     private int move;
 
-    /**attack range of enemy */
+    /**
+     * attack range of enemy
+     */
     private final int ATTACK_RANGE = 7;
 
-    /**chase range of enemy */
+    /**
+     * chase range of enemy
+     */
     private final int CHASE_RANGE = 10;
 
-    /**state of enemy */
+    /**
+     * state of enemy
+     */
     private EnemyState state;
 
-    /**reference to enemy */
+    /**
+     * reference to enemy
+     */
     public Enemy enemy;
 
-    /**reference to player / target */
+    /**
+     * reference to player / target
+     */
     private PlayerModel player;
 
-    /**graph for pathfinding */
+    /**
+     * graph for pathfinding
+     */
     private Board board;
 
     private Vector2 target;
     // Shooting Attributes & Constants
 
-    /** How long an enemy must wait until it can fire its weapon again */
+    /**
+     * How long an enemy must wait until it can fire its weapon again
+     */
     private static final int COOLDOWN = 120; //in ticks
 
-    /** The number of frames until we can fire again */
+    /**
+     * The number of frames until we can fire again
+     */
     private int firecool;
 
-    /** Whether this enemy is currently firing */
+    /**
+     * Whether this enemy is currently firing
+     */
     private boolean firing = true;
 
 
-    public AIController(Enemy enemy, PlayerModel player, Board board){
+    public AIController(Enemy enemy, PlayerModel player, Board board) {
         this.board = board;
         this.enemy = enemy;
         this.player = player;
-        state = EnemyState.CHASE;
+        state = EnemyState.WANDER;
         move = CONTROL_NO_ACTION;
         ticks = 0;
         firecool = 0;
         target = null;
     }
 
-    private enum EnemyState{
-            /**
-             * The enemy is stationary
-             */
-            STATIONARY,
-            /**
-             * The enemy is wandering back and forth
-             * Switches directions when hitting a wall
-             */
-            WANDER,
-            /**
-             * The ship has a target, but must get closer
-             */
-            CHASE,
-            /**
-             * The ship has a target and is attacking it
-             */
-            ATTACK
-     }
+    private enum EnemyState {
+        /**
+         * The enemy is stationary
+         */
+        STATIONARY,
+        /**
+         * The enemy is wandering back and forth
+         * Switches directions when hitting a wall
+         */
+        WANDER,
+        /**
+         * The ship has a target, but must get closer
+         */
+        CHASE,
+        /**
+         * The ship has a target and is attacking it
+         */
+        ATTACK
+    }
 
     /**
      * Returns the action selected by this InputController
-     *
+     * <p>
      * The returned int is a bit-vector of more than one possible input
      * option. This is why we do not use an enumeration of Control Codes;
      * Java does not (nicely) provide bitwise operation support for enums.
-     *
+     * <p>
      * This function tests the environment and uses the FSM to chose the next
      * action of the ship. This function SHOULD NOT need to be modified.  It
      * just contains code that drives the functions that you need to implement.
@@ -118,7 +140,7 @@ public class AIController implements InputController {
 
     /**
      * Change the state of the ship.
-     *
+     * <p>
      * A Finite State Machine (FSM) is just a collection of rules that,
      * given a current state, and given certain observations about the
      * environment, chooses a new state. For example, if we are currently
@@ -143,13 +165,15 @@ public class AIController implements InputController {
 
             case CHASE:
                 //If player within an attack range, switch to attack.
-                if(distance <= ATTACK_RANGE) state = EnemyState.ATTACK;
-                if(distance > CHASE_RANGE) state = EnemyState.WANDER;
+                if (distance <= ATTACK_RANGE) state = EnemyState.ATTACK;
+                if (distance > CHASE_RANGE) state = EnemyState.WANDER;
+                // TODO add change back to wander if enemy can no londer reach player
 
             case ATTACK:
                 //If player enters chase range, switch to chase.
-                if(distance > ATTACK_RANGE && distance <= CHASE_RANGE) state = EnemyState.CHASE;
-                if(distance > CHASE_RANGE) state = EnemyState.WANDER;
+                if (distance > ATTACK_RANGE && distance <= CHASE_RANGE) state = EnemyState.CHASE;
+                if (distance > CHASE_RANGE) state = EnemyState.WANDER;
+                // TODO add change back to wander if enemy can no londer reach player
                 break;
 
             default:
@@ -202,23 +226,28 @@ public class AIController implements InputController {
 
                 //#region PUT YOUR CODE HERE
                 // marks all neighboring squares
+                int x = (int) enemy.getX();
+                int y = (int) enemy.getY();
+                boolean leftMoveValid = board.isValidMove(x - 1, y, enemy.isFlipped());
+                boolean rightMoveValid =  board.isValidMove(x + 1, y, enemy.isFlipped());
 
-//                if (board.inBounds(x - 1, y)) {
-//                    board.setGoal(x - 1, y);
-//                }
-//                if (board.inBounds(x + 1, y)) {
-//                    board.setGoal(x + 1, y);
-//                }
-//
-//                if (board.inBounds(x, y - 1)) {
-//                    board.setGoal(x, y - 1);
-//                }
-//                if (board.inBounds(x, y + 1)) {
-//                    board.setGoal(x, y + 1);
-//                }
-                Vector2 pos = player.getPosition();
-                board.setGoal((int) pos.x, (int) pos.y);
-                setGoal = true;
+                if (enemy.getFaceRight()){
+                    if (rightMoveValid){
+                        board.setGoal(x+1, y);
+                    } else if (leftMoveValid) {
+                        board.setGoal(x-1, y);
+                    }
+                }
+                else if (!enemy.getFaceRight()){
+                    if (leftMoveValid){
+                        board.setGoal(x-1, y);
+                    } else if (rightMoveValid) {
+                        board.setGoal(x+1, y);
+                    }
+                }
+                else{
+                    board.setGoal(x,y);
+                }
 
                 setGoal = true;
                 //#endregion
@@ -234,8 +263,7 @@ public class AIController implements InputController {
                 // set setGoal to true if we marked any tiles.
 
                 //#region PUT YOUR CODE HERE
-
-                pos = player.getPosition();
+                Vector2 pos = player.getPosition();
                 board.setGoal((int) pos.x, (int) pos.y);
                 setGoal = true;
                 //#endregion
@@ -254,7 +282,7 @@ public class AIController implements InputController {
 
     /**
      * Returns true if we can both fire and hit our target
-     *
+     * <p>
      * If we can fire now, and we could hit the target from where we are,
      * we should hit the target now.
      *
@@ -282,7 +310,7 @@ public class AIController implements InputController {
 
     /**
      * Reset or cool down the ship weapon.
-     *
+     * <p>
      * If flag is true, the weapon will cool down by one animation frame.  Otherwise
      * it will reset to its maximum cooldown.
      *
