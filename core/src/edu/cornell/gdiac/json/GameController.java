@@ -429,7 +429,7 @@ public class GameController implements Screen {
             adjustForDrift(enemy);
 
             //get action from controller
-            int action = controller.getAction(avatar.isFlipped());
+            int action = controller.getAction(enemy.isFlipped());
 
             if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getAvatar().getX(), level.getAvatar().getY());

@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 public abstract class Enemy extends CapsuleObstacle {
 
     // Physics constants
-
     private int id;
 
     /**
@@ -152,6 +151,10 @@ public abstract class Enemy extends CapsuleObstacle {
      *@param isRight whether or not the dude is facing right*/
     public void setFaceRight(boolean isRight) {
         faceRight = isRight;
+    }
+
+    public boolean isFlipped() {
+        return isFlipped;
     }
 
     /**
