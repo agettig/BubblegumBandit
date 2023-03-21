@@ -8,7 +8,7 @@
     1200
   ],
   "background": "background",
-  "gravity": -9.8,
+  "gravity": -15,
   "avatar": {
     "pos": [
       10,
@@ -22,9 +22,9 @@
     "density": 1.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "force": 17.0,
+    "force": 35.0,
     "damping": 20.0,
-    "maxspeed": 5.0,
+    "maxspeed": 8.0,
     "jumppulse": 1.25,
     "jumplimit": 30,
     "texture": "dude",
@@ -268,20 +268,20 @@
         "name": "enemy1",
         "type": "moving",
         "pos": [
-          2.5,
-          1.5
+          4,
+          2
         ],
         "size": [
-          0.5,
-          0.9
+          1,
+          2.8
         ],
         "density": 1.0,
-        "friction": 1.0,
+        "friction": 0.0,
         "restitution": 0.0,
-        "force": 10.0,
-        "damping": 10.0,
-        "maxspeed": 5.0,
-        "texture": "robot",
+        "force": 0.0,
+        "damping": 0.0,
+        "maxspeed": 50.0,
+        "texture": "big_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -692,7 +692,7 @@
     "offsetY": 0.5,
     "speed": 15.0,
     "density": 10.0,
-    "texture": "gum"
+    "texture": "gumProjectile"
   },
   "floatingGums": {
     "numGums": 2,
