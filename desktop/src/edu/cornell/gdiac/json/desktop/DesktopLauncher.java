@@ -41,8 +41,8 @@ public class DesktopLauncher {
 		}
 
 		config.title = "Bubblegum Bandit";
-		config.width  = 800;
-		config.height = 600;
+		config.width  = 1280;
+		config.height = 720;
 		config.fullscreen = false;
 		config.resizable = true;
 		new GDXApp(new GDXRoot(), config);

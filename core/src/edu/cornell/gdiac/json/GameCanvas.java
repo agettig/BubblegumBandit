@@ -1319,15 +1319,14 @@ public class GameCanvas {
      * @param texture
      */
     public void drawBackground(TextureRegion texture) {
-//        draw(texture, Color.WHITE, 0, 0, viewport.getWorldWidth() * 3,
-//       viewport.getWorldHeight() * 2);
+        draw(texture, Color.WHITE, 0, 0, texture.getRegionWidth(), texture.getRegionHeight());
 
-        //TODO: Replace numbers with constants rather than arbitrary values.
-        for (int x = 0; x <= viewport.getWorldWidth() * 2.5; x += texture.getRegionWidth()){
-            for (int y = 0; y <= viewport.getWorldHeight() * 1.5; y += texture.getRegionHeight() * 1.75){
-                draw(texture, Color.WHITE, x, y, texture.getRegionWidth(), texture.getRegionWidth());
-            }
-        }
+//        //TODO: Replace numbers with constants rather than arbitrary values.
+//        for (int x = 0; x <= viewport.getWorldWidth() * 2.5; x += texture.getRegionWidth()){
+//            for (int y = 0; y <= viewport.getWorldHeight() * 1.5; y += texture.getRegionHeight() * 1.75){
+//                draw(texture, Color.WHITE, x, y, texture.getRegionWidth(), texture.getRegionWidth());
+//            }
+//        }
     }
 
     public void drawGutters(TextureRegion texture) {
