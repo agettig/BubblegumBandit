@@ -1,6 +1,6 @@
 {
 	"textures": {
-        "background": "textures/16by9loading.png",
+        "background": "textures/loading.png",
 		"play": "textures/play.png",
         "progress": {
             "file":      "textures/progressbar.png",
