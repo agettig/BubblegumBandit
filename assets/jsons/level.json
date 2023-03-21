@@ -692,7 +692,7 @@
     "offsetY": 0.5,
     "speed": 15.0,
     "density": 10.0,
-    "texture": "gum"
+    "texture": "gumProjectile"
   },
   "floatingGums": {
     "numGums": 2,
