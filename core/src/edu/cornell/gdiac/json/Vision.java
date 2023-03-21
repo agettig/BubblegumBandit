@@ -89,21 +89,35 @@ public class Vision {
                     origin.y + radius * (float) Math.sin(angle));
             rays.get(finalI).set(end);
 
-            RayCastCallback ray = new RayCastCallback() {
+            final float[] minFraction = new float[1];
+            RayCastCallback rayFirstPass = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
-                    if(!bodies.contains(fixture.getBody(), true)) {
-                        bodies.add(fixture.getBody());
-                    }
+                    // TODO: If we add dynamic cover, will need to change this
                     if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
                         rays.get(finalI).set(point);
+                        minFraction[0] = fraction;
                         return fraction;
                     }
                     return -1f;
                 }
             };
-            world.rayCast(ray, origin, end);
+
+            // Add the bodies that collide with the ray before it is obscured by a wall.
+            RayCastCallback raySecondPass = new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point,
+                                              Vector2 normal, float fraction) {
+                    if(fraction < minFraction[0] && !bodies.contains(fixture.getBody(), true)) {
+                        bodies.add(fixture.getBody());
+                    }
+                    return minFraction[0];
+                }
+            };
+
+            world.rayCast(rayFirstPass, origin, end);
+            world.rayCast(raySecondPass, origin, end);
             rays.get(i).sub(origin);
         }
     }
