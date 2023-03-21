@@ -1,11 +1,13 @@
 {
     "textures": {
         "earth": {
-            "file":	 "textures/texture_draft.png",
+            "file":	 "textures/earthtile.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "background": "textures/background5.png",
+        "background": {
+            "file": "textures/background5_small.png"
+        },
         "dude": "textures/bandit.png",
         "robot": "textures/robo_draft.png",
         "goal": "textures/goaldoor.png",
