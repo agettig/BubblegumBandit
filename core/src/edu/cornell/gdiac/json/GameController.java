@@ -485,12 +485,12 @@ public class GameController implements Screen {
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
+            canvas.drawText("VICTORY!", displayFont, (level.getAvatar().getX()-3) * 50, (level.getAvatar().getY() + 4)* 50);
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
+            canvas.drawText("FAILURE!", displayFont, (level.getAvatar().getX()-3) * 50, (level.getAvatar().getY() + 4)* 50);
             canvas.end();
         }
     }
