@@ -100,7 +100,7 @@ public class MovingEnemy  extends Enemy{
 
         // Process movement command.
         if (movingLeft) {
-            setVX(-1.5f);
+            setVX(-2f);
             setVY(0);
             setFaceRight(false);
         } else if (movingRight) {
