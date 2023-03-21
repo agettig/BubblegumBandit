@@ -176,6 +176,8 @@ public class GameController implements Screen {
      */
     private TextureRegion trajectoryProjectile;
 
+    private TextureRegion stuckGum;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -323,6 +325,7 @@ public class GameController implements Screen {
         bubblegumController.initialize(levelFormat.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
     }
 
@@ -929,6 +932,7 @@ public class GameController implements Screen {
 
             if (isGumObstacle(bd1)) {
                 Bubblegum gum = (Bubblegum) bd1;
+                gum.setTexture(stuckGum);
                 gum.setVX(0);
                 gum.setVY(0);
 
@@ -938,6 +942,7 @@ public class GameController implements Screen {
 
             } else if (isGumObstacle(bd2)) {
                 Bubblegum gum = (Bubblegum) bd2;
+                gum.setTexture(stuckGum);
                 gum.setVX(0);
                 gum.setVY(0);
 
