@@ -989,10 +989,10 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
-
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (getWidth() - layout.width) / 2.0f;
         float y = (getHeight() + layout.height) / 2.0f;
+        spriteBatch.setProjectionMatrix(camera.combined);
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
