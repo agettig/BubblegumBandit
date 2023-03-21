@@ -6,7 +6,9 @@
             "wrapV": "repeated"
         },
         "background": {
-            "file": "textures/background_small.png"
+            "file": "textures/background_small.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
         },
         "dude": "textures/bandit_shadow.png",
         "robot": "textures/robot_shadow.png",

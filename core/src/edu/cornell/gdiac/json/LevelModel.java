@@ -233,6 +233,8 @@ public class LevelModel {
         String key2 = levelFormat.get("background").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key2, Texture.class));
         background = texture;
+        background.setRegionWidth(graphicsSize[0]);
+        background.setRegionHeight(graphicsSize[1]);
 
         JsonValue wall = levelFormat.get("walls").child();
         while (wall != null) {
