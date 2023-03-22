@@ -16,7 +16,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
-import edu.cornell.gdiac.json.GDXRoot;
+import edu.cornell.gdiac.bubblegumbandit.controllers.GDXRoot;
 
 /**
  * The main class of the game.
