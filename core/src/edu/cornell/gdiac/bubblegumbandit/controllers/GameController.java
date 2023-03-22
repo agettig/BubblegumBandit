@@ -327,7 +327,7 @@ public class GameController implements Screen {
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
 
-        bubblegumController.initialize(levelFormat.get("gumProjectile"));
+        bubblegumController.initialize(directory, levelFormat.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
