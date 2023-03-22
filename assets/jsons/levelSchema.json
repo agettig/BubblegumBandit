@@ -13,7 +13,7 @@
         }
       ]
     },
-    "graphicSize": {
+    "roomSize": {
       "type": "array",
       "items": [
         {
@@ -970,7 +970,7 @@
   },
   "required": [
     "physicsSize",
-    "graphicSize",
+    "roomSize",
     "gravity",
     "avatar",
     "exit",
