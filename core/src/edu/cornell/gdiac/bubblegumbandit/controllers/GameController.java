@@ -453,11 +453,6 @@ public class GameController implements Screen {
             }
         }
 
-        level.update(dt);
-        level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
-
-        bubblegumController.addJointsToWorld(level);
-
        for (AIController controller: level.getEnemyControllers()){
             adjustForDrift(controller.getEnemy());
 
@@ -472,6 +467,8 @@ public class GameController implements Screen {
             }
 
             //pass to enemy, update the enemy with that action
+           // TODO this probably means enemies are updated twice per frame, once with this update method
+           // TODO and once with their parent. Switching to sense-think-act should fix this
            controller.getEnemy().update(action);
         }
 
@@ -488,7 +485,6 @@ public class GameController implements Screen {
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
         // Add all of the pending joints to the world.
-
         bubblegumController.addJointsToWorld(level);
     }
 
