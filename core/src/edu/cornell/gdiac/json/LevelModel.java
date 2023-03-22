@@ -30,6 +30,7 @@ import edu.cornell.gdiac.json.enemies.Enemy;
 import edu.cornell.gdiac.json.controllers.AIController;
 import edu.cornell.gdiac.json.enemies.MovingEnemy;
 import edu.cornell.gdiac.json.gum.FloatingGum;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.Iterator;
@@ -224,6 +225,23 @@ public class LevelModel {
         scale.x = graphicsSize[0] / pSize[0];
         scale.y = graphicsSize[1] / pSize[1];
 
+        //initialize moving background elements
+        BackObjModel box = new BackObjModel(0, 0, 64, 64);
+        JsonValue enemy1 = levelFormat.get("enemies").get("enemylist").child().next();
+        box.initialize(directory, enemy1);
+        box.setDrawScale(scale);
+
+        JsonValue floor1 = levelFormat.get("box");
+        String key = floor1.get("texture").asString();
+        TextureRegion texture1 = new TextureRegion(directory.getEntry(key, Texture.class));
+
+        box.setTexture(texture1);
+        activate(box);
+
+        box.setFilter(GameController.CollisionController.CATEGORY_BACK, GameController.CollisionController.MASK_BACK);
+
+        //------------------------------------------------
+
         // Add level goal
         goalDoor = new ExitModel();
         goalDoor.initialize(directory, levelFormat.get("exit"));
@@ -292,6 +310,8 @@ public class LevelModel {
             enemy = enemy.next();
             AIControllers[i] = new AIController(a, avatar, board);
         }
+
+
 
         // get number of floating gums
         int numGums = levelFormat.get("floatingGums").get("numGums").asInt();
