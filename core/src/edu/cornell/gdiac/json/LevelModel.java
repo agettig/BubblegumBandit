@@ -587,6 +587,11 @@ public class LevelModel {
         return enemies;
     }
 
+    /**
+     * Draws a repeating background, and crops off any overhangs outside the level
+     * to maintain resolution and aspect ratio.
+     * @param canvas the current canvas
+     */
     private void drawBackground(GameCanvas canvas) {
         for(int i = 0; i<board.getWidth()*scale.x; i+= backgroundRegion.getRegionWidth()) {
             for(int j = 0; j< board.getHeight()*scale.x; j+= backgroundRegion.getRegionHeight() ) {
