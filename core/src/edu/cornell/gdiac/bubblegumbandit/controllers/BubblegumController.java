@@ -1,9 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -34,6 +37,9 @@ public class BubblegumController {
     /**The queue of mid-air Bubblegum obstacles. */
     private static Queue<GumModel> midAirBubblegumQueue;
 
+    /** Stores the stuck gum texture */
+    private TextureRegion stuckGumTexture;
+
     /**
      * Instantiates the Bubblegum controller and its queues.
      * */
@@ -43,16 +49,18 @@ public class BubblegumController {
         midAirBubblegumQueue = new Queue<GumModel>();
     }
 
-    /** Initialize bublegumController stats */
-    public void initialize(JsonValue json) {
+    /** Initialize bubblegumController stats */
+    public void initialize(AssetDirectory directory, JsonValue json) {
         gumAmmo = json.get("starting_gum").asInt();
         startingGum = gumAmmo;
+        String key = json.get("stuckTexture").asString();
+        stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
     }
 
     public void resetAmmo() {
         gumAmmo = startingGum;
     }
-    /**gets the amounut of bubblegum player has */
+    /** gets the amount of bubblegum player has */
     public int getAmmo() {
         return gumAmmo;
     }
@@ -66,6 +74,9 @@ public class BubblegumController {
     public void collectGumAmmo() {
         gumAmmo += 1;
     }
+
+    /** Returns the stuck gum texture. */
+    public TextureRegion getStuckGumTexture() { return stuckGumTexture; }
 
 
     /**

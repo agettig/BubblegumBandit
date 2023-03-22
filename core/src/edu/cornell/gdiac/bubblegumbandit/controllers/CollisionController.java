@@ -158,6 +158,7 @@ public class CollisionController implements ContactListener {
             GumModel gum = (GumModel) bodyA;
             gum.setVX(0);
             gum.setVY(0);
+            gum.setTexture(bubblegumController.getStuckGumTexture());
 
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bodyB);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
@@ -168,6 +169,7 @@ public class CollisionController implements ContactListener {
             GumModel gum = (GumModel) bodyB;
             gum.setVX(0);
             gum.setVY(0);
+            gum.setTexture(bubblegumController.getStuckGumTexture());
 
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bodyA);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
