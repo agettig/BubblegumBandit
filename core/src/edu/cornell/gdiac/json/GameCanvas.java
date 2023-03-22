@@ -121,6 +121,11 @@ public class GameCanvas {
      */
     int height;
 
+    /**
+     * The offset of the shadow for sprites drawn with them, in pixels.
+     */
+    private float shadowOffset = 5f;
+
 
     // CACHE OBJECTS
     /**
@@ -734,6 +739,17 @@ public class GameCanvas {
         computeTransform(ox, oy, x, y, angle, sx, sy);
         spriteBatch.setColor(tint);
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+    }
+
+    public void drawWithShadow(TextureRegion region, Color tint, float ox, float oy,
+                               float x, float y, float angle, float sx, float sy) {
+
+        draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);
+        draw(region, tint, ox, oy, x, y, angle, sx, sy);
+
+
+
+
     }
 
     /**
