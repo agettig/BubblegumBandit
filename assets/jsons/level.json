@@ -795,5 +795,8 @@
     "speed": 7.0,
     "density": 10.0,
     "texture": "bullet"
+  },
+  "box": {
+    "texture": "box"
   }
 }
