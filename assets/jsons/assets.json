@@ -1,24 +1,41 @@
 {
     "textures": {
         "earth": {
-            "file":	 "textures/earthtile.png",
+            "file":	 "textures/texture_draft.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "background": "textures/background2.png",
-        "dude": "textures/player_draft.png",
-        "robot": "textures/robo_draft.png",
+        "background": {
+            "file": "textures/background_small.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "dude": "textures/bandit_shadow.png",
+        "robot": "textures/robot_shadow.png",
+        "big_robot": "textures/big_enemy.png",
         "goal": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
-        "gum": "textures/gum.png",
-        "chewedGum": "textures/chewed_gum.png"
-
+        "gum": "textures/stuck_gum.png",
+        "health_bar": "textures/health_bar.png",
+        "health_fill": "textures/health_fill.png",
+        "health_icon": "textures/UI_heart.png",
+        "bubblegum_icon": "textures/bubble_icon.png",
+        "floatingGum": "textures/gum.png",
+        "bullet": "textures/bullet.png"
     },
     "fonts": {
         "display": {
             "file": 	"fonts/RetroGame.ttf",
             "size": 	64
+        },
+        "lucida": {
+            "file": "fonts/LucidaGrande.ttf",
+            "size": 16
+        },
+        "times": {
+            "file": "fonts/TimesRoman.ttf",
+            "size": 32
         }
     },
 	"soundfx": {

@@ -1,47 +1,70 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
-import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import com.badlogic.gdx.utils.JsonValue;
 
 
 /**
- * Controls GumModel objects on the screen.
+ * Controls Bubblegum objects on the screen.
  * */
 public class BubblegumController {
 
-    /**Maximum amount of GumModel on screen at the same time. */
-    private static final int MAX_GUM = 30;
+    /** The current amount of gum ammo of the player. */
+    private int gumAmmo;
+
+    private int startingGum;
 
     /**Amount of active gum. */
-    private static int ACTIVE_GUM;
+    private static int activeGum;
 
-    /**The queue of stuck GumModel obstacles and their joints. */
+    /**The queue of stuck Bubblegum obstacles and their joints. */
     private static Queue<GumJointPair> stuckBubblegumQueue;
 
-    /**The queue of non-assembled GumModel obstacles and their jointDefs. */
+    /**The queue of non-assembled Bubblegum obstacles and their jointDefs. */
     private static Queue<GumJointPair> bubblegumAssemblyQueue;
 
-    /**The queue of mid-air GumModel obstacles. */
+    /**The queue of mid-air Bubblegum obstacles. */
     private static Queue<GumModel> midAirBubblegumQueue;
 
-    /** Gum gravity scale when creating gum */
-    private float gumGravity;
-
-    /** Gum speed when creating gum */
-    private float gumSpeed;
-
     /**
-     * Instantiates the GumModel controller and its queues.
+     * Instantiates the Bubblegum controller and its queues.
      * */
     public BubblegumController(){
         stuckBubblegumQueue = new Queue<GumJointPair>();
         bubblegumAssemblyQueue = new Queue<GumJointPair>();
         midAirBubblegumQueue = new Queue<GumModel>();
+    }
+
+    /** Initialize bublegumController stats */
+    public void initialize(JsonValue json) {
+        gumAmmo = json.get("starting_gum").asInt();
+        startingGum = gumAmmo;
+    }
+
+    public void resetAmmo() {
+        gumAmmo = startingGum;
+    }
+    /**gets the amounut of bubblegum player has */
+    public int getAmmo() {
+        return gumAmmo;
+    }
+
+    /** reduces max gum by 1 */
+    public void fireGum() {
+        gumAmmo -= 1;
+    }
+
+    /** increases ammo by 1 */
+    public void collectGumAmmo() {
+        gumAmmo += 1;
     }
 
 
@@ -71,7 +94,7 @@ public class BubblegumController {
     }
 
     /**
-     * Adds a GumJointPair to the queue of active GumModel.
+     * Adds a GumJointPair to the queue of active Bubblegum.
      * */
     public void addToStuckBubblegum(GumJointPair pair){
 
@@ -85,12 +108,107 @@ public class BubblegumController {
     }
 
     /**
+     * Clears all Bubblegum queues and sets the amount of active gum to 0.
+     * */
+    public void resetAllBubblegum(){
+        if(activeGum == 0) return;
+        if(bubblegumAssemblyQueue == null) return;
+        if(stuckBubblegumQueue == null) return;
+        if(midAirBubblegumQueue == null) return;
+
+        bubblegumAssemblyQueue.clear();
+        stuckBubblegumQueue.clear();
+        midAirBubblegumQueue.clear();
+        activeGum = 0;
+    }
+
+    /**
+     * For every GumJoint pair in the queue of active GumJointPairs,
+     * (1) destroys the joint in the pair,
+     * (2) destroys the body of the gum.
+     * Then, clears the queue.
+     * */
+    public void collectBubblegum(){
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the number of GumJointPairs that have yet to be assembled.
+     *
+     * @returns the number of GumJointPairs to assemble
+     * */
+    public int numActivePairsToAssemble(){
+        return bubblegumAssemblyQueue.size;
+    }
+
+    /**
+     * Returns true if the number of active Bubblegum objects is
+     * equal to or greater than the gum limit.
+     *
+     * @returns true if the gum limit has been reached
+     * */
+    public boolean gumLimitReached(){
+        return gumAmmo == 0;
+    }
+
+    /**
+     * Adds a new Bubblegum to
+     * equal to or greater than the gum limit.
+     *
+     * @returns true if the gum limit has been reached
+     * */
+    public void addNewBubblegum(GumModel gum){
+        activeGum++;
+        midAirBubblegumQueue.addLast(gum);
+    }
+
+    /**
+     * Returns and removes the first BubbleGum from the queue of gum
+     * that are still in the air.
+     *
+     * @returns the first BubbleGum from the queue of gum
+     * that are still in the air.
+     * */
+    private void dequeueMidAir(){
+        if(midAirBubblegumQueue.isEmpty()) return;
+        midAirBubblegumQueue.removeFirst();
+    }
+
+    /**
+     * Returns a WeldJointDef connecting gum and another obstacle.
+     */
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyB = ob.getBody();
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
+    }
+
+
+    /**
+     * Adds every joint in the joint queue to the world before clearing the queue.
+     */
+    public void addJointsToWorld(LevelModel level) {
+        for(int i = 0; i < numActivePairsToAssemble(); i++){
+            GumJointPair pairToAssemble = dequeueAssembly();
+            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
+            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
+            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
+            addToStuckBubblegum(activePair);
+        }
+    }
+
+    /**
      * Add a new gum projectile to the world and send it in the right direction.
      */
     public GumModel createGumProjectile(Vector2 target, JsonValue gumJV, BanditModel avatar, Vector2 origin, Vector2 scale,
-                                    float gumSpeed, float gumGravity, TextureRegion texture) {
+                                        float gumSpeed, float gumGravity, TextureRegion texture) {
 
-        if(gumLimitReached()) return null;
 
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
         gumVel.nor();
@@ -126,72 +244,4 @@ public class BubblegumController {
 
         return gum;
     }
-
-    /**
-     * Clears all GumModel queues and sets the amount of active gum to 0.
-     * */
-    public void resetAllBubblegum(){
-        if(ACTIVE_GUM == 0) return;
-        if(bubblegumAssemblyQueue == null) return;
-        if(stuckBubblegumQueue == null) return;
-        if(midAirBubblegumQueue == null) return;
-
-        bubblegumAssemblyQueue.clear();
-        stuckBubblegumQueue.clear();
-        midAirBubblegumQueue.clear();
-        ACTIVE_GUM = 0;
-    }
-
-    /**
-     * For every GumJoint pair in the queue of active GumJointPairs,
-     * (1) destroys the joint in the pair,
-     * (2) destroys the body of the gum.
-     * Then, clears the queue.
-     * */
-    public void collectBubblegum(){
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the number of GumJointPairs that have yet to be assembled.
-     *
-     * @returns the number of GumJointPairs to assemble
-     * */
-    public int numActivePairsToAssemble(){
-        return bubblegumAssemblyQueue.size;
-    }
-
-    /**
-     * Returns true if the number of active GumModel objects is
-     * equal to or greater than the gum limit.
-     *
-     * @returns true if the gum limit has been reached
-     * */
-    public boolean gumLimitReached(){
-        return ACTIVE_GUM >= MAX_GUM;
-    }
-
-    /**
-     * Adds a new GumModel to
-     * equal to or greater than the gum limit.
-     *
-     * @returns true if the gum limit has been reached
-     * */
-    public void addNewBubblegum(GumModel gum){
-        ACTIVE_GUM++;
-        midAirBubblegumQueue.addLast(gum);
-    }
-
-    /**
-     * Returns and removes the first BubbleGum from the queue of gum
-     * that are still in the air.
-     *
-     * @returns the first BubbleGum from the queue of gum
-     * that are still in the air.
-     * */
-    private void dequeueMidAir(){
-        if(midAirBubblegumQueue.isEmpty()) return;
-        midAirBubblegumQueue.removeFirst();
-    }
-
 }

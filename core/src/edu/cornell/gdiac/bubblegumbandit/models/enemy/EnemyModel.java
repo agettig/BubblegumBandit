@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.Sensor;
-import edu.cornell.gdiac.bubblegumbandit.Vision;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
@@ -23,6 +22,7 @@ import java.lang.reflect.Field;
 public abstract class EnemyModel extends CapsuleObstacle {
 
     // Physics constants
+    private int id;
 
     /**
      * The factor to multiply by the input
@@ -60,6 +60,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
     private Sensor[] sensors;
     private Color sensorColor;
 
+    //endRegion
+
     public Vision vision;
 
     private World world;
@@ -72,12 +74,14 @@ public abstract class EnemyModel extends CapsuleObstacle {
     /**
      * Whether this enemy is flipped
      */
-    private boolean isFlipped;
+    protected boolean isFlipped;
 
     /**
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
+
+    // endRegion
 
     /**
      * Returns left/right movement of this character.
@@ -118,6 +122,11 @@ public abstract class EnemyModel extends CapsuleObstacle {
         return force;
     }
 
+    /**Returns this enemy's ID
+     *
+     * @returns the id of this enemy*/
+    public int getId(){ return id; };
+
     /**
      * Sets how much force to apply to get the dude moving
      * <p>
@@ -141,6 +150,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
      *@param isRight whether or not the dude is facing right*/
     public void setFaceRight(boolean isRight) {
         faceRight = isRight;
+    }
+
+    public boolean isFlipped() {
+        return isFlipped;
     }
 
     /**
@@ -201,7 +214,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public EnemyModel(World world) {
+    public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
         isGrounded = true;
@@ -209,7 +222,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isFlipped = false;
         yScale = 1f;
         this.world = world;
-        vision = new Vision(3f, 0f, (float) Math.PI/2, Color.YELLOW);
+        this.id = id;
+        vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
     }
 
     /**
@@ -292,16 +306,17 @@ public abstract class EnemyModel extends CapsuleObstacle {
     }
 
 
-    public abstract void applyForce();
-
-    public void update() {
+    public void update(int controlCode) {
         if (yScale < 1f && !isFlipped) {
             yScale += 0.1f;
         } else if (yScale > -1f && isFlipped) {
             yScale -= 0.1f;
         }
         updateVision();
+
     }
+
+
 
     /**
      * Draws the physics object.
@@ -314,28 +329,28 @@ public abstract class EnemyModel extends CapsuleObstacle {
             float yFlip = isFlipped ? -1 : 1;
             canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
-            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        for (Sensor s : sensors) {
-            float y = getY();
-            float x = getX();
-            if (angle == 3.14f) {
-                y += s.printY();
-                x -= s.printX();
-            }
-
-            else {
-                y -= s.printY();
-                x += s.printX();
-            }
-            canvas.drawPhysics(s.getSensorShape(), sensorColor,
-                x, y, getAngle(), drawScale.x, drawScale.y);
-        }
+//        for (Sensor s : sensors) {
+//            float y = getY();
+//            float x = getX();
+//            if (angle == 3.14f) {
+//                y += s.printY();
+//                x -= s.printX();
+//            }
+//
+//            else {
+//                y -= s.printY();
+//                x += s.printX();
+//            }
+//            canvas.drawPhysics(s.getSensorShape(), sensorColor,
+//                x, y, getAngle(), drawScale.x, drawScale.y);
+//        }
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
@@ -380,9 +395,19 @@ public abstract class EnemyModel extends CapsuleObstacle {
     }
 
     /**
+     * Shoots at a target position.
+     *
+     * @param targetPosition the screen position to shoot at.
+     * */
+    public void shoot(Vector2 targetPosition){
+        return;
+    }
+
+    /**
      * Flips the player's angle and direction when the world gravity is flipped
      */
     public void flippedGravity() {
         isFlipped = !isFlipped;
     }
+
 }

@@ -17,6 +17,7 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.view;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -109,7 +110,7 @@ public class GameCanvas {
     /**
      * Camera for the underlying SpriteBatch
      */
-    private OrthographicCamera camera;
+    private GameCamera camera;
 
     /**
      * Value to cache window width (if we are currently full screen)
@@ -138,6 +139,8 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
+    private FitViewport UIviewport;
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -153,10 +156,11 @@ public class GameCanvas {
 
 
         // Set the projection matrix (for proper scaling)
-        camera = new OrthographicCamera(getWidth(), getHeight());
+        camera = new GameCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
         viewport = new FitViewport(getWidth(), getHeight(), camera);
         viewport.apply();
+        UIviewport = new FitViewport(getWidth(), getHeight());
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
         fovRender.setProjectionMatrix(camera.combined);
@@ -167,6 +171,8 @@ public class GameCanvas {
         global = new Matrix4();
         vertex = new Vector2();
     }
+
+    public FitViewport getUIviewport() {return UIviewport;}
 
     /**
      * Eliminate any resources that should be garbage collected manually.
@@ -183,6 +189,11 @@ public class GameCanvas {
         vertex = null;
         holder = null;
     }
+
+    /** Returns the camera for this GameCanvas
+     * @return the camera of this canvas
+     */
+    public GameCamera getCamera() { return camera; }
 
     /**
      * Returns the width of this canvas
@@ -433,6 +444,7 @@ public class GameCanvas {
     public void begin() {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
+        viewport.apply();
         active = DrawPass.STANDARD;
     }
 
@@ -441,9 +453,9 @@ public class GameCanvas {
      */
 
     public void end() {
-    	spriteBatch.end();
-		fovRender.end();
-    	active = DrawPass.INACTIVE;
+        spriteBatch.end();
+        fovRender.end();
+        active = DrawPass.INACTIVE;
     }
 
     /**
@@ -641,7 +653,7 @@ public class GameCanvas {
      * @param height The texture height
      */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
-       // viewport.apply();
+        // viewport.apply();
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -977,10 +989,10 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
-
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (getWidth() - layout.width) / 2.0f;
         float y = (getHeight() + layout.height) / 2.0f;
+        spriteBatch.setProjectionMatrix(camera.combined);
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
@@ -1268,16 +1280,10 @@ public class GameCanvas {
         pix.fill();
         textureSolid = new Texture(pix);
 
-        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
-                vertices, indices);
+        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid), vertices, indices);
 
-
-        draw(polyReg, Color.WHITE, x * scalex,
-                y * scaley, scalex, scaley);
-
-
+        draw(polyReg, Color.WHITE, x * scalex, y * scaley, scalex, scaley);
     }
-
 
     /**
      * Draw the individual rays of the field of vision
@@ -1286,18 +1292,15 @@ public class GameCanvas {
      * @param ends
      * @param x
      * @param y
-     * @param radius
      * @param scalex
      * @param scaley
      */
-    public void drawRays(Color color, Array<Vector2> ends, float x, float y,
-                         float radius, float scalex, float scaley) {
-
+    public void drawRays(Color color, Array<Vector2> ends, float x, float y, float scalex, float scaley) {
         if (active != DrawPass.DEBUG) {
             Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
             return;
         }
-
+        fovRender.setProjectionMatrix(camera.combined);
         fovRender.begin(ShapeRenderer.ShapeType.Line);
         local.applyTo(vertex);
         fovRender.setColor(color);
@@ -1310,11 +1313,20 @@ public class GameCanvas {
 
     }
 
+    /**
+     *
+     * Draws the background texture multiple times to fill the screen
+     * @param texture
+     */
     public void drawBackground(TextureRegion texture) {
-        draw(texture, Color.WHITE, 0, 0, viewport.getWorldWidth(),
-       viewport.getWorldHeight());
+        draw(texture, Color.WHITE, 0, 0, texture.getRegionWidth(), texture.getRegionHeight());
 
-
+//        //TODO: Replace numbers with constants rather than arbitrary values.
+//        for (int x = 0; x <= viewport.getWorldWidth() * 2.5; x += texture.getRegionWidth()){
+//            for (int y = 0; y <= viewport.getWorldHeight() * 1.5; y += texture.getRegionHeight() * 1.75){
+//                draw(texture, Color.WHITE, x, y, texture.getRegionWidth(), texture.getRegionWidth());
+//            }
+//        }
     }
 
     public void drawGutters(TextureRegion texture) {

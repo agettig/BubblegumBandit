@@ -3,169 +3,196 @@ package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
 public class MovingEnemyModel extends EnemyModel {
 
-    private enum EnemyState{
-        /**
-         * The enemy is stationary
-         */
-        STATIONARY,
-        /**
-         * The enemy is wandering back and forth
-         * Switches directions when hitting a wall
-         */
-        WANDER,
-        /**
-         * The ship has a target, but must get closer
-         */
-        CHASE,
-        /**
-         * The ship has a target and is attacking it
-         */
-        ATTACK
-    }
+    /**Maximum speed/velocity of a moving enemy. */
+    private static float MAX_SPEED = 1f;
 
-    /** How far forward this ship can move in a single turn */
-    private static float MOVE_SPEED = 0.01f;
-    /** How much this ship can turn in a single turn */
-    private static final float TURN_SPEED = 15.0f;
-    /** Ship velocity */
-    private Vector2 velocity;
+    /**Force to apply to MovingEnemies for movement.*/
+    private final float MOVEMENT_FORCE = 6.3f;
+
+    /**Impulse to apply to MovingEnemies for jumping.*/
+    private final float JUMPING_IMPULSE = 3f;
+
+    /**Vision radius of a MovingEnemy. */
     private float visionRadius;
+
+    /**[CONTROVERSIAL] Ticks to manage game time.*/
     private long ticks;
 
-    private EnemyState state;
-
+    /**Sets the vision radius of a MovingEnemy.
+     *
+     * @param visionRadius The new vision radius */
     public void setVisionRadius(float visionRadius) {
         this.visionRadius = visionRadius;
     }
 
-    public void setEnemyState(EnemyState state){
-        this.state = state;
+
+    /**Creates a MovingEnemy.
+     *
+     * @param world The box2d world
+     * @param id the id of this Enemy
+     * */
+    public MovingEnemyModel(World world, int id){
+        super(world, id);
     }
 
-    public MovingEnemyModel(World world){
-        super(world);
-    }
-
+    /**Initializes this MovingEnemy in the game. Sets its vision radius.
+     *
+     * @param directory The BubblegumBandit asset directory
+     * @param json the json to parse
+     * */
     public void initialize(AssetDirectory directory, JsonValue json){
         super.initialize(directory, json);
         setVisionRadius(json.get("visionradius").asFloat());
-        setEnemyState(EnemyState.valueOf(json.get("enemystate").asString()));
-        velocity = new Vector2();
-        ticks = 5;
     }
 
-    public void setMoveSpeed(float moveSpeed) {
-        MOVE_SPEED = moveSpeed;
+
+    /**
+     * Returns true if the enemy's velocity needs to be clamped. If
+     * so, clamps the horizontal velocity of this enemy so that it does
+     * not exceed the maximum speed.
+     *
+     * @returns true if this method clamped the enemy's velocity.
+     * */
+    private boolean ClampVelocity(){
+        Body enemyBody = getBody();
+
+        //If over the max velocity, adjust.
+        if(enemyBody.getLinearVelocity().x > MAX_SPEED){
+            enemyBody.getLinearVelocity().set(MAX_SPEED,
+                    enemyBody.getLinearVelocity().y);
+            return true;
+        }
+
+        //Repeat for negatives.
+        if(Math.abs(enemyBody.getLinearVelocity().x) > MAX_SPEED){
+            enemyBody.getLinearVelocity().set(-MAX_SPEED,
+                    enemyBody.getLinearVelocity().y);
+            return true;
+        }
+
+        return false;
     }
 
-    // TODO
+    /**
+     * Primary update method for a MovingEnemy.
+     *
+     * Takes a control code and performs the corresponding action. Updates
+     * the tick count.
+     */
+
     @Override
-    public void applyForce() {
-//        body.applyForce(new Vector2(5, 0),getPosition(),true);
-    }
+    public void update(int controlCode) {
+        super.update(controlCode);
 
-    // TODO
-    @Override
-    public void update() {
-        super.update();
+        ticks++;
+        // Determine how we are moving.
+        boolean movingLeft  = (controlCode & CONTROL_MOVE_LEFT) != 0;
+        boolean movingRight = (controlCode & CONTROL_MOVE_RIGHT) != 0;
+        boolean movingUp    = (controlCode & CONTROL_MOVE_UP) != 0;
+        boolean movingDown  = (controlCode & CONTROL_MOVE_DOWN) != 0;
 
-        //determine how the enemy is moving
-        int direction = this.enemyMovementDirection();
-
-        //movement
-        if (direction == -1) {
-            velocity.x = -MOVE_SPEED;
-            velocity.y = 0;
-            this.vision.setDirection(-1);
-            this.moveBot();
-        } else if (direction == 1) {
-            velocity.x = MOVE_SPEED;
-            velocity.y = 0;
-            this.moveBot();
-        }
-        else {
-            velocity.x = 0;
-            velocity.y = 0;
-        }
-        if (ticks % 400 == 0) {
-            flipBot();
-        }
-
-        applyForce();
-    }
-
-    private void flipBot() {
-        if (this.enemyMovementDirection() == 1) {
-            this.vision.setDirection(-1);
-            this.setFaceRight(false);
-        }else if (this.enemyMovementDirection() == -1) {
-            this.vision.setDirection(1);
-            this.setFaceRight(true);
-        }
-    }
-
-    private void moveBot() {
-        Vector2 tmp = new Vector2();
-        tmp.set(this.getPosition());
-
-        tmp.add(this.velocity.x, this.velocity.y);
-
-        if (this.isGrounded()) {
-            this.setPosition(tmp);
-            this.ticks += 1;
-        }
-    }
-
-
-        // TODO changeStateIfApplicable
-        public void changeStateIfApplicable () {
-            // TODO add initialization
-
-            switch (state) {
-                case STATIONARY:
-
-                    break;
-
-                case WANDER:
-
-
-                    break;
-
-                case CHASE:
-
-
-                    break;
-
-                case ATTACK:
-
-
-                    break;
-
-                default:
-                    Gdx.app.error("EnemyState", "Illegal enemy state", new IllegalStateException());
+        // Process movement command.
+        if (movingLeft) {
+            setVX(-4f);
+            setVY(0);
+            setFaceRight(false);
+        } else if (movingRight) {
+            setVX(4f);
+            setVY(0);
+            setFaceRight(true);
+        } else if (movingUp) {
+            if (!isFlipped){
+                setVY(4f);
+                body.applyForceToCenter(0, 5,true);
             }
-        }
-
-        /** Returns the direction the robot should move
-         *
-         * @return the direction the robot is moving -1 for left, 1 for right*/
-        public int enemyMovementDirection () {
-            int direction = 0;
-
-            //initialize direction based on the direction the bot is facing
-            if (this.isGrounded()) {
-                if (this.getFaceRight()) {
-                    direction = 1;
-                }
-                else direction = -1;
+            else{
+                setVY(0);
             }
+            setVX(0);
+        } else if (movingDown) {
+            if (isFlipped){
+                setVY(-4f);
+                body.applyForceToCenter(0, -5,true);
 
-            //every five seconds change the direction
-            return direction;
+            }
+            else{
+                setVY(0);
+            }
+            setVX(0);
+        } else {
+//            // NOT MOVING, SO SLOW DOWN
+//            velocity.x *= SPEED_DAMPNING;
+//            velocity.y *= SPEED_DAMPNING;
+//            if (Math.abs(velocity.x) < EPSILON_CLAMP) {
+//                velocity.x = 0.0f;
+//            }
+//            if (Math.abs(velocity.y) < EPSILON_CLAMP) {
+//                velocity.y = 0.0f;
+//            }
+            setVX(0);
+
         }
+//        switch(controlCode){
+//            case InputController.CONTROL_MOVE_LEFT: //chase left
+////                moveLeft();
+//                //moveRight();
+//                //jump();
+//                setVX(-1);
+//                break;
+//            case InputController.CONTROL_MOVE_RIGHT: //chase right
+//                setVX(1.2f);
+//                break;
+//            case InputController.CONTROL_FIRE: //shoot
+//                break;
+//            case InputController.CONTROL_MOVE_UP: //jump
+//                setVY(2);
+//                setVX(0);
+//                break;
+//            default: break;
+//        }
+
+    }
+
+    /**
+     * Makes the Enemy jump if it has not done so in 60 ticks.
+     */
+    private void jump(){
+//        System.out.println(ticks);
+        if(ticks % 20 != 0) return;
+
+        this.vision.setDirection(.5f);
+        Vector2 imp = new Vector2(0, 3);
+        getBody().applyLinearImpulse(imp, getPosition(), true);
+    }
+
+    /**
+     * Moves the Enemy left, or clamps its velocity if it is over
+     * the maximum speed.
+     * */
+    private void moveLeft(){
+        //adjust force
+        this.vision.setDirection(0);
+
+        //if we didn't need to clamp velocity, increase it.
+        if(!ClampVelocity()) getBody().applyForceToCenter(-MOVEMENT_FORCE, 0, true);
+    }
+
+    /**
+     * Moves the Enemy right, or clamps its velocity if it is over
+     * the maximum speed.
+     * */
+    private void moveRight(){
+        //adjust force
+        this.vision.setDirection((float) Math.PI);
+
+        //if we didn't need to clamp velocity, increase it.
+        if(!ClampVelocity()) getBody().applyForceToCenter(MOVEMENT_FORCE, 0, true);
+    }
 }

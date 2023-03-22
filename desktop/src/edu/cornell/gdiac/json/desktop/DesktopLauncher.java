@@ -12,6 +12,8 @@
  */
 package edu.cornell.gdiac.json.desktop;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import edu.cornell.gdiac.backend.GDXApp;
 import edu.cornell.gdiac.backend.GDXAppSettings;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GDXRoot;
@@ -34,9 +36,13 @@ public class DesktopLauncher {
 	 */
 	public static void main (String[] arg) {
 		GDXAppSettings config = new GDXAppSettings();
-		config.title = "JSON Demo";
-		config.width  = 800;
-		config.height = 600;
+		if (SharedLibraryLoader.isMac && Gdx.app == null) {
+			org.lwjgl.system.Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+		}
+
+		config.title = "Bubblegum Bandit";
+		config.width  = 1280;
+		config.height = 720;
 		config.fullscreen = false;
 		config.resizable = true;
 		new GDXApp(new GDXRoot(), config);

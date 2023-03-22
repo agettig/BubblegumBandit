@@ -1,21 +1,20 @@
-package edu.cornell.gdiac.bubblegumbandit.models.projectiles;
+package edu.cornell.gdiac.bubblegumbandit.models.level.gum;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
 import java.util.ArrayList;
 
 /**
-* Class to represent a "stuck" GumModel. This GumModel
-* is not a projectile; instead, it is instantiated when
-* a gum projectile hits an Obstacle.
-*/
+ * Class to represent a "stuck" Bubblegum. This Bubblegum
+ * is not a projectile; instead, it is instantiated when
+ * a gum projectile hits an Obstacle.
+ */
 public class GumModel extends WheelObstacle {
 
-    /**Upper limit on GumModel objects */
+    /**Upper limit on Bubblegum objects */
     private static final int MAX_GUM = 2;
 
     /**All active joints created by gum */
@@ -24,20 +23,17 @@ public class GumModel extends WheelObstacle {
     /**All active gum objects created by gum */
     private static ArrayList<GumModel> activeGum;
 
-    /**Diameter of a GumModel projectile */
+    /**Diameter of a Bubblegum projectile */
     private float diameter;
 
-    /**X-coordinate of GumModel velocity */
+    /**X-coordinate of Bubblegum velocity */
     public float vx;
 
-    /**Y-coordinate of GumModel velocity */
+    /**Y-coordinate of Bubblegum velocity */
     public float vy;
 
-    /** Reference to the character avatar */
-    private BanditModel avatar;
-
     /**
-     * Creates a GumModel projectile.
+     * Creates a Bubblegum projectile.
      * */
     public GumModel(float x, float y, float radius){
         super(x, y, radius);
@@ -75,27 +71,27 @@ public class GumModel extends WheelObstacle {
 
 
     /**
-     * Returns the diameter of this GumModel projectile.
+     * Returns the diameter of this Bubblegum projectile.
      *
-     * @return the diameter of this GumModel
+     * @return the diameter of this Bubblegum
      * */
     public float getDiameter(){
         return diameter;
     }
 
     /**
-     * Returns the radius of this GumModel.
+     * Returns the radius of this Bubblegum.
      *
-     * @returns the radius of this GumModel (its diameter halved)
+     * @returns the radius of this Bubblegum (its diameter halved)
      * */
     public float getRadius(){
         return diameter / 2;
     }
 
     /**
-     * Returns the velocity of this GumModel.
+     * Returns the velocity of this Bubblegum.
      *
-     * @return the velocity of this GumModel
+     * @return the velocity of this Bubblegum
      * */
     public Vector2 getVelocity(){
         //Return a new object to avoid corruption
@@ -103,17 +99,17 @@ public class GumModel extends WheelObstacle {
     }
 
     /**
-     * Sets the X-coordinate of this GumModel's velocity.
+     * Sets the X-coordinate of this Bubblegum's velocity.
      *
-     * @param vx the new X-velocity of this GumModel
+     * @param vx the new X-velocity of this Bubblegum
      */
     public void setVx(float vx) { this.vx = vx; }
 
 
     /**
-     * Sets the Y-coordinate of this GumModel's velocity.
+     * Sets the Y-coordinate of this Bubblegum's velocity.
      *
-     * @param vy the new Y-velocity of this GumModel
+     * @param vy the new Y-velocity of this Bubblegum
      */
     public void setVy(float vy) { this.vy = vy; }
 
