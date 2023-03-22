@@ -3,10 +3,6 @@
     64.0,
     64.0
   ],
-  "worldSize": [
-    48,
-    24
-  ],
   "background": "background",
   "gravity": -15,
   "avatar": {
