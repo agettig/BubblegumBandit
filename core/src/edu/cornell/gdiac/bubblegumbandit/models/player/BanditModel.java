@@ -37,10 +37,6 @@ public class BanditModel extends CapsuleObstacle {
 	private float damping;
 	/** The maximum character speed */
 	private float maxspeed;
-	/** The impulse for the character jump */
-	private float jumppulse;
-	/** Cooldown (in animation frames) for jumping */
-	private int jumpLimit;
 
 	/** The current horizontal movement of the character */
 	private float   movement;
@@ -48,10 +44,6 @@ public class BanditModel extends CapsuleObstacle {
 	private boolean faceRight;
 	/** Whether our feet are on the ground */
 	private boolean isGrounded;
-	/** How long until we can jump again */
-	private int jumpCooldown;
-	/** Whether we are actively jumping */
-	private boolean isJumping;
 
 	// SENSOR FIELDS
 	/** Ground sensor to represent our feet */
@@ -85,14 +77,54 @@ public class BanditModel extends CapsuleObstacle {
 	/** Cache for flipping player orientation */
 	private float angle;
 
+	public boolean isFlipped() {
+		return isFlipped;
+	}
+
 	/** Whether this player is flipped */
 	private boolean isFlipped;
 
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
 
-	/** The physics world */
-	private World world;
+	/** Camera target for player */
+	private final Vector2 cameraTarget;
+
+	/**
+	 * Returns the camera target for the player.
+	 *
+	 * This is based on the player's position, velocity, and gravity.
+	 *
+	 * @return the camera target for the player
+	 */
+	public Vector2 getCameraTarget() { return cameraTarget; }
+
+
+	/** The max amount of health the player can have */
+	private final float MAX_HEALTH = 10;
+
+	/** The current amount of health the player has */
+	private float health;
+
+	/** Returns the player's current health for the HUD */
+	public float getHealth() {return health;}
+
+	/** Returns the player's max health for the HUD */
+	public float getMaxHealth() {return MAX_HEALTH;}
+
+	/** Decreases the player's health
+	 * @param damage The amount of damage done to the player
+	 */
+	public void hitPlayer(float damage) {health = Math.max(0,health-damage); }
+
+	/** Increases the player's health
+	 * @param heal The amount of healing done to the player
+	 */
+	public void healPlayer(float heal) {
+		health = Math.min(MAX_HEALTH,health+heal);
+	}
+
+
 
 	/**
 	 * Returns left/right movement of this character.
@@ -149,23 +181,6 @@ public class BanditModel extends CapsuleObstacle {
 		}
 	}
 
-	/**
-	 * Returns true if the dude is actively jumping.
-	 *
-	 * @return true if the dude is actively jumping.
-	 */
-	public boolean isJumping() {
-		return isJumping && jumpCooldown <= 0 && isGrounded;
-	}
-
-	/**
-	 * Sets whether the dude is actively jumping.
-	 *
-	 * @param value whether the dude is actively jumping.
-	 */
-	public void setJumping(boolean value) {
-		isJumping = value;
-	}
 
 	/**
 	 * Returns true if the dude is on the ground.
@@ -248,42 +263,6 @@ public class BanditModel extends CapsuleObstacle {
 	}
 
 	/**
-	 * Returns the upward impulse for a jump.
-	 *
-	 * @return the upward impulse for a jump.
-	 */
-	public float getJumpPulse() {
-		return jumppulse;
-	}
-
-	/**
-	 * Sets the upward impulse for a jump.
-	 *
-	 * @param value	the upward impulse for a jump.
-	 */
-	public void setJumpPulse(float value) {
-		jumppulse = value;
-	}
-
-	/**
-	 * Returns the cooldown limit between jumps
-	 *
-	 * @return the cooldown limit between jumps
-	 */
-	public int getJumpLimit() {
-		return jumpLimit;
-	}
-
-	/**
-	 * Sets the cooldown limit between jumps
-	 *
-	 * @param value	the cooldown limit between jumps
-	 */
-	public void setJumpLimit(int value) {
-		jumpLimit = value;
-	}
-
-	/**
 	 * Returns topSensorName when flipped else bottomSensorName
 	 * This is used by ContactListener
 	 *
@@ -340,16 +319,17 @@ public class BanditModel extends CapsuleObstacle {
 		// Gameplay attributes
 		isGrounded = false;
 		isShooting = false;
-		isJumping = false;
 		faceRight = false;
 
 		shootCooldown = 0;
-		jumpCooldown = 0;
 
 		isFlipped = false;
 		yScale = 1.0f;
-		this.world = world;
 
+		health = MAX_HEALTH;
+
+
+		cameraTarget = new Vector2();
 	}
 
 	/**
@@ -366,6 +346,7 @@ public class BanditModel extends CapsuleObstacle {
 		float[] pos  = json.get("pos").asFloatArray();
 		float[] size = json.get("size").asFloatArray();
 		setPosition(pos[0],pos[1]);
+		cameraTarget.set(pos[0]*drawScale.x, pos[1]*drawScale.y);
 		setDimension(size[0],size[1]);
 
 		// Technically, we should do error checking here.
@@ -377,8 +358,6 @@ public class BanditModel extends CapsuleObstacle {
 		setForce(json.get("force").asFloat());
 		setDamping(json.get("damping").asFloat());
 		setMaxSpeed(json.get("maxspeed").asFloat());
-		setJumpPulse(json.get("jumppulse").asFloat());
-		setJumpLimit(json.get("jumplimit").asInt());
 
 		// Reflection is best way to convert name to color
 		Color debugColor;
@@ -501,10 +480,6 @@ public class BanditModel extends CapsuleObstacle {
 			}
 		}
 		else {
-			// TODO: This seems to create an issue where you can't slow down a jump
-			// once you hit top speed. Should check both directions independently
-			// and let you move the opposite direction even if at top speed.
-			// Might not be a problem without jumping, but it might be.
 			forceCache.set(getMovement(),0);
 			body.applyForce(forceCache,getPosition(),true);
 		}
@@ -518,12 +493,6 @@ public class BanditModel extends CapsuleObstacle {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		// Apply cooldowns
-		if (isJumping()) {
-			jumpCooldown = getJumpLimit();
-		} else {
-			jumpCooldown = Math.max(0, jumpCooldown - 1);
-		}
 
 		if (isShooting()) {
 			shootCooldown = shotLimit;
@@ -536,6 +505,10 @@ public class BanditModel extends CapsuleObstacle {
 		} else if (yScale > -1f && isFlipped) {
 			yScale -= 0.1f;
 		}
+
+		// Change camera target
+		cameraTarget.x = getX()*drawScale.x;
+		cameraTarget.y = getY()*drawScale.y;
 
 		super.update(dt);
 	}

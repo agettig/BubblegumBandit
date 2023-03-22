@@ -2,7 +2,7 @@ package edu.cornell.gdiac.bubblegumbandit.helpers;
 
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 
 
 /**

@@ -22,24 +22,23 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.JointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
-import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
-import edu.cornell.gdiac.bubblegumbandit.models.projectiles.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.ObjectSet;
+import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.util.ScreenListener;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
 
 /**
  * Gameplay controller for the game.
@@ -53,6 +52,16 @@ import static edu.cornell.gdiac.util.SliderGui.createAndShowGUI;
  * singleton asset manager to manage the various assets.
  */
 public class GameController implements Screen {
+    // ASSETS
+
+    // TODO remove
+    private boolean enableGUI = false;
+
+    /** How close to the center of the tile we need to be to stop drifting */
+    private static final float DRIFT_TOLER = .2f;
+    /** How fast we drift to the tile center when paused */
+    private static final float DRIFT_SPEED = 0.325f;
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -65,6 +74,8 @@ public class GameController implements Screen {
      * The JSON defining the level model
      */
     private JsonValue levelFormat;
+
+    private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
      */
@@ -105,6 +116,13 @@ public class GameController implements Screen {
      */
     private ScreenListener listener;
 
+    private CollisionController collisionController;
+
+    /**
+     * Mark set to handle more sophisticated collision callbacks
+     */
+    protected ObjectSet<Fixture> sensorFixtures;
+
     /**
      * Reference to the game level
      */
@@ -132,25 +150,31 @@ public class GameController implements Screen {
      */
     private BubblegumController bubblegumController;
 
-
-    /**
-     * Reference to the Collision controller instance
-     */
-    private CollisionController collisionController;
-
     /**
      * Queue of gum joints
      */
     protected Queue<JointDef> jointsQueue;
 
-    /** Gum gravity scale when creating gum */
+
+    /** A collection of the active projectiles on screen */
+    private ProjectileController projectileController;
+
+    /**
+     * Gum gravity scale when creating gum
+     */
     private float gumGravity;
 
-    /** Gum speed when creating gum */
+    /**
+     * Gum speed when creating gum
+     */
     private float gumSpeed;
 
-    /** The texture of the trajectory projectile */
+    /**
+     * The texture of the trajectory projectile
+     */
     private TextureRegion trajectoryProjectile;
+
+    private TextureRegion stuckGum;
 
     /**
      * Returns true if the level is completed.
@@ -184,9 +208,7 @@ public class GameController implements Screen {
      *
      * @return true if the level is failed.
      */
-    public boolean isFailure() {
-        return failed;
-    }
+    public boolean getFailure() {return failed;}
 
     /**
      * Sets whether the level is failed.
@@ -254,16 +276,27 @@ public class GameController implements Screen {
         //Data Structures && Classes
         level = new LevelModel();
         jointsQueue = new Queue<JointDef>();
-        bubblegumController = new BubblegumController();
-        collisionController = new CollisionController(level);
 
-        //GUI
+        sensorFixtures = new ObjectSet<Fixture>();
+
+        setComplete(false);
+        setFailure(false);
         UIManager.put("swing.boldMetal", Boolean.FALSE);
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI(new SliderListener());
-            }
-        });
+        bubblegumController = new BubblegumController();
+        collisionController = new CollisionController(level, bubblegumController);
+        projectileController = new ProjectileController();
+
+        if (enableGUI){
+            //TODO remove gui
+//            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+//                public void run() {
+//                    createAndShowGUI(new SliderListener());
+//                }
+//            });
+        }
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+
     }
 
     /**
@@ -290,12 +323,15 @@ public class GameController implements Screen {
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
         jumpSound = directory.getEntry("jump", SoundEffect.class);
-        TextureRegion gumTexture = new TextureRegion(directory.getEntry("gum", Texture.class));
-        TextureRegion stuckGumTexture = new TextureRegion(directory.getEntry("chewedGum", Texture.class));
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+
+        bubblegumController.initialize(levelFormat.get("gumProjectile"));
+
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
+        hud = new HUDController(directory);
     }
 
     /**
@@ -307,15 +343,19 @@ public class GameController implements Screen {
     public void reset() {
 
         bubblegumController.resetAllBubblegum();
+        projectileController.reset();
+
         level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
+        bubblegumController.resetAmmo();
 
         // Reload the json each time
         level.populate(directory, levelFormat);
         level.getWorld().setContactListener(collisionController);
+        projectileController.initialize(levelFormat.get("projectile"), directory, level.getScale().x, level.getScale().y);
     }
 
     /**
@@ -330,7 +370,7 @@ public class GameController implements Screen {
      */
     public boolean preUpdate(float dt) {
 
-        InputController input = InputController.getInstance();
+        PlayerController input = PlayerController.getInstance();
         input.readInput();
         if (listener == null) {return true;}
 
@@ -344,16 +384,15 @@ public class GameController implements Screen {
             return false;
         }
         else if (countdown > 0) {countdown--;}
-        else if (countdown == 0) {reset(); }
+        else if (countdown == 0) {
+            reset();
+        }
 
         //Check for failure.
-        if (!isFailure() && level.getAvatar().getY() < -1) {
+        if (!getFailure() && level.getBandit().getHealth() <= 0) {
             setFailure(true);
             return false;
         }
-
-
-
         return true;
     }
 
@@ -369,21 +408,23 @@ public class GameController implements Screen {
      */
     public void update(float dt) {
 
-        if(collisionController.isWinConditionMet()) setComplete(true);
+        if(collisionController.isWinConditionMet()) {
+            setComplete(true);
+            collisionController.resetWinCondition();
+        }
 
-        InputController inputResults = InputController.getInstance();
+        PlayerController inputResults = PlayerController.getInstance();
 
         //Update Controllers.
-        BanditModel bandit = level.getAvatar();
-        for(AIController ai : level.getEnemies()) ai.update();
+        BanditModel bandit = level.getBandit();
 
         //move bandit
         float movement = inputResults.getHorizontal() * bandit.getForce();
         bandit.setMovement(movement);
         bandit.applyForce();
 
-        //Perform actions when the player flips gravity.
-        if (inputResults.getSwitchGravity() && bandit.isGrounded()) {
+
+        if (PlayerController.getInstance().getSwitchGravity() && bandit.isGrounded()) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = playSound(jumpSound, jumpId);
@@ -392,28 +433,65 @@ public class GameController implements Screen {
             bandit.setGrounded(false);
             collisionController.clearSensorFixtures();
 
-            for (AIController ai : level.getEnemies()) ai.flipEnemy();
+            for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
         }
 
 
-        if (inputResults.didShoot()) {
-
+        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getProjTarget(canvas);
             JsonValue gumJV = levelFormat.get("gumProjectile");
-            BanditModel avatar = level.getAvatar();
+            BanditModel avatar = level.getBandit();
             Vector2 origin = level.getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
             GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumSpeed, gumGravity, gumTexture);
-            level.activate(gum);
+            if (gum != null) {
+                bubblegumController.fireGum();
+                level.activate(gum);
+                gum.setFilter(CATEGORY_GUM, MASK_GUM);
+            }
         }
 
         level.update(dt);
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
-        addJointsToWorld();
+        bubblegumController.addJointsToWorld(level);
+
+       for (AIController controller: level.getEnemyControllers()){
+            adjustForDrift(controller.getEnemy());
+
+            //get action from controller
+            int action = controller.getAction();
+
+            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                level.activate(newProj);
+            } else {
+                controller.coolDown(true);
+            }
+
+            //pass to enemy, update the enemy with that action
+           controller.getEnemy().update(action);
+        }
+
+        level.update(dt);
+        projectileController.update();
+
+        // Update the camera
+        Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
+        canvas.getCamera().setTarget(bandit.getCameraTarget());
+        canvas.getCamera().setSecondaryTarget(target);
+        canvas.getCamera().update(dt);
+
+        // Turn the physics engine crank.
+        level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
+
+        // Add all of the pending joints to the world.
+
+        bubblegumController.addJointsToWorld(level);
     }
+
 
     /**
      * Draw the physics objects to the canvas
@@ -429,17 +507,18 @@ public class GameController implements Screen {
         canvas.clear();
 
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
+        hud.draw(level, bubblegumController);
 
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
+            canvas.drawText("VICTORY!", displayFont, (level.getBandit().getX()-3) * 50, (level.getBandit().getY() + 4)* 50);
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
+            canvas.drawText("FAILURE!", displayFont, (level.getBandit().getX()-3) * 50, (level.getBandit().getY() + 4)* 50);
             canvas.end();
         }
     }
@@ -521,7 +600,8 @@ public class GameController implements Screen {
         this.listener = listener;
     }
 
-    /**
+ /**
+
      * Method to ensure that a sound asset is only played once.
      * <p>
      * Every time you play a sound asset, it makes a new instance of that sound.
@@ -559,66 +639,6 @@ public class GameController implements Screen {
         return sound.play(volume);
     }
 
-//    /**
-//     * Add a new gum projectile to the world and send it in the right direction.
-//     */
-//    private void createGumProjectile(Vector2 target) {
-//
-//        if(bubblegumController.gumLimitReached()) return;
-//
-//        JsonValue gumJV = levelFormat.get("gumProjectile");
-//        BanditModel avatar = level.getAvatar();
-//
-//        Vector2 origin = level.getProjOrigin(gumJV, canvas);
-//        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-//        gumVel.nor();
-//
-//        // Prevent player from shooting themselves by clicking on player
-//        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
-//        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
-//            return;
-//        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
-//            return;
-//        }
-//
-//        String key = gumJV.get("texture").asString();
-//        TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-//        float radius = gumTexture.getRegionWidth() / (2.0f * level.getScale().x);
-//
-//        //Create a new GumModel and assign it to the BubblegumController.
-//        GumModel gum = new GumModel(origin.x, origin.y, radius);
-//        gum.setName(gumJV.name());
-//        gum.setDensity(gumJV.getFloat("density", 0));
-//        gum.setDrawScale(level.getScale());
-//        gum.setTexture(gumTexture);
-//        gum.setBullet(true);
-//        gum.setGravityScale(gumGravity);
-//        bubblegumController.addNewBubblegum(gum);
-//
-//        // Compute position and velocity
-//        if (gumSpeed == 0) { // Use default gum speed
-//            gumVel.scl(gumJV.getFloat("speed", 0));
-//        } else { // Use slider gum speed
-//            gumVel.scl(gumSpeed);
-//        }
-//        gum.setVX(gumVel.x);
-//        gum.setVY(gumVel.y);
-//        level.activate(gum);
-//    }
-
-    /**
-     * Adds every joint in the joint queue to the world before clearing the queue.
-     */
-    private void addJointsToWorld() {
-        for(int i = 0; i < bubblegumController.numActivePairsToAssemble(); i++){
-            GumJointPair pairToAssemble = bubblegumController.dequeueAssembly();
-            WeldJointDef weldJointDef = pairToAssemble.getJointDef();
-            WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
-            GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
-            bubblegumController.addToStuckBubblegum(activePair);
-        }
-    }
-
     public void setGravity(float gravity) {
         float g = gravity;
         if (level.getWorld().getGravity().y < 0) {
@@ -627,33 +647,69 @@ public class GameController implements Screen {
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    class SliderListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            JSlider source = (JSlider) e.getSource();
-            if (!source.getValueIsAdjusting()) {
-                int val = source.getValue();
-                if (source.getName().equals("gravity")) {
-                    setGravity(val);
-                } else if (source.getName().equals("radius")) {
-                    for (AIController ai : level.getEnemies()) {
-                        ai.setVisionRadius(val);
-                    }
-                } else if (source.getName().equals("range")) {
-                    for (AIController ai : level.getEnemies()) {
-                        ai.setVisionRange((float) (val * (Math.PI / 180f)));
-                    }
-                } else if (source.getName().equals("gum gravity scale")) {
-                    gumGravity = val;
-                } else if (source.getName().equals("gum speed")) {
-                    gumSpeed = val;
-                } else if (source.getName().equals("move speed")) {
-                    for (AIController ai : level.getEnemies()) {
-                        ai.setMovementSpeed((float) val /100);
-                    }
-                }
-            }
+    /**
+     * Nudges the ship back to the center of a tile if it is not moving.
+     *
+     * @param enemy The Enemy to adjust
+     */
+    private void adjustForDrift(EnemyModel enemy) {
+        // Drift to line up vertically with the grid.
 
+        if (enemy.getVX() == 0.0f) {
+            float offset = level.getBoard().centerOffset(enemy.getX());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setX(enemy.getX()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setX(enemy.getX()-DRIFT_SPEED);
+            }
         }
 
+        // Drift to line up horizontally with the grid.
+        if (enemy.getVY() == 0.0f) {
+            float offset = level.getBoard().centerOffset(enemy.getY());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setY(enemy.getY()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setY(enemy.getY()-DRIFT_SPEED);
+            }
+        }
     }
+
+
+//    class SliderListener implements ChangeListener {
+//        public void stateChanged(ChangeEvent e) {
+//            JSlider source = (JSlider) e.getSource();
+//            if (!source.getValueIsAdjusting()) {
+//                int val = source.getValue();
+//                if (source.getName().equals("gravity")) {
+//                    setGravity(val);
+//                } else if (source.getName().equals("radius")) {
+//                    for (AIController ai : level.getEnemyControllers()) {
+//                        ai.getEnemy().setVisionRadius(val);
+//                    }
+//                } else if (source.getName().equals("range")) {
+//                    for (AIController ai : level.getEnemies()) {
+//                        ai.setVisionRange((float) (val * (Math.PI / 180f)));
+//                    }
+//                } else if (source.getName().equals("gum gravity scale")) {
+//                    gumGravity = val;
+//                } else if (source.getName().equals("gum speed")) {
+//                    gumSpeed = val;
+//                } else if (source.getName().equals("move speed")) {
+//<<<<<<< HEAD:core/src/edu/cornell/gdiac/bubblegumbandit/controllers/GameController.java
+//                    for (AIController ai : level.getEnemies()) {
+//                        ai.setMovementSpeed((float) val /100);
+//=======
+//                    for (Enemy enemy : level.getEnemies()) {
+//                        if (enemy instanceof MovingEnemy) {
+//                            //((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
+//                        }
+//>>>>>>> main:core/src/edu/cornell/gdiac/json/GameController.java
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//    }
 }

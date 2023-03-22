@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.bubblegumbandit;
+package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -88,20 +88,35 @@ public class Vision {
                     origin.y + radius * (float) Math.sin(angle));
             rays.get(finalI).set(end);
 
-            RayCastCallback ray = new RayCastCallback() {
+            final float[] minFraction = new float[1];
+            RayCastCallback rayFirstPass = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
-                    if(bodies.contains(fixture.getBody(), false))
-                        bodies.add(fixture.getBody());
+                    // TODO: If we add dynamic cover, will need to change this
                     if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
                         rays.get(finalI).set(point);
+                        minFraction[0] = fraction;
                         return fraction;
                     }
                     return -1f;
                 }
             };
-            world.rayCast(ray, origin, end);
+
+            // Add the bodies that collide with the ray before it is obscured by a wall.
+            RayCastCallback raySecondPass = new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point,
+                                              Vector2 normal, float fraction) {
+                    if(fraction < minFraction[0] && !bodies.contains(fixture.getBody(), true)) {
+                        bodies.add(fixture.getBody());
+                    }
+                    return minFraction[0];
+                }
+            };
+
+            world.rayCast(rayFirstPass, origin, end);
+            world.rayCast(raySecondPass, origin, end);
             rays.get(i).sub(origin);
         }
     }
@@ -114,8 +129,7 @@ public class Vision {
      * @return whether the obstacle is in view.
      */
     public boolean canSee(Obstacle obstacle) {
-        return bodies.contains(obstacle.getBody(),
-                true);
+        return bodies.contains(obstacle.getBody(), true);
     }
 
 
@@ -136,16 +150,16 @@ public class Vision {
      */
     public void draw(GameCanvas canvas, float x, float y, float scalex, float scaley) {
         canvas.drawFOV(color, rays, x, y, scalex, scaley);
-//            canvas.drawRays(color, rays, x, y, radius, scalex, scaley);
+//        canvas.drawRays(color, rays, x, y, radius, scalex, scaley);
     }
 
     /**
      * Draws the outline of the physics object.
      */
     public void drawDebug(GameCanvas canvas, float x, float y, float scalex, float scaley) {
-
+//        canvas.drawFOV(color, rays, x, y, scalex, scaley);
 //        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
-        canvas.drawRays(DEBUGCOLOR, rays, x, y, radius, scalex, scaley);
+        canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
     }
 
     public void setRange(float range) {

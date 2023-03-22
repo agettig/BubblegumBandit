@@ -885,4 +885,19 @@ public abstract class SimpleObstacle extends Obstacle {
 			createFixtures();
 		}
 	}
+
+	/**
+	 * Sets the filter categories for this obstacle.
+	 *
+	 * @param categoryBits the category bits for the filtering
+	 * @param maskBits     the mask bits for the filtering
+	 */
+	public void setFilter(short categoryBits, short maskBits) {
+		for (Fixture f : this.body.getFixtureList()) {
+			Filter filter = f.getFilterData();
+			filter.categoryBits = categoryBits;
+			filter.maskBits = maskBits;
+			f.setFilterData(filter);
+		}
+	}
 }
