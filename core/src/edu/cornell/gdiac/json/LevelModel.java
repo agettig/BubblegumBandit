@@ -93,7 +93,6 @@ public class LevelModel {
     /** The background of the level */
     private TextureRegion background;
 
-    private int[] graphicsSize;
 
 
 
@@ -217,12 +216,17 @@ public class LevelModel {
     public void populate(AssetDirectory directory, JsonValue levelFormat) {
         float gravity = levelFormat.getFloat("gravity");
         float[] pSize = levelFormat.get("physicsSize").asFloatArray();
-        graphicsSize = levelFormat.get("graphicSize").asIntArray();
+
+        board = new Board (levelFormat.get("board"), scale);
+        System.out.println("board height: "+board.getHeight());
+
 
         world = new World(new Vector2(0, gravity), false);
-        bounds = new Rectangle(0, 0, pSize[0], pSize[1]);
-        scale.x = graphicsSize[0] / pSize[0];
-        scale.y = graphicsSize[1] / pSize[1];
+        bounds = new Rectangle(0, 0, board.getHeight(), board.getHeight());
+
+        scale.x = pSize[0];
+        scale.y = pSize[1];
+
 
         // Add level goal
         goalDoor = new ExitModel();
@@ -231,12 +235,12 @@ public class LevelModel {
         activate(goalDoor);
 
         String key2 = levelFormat.get("background").asString();
-        TextureRegion texture = new TextureRegion(directory.getEntry(key2, Texture.class));
-        background = texture;
-        background.setRegionWidth(graphicsSize[0]);
-        background.setRegionHeight(graphicsSize[1]);
+        background= new TextureRegion(directory.getEntry(key2, Texture.class));
 
-        JsonValue wall = levelFormat.get("walls").child();
+        //background.setWidth((int) (scale.x*16)); //things that make you say hmmm
+        //background.setRegionHeight((int)(scale.y*9));
+
+        JsonValue wall = levelFormat.get("walls").child(); //whyyy
         while (wall != null) {
             WallModel obj = new WallModel();
             obj.initialize(directory, wall);
@@ -273,7 +277,6 @@ public class LevelModel {
         activate(avatar);
         avatar.setFilter(GameController.CollisionController.CATEGORY_PLAYER, GameController.CollisionController.MASK_PLAYER);
 
-        board = new Board (levelFormat.get("board"));
 
         // initialize each enemy
         for (int i = 0; i < numEnemies; i++) {
@@ -508,18 +511,25 @@ public class LevelModel {
 
     public void drawGrid(GameCanvas canvas){
         PolygonShape s = new PolygonShape();
-        int halfWidth = graphicsSize[0]/2;
-        int halfHeight = graphicsSize[1]/2;
-        s.setAsBox(halfWidth, .5f);
-
-        for (int i = 50; i < graphicsSize[1]; i+=50){
-            canvas.drawPhysics(s, Color.RED, halfWidth, i);
+        int halfWidth = (int) (scale.x/2);
+        int halfHeight = (int) (scale.y/2);
+        s.setAsBox(.5f*scale.x, .5f*scale.y);
+        for(int i = 0; i<board.getWidth(); i++) {
+            for(int j = 0; j<board.getHeight(); j++) {
+                canvas.drawPhysics(s, Color.RED, i*scale.x+halfWidth, j*scale.y+halfHeight);
+            }
         }
-        s.setAsBox(.5f, graphicsSize[1]/2);
 
-        for (int i = 50; i < graphicsSize[0]; i+=50){
-            canvas.drawPhysics(s, Color.RED, i, halfHeight);
-        }
+
+
+        //for (int i = 0; i < worldSize[0]; i+=1){ //what
+        //    canvas.drawPhysics(s, Color.RED, halfWidth, i);
+        //}
+        //s.setAsBox(.5f,.5f);
+
+        //for (int i = (int) scale.x; i < (int) scale.x*worldSize[1]; i+=scale.x){
+        //    canvas.drawPhysics(s, Color.RED, i, halfHeight);
+        //}
     }
 
     /**
@@ -536,7 +546,7 @@ public class LevelModel {
         canvas.begin();
 
         if(background!=null) {
-            canvas.drawBackground(background);
+            drawBackground(canvas);
         }
         for (Obstacle obj : objects) {
             obj.draw(canvas);
@@ -559,7 +569,7 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
-//            drawGrid(canvas);
+            drawGrid(canvas);
             board.drawBoard(canvas);
             canvas.endDebug();
 
@@ -572,5 +582,13 @@ public class LevelModel {
 
     public Enemy[] getEnemies() {
         return enemies;
+    }
+
+    private void drawBackground(GameCanvas canvas) {
+        for(int i = 0; i<board.getWidth()*scale.x; i+=background.getRegionWidth()) {
+            for(int j = 0; j< board.getHeight()*scale.x; j+= background.getRegionHeight() ) {
+                canvas.draw(background,i, j);
+            }
+        }
     }
 }

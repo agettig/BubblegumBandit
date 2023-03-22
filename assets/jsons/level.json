@@ -1,11 +1,11 @@
 {
   "physicsSize": [
-    48.0,
-    24.0
+    64.0,
+    64.0
   ],
-  "graphicSize": [
-    2400,
-    1200
+  "worldSize": [
+    48,
+    24
   ],
   "background": "background",
   "gravity": -15,
@@ -272,8 +272,8 @@
           2
         ],
         "size": [
-          1,
-          2.8
+          2,
+          2
         ],
         "density": 1.0,
         "friction": 0.0,
@@ -281,7 +281,7 @@
         "force": 0.0,
         "damping": 0.0,
         "maxspeed": 50.0,
-        "texture": "big_robot",
+        "texture": "med_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -343,7 +343,7 @@
         ],
         "size": [
           0.5,
-          0.9
+          1.0
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -351,7 +351,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "robot",
+        "texture": "small_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -413,7 +413,7 @@
         ],
         "size": [
           0.5,
-          0.9
+          1.0
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -421,7 +421,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "robot",
+        "texture": "small_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -483,7 +483,7 @@
         ],
         "size": [
           0.5,
-          0.9
+          1.0
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -491,7 +491,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "robot",
+        "texture": "small_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -553,7 +553,7 @@
         ],
         "size": [
           0.5,
-          0.9
+          1.0
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -561,7 +561,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "robot",
+        "texture": "small_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -623,7 +623,7 @@
         ],
         "size": [
           0.5,
-          0.9
+          1.0
         ],
         "density": 1.0,
         "friction": 2.0,
@@ -631,7 +631,7 @@
         "force": 10.0,
         "damping": 10.0,
         "maxspeed": 5.0,
-        "texture": "robot",
+        "texture": "small_robot",
         "debugcolor": "white",
         "debugopacity": 192,
         "sensorcolor": "red",
@@ -736,8 +736,8 @@
     "debugopacity": 200
   },
   "board": {
-    "width" : 24,
-    "length" : 48,
+    "height" : 24,
+    "width" : 48,
     "values": {
       "row1":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "row2":[0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 2, 0],
