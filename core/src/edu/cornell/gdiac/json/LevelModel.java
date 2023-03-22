@@ -33,6 +33,7 @@ import edu.cornell.gdiac.json.gum.FloatingGum;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.Iterator;
+import org.w3c.dom.Text;
 
 /**
  * Represents a single level in our game
@@ -90,8 +91,11 @@ public class LevelModel {
      */
     private boolean debug;
 
-    /** The background of the level */
-    private TextureRegion background;
+    /** The full background of the level */
+    private Texture backgroundText;
+
+    /** The background of the level, cropped if necessary */
+    private TextureRegion backgroundRegion;
 
 
 
@@ -218,11 +222,9 @@ public class LevelModel {
         float[] pSize = levelFormat.get("physicsSize").asFloatArray();
 
         board = new Board (levelFormat.get("board"), scale);
-        System.out.println("board height: "+board.getHeight());
-
 
         world = new World(new Vector2(0, gravity), false);
-        bounds = new Rectangle(0, 0, board.getHeight(), board.getHeight());
+        bounds = new Rectangle(0, 0, board.getWidth(), board.getHeight());
 
         scale.x = pSize[0];
         scale.y = pSize[1];
@@ -235,7 +237,8 @@ public class LevelModel {
         activate(goalDoor);
 
         String key2 = levelFormat.get("background").asString();
-        background= new TextureRegion(directory.getEntry(key2, Texture.class));
+        backgroundText = directory.getEntry(key2, Texture.class);
+        backgroundRegion = new TextureRegion(backgroundText);
 
         //background.setWidth((int) (scale.x*16)); //things that make you say hmmm
         //background.setRegionHeight((int)(scale.y*9));
@@ -545,7 +548,7 @@ public class LevelModel {
 
         canvas.begin();
 
-        if(background!=null) {
+        if(backgroundRegion !=null) {
             drawBackground(canvas);
         }
         for (Obstacle obj : objects) {
@@ -585,10 +588,24 @@ public class LevelModel {
     }
 
     private void drawBackground(GameCanvas canvas) {
-        for(int i = 0; i<board.getWidth()*scale.x; i+=background.getRegionWidth()) {
-            for(int j = 0; j< board.getHeight()*scale.x; j+= background.getRegionHeight() ) {
-                canvas.draw(background,i, j);
+        for(int i = 0; i<board.getWidth()*scale.x; i+= backgroundRegion.getRegionWidth()) {
+            for(int j = 0; j< board.getHeight()*scale.x; j+= backgroundRegion.getRegionHeight() ) {
+                if(j+ backgroundRegion.getRegionHeight()>board.getHeight()*scale.x) {
+                    backgroundRegion.setRegionY((int) (backgroundText.getHeight()
+                        -(board.getHeight()*scale.x-j)));
+                }
+                if(i+ backgroundRegion.getRegionWidth()>board.getWidth()*scale.x) {
+                    backgroundRegion.setRegionWidth((int) (board.getWidth()*scale.x-i));
+                }
+                canvas.draw(backgroundRegion,i, j);
+               backgroundRegion.setRegionX(0);
+                backgroundRegion.setRegionY(0);
+                backgroundRegion.setRegionHeight(backgroundText.getHeight());
+                backgroundRegion.setRegionWidth(backgroundText.getWidth());
+
             }
         }
+
+
     }
 }
