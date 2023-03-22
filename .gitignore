@@ -1,13 +1,10 @@
 ## Java
-
-javadoc/
 .DS_Store
 
 core/resources/
-/core/resources/
-/desktop/out/
 desktop/out/
 out/
+javadoc/
 
 *.class
 *.war
