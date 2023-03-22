@@ -13,17 +13,6 @@
         }
       ]
     },
-    "roomSize": {
-      "type": "array",
-      "items": [
-        {
-          "type": "integer"
-        },
-        {
-          "type": "integer"
-        }
-      ]
-    },
     "gravity": {
       "type": "number"
     },
