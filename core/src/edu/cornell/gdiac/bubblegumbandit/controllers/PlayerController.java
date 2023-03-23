@@ -70,6 +70,13 @@ public class PlayerController{
     /** Whether the debug toggle was pressed. */
     private boolean debugPressed;
     private boolean debugPrevious;
+    /** Whether the camera mode toggle was pressed. */
+    private boolean cameraPressed;
+    private boolean cameraPrevious;
+    /** Whether the controls toggle was pressed. */
+    private boolean controlTogglePressed;
+    private boolean controlTogglePrevious;
+
     /** Whether the exit button was pressed. */
     private boolean exitPressed;
     private boolean exitPrevious;
@@ -85,8 +92,14 @@ public class PlayerController{
     /** For the gamepad crosshair control */
     private float momentum;
 
-    /** If gravity was switched */
-    private boolean switchGravity;
+
+    /** If gravity was pulled down */
+    private boolean gravityDown;
+    private boolean gravityDownPrevious;
+
+    /** If gravity was pulled up / toggled */
+    private boolean gravityUp;
+    private boolean gravityUpPrevious;
 
     /** If gum was collected */
 
@@ -132,7 +145,11 @@ public class PlayerController{
         return crosscache.set(crosshair);
     }
 
-    public boolean getSwitchGravity(){return switchGravity;};
+    /** Returns true if the player swapped gravity upwards / toggled gravity */
+    public boolean getGravityUp(){return gravityUp && !gravityUpPrevious;};
+
+    /** Returns true if the player swapped gravity downwards */
+    public boolean getGravityDown(){return gravityDown && !gravityDownPrevious;};
 
     /** Returns true if the player inputted some command to collect Bubblegum.
      *
@@ -223,6 +240,24 @@ public class PlayerController{
     }
 
     /**
+     * Returns true if the player wants to go toggle the camera mode.
+     *
+     * @return true if the player wants to go toggle the camera mode.
+     */
+    public boolean didCameraSwap() {
+        return cameraPressed && !cameraPrevious;
+    }
+
+    /**
+     * Returns true if the player wants to go toggle the controls mode.
+     *
+     * @return true if the player wants to go toggle the controls mode.
+     */
+    public boolean didControlsSwap() {
+        return controlTogglePressed && !controlTogglePrevious;
+    }
+
+    /**
      * Returns true if the exit button was pressed.
      *
      * @return true if the exit button was pressed.
@@ -268,6 +303,10 @@ public class PlayerController{
         exitPrevious = exitPressed;
         nextPrevious = nextPressed;
         prevPrevious = prevPressed;
+        cameraPrevious = cameraPressed;
+        controlTogglePrevious = controlTogglePressed;
+        gravityDownPrevious = gravityDown;
+        gravityUpPrevious = gravityUp;
 
         // Check to see if a GamePad is connected
         if (xbox != null && xbox.isConnected()) {
@@ -332,8 +371,11 @@ public class PlayerController{
         prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
         nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
         exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-        switchGravity = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W)) || (Gdx.input.isKeyJustPressed(Input.Keys.S));
+        gravityUp = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W));
+        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.S));
         collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
+        cameraPressed = (secondary && cameraPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_2));
+        controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
