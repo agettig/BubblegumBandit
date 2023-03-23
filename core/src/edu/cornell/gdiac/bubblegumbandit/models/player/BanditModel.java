@@ -522,7 +522,7 @@ public class BanditModel extends CapsuleObstacle {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
 
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+			canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
 					getY()*drawScale.y,getAngle(),effect,yScale);
 
 		}

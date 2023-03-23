@@ -18,11 +18,14 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_ENEMY = 0x0002;
     public static final short CATEGORY_TERRAIN = 0x0004;
     public static final short CATEGORY_GUM = 0x0008;
+    public static final short CATEGORY_PROJECTILE = 0x0010;
 
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
-    public static final short MASK_ENEMY = ~(CATEGORY_ENEMY | CATEGORY_PLAYER);
+    public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
     public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
+    public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
+    public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
@@ -154,26 +157,29 @@ public class CollisionController implements ContactListener {
         //Safety check.
         if (bodyA == null || bodyB == null) return;
 
+        GumModel gum = null;
+        Obstacle body = null;
         if (isGumObstacle(bodyA)) {
-            GumModel gum = (GumModel) bodyA;
+            gum = (GumModel) bodyA;
+            body = bodyB;
+        };
+        if (isGumObstacle(bodyB)) {
+            gum = (GumModel) bodyB;
+            body = bodyA;
+        };
+
+        if (gum != null && gum.getObjectsStuck() < 2){
             gum.setVX(0);
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
 
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bodyB);
+            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
-
-        }
-        else if (isGumObstacle(bodyB)) {
-            GumModel gum = (GumModel) bodyB;
-            gum.setVX(0);
-            gum.setVY(0);
-            gum.setTexture(bubblegumController.getStuckGumTexture());
-
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, bodyA);
-            GumJointPair pair = new GumJointPair(gum, weldJointDef);
-            bubblegumController.addToAssemblyQueue(pair);
+            gum.incrementStuckObjects();
+            if (gum.getObjectsStuck() == 2){
+                gum.setFilter(CATEGORY_GUM, MASK_GUM_LIMIT);
+            }
         }
     }
 
