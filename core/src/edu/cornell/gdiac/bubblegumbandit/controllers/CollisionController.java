@@ -181,14 +181,12 @@ public class CollisionController implements ContactListener {
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
 
-        if (gum != null && gum.getObjectsStuck() < 2){
+        if (gum != null && gum.canAddObstacle(body)){
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
-            gum.incrementStuckObjects();
-            if (gum.getObjectsStuck() == 2){
-                gum.setFilter(CATEGORY_GUM, MASK_GUM_LIMIT);
-            }
+            gum.addObstacle(body);
+            gum.setCollisionFilters();
         }
     }
 
