@@ -19,6 +19,10 @@ public class BackObjModel extends BoxObstacle {
         super(x, y, width, height);
     }
 
+    public BackObjModel(){
+        super (0, 0, 1, 1);
+    }
+
     /**
      * Initializes the dude via the given JSON value
      * <p>
@@ -28,13 +32,8 @@ public class BackObjModel extends BoxObstacle {
      * @param directory the asset manager
      * @param json      the JSON subtree defining the dude
      */
-    public void initialize(AssetDirectory directory, JsonValue json) {
+    public void initialize(AssetDirectory directory, JsonValue json, JsonValue info) {
         setName(json.get("name").asString());
-        float[] pos = json.get("pos").asFloatArray();
-        float[] size = json.get("size").asFloatArray();
-        setPosition(pos[0], pos[1]);
-        setDimension(1.3f, 1.3f);
-
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
@@ -57,10 +56,17 @@ public class BackObjModel extends BoxObstacle {
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
 
-        // Now get the texture from the AssetManager singleton
-        String key = json.get("texture").asString();
+        String key = info.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        setInfo(info, texture);
+    }
+
+    public void setInfo(JsonValue info, TextureRegion texture){
+        int[] p = info.get("pos").asIntArray();
+        setPosition(p[0] ,p[1]);
         setTexture(texture);
 
+        setWidth(texture.getRegionWidth()/64f);
+        setHeight(texture.getRegionHeight()/64f);
     }
 }
