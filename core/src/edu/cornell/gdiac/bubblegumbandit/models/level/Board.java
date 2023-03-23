@@ -49,7 +49,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 public class Board {
 
 
-    /**
+  /**
      * Each tile on the board has a set of attributes associated with it.
      * However, no class other than board needs to access them directly.
      * Therefore, we make this an inner class.
@@ -84,27 +84,31 @@ public class Board {
 
     // Instance attributes
     /**
+     * The board height (in number of tiles)
+     */
+    private int height;
+    /**
      * The board width (in number of tiles)
      */
     private int width;
-    /**
-     * The board height (in number of tiles)
-     */
-    private int length;
+
+    //needed for draw method at least
+    private Vector2 scale;
 
     /**
      * Creates a new board of the given size
      *
      * @param boardJson json representation of board
      */
-    public Board(JsonValue boardJson) {
+    public Board(JsonValue boardJson, Vector2 scale) {
+        this.scale = scale;
+        this.height = boardJson.getInt("height");
         this.width = boardJson.getInt("width");
-        this.length = boardJson.getInt("length");
         JsonValue row = boardJson.get("values").child;
-        tiles = new TileState[length][width];
-        for (int i = 0; i < length; i++) {
+        tiles = new TileState[width][height];
+        for (int i = 0; i < width; i++) {
             int[] rowVals = row.asIntArray();
-            for (int j = 0; j < width; j++) {
+            for (int j = 0; j < height; j++) {
                 TileState tile = new TileState();
                 tile.value = rowVals[j];
                 tiles[i][j] = tile;
@@ -216,8 +220,8 @@ public class Board {
      * Resets the values of all the tiles on screen.
      */
     public void resetTiles() {
-        for (int x = 0; x < length; x++) {
-            for (int y = 0; y < width; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 TileState tile = tiles[x][y];
                 tile.goal = false;
                 tile.visited = false;
@@ -225,22 +229,24 @@ public class Board {
         }
     }
 
-    /**
-     * Returns the number of tiles horizontally across the board.
-     *
-     * @return the number of tiles horizontally across the board.
-     */
-    public int getWidth() {
-        return width;
+
+  /**
+   * Returns the number of tiles vertically across the board.
+   *
+   * @return the number of tiles vertically across the board.
+   */
+    public int getHeight() {
+        return height;
     }
 
-    /**
-     * Returns the number of tiles vertically across the board.
-     *
-     * @return the number of tiles vertically across the board.
-     */
-    public int getLength() {
-        return length;
+
+  /**
+   * Returns the number of tiles horizontally across the board.
+   *
+   * @return the number of tiles horizontally across the board.
+   */
+    public int getWidth() {
+        return width;
     }
 
 
@@ -257,7 +263,7 @@ public class Board {
      * @return true if the given position is a valid tile
      */
     public boolean inBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < length && y < width;
+        return x >= 0 && y >= 0 && x < width && y < height;
     }
 
     /**
@@ -341,19 +347,20 @@ public class Board {
 
     public void drawBoard(GameCanvas canvas) {
         PolygonShape s = new PolygonShape();
-        s.setAsBox(20, 20);
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < width; j++) {
+        s.setAsBox(this.scale.x*3/8, this.scale.y*3/8); //smaller than grid squares
+        float margin = this.scale.x*1/2;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
                 int val = tiles[i][j].value;
                 if (val != 0) {
-                    Color x;
-                    if (val == 1) x = Color.BLUE;
+                    Color color;
+                    if (val == 1) color = Color.BLUE;
                     else if (val == 2) {
-                        x = Color.RED;
+                        color = Color.RED;
                     } else {
-                        x = Color.GREEN;
+                        color = Color.GREEN;
                     }
-                    canvas.drawPhysics(s, x, i * 50 + 25, j * 50 + 25);
+                    canvas.drawPhysics(s, color, i * scale.x + margin, j * scale.y + margin);
                 }
             }
         }

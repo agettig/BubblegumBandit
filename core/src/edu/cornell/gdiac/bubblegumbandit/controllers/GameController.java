@@ -150,11 +150,6 @@ public class GameController implements Screen {
      */
     private BubblegumController bubblegumController;
 
-    /**
-     * Queue of gum joints
-     */
-    protected Queue<JointDef> jointsQueue;
-
 
     /** A collection of the active projectiles on screen */
     private ProjectileController projectileController;
@@ -275,8 +270,6 @@ public class GameController implements Screen {
 
         //Data Structures && Classes
         level = new LevelModel();
-        jointsQueue = new Queue<JointDef>();
-
         sensorFixtures = new ObjectSet<Fixture>();
 
         setComplete(false);
@@ -454,7 +447,10 @@ public class GameController implements Screen {
         }
 
        for (AIController controller: level.getEnemyControllers()){
-            adjustForDrift(controller.getEnemy());
+
+           //TODO fix adjust for drift
+
+//            adjustForDrift(controller.getEnemy());
 
             //get action from controller
             int action = controller.getAction();
@@ -462,6 +458,7 @@ public class GameController implements Screen {
             if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
                 level.activate(newProj);
+                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
             } else {
                 controller.coolDown(true);
             }
@@ -470,7 +467,7 @@ public class GameController implements Screen {
            // TODO this probably means enemies are updated twice per frame, once with this update method
            // TODO and once with their parent. Switching to sense-think-act should fix this
            controller.getEnemy().update(action);
-        }
+       }
 
         level.update(dt);
         projectileController.update();
@@ -509,12 +506,13 @@ public class GameController implements Screen {
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("VICTORY!", displayFont, (level.getBandit().getX()-3) * 50, (level.getBandit().getY() + 4)* 50);
+            //TODO fix drawing text to center
+            canvas.drawText("VICTORY!", displayFont, ((level.getBandit().getX() + 4)* 50), (level.getBandit().getY() + 4)* 50);
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("FAILURE!", displayFont, (level.getBandit().getX()-3) * 50, (level.getBandit().getY() + 4)* 50);
+            canvas.drawText("FAILURE!", displayFont, (level.getBandit().getX()-3) * 40, (level.getBandit().getY() + 4)* 40);
             canvas.end();
         }
     }
@@ -597,7 +595,6 @@ public class GameController implements Screen {
     }
 
  /**
-
      * Method to ensure that a sound asset is only played once.
      * <p>
      * Every time you play a sound asset, it makes a new instance of that sound.
@@ -662,7 +659,9 @@ public class GameController implements Screen {
 
         // Drift to line up horizontally with the grid.
         if (enemy.getVY() == 0.0f) {
-            float offset = level.getBoard().centerOffset(enemy.getY());
+            float y = enemy.getY();
+            if (enemy.getId()==0){y -= 1;}
+            float offset = level.getBoard().centerOffset(y);
             if (offset < -DRIFT_TOLER) {
                 enemy.setY(enemy.getY()+DRIFT_SPEED);
             } else if (offset > DRIFT_TOLER) {
