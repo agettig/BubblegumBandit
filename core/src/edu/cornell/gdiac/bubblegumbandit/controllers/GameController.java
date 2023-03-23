@@ -171,6 +171,9 @@ public class GameController implements Screen {
 
     private TextureRegion stuckGum;
 
+    /** The gravity control mode for the player controller */
+    private boolean gravityToggle = true;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -370,6 +373,8 @@ public class GameController implements Screen {
         // Toggle debug and handle resets.
         if (input.didDebug()) {level.setDebug(!level.getDebug());}
         if (input.didReset()) {reset();}
+        if (input.didCameraSwap()) { canvas.getCamera().toggleMode(); }
+        if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
 
         // Switch screens if necessary.
         if (input.didExit()) {
@@ -417,7 +422,11 @@ public class GameController implements Screen {
         bandit.applyForce();
 
 
-        if (PlayerController.getInstance().getSwitchGravity() && bandit.isGrounded()) {
+        float grav =  level.getWorld().getGravity().y;
+        if (bandit.isGrounded() && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
+                (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
+                (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
+        ) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = playSound(jumpSound, jumpId);
