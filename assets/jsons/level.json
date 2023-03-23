@@ -18,9 +18,9 @@
     "density": 1.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "force": 35.0,
+    "force": 30.0,
     "damping": 20.0,
-    "maxspeed": 8.0,
+    "maxspeed": 7.0,
     "jumppulse": 1.25,
     "jumplimit": 30,
     "texture": "dude",
@@ -688,7 +688,8 @@
     "offsetY": 0.5,
     "speed": 15.0,
     "density": 10.0,
-    "texture": "gumProjectile"
+    "texture": "gumProjectile",
+    "stuckTexture": "gum"
   },
   "floatingGums": {
     "numGums": 2,
@@ -712,7 +713,7 @@
           21
         ]
       }
-      ]
+    ]
   },
   "exit": {
     "pos": [
