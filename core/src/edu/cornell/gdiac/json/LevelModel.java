@@ -225,20 +225,22 @@ public class LevelModel {
         scale.x = graphicsSize[0] / pSize[0];
         scale.y = graphicsSize[1] / pSize[1];
 
-        //initialize moving background elements
-        BackObjModel box = new BackObjModel(0, 0, 64, 64);
-        JsonValue enemy1 = levelFormat.get("enemies").get("enemylist").child().next();
-        box.initialize(directory, enemy1);
-        box.setDrawScale(scale);
+        //initialize dynamic background elements
+        JsonValue backJV =levelFormat.get("backgroundObj");
 
-        JsonValue floor1 = levelFormat.get("box");
-        String key = floor1.get("texture").asString();
-        TextureRegion texture1 = new TextureRegion(directory.getEntry(key, Texture.class));
+        int numObj = backJV.get("numObj").asInt();
+        JsonValue info = backJV.get("objects").child();
 
-        box.setTexture(texture1);
-        activate(box);
+        for (int i = 0; i < numObj; i ++){
+            BackObjModel o = new BackObjModel();
+            o.initialize(directory, backJV, info);
 
-        box.setFilter(GameController.CollisionController.CATEGORY_BACK, GameController.CollisionController.MASK_BACK);
+            o.setDrawScale(scale);
+            activate(o);
+            o.setFilter(GameController.CollisionController.CATEGORY_BACK, GameController.CollisionController.MASK_BACK);
+
+            info = info.next();
+        }
 
         //------------------------------------------------
 
