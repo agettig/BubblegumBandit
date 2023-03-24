@@ -23,7 +23,8 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
-        "box": "textures/box.png"
+        "box": "textures/box.png",
+        "powercell": "textures/powercell.png"
     },
     "fonts": {
         "display": {
