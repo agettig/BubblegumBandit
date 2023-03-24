@@ -6,13 +6,14 @@
             "wrapV": "repeated"
         },
         "background": {
-            "file": "textures/background_small.png",
+            "file": "textures/background.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "dude": "textures/bandit_shadow.png",
-        "robot": "textures/robot_shadow.png",
+        "dude": "textures/bandit.png",
+        "small_robot": "textures/small_enemy.png",
         "big_robot": "textures/big_enemy.png",
+        "med_robot": "textures/medium_enemy.png",
         "goal": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
