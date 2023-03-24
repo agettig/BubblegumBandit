@@ -252,19 +252,13 @@ public class LevelModel {
 
         TextureRegion[] textures = TiledParser.createTileset(directory, tilesetJson);
 
-        // Add level goal
-//        goalDoor = new ExitModel();
-//        goalDoor.initialize(directory, levelFormat.get("exit"), constants.get("exit"));
-//        goalDoor.setDrawScale(scale);
-//        activate(goalDoor);
-
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
             if (tileVal != 0) {
                 TileModel newTile = new TileModel();
-                int x = i % levelWidth;
-                int y = levelHeight - (i / levelWidth);
+                float x = (i % levelWidth) + 0.5f;
+                float y = levelHeight - (i / levelWidth) - 0.5f;
                 newTile.initialize(textures[tileVal], x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
@@ -275,17 +269,25 @@ public class LevelModel {
         // Create objects
         JsonValue object = objects.child();
         while (object != null) {
+            float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
+            float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
             if (object.get("name").asString().equals("Player")) {
                 bandit = new BanditModel(world);
-                float x = object.getFloat("x") / scale.x;
-                float y = levelHeight - (object.getFloat("y") / scale.y);
                 bandit.initialize(directory, x, y, constants.get("avatar"));
                 bandit.setDrawScale(scale);
-                activate(bandit);
-                bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
+            }
+            else if (object.get("name").asString().equals("Exit")) {
+                goalDoor = new ExitModel();
+                goalDoor.initialize(directory, x, y, constants.get("exit"));
+                goalDoor.setDrawScale(scale);
             }
             object = object.next();
         }
+        activate(goalDoor);
+        // Add bandit at the end because this affects draw order
+        activate(bandit);
+        bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
+
 
         // board = new Board(levelFormat.get("board"), scale);
         // initializeFloatingGum(directory, levelFormat, constants);

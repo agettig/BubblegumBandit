@@ -44,14 +44,14 @@ public class ExitModel extends BoxObstacle {
 	 * this JSON value is limited to the exit subtree
 	 *
 	 * @param directory the asset manager
-	 * @param levelJson		the JSON subtree defining the exit in the level
+	 * @param x		the x position of the exit
+	 * @param y 	the y position of the exit
 	 * @param constants		the JSON subtree defining the exit constants
 	 */
-	public void initialize(AssetDirectory directory, JsonValue levelJson, JsonValue constants) {
+	public void initialize(AssetDirectory directory, float x, float y, JsonValue constants) {
 		setName(constants.name());
-		float[] pos  = levelJson.get("pos").asFloatArray();
 		float[] size = constants.get("size").asFloatArray();
-		setPosition(pos[0],pos[1]);
+		setPosition(x,y);
 		setDimension(size[0],size[1]);
 		
 		// Technically, we should do error checking here.
