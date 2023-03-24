@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-import edu.cornell.gdiac.json.*;  // For GameCanvas
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 /**
  * Base model class to support collisions.
@@ -978,7 +978,7 @@ public abstract class Obstacle {
 	 * primary purpose is to adjust changes to the fixture, which have to take place 
 	 * after collision.
 	 *
-	 * @param dt Timing values from parent loop
+	 * @param delta Timing values from parent loop
 	 */
 	public void update(float delta) { 
 	}
