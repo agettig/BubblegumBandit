@@ -1,8 +1,10 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
@@ -161,12 +163,19 @@ public class CollisionController implements ContactListener {
 
         GumModel gum = null;
         Obstacle body = null;
+        EnemyModel enemy = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
+            if (bodyB instanceof EnemyModel) {
+                enemy = (EnemyModel) bodyB;
+            }
             body = bodyB;
         };
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
+            if (bodyA instanceof EnemyModel) {
+                enemy = (EnemyModel) bodyA;
+            }
             body = bodyA;
         };
         if (gum != null && gum.getName().equals("gumProjectile")) {
@@ -182,11 +191,32 @@ public class CollisionController implements ContactListener {
         }
 
         if (gum != null && gum.canAddObstacle(body)){
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
-            GumJointPair pair = new GumJointPair(gum, weldJointDef);
-            bubblegumController.addToAssemblyQueue(pair);
-            gum.addObstacle(body);
-            gum.setCollisionFilters();
+            if (body instanceof EnemyModel) {
+                gum.markRemoved(true);
+                enemy.setTexture(enemy.getGummedTexture());
+                enemy.setGummed(true);
+            }
+            else {
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+                gum.addObstacle(body);
+                gum.setCollisionFilters();
+            }
+        }
+    }
+
+    /** Need to add queue for tile enemy weld joints */
+    public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
+        WeldJointDef jointDef = new WeldJointDef();
+        if (ob1.getName().contains("floor")) {
+            jointDef.bodyA = ob1.getBody();
+            jointDef.bodyB = ob2.getBody();
+            Vector2 anchor = new Vector2();
+            jointDef.localAnchorA.set(anchor);
+            anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
+            jointDef.localAnchorB.set(anchor);
+            levelModel.getWorld().createJoint(jointDef);
         }
     }
 

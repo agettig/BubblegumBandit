@@ -81,6 +81,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
      */
     private float yScale;
 
+    private TextureRegion gummed_robot;
+
+    private boolean gummed;
+
     // endRegion
 
     /**
@@ -214,6 +218,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
+    public void setGummed(boolean value) {gummed = value; }
+
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -224,6 +230,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         this.world = world;
         this.id = id;
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        gummed = false;
     }
 
     /**
@@ -271,6 +278,9 @@ public abstract class EnemyModel extends CapsuleObstacle {
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
+        String gummedKey = json.get("gummedTexture").asString();
+        gummed_robot = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+
         // initialize sensors
         int numSensors = json.get("numsensors").asInt();
         initializeSensors(json, numSensors);
@@ -287,6 +297,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
 
+    }
+
+    public TextureRegion getGummedTexture() {
+        return gummed_robot;
     }
 
     public void initializeSensors(JsonValue json, int numSensors) {
