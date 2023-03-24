@@ -15,8 +15,11 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -259,6 +262,14 @@ public class GameController implements Screen {
      * defined by the appropriate JSON file.
      */
     public GameController() {
+
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("crosshair2.png"));
+// Set hotspot to the middle of it (0,0 would be the top-left corner)
+        int xHotspot = 16, yHotspot = 16;
+        Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+        pixmap.dispose(); // We don't need the pixmap anymore
+        Gdx.graphics.setCursor(cursor);
+
 
         //Technicals
         complete = false;
