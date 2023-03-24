@@ -58,8 +58,20 @@
                  "type":"",
                  "visible":true,
                  "width":64,
-                 "x":320,
+                 "x":317.632015155103,
                  "y":640
+                }, 
+                {
+                 "gid":12,
+                 "height":96,
+                 "id":12,
+                 "name":"Exit",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":768,
+                 "y":1920
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -68,7 +80,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":12,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "properties":[
         {
