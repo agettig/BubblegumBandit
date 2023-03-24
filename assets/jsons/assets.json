@@ -23,7 +23,8 @@
         "health_icon": "textures/UI_heart.png",
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
-        "bullet": "textures/bullet.png"
+        "bullet": "textures/bullet.png",
+        "gummed_robot": "textures/tinted_small_enemy.png"
     },
     "fonts": {
         "display": {
