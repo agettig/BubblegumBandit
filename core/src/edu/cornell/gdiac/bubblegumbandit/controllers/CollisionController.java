@@ -206,7 +206,7 @@ public class CollisionController implements ContactListener {
         }
     }
 
-    /** Need to add queue for tile enemy weld joints */
+    /** Need to add queue for tile enemy weld joints, may make more sense to add queue to bubblegum controller? */
     public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
         WeldJointDef jointDef = new WeldJointDef();
         if (ob1.getName().contains("floor")) {
