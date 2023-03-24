@@ -35,6 +35,7 @@ import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
+import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import java.util.Iterator;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
@@ -301,7 +302,7 @@ public class LevelModel {
 
             o.setDrawScale(scale);
             activate(o);
-            o.setFilter(GameController.CollisionController.CATEGORY_BACK, GameController.CollisionController.MASK_BACK);
+            o.setFilter(CATEGORY_BACK, MASK_BACK);
 
             info = info.next();
         }

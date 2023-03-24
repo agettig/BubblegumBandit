@@ -20,12 +20,16 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_GUM = 0x0008;
     public static final short CATEGORY_PROJECTILE = 0x0010;
 
+    public static final short CATEGORY_BACK = 0x0012;
+
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
     public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
+
+    public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
