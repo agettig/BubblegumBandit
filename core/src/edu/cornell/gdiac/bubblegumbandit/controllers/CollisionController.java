@@ -1,8 +1,10 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
@@ -41,6 +43,9 @@ public class CollisionController implements ContactListener {
 
     /** true if the win condition has been met */
     private boolean winConditionMet;
+
+    /**Temp queue for now for sticking robot joints */
+    private Queue<WeldJointDef> stickRobots = new Queue<>();
 
     public void resetWinCondition(){
         winConditionMet = false;
@@ -86,6 +91,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
+            createEnemyTileJoint(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -209,14 +215,38 @@ public class CollisionController implements ContactListener {
     /** Need to add queue for tile enemy weld joints, may make more sense to add queue to bubblegum controller? */
     public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
         WeldJointDef jointDef = new WeldJointDef();
-        if (ob1.getName().contains("floor")) {
+        EnemyModel enemy1 = null;
+        EnemyModel enemy2 = null;
+        if (ob1 instanceof EnemyModel) {
+            enemy1 = (EnemyModel) ob1;
+        }
+        if (ob2 instanceof EnemyModel) {
+            enemy2 = (EnemyModel) ob2;
+        }
+        if (ob1.getName().contains("floor") && ob2 instanceof EnemyModel && enemy2.getGummed() == true) {
             jointDef.bodyA = ob1.getBody();
             jointDef.bodyB = ob2.getBody();
             Vector2 anchor = new Vector2();
             jointDef.localAnchorA.set(anchor);
             anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
             jointDef.localAnchorB.set(anchor);
-            levelModel.getWorld().createJoint(jointDef);
+            stickRobots.addLast(jointDef);
+        }
+        else if (ob2.getName().contains("floor") && ob1 instanceof EnemyModel && enemy1.getGummed() == true) {
+            jointDef.bodyA = ob2.getBody();
+            jointDef.bodyB = ob1.getBody();
+            Vector2 anchor = new Vector2();
+            jointDef.localAnchorB.set(anchor);
+            anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
+            jointDef.localAnchorA.set(anchor);
+            stickRobots.addLast(jointDef);
+        }
+    }
+
+    public void addRobotJoints(LevelModel level) {
+        if (stickRobots.size == 0) return;
+        for (WeldJointDef joint : stickRobots) {
+            level.getWorld().createJoint(joint);
         }
     }
 
