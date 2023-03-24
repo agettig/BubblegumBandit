@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.json;
+package edu.cornell.gdiac.bubblegumbandit.models;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -66,7 +66,7 @@ public class BackObjModel extends BoxObstacle {
         setPosition(p[0] ,p[1]);
         setTexture(texture);
 
-        setWidth(texture.getRegionWidth()/64f * 1.3f);
-        setHeight(texture.getRegionHeight()/64f * 1.3f);
+        setWidth(texture.getRegionWidth()/64f);
+        setHeight(texture.getRegionHeight()/64f);
     }
 }
