@@ -80,6 +80,9 @@ public class GameController implements Screen {
      */
     private JsonValue constantsJson;
 
+    /** The JSON defining the tileset */
+    private JsonValue tilesetJson;
+
     private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
@@ -328,6 +331,7 @@ public class GameController implements Screen {
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
         constantsJson = directory.getEntry("constants", JsonValue.class);
+        tilesetJson = directory.getEntry("tileset", JsonValue.class);
 
         bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
@@ -347,7 +351,7 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
 
-        level.dispose();
+         level.dispose();
 
         setComplete(false);
         setFailure(false);
@@ -355,7 +359,7 @@ public class GameController implements Screen {
         bubblegumController.resetAmmo();
 
         // Reload the json each time
-        level.populate(directory, levelFormat, constantsJson);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
     }
@@ -441,7 +445,9 @@ public class GameController implements Screen {
             bandit.setGrounded(false);
             collisionController.clearSensorFixtures();
 
-            for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            if (level.getEnemyControllers() != null) {
+                for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            }
         }
 
 
@@ -461,28 +467,28 @@ public class GameController implements Screen {
             }
         }
 
-       for (AIController controller: level.getEnemyControllers()){
-
-           //TODO fix adjust for drift
-
-//            adjustForDrift(controller.getEnemy());
-
-            //get action from controller
-            int action = controller.getAction();
-
-            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                level.activate(newProj);
-                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-            } else {
-                controller.coolDown(true);
-            }
-
-            //pass to enemy, update the enemy with that action
-           // TODO this probably means enemies are updated twice per frame, once with this update method
-           // TODO and once with their parent. Switching to sense-think-act should fix this
-           controller.getEnemy().update(action);
-       }
+//       for (AIController controller: level.getEnemyControllers()){
+//
+//           //TODO fix adjust for drift
+//
+////            adjustForDrift(controller.getEnemy());
+//
+//            //get action from controller
+//            int action = controller.getAction();
+//
+//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+//                level.activate(newProj);
+//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+//            } else {
+//                controller.coolDown(true);
+//            }
+//
+//            //pass to enemy, update the enemy with that action
+//           // TODO this probably means enemies are updated twice per frame, once with this update method
+//           // TODO and once with their parent. Switching to sense-think-act should fix this
+//           controller.getEnemy().update(action);
+//       }
 
         level.update(dt);
         projectileController.update();

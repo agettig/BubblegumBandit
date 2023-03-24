@@ -339,15 +339,16 @@ public class BanditModel extends CapsuleObstacle {
 	 * this JSON value is limited to the dude subtree
 	 *
 	 * @param directory the asset manager
-	 * @param levelJson		the JSON subtree defining the level information of the player
+	 * @param x		the x position of the bandit
+	 * @param y 	the y position of the bandit
 	 * @oaram constantsJson the JSON subtree defining the constant player information
 	 */
-	public void initialize(AssetDirectory directory, JsonValue levelJson, JsonValue constantsJson) {
+	public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
 		setName(constantsJson.name());
-		float[] pos  = levelJson.get("pos").asFloatArray();
+		 System.out.println(x + " " + y);
 		float[] size = constantsJson.get("size").asFloatArray();
-		setPosition(pos[0],pos[1]);
-		cameraTarget.set(pos[0]*drawScale.x, pos[1]*drawScale.y);
+		setPosition(x,y);
+		cameraTarget.set(x*drawScale.x, y*drawScale.y);
 		setDimension(size[0],size[1]);
 
 		// Technically, we should do error checking here.

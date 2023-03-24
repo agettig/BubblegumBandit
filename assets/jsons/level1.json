@@ -50,10 +50,16 @@
          "name":"Objects",
          "objects":[
                 {
-                 "id":8,
-                 "template":"Player.tx",
-                 "x":316,
-                 "y":633
+                 "gid":7,
+                 "height":113,
+                 "id":11,
+                 "name":"Player",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":320,
+                 "y":640
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -61,9 +67,15 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":3,
- "nextobjectid":9,
+ "nextlayerid":4,
+ "nextobjectid":12,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"gravity",
+         "type":"float",
+         "value":-15
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",
  "tileheight":64,
@@ -71,6 +83,10 @@
         {
          "firstgid":1,
          "source":"objects.tsx"
+        }, 
+        {
+         "firstgid":7,
+         "source":"objects.json"
         }],
  "tilewidth":64,
  "type":"map",
