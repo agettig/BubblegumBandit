@@ -517,13 +517,14 @@ public class LevelModel {
         dir = new Vector2(intersect.x - origin.x, intersect.y - origin.y);
         int numSegments = (int) (dir.len() / trajectoryGap); // Truncate to find number before colliding
         dir.nor();
-        Color[] colors = new Color[]{new Color(255, 158, 158, 255),
-                                     new Color(255, 187, 187, 255),
-                                     new Color(255, 206, 206, 255),
-                                     new Color(255,219,219, 255),
-                                     new Color(255,231,231, 255)};
+        Color[] colors = new Color[]{new Color(1, .619f, .62f, 1),
+                                     new Color(1, .73f, .73f, .9f),
+                                     new Color(1, .81f, .81f, .8f),
+                                     new Color(1,.86f,.86f, .7f),
+                                     new Color(1,.905f,.905f, .6f),
+                                     new Color(1,1,1,.5f)};
         int range = numSegments + 1;
-        if (range > 5) range = 5;
+        if (range > 6) range = 6;
         for (int i = 0; i < range; i++) {
             x = origin.x + (dir.x * i * trajectoryGap);
             y = origin.y + (dir.y * i * trajectoryGap);
