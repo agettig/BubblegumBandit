@@ -518,12 +518,12 @@ public class GameController implements Screen {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
             //TODO fix drawing text to center
-            canvas.drawText("VICTORY!", displayFont, ((level.getBandit().getX() + 4)* 50), (level.getBandit().getY() + 4)* 50);
+            canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("FAILURE!", displayFont, (level.getBandit().getX()-3) * 40, (level.getBandit().getY() + 4)* 40);
+            canvas.drawTextCentered("FAILURE!", displayFont, 150);
             canvas.end();
         }
     }
