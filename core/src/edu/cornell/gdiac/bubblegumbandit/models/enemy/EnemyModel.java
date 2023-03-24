@@ -220,6 +220,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     public void setGummed(boolean value) {gummed = value; }
 
+    public boolean getGummed() {return gummed; }
+
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);

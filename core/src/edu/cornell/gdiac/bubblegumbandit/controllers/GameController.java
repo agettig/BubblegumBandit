@@ -483,6 +483,7 @@ public class GameController implements Screen {
 
         // Add all of the pending joints to the world.
         bubblegumController.addJointsToWorld(level);
+        collisionController.addRobotJoints(level);
     }
 
 
