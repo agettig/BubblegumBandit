@@ -1,0 +1,3 @@
+[submodule "Tiled"]
+	path = Tiled
+	url = git@github.com:agettig/Tiled.git
