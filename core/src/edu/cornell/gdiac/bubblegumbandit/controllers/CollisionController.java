@@ -212,36 +212,37 @@ public class CollisionController implements ContactListener {
         }
     }
 
-    /** Need to add queue for tile enemy weld joints, may make more sense to add queue to bubblegum controller? */
+    /** Adjust isGrounded to also save what floor it is on, call in gameController to weld robots on ground that are gummed*/
     public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
         WeldJointDef jointDef = new WeldJointDef();
-        EnemyModel enemy1 = null;
-        EnemyModel enemy2 = null;
+        EnemyModel enemy;
+
         if (ob1 instanceof EnemyModel) {
-            enemy1 = (EnemyModel) ob1;
+            enemy = (EnemyModel) ob1;
+            if ((ob2.getName().contains("floor") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
+                jointDef.bodyA = ob2.getBody();
+                jointDef.bodyB = ob1.getBody();
+                Vector2 anchor = new Vector2();
+                jointDef.localAnchorB.set(anchor);
+                anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
+                jointDef.localAnchorA.set(anchor);
+                stickRobots.addLast(jointDef);
+            }
         }
         if (ob2 instanceof EnemyModel) {
-            enemy2 = (EnemyModel) ob2;
-        }
-        if (ob1.getName().contains("floor") && ob2 instanceof EnemyModel && enemy2.getGummed() == true) {
-            jointDef.bodyA = ob1.getBody();
-            jointDef.bodyB = ob2.getBody();
-            Vector2 anchor = new Vector2();
-            jointDef.localAnchorA.set(anchor);
-            anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
-            jointDef.localAnchorB.set(anchor);
-            stickRobots.addLast(jointDef);
-        }
-        else if (ob2.getName().contains("floor") && ob1 instanceof EnemyModel && enemy1.getGummed() == true) {
-            jointDef.bodyA = ob2.getBody();
-            jointDef.bodyB = ob1.getBody();
-            Vector2 anchor = new Vector2();
-            jointDef.localAnchorB.set(anchor);
-            anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
-            jointDef.localAnchorA.set(anchor);
-            stickRobots.addLast(jointDef);
+            enemy = (EnemyModel) ob2;
+            if ((ob1.getName().contains("floor") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
+                jointDef.bodyA = ob1.getBody();
+                jointDef.bodyB = ob2.getBody();
+                Vector2 anchor = new Vector2();
+                jointDef.localAnchorA.set(anchor);
+                anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
+                jointDef.localAnchorB.set(anchor);
+                stickRobots.addLast(jointDef);
+            }
         }
     }
+
 
     public void addRobotJoints(LevelModel level) {
         if (stickRobots.size == 0) return;
