@@ -303,8 +303,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     }
 
-    public TextureRegion getGummedTexture() {
-        return gummed_robot;
+    public void setGummedTexture() {
+        setTexture(gummed_robot);
     }
 
     public void initializeSensors(JsonValue json, int numSensors) {

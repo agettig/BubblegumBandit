@@ -175,17 +175,17 @@ public class CollisionController implements ContactListener {
         EnemyModel enemy = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
+            body = bodyB;
             if (bodyB instanceof EnemyModel) {
                 enemy = (EnemyModel) bodyB;
             }
-            body = bodyB;
         };
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
+            body = bodyA;
             if (bodyA instanceof EnemyModel) {
                 enemy = (EnemyModel) bodyA;
             }
-            body = bodyA;
         };
         if (gum != null && gum.getName().equals("gumProjectile")) {
             // Do this once gum is turning from a projectile to sticky
@@ -200,9 +200,9 @@ public class CollisionController implements ContactListener {
         }
 
         if (gum != null && gum.canAddObstacle(body)){
-            if (body instanceof EnemyModel) {
+            if (enemy != null) {
                 gum.markRemoved(true);
-                enemy.setTexture(enemy.getGummedTexture());
+                enemy.setGummedTexture();
                 enemy.setGummed(true);
             }
             else {
@@ -234,7 +234,7 @@ public class CollisionController implements ContactListener {
         }
         if (ob2 instanceof EnemyModel) {
             enemy = (EnemyModel) ob2;
-            if ((ob1.getName().contains("tile") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
+            if ((ob1.getName().contains("tile") || ob1.getName().contains("wall")) && enemy.getGummed() == true) {
                 jointDef.bodyA = ob1.getBody();
                 jointDef.bodyB = ob2.getBody();
                 Vector2 anchor = new Vector2();
@@ -252,6 +252,10 @@ public class CollisionController implements ContactListener {
         for (WeldJointDef joint : stickRobots) {
             level.getWorld().createJoint(joint);
         }
+    }
+
+    public void resetRobotJoints() {
+        stickRobots.clear();
     }
 
     /**
