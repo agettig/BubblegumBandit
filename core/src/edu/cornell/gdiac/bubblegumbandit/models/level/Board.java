@@ -360,9 +360,6 @@ public class Board {
         float margin = this.scale.x*1/2;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (tiles[i][j] == null) {
-                    System.out.println("x: " + i + " y: " + j);
-                }
                 int val = tiles[i][j].value;
                 if (val != 0) {
                     Color color;

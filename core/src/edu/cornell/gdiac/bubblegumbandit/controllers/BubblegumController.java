@@ -70,9 +70,9 @@ public class BubblegumController {
         gumAmmo -= 1;
     }
 
-    /** increases ammo by 1 */
-    public void collectGumAmmo() {
-        gumAmmo += 1;
+    /** increases amount of ammo by ammo */
+    public void addAmmo(int ammo) {
+        gumAmmo += ammo;
     }
 
     /** Returns the stuck gum texture. */
