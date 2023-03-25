@@ -89,11 +89,6 @@ public class LevelModel {
     private ExitModel goalDoor;
 
     /**
-     * Reference to floating gum in the game, to be collected
-     */
-    private FloatingGum[] floatingGum;
-
-    /**
      * Whether or not the level is in debug more (showing off physics)
      */
     private boolean debug;
@@ -291,29 +286,40 @@ public class LevelModel {
         JsonValue object = objects.child();
         int enemyCount = 0;
         while (object != null) {
+            String objName = object.get("name").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
-            if (object.get("name").asString().equals("Player")) {
-                bandit = new BanditModel(world);
-                bandit.initialize(directory, x, y, constants.get("avatar"));
-                bandit.setDrawScale(scale);
-            }
-            else if (object.get("name").asString().equals("Exit")) {
-                goalDoor = new ExitModel();
-                goalDoor.initialize(directory, x, y, constants.get("exit"));
-                goalDoor.setDrawScale(scale);
-            }
-            else if (object.get("name").asString().equals("Enemy")) {
-                JsonValue enemyConstants = constants.get(object.get("type").asString());
-                if (enemyConstants.get("type").asString().equals("moving")) {
-                    EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                    aiControllers[enemyCount] = new AIController(enemy, bandit, board);
-                    enemyCount++;
-                }
+            switch (objName) {
+                case "Player":
+                    bandit = new BanditModel(world);
+                    bandit.initialize(directory, x, y, constants.get("avatar"));
+                    bandit.setDrawScale(scale);
+                    break;
+                case "Exit":
+                    goalDoor = new ExitModel();
+                    goalDoor.initialize(directory, x, y, constants.get("exit"));
+                    goalDoor.setDrawScale(scale);
+                    break;
+                case "Enemy":
+                    JsonValue enemyConstants = constants.get(object.get("type").asString());
+                    if (enemyConstants.get("type").asString().equals("moving")) {
+                        EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
+                        enemy.initialize(directory, x, y, enemyConstants);
+                        enemy.setDrawScale(scale);
+                        activate(enemy);
+                        enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                        aiControllers[enemyCount] = new AIController(enemy, bandit, board);
+                        enemyCount++;
+                    }
+                    break;
+                case "Gum":
+                    FloatingGum gum = new FloatingGum();
+                    gum.initialize(directory, x, y, scale, constants.get("floatingGums"));
+                    activate(gum);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(objName + " is not a valid object");
+
             }
             object = object.next();
         }
@@ -321,9 +327,6 @@ public class LevelModel {
         // Add bandit at the end because this affects draw order
         activate(bandit);
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
-
-        // initializeFloatingGum(directory, levelFormat, constants);
-        // initializeEnemies(directory, levelFormat, constants);
 
     }
 
@@ -335,26 +338,6 @@ public class LevelModel {
         if (world != null) {
             world.dispose();
             world = null;
-        }
-    }
-
-    private void initializeFloatingGum(AssetDirectory directory, JsonValue levelFormat, JsonValue constantsJson) {
-        // json of gums
-        JsonValue gumsJson = levelFormat.get("floatingGums");
-
-        // get number of floating gums
-        int numGums = gumsJson.get("numGums").asInt();
-        JsonValue position = gumsJson.get("positions").child();
-        floatingGum = new FloatingGum[numGums];
-
-        for (int i = 0; i < numGums; i++) {
-            FloatingGum gum = new FloatingGum();
-            gum.initialize(directory, constantsJson.get("floatingGums"));
-            gum.setPosition(position);
-            gum.setDrawScale(scale);
-            activate(gum);
-            floatingGum[i] = gum;
-            position = position.next();
         }
     }
 

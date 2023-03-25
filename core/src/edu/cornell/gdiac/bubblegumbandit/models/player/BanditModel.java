@@ -345,7 +345,6 @@ public class BanditModel extends CapsuleObstacle {
 	 */
 	public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
 		setName(constantsJson.name());
-		 System.out.println(x + " " + y);
 		float[] size = constantsJson.get("size").asFloatArray();
 		setPosition(x,y);
 		cameraTarget.set(x*drawScale.x, y*drawScale.y);
