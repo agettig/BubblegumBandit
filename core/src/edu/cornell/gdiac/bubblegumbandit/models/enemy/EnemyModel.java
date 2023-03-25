@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,7 +20,7 @@ import java.lang.reflect.Field;
  * Initialization is done by reading the json
  * Note, enemies can only be initiated as stationary or moving enemies
  */
-public abstract class EnemyModel extends CapsuleObstacle {
+public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     // Physics constants
     private int id;
