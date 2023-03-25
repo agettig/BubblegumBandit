@@ -65,7 +65,7 @@
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
-  "med_robot": {
+  "mediumrobot": {
     "type": "moving",
     "size": [
       2,
@@ -129,7 +129,7 @@
       }
     }
   },
-  "small_robot": {
+  "smallrobot": {
     "type": "moving",
     "size": [
       0.5,
