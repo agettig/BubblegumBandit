@@ -372,7 +372,7 @@ public class PlayerController{
         nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
         exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         gravityUp = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W));
-        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.S));
+        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.S));
         collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
         cameraPressed = (secondary && cameraPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_2));
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
