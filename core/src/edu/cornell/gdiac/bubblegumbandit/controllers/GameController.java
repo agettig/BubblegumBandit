@@ -175,7 +175,7 @@ public class GameController implements Screen {
     private TextureRegion stuckGum;
 
     /** The gravity control mode for the player controller */
-    private boolean gravityToggle = true;
+    private boolean gravityToggle = false;
 
     /**
      * Returns true if the level is completed.
