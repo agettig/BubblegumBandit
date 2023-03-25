@@ -1,11 +1,15 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
+
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
 public class MovingEnemyModel extends EnemyModel {
@@ -32,6 +36,11 @@ public class MovingEnemyModel extends EnemyModel {
         this.visionRadius = visionRadius;
     }
 
+    private DefaultStateMachine<MovingEnemyModel, EnemyState> enemyStateMachine;
+
+    public DefaultStateMachine<MovingEnemyModel, EnemyState> getEnemyStateMachine() {
+        return enemyStateMachine;
+    }
 
     /**Creates a MovingEnemy.
      *
@@ -40,6 +49,7 @@ public class MovingEnemyModel extends EnemyModel {
      * */
     public MovingEnemyModel(World world, int id){
         super(world, id);
+        enemyStateMachine = new DefaultStateMachine<MovingEnemyModel, EnemyState>(this, EnemyState.SPAWN);
     }
 
     /**Initializes this MovingEnemy in the game. Sets its vision radius.
@@ -89,6 +99,7 @@ public class MovingEnemyModel extends EnemyModel {
 
     @Override
     public void update(int controlCode) {
+        enemyStateMachine.update();
         super.update(controlCode);
 
         ticks++;
@@ -194,5 +205,10 @@ public class MovingEnemyModel extends EnemyModel {
 
         //if we didn't need to clamp velocity, increase it.
         if(!ClampVelocity()) getBody().applyForceToCenter(MOVEMENT_FORCE, 0, true);
+    }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        return false;
     }
 }
