@@ -282,7 +282,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
-        String gummedKey = json.get("gummedTexture").asString();
+        String gummedKey = constantsJson.get("gummedTexture").asString();
         gummed_robot = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
 
         // initialize sensors

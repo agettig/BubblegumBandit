@@ -222,7 +222,7 @@ public class CollisionController implements ContactListener {
 
         if (ob1 instanceof EnemyModel) {
             enemy = (EnemyModel) ob1;
-            if ((ob2.getName().contains("floor") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
+            if ((ob2.getName().contains("tile") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
                 jointDef.bodyA = ob2.getBody();
                 jointDef.bodyB = ob1.getBody();
                 Vector2 anchor = new Vector2();
@@ -234,7 +234,7 @@ public class CollisionController implements ContactListener {
         }
         if (ob2 instanceof EnemyModel) {
             enemy = (EnemyModel) ob2;
-            if ((ob1.getName().contains("floor") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
+            if ((ob1.getName().contains("tile") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
                 jointDef.bodyA = ob1.getBody();
                 jointDef.bodyB = ob2.getBody();
                 Vector2 anchor = new Vector2();
