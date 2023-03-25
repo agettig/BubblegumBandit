@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 
 import java.lang.reflect.Field;
@@ -82,6 +83,12 @@ public class FloatingGum extends BoxObstacle {
         // Just roll over to prevent overflow
         if (counter >= Math.PI * 20) {
             counter -= Math.PI * 20;
+        }
+    }
+
+    public void draw(GameCanvas canvas) {
+        if (texture != null) {
+            canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
         }
     }
 
