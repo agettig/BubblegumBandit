@@ -233,14 +233,15 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * this JSON value is limited to the dude subtree
      *
      * @param directory the asset manager
-     * @param levelJson the JSON subtree defining the enemy in the level
+     * @param id the id of this enemy
+     * @param x the x position of this enemy
+     * @param y the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
      */
-    public void initialize(AssetDirectory directory, JsonValue levelJson, JsonValue constantsJson) {
-        setName(levelJson.get("name").asString());
-        float[] pos = levelJson.get("pos").asFloatArray();
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
+        setName("enemy" + id);
         float[] size = constantsJson.get("size").asFloatArray();
-        setPosition(pos[0], pos[1]);
+        setPosition(x, y);
         setDimension(size[0], size[1]);
 
         // Technically, we should do error checking here.

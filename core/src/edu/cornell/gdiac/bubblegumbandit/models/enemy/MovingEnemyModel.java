@@ -45,11 +45,12 @@ public class MovingEnemyModel extends EnemyModel {
     /**Initializes this MovingEnemy in the game. Sets its vision radius.
      *
      * @param directory The BubblegumBandit asset directory
-     * @param levelJson the level json to parse
+     * @param x the x position of this enemy
+     * @param y the y position of this enemy
      * @param constantsJson the constants json
      * */
-    public void initialize(AssetDirectory directory, JsonValue levelJson, JsonValue constantsJson){
-        super.initialize(directory, levelJson, constantsJson);
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson){
+        super.initialize(directory, x, y, constantsJson);
         setVisionRadius(constantsJson.get("visionradius").asFloat());
     }
 

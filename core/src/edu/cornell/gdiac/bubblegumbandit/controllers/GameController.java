@@ -467,28 +467,28 @@ public class GameController implements Screen {
             }
         }
 
-//       for (AIController controller: level.getEnemyControllers()){
-//
-//           //TODO fix adjust for drift
-//
-////            adjustForDrift(controller.getEnemy());
-//
-//            //get action from controller
-//            int action = controller.getAction();
-//
-//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-//                level.activate(newProj);
-//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-//            } else {
-//                controller.coolDown(true);
-//            }
-//
-//            //pass to enemy, update the enemy with that action
-//           // TODO this probably means enemies are updated twice per frame, once with this update method
-//           // TODO and once with their parent. Switching to sense-think-act should fix this
-//           controller.getEnemy().update(action);
-//       }
+       for (AIController controller: level.getEnemyControllers()){
+
+           //TODO fix adjust for drift
+
+//            adjustForDrift(controller.getEnemy());
+
+            //get action from controller
+            int action = controller.getAction();
+
+            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                level.activate(newProj);
+                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+            } else {
+                controller.coolDown(true);
+            }
+
+            //pass to enemy, update the enemy with that action
+           // TODO this probably means enemies are updated twice per frame, once with this update method
+           // TODO and once with their parent. Switching to sense-think-act should fix this
+           controller.getEnemy().update(action);
+       }
 
         level.update(dt);
         projectileController.update();

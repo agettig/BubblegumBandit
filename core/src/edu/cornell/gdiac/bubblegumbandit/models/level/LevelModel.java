@@ -226,15 +226,25 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
-        JsonValue objects = levelFormat.get("layers").child().next().get("Objects");
-        JsonValue tileLayer = levelFormat.get("layers").child();
+        JsonValue boardLayer = levelFormat.get("layers").child();
+
+        JsonValue tileLayer = boardLayer.next();
+        JsonValue objects = tileLayer.next().get("Objects");
+
         int[] worldData = tileLayer.get("data").asIntArray();
+        float gravity = 0;
+        int numEnemies = 0;
 
         JsonValue property = levelFormat.get("properties").child();
-        while (!property.get("name").asString().equals("gravity")) {
+        while (property != null) {
+            String propName = property.get("name").asString();
+            if (propName.equals("gravity")) {
+                gravity = property.getFloat("value");
+            } else if (propName.equals("numenemies")) {
+                numEnemies = property.getInt("value");
+            }
             property = property.next();
         }
-        float gravity = property.getFloat("value");
 
         float[] pSize = constants.get("physicsSize").asFloatArray();
 
@@ -245,12 +255,23 @@ public class LevelModel {
 
         scale.x = pSize[0];
         scale.y = pSize[1];
+        int boardIdOffset = 0;
+        JsonValue tileset = levelFormat.get("tilesets").child();
+        while (tileset != null) {
+            if (tileset.get("source").asString().equals("board.tsx")) {
+                boardIdOffset = tileset.getInt("firstgid");
+            }
+            tileset = tileset.next();
+        }
+
+        board = new Board(boardLayer, boardIdOffset, scale);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
         TextureRegion[] textures = TiledParser.createTileset(directory, tilesetJson);
+        aiControllers = new AIController[numEnemies];
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -268,6 +289,7 @@ public class LevelModel {
 
         // Create objects
         JsonValue object = objects.child();
+        int enemyCount = 0;
         while (object != null) {
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
@@ -281,6 +303,18 @@ public class LevelModel {
                 goalDoor.initialize(directory, x, y, constants.get("exit"));
                 goalDoor.setDrawScale(scale);
             }
+            else if (object.get("name").asString().equals("Enemy")) {
+                JsonValue enemyConstants = constants.get(object.get("type").asString());
+                if (enemyConstants.get("type").asString().equals("moving")) {
+                    EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    aiControllers[enemyCount] = new AIController(enemy, bandit, board);
+                    enemyCount++;
+                }
+            }
             object = object.next();
         }
         activate(goalDoor);
@@ -288,8 +322,6 @@ public class LevelModel {
         activate(bandit);
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
-
-        // board = new Board(levelFormat.get("board"), scale);
         // initializeFloatingGum(directory, levelFormat, constants);
         // initializeEnemies(directory, levelFormat, constants);
 
@@ -323,45 +355,6 @@ public class LevelModel {
             activate(gum);
             floatingGum[i] = gum;
             position = position.next();
-        }
-
-    }
-
-    /**
-     * Initializes the enemies in the game based on the provided level format.
-     * Reads enemy data from the level format JSON and creates instances
-     * of the appropriate enemy models.
-     * Also initializes AIControllers for each enemy.
-     *
-     * @param directory   The AssetDirectory containing the
-     *                    assets required for enemy initialization.
-     * @param levelFormat A JsonValue containing the level format data,
-     *                    including enemy definitions.
-     * @param constantsJson A JsonValue containing the constants for the enemy.
-     */
-    private void initializeEnemies(AssetDirectory directory, JsonValue levelFormat, JsonValue constantsJson) {
-
-        //Make AIControllers from JSON data.
-        // get number of enemies
-        int numEnemies = levelFormat.get("enemies").get("numenemies").asInt();
-
-        aiControllers = new AIController[numEnemies];
-        JsonValue enemyJson = levelFormat.get("enemies").get("enemylist").child();
-        JsonValue enemyConstants = constantsJson.get(enemyJson.get("class").asString());
-        for (int i = 0; i < numEnemies; i++) {
-            EnemyModel enemy;
-            if (enemyConstants.get("type").asString().equals("moving")) {
-                enemy = new MovingEnemyModel(world, i);
-                enemy.initialize(directory, enemyJson, enemyConstants);
-                enemy.setDrawScale(scale);
-                activate(enemy);
-                enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                enemyJson = enemyJson.next();
-                if (enemyJson != null) {
-                    enemyConstants = constantsJson.get(enemyJson.get("class").asString());
-                }
-                aiControllers[i] = new AIController(enemy, bandit, board);
-            }
         }
     }
 
