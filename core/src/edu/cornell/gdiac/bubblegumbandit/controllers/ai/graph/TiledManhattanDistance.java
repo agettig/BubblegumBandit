@@ -14,27 +14,23 @@
  * limitations under the License.
  ******************************************************************************/
 
-package edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph;
+package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
 
-import com.badlogic.gdx.ai.pfa.DefaultConnection;
+import com.badlogic.gdx.ai.pfa.Heuristic;
 
-/** A connection for a {@link FlatTiledGraph}.
+/** A Manhattan distance heuristic for a {@link TiledGraph}. It simply calculates the Manhattan distance between two given
+ * tiles.
+ * 
+ * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
  * 
  * @author davebaol */
-public class FlatTiledConnection extends DefaultConnection<FlatTiledNode> {
+public class TiledManhattanDistance<N extends TiledNode<N>> implements Heuristic<N> {
 
-	static final float NON_DIAGONAL_COST = (float)Math.sqrt(2);
-
-	FlatTiledGraph worldMap;
-
-	public FlatTiledConnection (FlatTiledGraph worldMap, FlatTiledNode fromNode, FlatTiledNode toNode) {
-		super(fromNode, toNode);
-		this.worldMap = worldMap;
+	public TiledManhattanDistance () {
 	}
 
 	@Override
-	public float getCost () {
-		if (worldMap.diagonal) return 1;
-		return getToNode().x != worldMap.startNode.x && getToNode().y != worldMap.startNode.y ? NON_DIAGONAL_COST : 1;
+	public float estimate (N node, N endNode) {
+		return Math.abs(endNode.x - node.x) + Math.abs(endNode.y - node.y);
 	}
 }
