@@ -94,7 +94,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
-            createEnemyTileJoint(obstacleA, obstacleB);
+            resolveEnemyGumCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -200,7 +200,7 @@ public class CollisionController implements ContactListener {
         }
 
         if (gum != null && gum.canAddObstacle(body)){
-            if (enemy != null) {
+            if (enemy != null && gum.onTile() != true) {
                 gum.markRemoved(true);
                 enemy.setGummedTexture();
                 enemy.setGummed(true);
@@ -211,42 +211,53 @@ public class CollisionController implements ContactListener {
                 bubblegumController.addToAssemblyQueue(pair);
                 gum.addObstacle(body);
                 gum.setCollisionFilters();
+                gum.onTile(true);
             }
         }
     }
 
-    /** Adjust isGrounded to also save what floor it is on, call in gameController to weld robots on ground that are gummed*/
-    public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
-        WeldJointDef jointDef = new WeldJointDef();
+    /**
+     * Adds a joint that sticks enemies to the tile if the enemy has been hit with gum
+     * @param ob1
+     * @param ob2
+     */
+    public void resolveEnemyGumCollision(Obstacle ob1, Obstacle ob2) {
         EnemyModel enemy;
 
         if (ob1 instanceof EnemyModel) {
             enemy = (EnemyModel) ob1;
             if ((ob2.getName().contains("tile") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
-                jointDef.bodyA = ob2.getBody();
-                jointDef.bodyB = ob1.getBody();
-                Vector2 anchor = new Vector2();
-                jointDef.localAnchorB.set(anchor);
-                anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
-                jointDef.localAnchorA.set(anchor);
-                stickRobots.addLast(jointDef);
+                createEnemyTileJoint(ob2, ob1);
             }
         }
         if (ob2 instanceof EnemyModel) {
             enemy = (EnemyModel) ob2;
             if ((ob1.getName().contains("tile") || ob1.getName().contains("wall")) && enemy.getGummed() == true) {
-                jointDef.bodyA = ob1.getBody();
-                jointDef.bodyB = ob2.getBody();
-                Vector2 anchor = new Vector2();
-                jointDef.localAnchorA.set(anchor);
-                anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
-                jointDef.localAnchorB.set(anchor);
-                stickRobots.addLast(jointDef);
+                createEnemyTileJoint(ob1, ob2);
             }
         }
     }
 
+    /**
+     * Helper for creating joints between enemy and tiles
+     * @param ob1
+     * @param ob2
+     */
+    public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = ob2.getBody();
+        jointDef.bodyB = ob1.getBody();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorB.set(anchor);
+        anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
+        jointDef.localAnchorA.set(anchor);
+        stickRobots.addLast(jointDef);
+    }
 
+    /**
+     * adds robot joints to robot joint queue, to be updated in GameController
+     * @param level
+     */
     public void addRobotJoints(LevelModel level) {
         if (stickRobots.size == 0) return;
         for (WeldJointDef joint : stickRobots) {
