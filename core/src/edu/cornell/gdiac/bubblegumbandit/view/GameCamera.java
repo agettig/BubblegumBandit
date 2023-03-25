@@ -16,7 +16,7 @@ public class GameCamera  extends OrthographicCamera {
     private final float secondaryWeight = 0.25f;
 
     /** Whether the secondary target is enabled */
-    private boolean useSecondaryTarget = false;
+    private boolean useSecondaryTarget = true;
 
     /** Defines how far the target y can be from the camera position y, as a proportion of the screen height. */
     private final float yClampFactor = 0.25f;
