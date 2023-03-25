@@ -16,19 +16,90 @@
 
 package edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph;
 
-import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
 
-/** Graph interface representing a generic tiled map.
- * 
- * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
- * 
- * @author davebaol */
-public interface TiledGraph<N extends TiledNode<N>> extends IndexedGraph<N> {
+public class FlatTiledGraph {
+	protected int width;
 
-	public void init(int roomCount, int roomMinSize, int roomMaxSize, int squashIterations);
+	protected int height;
 
-	public N getNode(int x, int y);
+	private Vector2 scale;
 
-	public N getNode(int index);
+	protected Array<TiledNode> nodes;
+
+	public boolean diagonal;
+	public TiledNode startNode;
+
+
+	private static final int GRAVITY_DOWN_TILE = 1;
+
+	private static final int GRAVITY_UP_TILE = 3;
+
+	private static final int BOTH_GRAVITY_TILE = 2;
+
+
+	public FlatTiledGraph (JsonValue boardJson, int boardIdOffset, Vector2 scale) {
+		this.scale = scale;
+		this.height = boardJson.getInt("height");
+		this.width = boardJson.getInt("width");
+		this.nodes = new Array<TiledNode>(width * height);
+		this.diagonal = false;
+		this.startNode = null;
+
+		for (int i = 0; i < width; i++){
+			for (int j = 0; j < height; j++){
+				nodes.add(new TiledNode(i, j, , 4));
+			}
+		}
+	}
+
+	public void init (int roomCount, int roomMinSize, int roomMaxSize, int squashIterations) {
+//		int map[][] = DungeonUtils.generate(sizeX, sizeY, roomCount, roomMinSize, roomMaxSize, squashIterations);
+//		for (int x = 0; x < sizeX; x++) {
+//			for (int y = 0; y < sizeY; y++) {
+//				nodes.add(new FlatTiledNode(x, y, map[x][y], 4));
+//			}
+//		}
+//
+//		// Each node has up to 4 neighbors, therefore no diagonal movement is possible
+//		for (int x = 0; x < sizeX; x++) {
+//			int idx = x * sizeY;
+//			for (int y = 0; y < sizeY; y++) {
+//				FlatTiledNode n = nodes.get(idx + y);
+//				if (x > 0) addConnection(n, -1, 0);
+//				if (y > 0) addConnection(n, 0, -1);
+//				if (x < sizeX - 1) addConnection(n, 1, 0);
+//				if (y < sizeY - 1) addConnection(n, 0, 1);
+//			}
+//		}
+	}
+
+	public TiledNode getNode (int x, int y) {
+		return nodes.get(x * sizeY + y);
+	}
+
+	public TiledNode getNode (int index) {
+		return nodes.get(index);
+	}
+
+	public int getIndex (TiledNode node) {
+		return node.getIndex();
+	}
+
+	public int getNodeCount () {
+		return nodes.size;
+	}
+
+	public Array<Connection<TiledNode>> getConnections (TiledNode fromNode) {
+		return fromNode.getConnections();
+	}
+
+	private void addConnection (TiledNode n, int xOffset, int yOffset) {
+		TiledNode target = getNode(n.x + xOffset, n.y + yOffset);
+		if (target.type == TiledNode.TILE_FLOOR) n.getConnections().add(new FlatTiledConnection(this, n, target));
+	}
 
 }

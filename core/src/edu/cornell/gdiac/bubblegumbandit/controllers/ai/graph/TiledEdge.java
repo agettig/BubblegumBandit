@@ -16,21 +16,25 @@
 
 package edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph;
 
-import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.ai.pfa.DefaultConnection;
 
-/** A node for a {@link FlatTiledGraph}.
+/** A connection for a {@link TiledGraph}.
  * 
  * @author davebaol */
-public class FlatTiledNode extends TiledNode<FlatTiledNode> {
+public class FlatTiledConnection extends DefaultConnection<TiledNode> {
 
-	public FlatTiledNode (int x, int y, int type, int connectionCapacity) {
-		super(x, y, type, new Array<Connection<FlatTiledNode>>(connectionCapacity));
+	static final float NON_DIAGONAL_COST = (float)Math.sqrt(2);
+
+	TiledGraph worldMap;
+
+	public FlatTiledConnection (TiledGraph worldMap, TiledNode fromNode, TiledNode toNode) {
+		super(fromNode, toNode);
+		this.worldMap = worldMap;
 	}
 
 	@Override
-	public int getIndex () {
-		return x * FlatTiledGraph.sizeY + y;
+	public float getCost () {
+		if (worldMap.diagonal) return 1;
+		return getToNode().x != worldMap.startNode.x && getToNode().y != worldMap.startNode.y ? NON_DIAGONAL_COST : 1;
 	}
-
 }
