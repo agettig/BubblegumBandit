@@ -24,7 +24,7 @@ public class GumModel extends WheelObstacle {
     /**
      * The maximum number of obstacles a gum can stick to
      * */
-    private final int MAX_OBSTACLES = 2;
+    private final int MAX_OBSTACLES = 3;
 
 
     /**
@@ -58,7 +58,7 @@ public class GumModel extends WheelObstacle {
      * to stop collisions between gum and enemies
      * */
     public void setCollisionFilters(){
-        if (obstacles.size == 2){
+        if (obstacles.size == MAX_OBSTACLES){
             setFilter(CATEGORY_GUM, MASK_GUM_LIMIT);
         }
     }
