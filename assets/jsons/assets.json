@@ -44,6 +44,8 @@
   		"jump" : "sounds/jump.mp3"
 	},
 	"jsons" : {
-		"level1" : "jsons/level.json"
+		"level1" : "jsons/level1.json",
+        "constants": "jsons/constants.json",
+        "tileset": "jsons/objects.json"
     }
 }

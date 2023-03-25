@@ -13,10 +13,10 @@ public class GameCamera  extends OrthographicCamera {
     private final float ySpeed = 4f;
 
     /** The weight of the secondary target */
-    private final float secondaryWeight = 0.2f;
+    private final float secondaryWeight = 0.25f;
 
     /** Whether the secondary target is enabled */
-    private final boolean useSecondaryTarget = false;
+    private boolean useSecondaryTarget = true;
 
     /** Defines how far the target y can be from the camera position y, as a proportion of the screen height. */
     private final float yClampFactor = 0.25f;
@@ -42,6 +42,11 @@ public class GameCamera  extends OrthographicCamera {
         secondaryTarget = new Vector2();
         target = new Vector2();
     }
+
+    /** Toggles the camera mode between using a secondary target or not.
+     *
+     */
+    public void toggleMode() { useSecondaryTarget = !useSecondaryTarget; }
 
     /**
      * Returns the current target of the game camera.

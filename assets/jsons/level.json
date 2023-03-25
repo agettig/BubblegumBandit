@@ -9,31 +9,7 @@
     "pos": [
       10,
       3
-    ],
-    "size": [
-      1,
-      1.75
-    ],
-    "bodytype": "dynamic",
-    "density": 1.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "force": 30.0,
-    "damping": 20.0,
-    "maxspeed": 7.0,
-    "jumppulse": 1.25,
-    "jumplimit": 30,
-    "texture": "dude",
-    "debugcolor": "white",
-    "debugopacity": 192,
-    "sensorsize": [
-      0.183,
-      0.05
-    ],
-    "bottomsensorname": "dudeGroundSensor",
-    "sensorcolor": "red",
-    "sensoropacity": 192,
-    "topsensorname": "dudeTopSensor"
+    ]
   },
   "walls": {
     "wall1": {
@@ -51,14 +27,7 @@
         0.0,
         0.0,
         24.0
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.2,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "wall2": {
       "vertices": 12,
@@ -75,14 +44,7 @@
         23.0,
         12.0,
         24.0
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     }
   },
   "platforms": {
@@ -94,14 +56,7 @@
       "size": [
         48,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor2": {
       "pos": [
@@ -111,14 +66,7 @@
       "size": [
         2,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor3": {
       "pos": [
@@ -128,14 +76,7 @@
       "size": [
         4,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor4": {
       "pos": [
@@ -145,14 +86,7 @@
       "size": [
         1,
         8
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor5": {
       "pos": [
@@ -162,14 +96,7 @@
       "size": [
         8,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor6": {
       "pos": [
@@ -179,14 +106,7 @@
       "size": [
         1,
         19
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor7": {
       "pos": [
@@ -196,14 +116,7 @@
       "size": [
         1,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor8": {
       "pos": [
@@ -213,14 +126,7 @@
       "size": [
         10,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor9": {
       "pos": [
@@ -230,14 +136,7 @@
       "size": [
         15,
         1
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     },
     "floor10": {
       "pos": [
@@ -247,14 +146,7 @@
       "size": [
         1,
         12
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
+      ]
     }
   },
   "enemies": {
@@ -262,451 +154,56 @@
     "enemylist": [
       {
         "name": "enemy1",
-        "type": "moving",
+        "class": "med_robot",
         "pos": [
           4,
           2
-        ],
-        "size": [
-          2,
-          2
-        ],
-        "density": 1.0,
-        "friction": 0.0,
-        "restitution": 0.0,
-        "force": 0.0,
-        "damping": 0.0,
-        "maxspeed": 50.0,
-        "texture": "med_robot",
-        "gummedTexture": "med_robot",
-        "debugcolor": "white",
-        "debugopacity": 192,
-        "sensorcolor": "red",
-        "sensoropacity": 192,
-        "visionradius": 3.0,
-        "enemystate": "WANDER",
-        "numsensors": 3,
-        "sensors": {
-          "enemyGroundSensor": {
-            "sensorsize": [
-              0.183,
-              0.05
-            ],
-            "sensorcenter": [
-              0,
-              -0.305
-            ],
-            "printoffset": [
-              0,
-              0.305
-            ]
-          },
-          "enemyRightSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              0.45,
-              0
-            ]
-          },
-          "enemyLeftSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              -0.45,
-              0
-            ]
-          }
-        }
+        ]
       },
       {
         "name": "enemy2",
-        "type": "moving",
+        "class": "small_robot",
         "pos": [
           5.5,
           19.5
-        ],
-        "size": [
-          0.5,
-          1.0
-        ],
-        "density": 1.0,
-        "friction": 2.0,
-        "restitution": 0.0,
-        "force": 10.0,
-        "damping": 10.0,
-        "maxspeed": 5.0,
-        "texture": "small_robot",
-        "gummedTexture": "gummed_robot",
-        "debugcolor": "white",
-        "debugopacity": 192,
-        "sensorcolor": "red",
-        "sensoropacity": 192,
-        "visionradius": 3.0,
-        "enemystate": "WANDER",
-        "numsensors": 3,
-        "sensors": {
-          "enemyGroundSensor": {
-            "sensorsize": [
-              0.183,
-              0.05
-            ],
-            "sensorcenter": [
-              0,
-              -0.305
-            ],
-            "printoffset": [
-              0,
-              0.305
-            ]
-          },
-          "enemyRightSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              0.45,
-              0
-            ]
-          },
-          "enemyLeftSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              -0.45,
-              0
-            ]
-          }
-        }
+        ]
       },
       {
         "name": "enemy3",
-        "type": "moving",
+        "class": "smalL_robot",
         "pos": [
           20.0,
           1.0
-        ],
-        "size": [
-          0.5,
-          1.0
-        ],
-        "density": 1.0,
-        "friction": 2.0,
-        "restitution": 0.0,
-        "force": 10.0,
-        "damping": 10.0,
-        "maxspeed": 5.0,
-        "texture": "small_robot",
-        "gummedTexture": "gummed_robot",
-        "debugcolor": "white",
-        "debugopacity": 192,
-        "sensorcolor": "red",
-        "sensoropacity": 192,
-        "visionradius": 3.0,
-        "enemystate": "WANDER",
-        "numsensors": 3,
-        "sensors": {
-          "enemyGroundSensor": {
-            "sensorsize": [
-              0.183,
-              0.05
-            ],
-            "sensorcenter": [
-              0,
-              -0.305
-            ],
-            "printoffset": [
-              0,
-              0.305
-            ]
-          },
-          "enemyRightSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              0.45,
-              0
-            ]
-          },
-          "enemyLeftSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              -0.45,
-              0
-            ]
-          }
-        }
+        ]
       },
       {
         "name": "enemy4",
-        "type": "moving",
+        "class": "smalL_robot",
         "pos": [
           24.0,
           1.0
-        ],
-        "size": [
-          0.5,
-          1.0
-        ],
-        "density": 1.0,
-        "friction": 2.0,
-        "restitution": 0.0,
-        "force": 10.0,
-        "damping": 10.0,
-        "maxspeed": 5.0,
-        "texture": "small_robot",
-        "gummedTexture": "gummed_robot",
-        "debugcolor": "white",
-        "debugopacity": 192,
-        "sensorcolor": "red",
-        "sensoropacity": 192,
-        "visionradius": 3.0,
-        "enemystate": "WANDER",
-        "numsensors": 3,
-        "sensors": {
-          "enemyGroundSensor": {
-            "sensorsize": [
-              0.183,
-              0.05
-            ],
-            "sensorcenter": [
-              0,
-              -0.305
-            ],
-            "printoffset": [
-              0,
-              0.305
-            ]
-          },
-          "enemyRightSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              0.45,
-              0
-            ]
-          },
-          "enemyLeftSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              -0.45,
-              0
-            ]
-          }
-        }
+        ]
       },
       {
         "name": "enemy5",
-        "type": "moving",
+        "class": "smalL_robot",
         "pos": [
           28.0,
           1.0
-        ],
-        "size": [
-          0.5,
-          1.0
-        ],
-        "density": 1.0,
-        "friction": 2.0,
-        "restitution": 0.0,
-        "force": 10.0,
-        "damping": 10.0,
-        "maxspeed": 5.0,
-        "texture": "small_robot",
-        "gummedTexture": "gummed_robot",
-        "debugcolor": "white",
-        "debugopacity": 192,
-        "sensorcolor": "red",
-        "sensoropacity": 192,
-        "visionradius": 3.0,
-        "enemystate": "WANDER",
-        "numsensors": 3,
-        "sensors": {
-          "enemyGroundSensor": {
-            "sensorsize": [
-              0.183,
-              0.05
-            ],
-            "sensorcenter": [
-              0,
-              -0.305
-            ],
-            "printoffset": [
-              0,
-              0.305
-            ]
-          },
-          "enemyRightSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              0.45,
-              0
-            ]
-          },
-          "enemyLeftSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              -0.45,
-              0
-            ]
-          }
-        }
+        ]
       },
       {
         "name": "enemy6",
-        "type": "moving",
+        "class": "smalL_robot",
         "pos": [
           26.0,
           1.0
-        ],
-        "size": [
-          0.5,
-          1.0
-        ],
-        "density": 1.0,
-        "friction": 2.0,
-        "restitution": 0.0,
-        "force": 10.0,
-        "damping": 10.0,
-        "maxspeed": 5.0,
-        "texture": "small_robot",
-        "gummedTexture": "gummed_robot",
-        "debugcolor": "white",
-        "debugopacity": 192,
-        "sensorcolor": "red",
-        "sensoropacity": 192,
-        "visionradius": 3.0,
-        "enemystate": "WANDER",
-        "numsensors": 3,
-        "sensors": {
-          "enemyGroundSensor": {
-            "sensorsize": [
-              0.183,
-              0.05
-            ],
-            "sensorcenter": [
-              0,
-              -0.305
-            ],
-            "printoffset": [
-              0,
-              0.305
-            ]
-          },
-          "enemyRightSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              0.45,
-              0
-            ]
-          },
-          "enemyLeftSensor": {
-            "sensorsize": [
-              0.183,
-              0.3
-            ],
-            "sensorcenter": [
-              0,
-              0
-            ],
-            "printoffset": [
-              -0.45,
-              0
-            ]
-          }
-        }
+        ]
       }
     ]
   },
-  "gumProjectile": {
-    "starting_gum": 5,
-    "offsetX": 0.6,
-    "offsetY": 0.5,
-    "speed": 15.0,
-    "density": 10.0,
-    "texture": "gumProjectile",
-    "stuckTexture": "gum"
-  },
   "floatingGums": {
     "numGums": 2,
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "texture": "floatingGum",
-    "debugcolor": "yellow",
-    "debugopacity": 200,
-    "bobAmount":  0.1,
-    "bobSpeed": 3,
     "positions": [
       {
         "pos": [
@@ -725,18 +222,7 @@
     "pos": [
       46,
       1.92
-    ],
-    "size": [
-      1.92,
-      1.92
-    ],
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "texture": "goal",
-    "debugcolor": "yellow",
-    "debugopacity": 200
+    ]
   },
   "board": {
     "height" : 24,
@@ -791,12 +277,5 @@
       "row47":[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
       "row48":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
-  },
-  "projectile": {
-    "offsetX": 0.6,
-    "offsetY": 0.5,
-    "speed": 7.0,
-    "density": 10.0,
-    "texture": "bullet"
   }
 }

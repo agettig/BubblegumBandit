@@ -30,6 +30,9 @@ public class CollisionController implements ContactListener {
     public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
+
+    /** The amount of gum collected when collecting floating gum */
+    private static final int AMMO_AMOUNT = 5;
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
@@ -343,7 +346,7 @@ public class CollisionController implements ContactListener {
 
     private void collectGum(Obstacle bd1) {
         bd1.markRemoved(true);
-        bubblegumController.collectGumAmmo();
+        bubblegumController.addAmmo(AMMO_AMOUNT);
     }
 
 }
