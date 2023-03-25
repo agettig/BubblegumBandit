@@ -78,6 +78,14 @@ public class GameController implements Screen {
      */
     private JsonValue levelFormat;
 
+    /**
+     * The JSON defining game constants
+     */
+    private JsonValue constantsJson;
+
+    /** The JSON defining the tileset */
+    private JsonValue tilesetJson;
+
     private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
@@ -175,7 +183,7 @@ public class GameController implements Screen {
     private TextureRegion stuckGum;
 
     /** The gravity control mode for the player controller */
-    private boolean gravityToggle = true;
+    private boolean gravityToggle = false;
 
     /**
      * Returns true if the level is completed.
@@ -333,8 +341,10 @@ public class GameController implements Screen {
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level1", JsonValue.class);
+        constantsJson = directory.getEntry("constants", JsonValue.class);
+        tilesetJson = directory.getEntry("tileset", JsonValue.class);
 
-        bubblegumController.initialize(directory, levelFormat.get("gumProjectile"));
+        bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
@@ -352,7 +362,7 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
 
-        level.dispose();
+         level.dispose();
 
         setComplete(false);
         setFailure(false);
@@ -360,9 +370,9 @@ public class GameController implements Screen {
         bubblegumController.resetAmmo();
 
         // Reload the json each time
-        level.populate(directory, levelFormat);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
-        projectileController.initialize(levelFormat.get("projectile"), directory, level.getScale().x, level.getScale().y);
+        projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
     }
 
     /**
@@ -446,13 +456,15 @@ public class GameController implements Screen {
             bandit.setGrounded(false);
             collisionController.clearSensorFixtures();
 
-            for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            if (level.getEnemyControllers() != null) {
+                for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            }
         }
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getProjTarget(canvas);
-            JsonValue gumJV = levelFormat.get("gumProjectile");
+            JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
             Vector2 origin = level.getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
@@ -519,7 +531,7 @@ public class GameController implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
-        level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
+        level.draw(canvas, constantsJson, gumSpeed, gumGravity, trajectoryProjectile);
         hud.draw(level, bubblegumController);
 
         // Final message
@@ -689,42 +701,4 @@ public class GameController implements Screen {
             }
         }
     }
-
-
-//    class SliderListener implements ChangeListener {
-//        public void stateChanged(ChangeEvent e) {
-//            JSlider source = (JSlider) e.getSource();
-//            if (!source.getValueIsAdjusting()) {
-//                int val = source.getValue();
-//                if (source.getName().equals("gravity")) {
-//                    setGravity(val);
-//                } else if (source.getName().equals("radius")) {
-//                    for (AIController ai : level.getEnemyControllers()) {
-//                        ai.getEnemy().setVisionRadius(val);
-//                    }
-//                } else if (source.getName().equals("range")) {
-//                    for (AIController ai : level.getEnemies()) {
-//                        ai.setVisionRange((float) (val * (Math.PI / 180f)));
-//                    }
-//                } else if (source.getName().equals("gum gravity scale")) {
-//                    gumGravity = val;
-//                } else if (source.getName().equals("gum speed")) {
-//                    gumSpeed = val;
-//                } else if (source.getName().equals("move speed")) {
-//<<<<<<< HEAD:core/src/edu/cornell/gdiac/bubblegumbandit/controllers/GameController.java
-//                    for (AIController ai : level.getEnemies()) {
-//                        ai.setMovementSpeed((float) val /100);
-//=======
-//                    for (Enemy enemy : level.getEnemies()) {
-//                        if (enemy instanceof MovingEnemy) {
-//                            //((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
-//                        }
-//>>>>>>> main:core/src/edu/cornell/gdiac/json/GameController.java
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//    }
 }
