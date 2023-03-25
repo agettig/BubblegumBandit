@@ -357,6 +357,7 @@ public class GameController implements Screen {
         setFailure(false);
         countdown = -1;
         bubblegumController.resetAmmo();
+        collisionController.resetRobotJoints();
 
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);
