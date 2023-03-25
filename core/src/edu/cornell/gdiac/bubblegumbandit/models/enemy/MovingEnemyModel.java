@@ -49,7 +49,7 @@ public class MovingEnemyModel extends EnemyModel {
      * */
     public MovingEnemyModel(World world, int id){
         super(world, id);
-        enemyStateMachine = new DefaultStateMachine<MovingEnemyModel, EnemyState>(this, EnemyState.SPAWN);
+        enemyStateMachine = new DefaultStateMachine<>(this, EnemyState.SPAWN);
     }
 
     /**Initializes this MovingEnemy in the game. Sets its vision radius.
