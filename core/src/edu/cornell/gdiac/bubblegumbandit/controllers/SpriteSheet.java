@@ -8,11 +8,11 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import java.util.HashMap;
 
-
+//my solution to film strip
 /**
  * An Animation Controller to store and control the animations for a single object.
  */
-public class AnimationController {
+public class SpriteSheet {
 
   /** The width of an animation frame on the sprite sheet */
   private int width;
@@ -45,14 +45,15 @@ public class AnimationController {
 
   /**
    * Creates an Animator Controller from a sprite sheet
-   * @param spriteSheetJSON The value specifying this sprite sheet
    * @param directory
    */
-  public AnimationController(JsonValue spriteSheetJSON, AssetDirectory directory) {
+  public SpriteSheet(AssetDirectory directory) { //may need to move some of this logic to a loader
+    // and parser..
 
     //setting default values
     frame.setRegionHeight(height);
     frame.setRegionWidth(width);
+    JsonValue spriteSheetJSON = directory.getEntry("animations", JsonValue.class);
     String key = spriteSheetJSON.get("sheet").asString();
     this.spriteSheet = directory.getEntry(key, Texture.class);
     switch (spriteSheetJSON.get("origin").asString()) {
