@@ -11,6 +11,20 @@
             "wrapV": "repeated"
         },
         "dude": "textures/bandit.png",
+        "bandit_run":  {
+            "file": "textures/bandit_run.png",
+            "sprites": {
+                "rows": 1,
+                "columns": 4,
+                "size": 4,
+                "region": [
+                    0,
+                    0,
+                    512,
+                    128
+                ]
+            }
+        },
         "small_robot": "textures/small_enemy.png",
         "big_robot": "textures/big_enemy.png",
         "med_robot": "textures/medium_enemy.png",

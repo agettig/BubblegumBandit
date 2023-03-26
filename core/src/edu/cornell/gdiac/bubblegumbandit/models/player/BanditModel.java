@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import java.lang.reflect.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -76,6 +77,9 @@ public class BanditModel extends CapsuleObstacle {
 
 	/** Cache for flipping player orientation */
 	private float angle;
+
+	/** Animation controller for controlling animations?? */
+	private AnimationController animationController;
 
 	public boolean isFlipped() {
 		return isFlipped;
@@ -349,6 +353,8 @@ public class BanditModel extends CapsuleObstacle {
 		cameraTarget.set(pos[0]*drawScale.x, pos[1]*drawScale.y);
 		setDimension(size[0],size[1]);
 
+		animationController = new AnimationController(directory,"player");
+
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
 		setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
@@ -522,8 +528,11 @@ public class BanditModel extends CapsuleObstacle {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
 
-			canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
-					getY()*drawScale.y,getAngle(),effect,yScale);
+			canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+			getY()*drawScale.y,getAngle(),effect,yScale);
+
+			///canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+					//getY()*drawScale.y,getAngle(),effect,yScale);
 
 		}
 
