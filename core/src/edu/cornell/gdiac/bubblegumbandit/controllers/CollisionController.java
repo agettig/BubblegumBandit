@@ -1,13 +1,17 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
@@ -40,6 +44,9 @@ public class CollisionController implements ContactListener {
     /** Reference to the LevelModel */
     private LevelModel levelModel;
 
+    /** Reference to the game camera */
+    private GameCamera camera;
+
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
@@ -53,11 +60,22 @@ public class CollisionController implements ContactListener {
      *
      * This constructor initializes all the caching objects so that
      * there is no heap allocation during collision detection.
+     *
+     * @param levelModel the level model
+     * @param controller the bubblegum controller
      */
     public CollisionController(LevelModel levelModel, BubblegumController controller){
         sensorFixtures = new ObjectSet<Fixture>();
         bubblegumController = controller;
         this.levelModel = levelModel;
+    }
+
+    /** Initializes this CollisionController
+     *
+     * @param camera the game camera for the scene
+     */
+    public void initialize(GameCamera camera) {
+        this.camera = camera;
     }
 
     /**
@@ -122,6 +140,21 @@ public class CollisionController implements ContactListener {
                 avatar.setGrounded(false);
             }
         }
+
+        try{
+            Obstacle ob1 = (Obstacle) body1.getUserData();
+            Obstacle ob2 = (Obstacle) body2.getUserData();
+
+            if (ob1.getName().equals("cameratile") && avatar == bd2) {
+                updateCamera(ob1);
+            } else if (ob2.getName().equals("cameratile") && avatar == bd1) {
+                updateCamera(ob2);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -132,6 +165,55 @@ public class CollisionController implements ContactListener {
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
+    }
+
+    /** Updates the camera based on the collision between the player and the camera tile.
+     *
+     * @param ob the camera tile */
+    private void updateCamera(Obstacle ob) {
+        CameraTileModel camTile = (CameraTileModel) ob;
+        BanditModel avatar = levelModel.getBandit();
+
+        Vector2 ul;
+        Vector2 lr;
+        boolean isFirst = !((camTile.isHorizontal() && avatar.getX() > camTile.getX()) ||
+                (!camTile.isHorizontal() && avatar.getY() < camTile.getY()));
+        if (isFirst) {
+            ul = camTile.getFirstUpperLeft();
+            lr = camTile.getFirstLowerRight();
+        } else {
+            ul = camTile.getSecondUpperLeft();
+            lr = camTile.getSecondLowerRight();
+        }
+        Vector2 scale = levelModel.getScale();
+        float zoomWidth = 0;
+        float zoomHeight = 0;
+        boolean fixCamera = false;
+
+        if ((isFirst && camTile.isFirstFixedX()) || (!isFirst && camTile.isSecondFixedX())) {
+            float centerX = (ul.x + lr.x) * scale.x / 2f;
+            zoomWidth = Math.abs(ul.x - lr.x) * scale.x;
+            camera.setFixedX(true);
+            camera.setTargetX(centerX);
+            fixCamera = true;
+        }
+        if ((isFirst && camTile.isFirstFixedY()) || (!isFirst && camTile.isSecondFixedY())) {
+            float centerY = (ul.y + lr.y) * scale.y / 2f;
+            zoomHeight = Math.abs(ul.y - lr.y) * scale.y;
+            camera.setFixedY(true);
+            camera.setTargetY(centerY);
+            fixCamera = true;
+        }
+        if (fixCamera) {
+            System.out.println("Zoom width: " + zoomWidth + " height: " + zoomHeight);
+            camera.setZoom(zoomWidth, zoomHeight);
+        }
+        else {
+            // Change camera to track the player
+            camera.setFixedX(false);
+            camera.setFixedY(false);
+            camera.setZoom(1);
+        }
     }
 
     /**
