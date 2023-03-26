@@ -15,6 +15,7 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -318,6 +319,12 @@ public class LevelModel {
                     FloatingGum gum = new FloatingGum();
                     gum.initialize(directory, x, y, scale, constants.get("floatingGums"));
                     activate(gum);
+                    break;
+                case "Camera":
+                    CameraTileModel cam = new CameraTileModel();
+                    cam.initialize(x, y, levelHeight, object, constants.get("cameratile"));
+                    cam.setDrawScale(scale);
+                    activate(cam);
                     break;
                 default:
                     throw new UnsupportedOperationException(objName + " is not a valid object");

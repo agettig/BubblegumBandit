@@ -45,6 +45,7 @@
 	"jsons" : {
 		"level1" : "jsons/level1.json",
         "level2" : "jsons/testbed.json",
+        "level3" : "jsons/camera_demo.json",
         "constants": "jsons/constants.json",
         "tileset": "jsons/objects.json"
     }

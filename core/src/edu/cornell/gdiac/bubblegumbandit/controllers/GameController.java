@@ -34,6 +34,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -189,7 +190,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 2;
+    private final int NUM_LEVELS = 3;
 
     /**
      * Returns true if the level is completed.
@@ -377,11 +378,15 @@ public class GameController implements Screen {
         countdown = -1;
         bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
+        canvas.getCamera().setFixedX(false);
+        canvas.getCamera().setFixedY(false);
+        canvas.getCamera().setZoom(1);
 
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
+        collisionController.initialize(canvas.getCamera());
     }
 
     /**
@@ -403,7 +408,6 @@ public class GameController implements Screen {
         // Toggle debug and handle resets.
         if (input.didDebug()) {level.setDebug(!level.getDebug());}
         if (input.didReset()) {reset();}
-        if (input.didCameraSwap()) { canvas.getCamera().toggleMode(); }
         if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
         if (input.didAdvance()) {
             levelNum++;
@@ -449,7 +453,6 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-
         if(collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
             if (levelNum > NUM_LEVELS) {
@@ -531,9 +534,15 @@ public class GameController implements Screen {
         projectileController.update();
 
         // Update the camera
+        GameCamera cam = canvas.getCamera();
         Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
-        canvas.getCamera().setTarget(bandit.getCameraTarget());
-        canvas.getCamera().setSecondaryTarget(target);
+        if (!cam.isFixedX()) {
+            cam.setTargetX(bandit.getCameraTarget().x);
+            cam.setSecondaryTargetX(target.x);
+        } if (!cam.isFixedY()) {
+            cam.setTargetY(bandit.getCameraTarget().y);
+            cam.setSecondaryTargetY(target.y);
+        }
         canvas.getCamera().update(dt);
 
         // Turn the physics engine crank.
