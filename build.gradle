@@ -62,20 +62,20 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
         implementation files("../dependencies/soundlib.jar")
 
+
     }
 }
 
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
+        implementation "com.badlogicgames.box2dlights:box2dlights:1.4"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         implementation files("../dependencies/soundlib.jar")
-
 
     }
 }
