@@ -1,0 +1,216 @@
+{
+  "physicsSize": [
+    64.0,
+    64.0
+  ],
+  "background": "background",
+  "avatar": {
+    "size": [
+      1,
+      1.75
+    ],
+    "bodytype": "dynamic",
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "force": 30.0,
+    "damping": 20.0,
+    "maxspeed": 7.0,
+    "texture": "dude",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorsize": [
+      0.183,
+      0.05
+    ],
+    "bottomsensorname": "dudeGroundSensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "topsensorname": "dudeTopSensor"
+  },
+  "walls": {
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.2,
+    "restitution": 0.0,
+    "texture": "earth",
+    "debugcolor": "yellow",
+    "debugopacity": 200
+  },
+  "tiles": {
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "texture": "earth",
+    "debugcolor": "yellow",
+    "debugopacity": 200
+  },
+  "gumProjectile": {
+    "starting_gum": 5,
+    "offsetX": 0.6,
+    "offsetY": 0.5,
+    "speed": 15.0,
+    "density": 10.0,
+    "texture": "gumProjectile",
+    "stuckTexture": "gum"
+  },
+  "floatingGums": {
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": "floatingGum",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "bobAmount":  0.1,
+    "bobSpeed": 3
+  },
+  "mediumrobot": {
+    "type": "moving",
+    "size": [
+      2,
+      2
+    ],
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "force": 0.0,
+    "damping": 0.0,
+    "maxspeed": 50.0,
+    "texture": "med_robot",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "numsensors": 3,
+    "sensors": {
+      "enemyGroundSensor": {
+        "sensorsize": [
+          0.183,
+          0.05
+        ],
+        "sensorcenter": [
+          0,
+          -0.305
+        ],
+        "printoffset": [
+          0,
+          0.305
+        ]
+      },
+      "enemyRightSensor": {
+        "sensorsize": [
+          0.183,
+          0.3
+        ],
+        "sensorcenter": [
+          0,
+          0
+        ],
+        "printoffset": [
+          0.45,
+          0
+        ]
+      },
+      "enemyLeftSensor": {
+        "sensorsize": [
+          0.183,
+          0.3
+        ],
+        "sensorcenter": [
+          0,
+          0
+        ],
+        "printoffset": [
+          -0.45,
+          0
+        ]
+      }
+    }
+  },
+  "smallrobot": {
+    "type": "moving",
+    "size": [
+      0.5,
+      1.0
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 5.0,
+    "texture": "small_robot",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "numsensors": 3,
+    "sensors": {
+      "enemyGroundSensor": {
+        "sensorsize": [
+          0.183,
+          0.05
+        ],
+        "sensorcenter": [
+          0,
+          -0.305
+        ],
+        "printoffset": [
+          0,
+          0.305
+        ]
+      },
+      "enemyRightSensor": {
+        "sensorsize": [
+          0.183,
+          0.3
+        ],
+        "sensorcenter": [
+          0,
+          0
+        ],
+        "printoffset": [
+          0.45,
+          0
+        ]
+      },
+      "enemyLeftSensor": {
+        "sensorsize": [
+          0.183,
+          0.3
+        ],
+        "sensorcenter": [
+          0,
+          0
+        ],
+        "printoffset": [
+          -0.45,
+          0
+        ]
+      }
+    }
+  },
+  "exit": {
+    "size": [
+      1.92,
+      1.92
+    ],
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": "goal",
+    "debugcolor": "yellow",
+    "debugopacity": 200
+  },
+  "projectile": {
+    "offsetX": 0.6,
+    "offsetY": 0.5,
+    "speed": 7.0,
+    "density": 10.0,
+    "texture": "bullet"
+  }
+}
