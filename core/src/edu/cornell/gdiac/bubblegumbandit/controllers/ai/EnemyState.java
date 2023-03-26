@@ -49,18 +49,7 @@ public enum EnemyState implements State<EnemyController> {
 
     WANDER() {
         public void enter (EnemyController aiController) {
-//            if (EnemyModel.getLocation() != Location.SHACK) {
-//                talk(EnemyModel, "Walkin' home");
-//                EnemyModel.setLocation(Location.SHACK);
-//
-//                // Let Elsa know I'm home
-//                MessageManager.getInstance().dispatchMessage( //
-//                        0.0f, // time delay
-//                        EnemyModel, // ID of sender
-//                        EnemyModel.elsa, // ID of recipient
-//                        MessageType.HI_HONEY_I_M_HOME, // the message
-//                        null);
-//            }
+            talk(aiController, "enter wander");
         }
 
         @Override
@@ -81,6 +70,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit (EnemyController aiController) {
+            talk(aiController, "leave wander");
         }
 
         @Override
@@ -103,11 +93,7 @@ public enum EnemyState implements State<EnemyController> {
      CHASE() {
         @Override
         public void enter (EnemyController aiController) {
-//            if (EnemyModel.getLocation() != Location.SALOON) {
-//                EnemyModel.setLocation(Location.SALOON);
-//
-//                talk(EnemyModel, "Boy, ah sure is thusty! Walking to the saloon");
-//            }
+            talk(aiController, "enter chase");
         }
 
         @Override
@@ -123,19 +109,14 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit (EnemyController aiController) {
-            talk(aiController, "Leaving the saloon, feelin' good");
+            talk(aiController, "leave chase");
         }
     },
 
     ATTACK() {
         @Override
         public void enter (EnemyController aiController) {
-//            // On entry EnemyModel makes sure he is located at the bank
-//            if (EnemyModel.getLocation() != Location.BANK) {
-//                talk(EnemyModel, "Goin' to the bank. Yes siree");
-//
-//                EnemyModel.setLocation(Location.BANK);
-//            }
+            talk(aiController, "enter attack");
         }
 
         @Override
@@ -161,18 +142,24 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit (EnemyController aiController) {
-//            talk(EnemyModel, "Leavin' the bank");
+            talk(aiController, "leave attack");
         }
     },
 
     PERCEIVE(){
         @Override
-        public void enter(EnemyController aiController){};
+        public void enter(EnemyController aiController){
+            talk(aiController, "enter perceive");
+        };
 
         @Override
-        public void update(EnemyController aiController){};
+        public void update(EnemyController aiController){
+            talk(aiController, "perceive gather information");
+        };
         @Override
-        public void exit(EnemyController aiController){};
+        public void exit(EnemyController aiController){
+            talk(aiController, "leave perceive");
+        };
 
     };
 

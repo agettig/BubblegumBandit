@@ -26,6 +26,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -111,6 +112,8 @@ public class LevelModel {
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
     private AIController[] aiControllers;
+
+    private EnemyController[] enemyControllers;
 
     public AIController[] getEnemyControllers() {
         return aiControllers;
@@ -259,7 +262,6 @@ public class LevelModel {
             if (tileset.get("source").asString().equals("board.tsx")) {
                 boardIdOffset = tileset.getInt("firstgid");
             }
-            System.out.println(boardIdOffset);
             tileset = tileset.next();
         }
 
@@ -273,6 +275,7 @@ public class LevelModel {
 
         TextureRegion[] textures = TiledParser.createTileset(directory, tilesetJson);
         aiControllers = new AIController[numEnemies];
+        enemyControllers = new EnemyController[numEnemies];
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -315,6 +318,7 @@ public class LevelModel {
                         activate(enemy);
                         enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
                         aiControllers[enemyCount] = new AIController(enemy, bandit, board);
+                        enemyControllers[enemyCount] = new EnemyController(enemy, bandit, tiledGraph);
                         enemyCount++;
                     }
                     break;
@@ -389,6 +393,10 @@ public class LevelModel {
             } else {
                 obj.update(dt);
             }
+        }
+
+        for (EnemyController controller : enemyControllers){
+            controller.getEnemyStateMachine().update();
         }
     }
 

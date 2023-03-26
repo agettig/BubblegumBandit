@@ -78,7 +78,8 @@ public class EnemyController {
 
     public EnemyController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraph) {
         this.tiledGraph = tiledGraph;
-        this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, null, tiledGraph);
+        this.enemy = enemy;
+        this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraph);
         this.bandit = bandit;
         move = CONTROL_NO_ACTION;
         ticks = 0;
