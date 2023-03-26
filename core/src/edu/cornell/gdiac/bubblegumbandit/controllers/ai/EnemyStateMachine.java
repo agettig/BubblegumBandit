@@ -3,6 +3,13 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
+import com.badlogic.gdx.ai.pfa.GraphPath;
+import com.badlogic.gdx.ai.pfa.Heuristic;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledManhattanDistance;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledNode;
 
 /** Default implementation of the {@link StateMachine} interface.
  *
@@ -10,8 +17,15 @@ import com.badlogic.gdx.ai.msg.Telegram;
  * @param <S> the type of the states of this state machine
  *
  * @author davebaol */
-public class DefaultStateMachine<E, S extends State<E>> implements StateMachine<E, S> {
+public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E, S> {
 
+
+    private IndexedAStarPathFinder<TiledNode> pathFinder;
+
+    private Heuristic heuristic;
+    private TiledGraph tiledGraph;
+
+    private GraphPath graphPath;
     /** The entity that owns this state machine. */
     protected E owner;
 
@@ -24,32 +38,20 @@ public class DefaultStateMachine<E, S extends State<E>> implements StateMachine<
     /** The global state of the owner. Its logic is called every time the FSM is updated. */
     protected S globalState;
 
-    /** Creates a {@code DefaultStateMachine} with no owner, initial state and global state. */
-    public DefaultStateMachine () {
-        this(null, null, null);
-    }
-
-    /** Creates a {@code DefaultStateMachine} for the specified owner.
-     * @param owner the owner of the state machine */
-    public DefaultStateMachine (E owner) {
-        this(owner, null, null);
-    }
-
-    /** Creates a {@code DefaultStateMachine} for the specified owner and initial state.
-     * @param owner the owner of the state machine
-     * @param initialState the initial state */
-    public DefaultStateMachine (E owner, S initialState) {
-        this(owner, initialState, null);
-    }
 
     /** Creates a {@code DefaultStateMachine} for the specified owner, initial state and global state.
      * @param owner the owner of the state machine
      * @param initialState the initial state
      * @param globalState the global state */
-    public DefaultStateMachine (E owner, S initialState, S globalState) {
+    public EnemyStateMachine (E owner, S initialState, S globalState, TiledGraph tiledGraph) {
         this.owner = owner;
         this.setInitialState(initialState);
         this.setGlobalState(globalState);
+        this.tiledGraph = tiledGraph;
+        this.pathFinder = new IndexedAStarPathFinder<>(tiledGraph, true);
+        this.heuristic = new TiledManhattanDistance();
+        this.graphPath = new DefaultGraphPath<>();
+
     }
     /** Returns the owner of this state machine. */
     public E getOwner () {

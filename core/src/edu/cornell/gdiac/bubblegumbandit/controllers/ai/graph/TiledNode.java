@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.Array;
 /** A node for a {@link TiledGraph}.
  * 
  * @author davebaol */
-public class FlatTiledNode {
+public class TiledNode {
 
 	private int x;
 
@@ -58,16 +58,16 @@ public class FlatTiledNode {
 		return type;
 	}
 
-	private Array<Connection<FlatTiledNode>> connections;
+	private Array<Connection<TiledNode>> connections;
 
-	public FlatTiledNode(int x, int y, int type) {
+	public TiledNode(int x, int y, int type) {
 		this.x = x;
 		this.y = y;
 		this.type = type;
 		this.connections =  new Array<>(4);
 	}
 
-	public Array<Connection<FlatTiledNode>> getConnections () {
+	public Array<Connection<TiledNode>> getConnections () {
 		return this.connections;
 	}
 }

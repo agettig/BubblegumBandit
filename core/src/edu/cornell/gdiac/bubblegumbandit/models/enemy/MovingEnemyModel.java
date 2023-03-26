@@ -36,11 +36,11 @@ public class MovingEnemyModel extends EnemyModel {
         this.visionRadius = visionRadius;
     }
 
-    private DefaultStateMachine<MovingEnemyModel, EnemyState> enemyStateMachine;
-
-    public DefaultStateMachine<MovingEnemyModel, EnemyState> getEnemyStateMachine() {
-        return enemyStateMachine;
-    }
+//    private DefaultStateMachine<MovingEnemyModel, EnemyState> enemyStateMachine;
+//
+//    public DefaultStateMachine<MovingEnemyModel, EnemyState> getEnemyStateMachine() {
+//        return enemyStateMachine;
+//    }
 
     /**Creates a MovingEnemy.
      *
@@ -49,7 +49,6 @@ public class MovingEnemyModel extends EnemyModel {
      * */
     public MovingEnemyModel(World world, int id){
         super(world, id);
-        enemyStateMachine = new DefaultStateMachine<>(this, EnemyState.SPAWN);
     }
 
     /**Initializes this MovingEnemy in the game. Sets its vision radius.
@@ -101,7 +100,6 @@ public class MovingEnemyModel extends EnemyModel {
 
     @Override
     public void update(int controlCode) {
-        enemyStateMachine.update();
         super.update(controlCode);
 
         ticks++;
