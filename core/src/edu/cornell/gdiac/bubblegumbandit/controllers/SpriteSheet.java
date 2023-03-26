@@ -47,15 +47,21 @@ public class SpriteSheet {
    * Creates an Animator Controller from a sprite sheet
    * @param directory
    */
-  public SpriteSheet(AssetDirectory directory) { //may need to move some of this logic to a loader
+  public SpriteSheet(AssetDirectory directory, String sheetName) { //may need to move some of this logic to a loader
     // and parser..
 
-    //setting default values
-    frame.setRegionHeight(height);
-    frame.setRegionWidth(width);
-    JsonValue spriteSheetJSON = directory.getEntry("animations", JsonValue.class);
+    animations = new HashMap<>();
+
+    JsonValue spriteSheetJSON = directory.getEntry("animations", JsonValue.class).get(sheetName);
     String key = spriteSheetJSON.get("sheet").asString();
     this.spriteSheet = directory.getEntry(key, Texture.class);
+    //setting default values
+    frame = new TextureRegion(spriteSheet);
+    this.height = spriteSheetJSON.get("height").asInt();
+    this.width = spriteSheetJSON.get("height").asInt();
+    frame.setRegionHeight(height);
+    frame.setRegionWidth(width);
+
     switch (spriteSheetJSON.get("origin").asString()) {
       case "left":
         origin = new Vector2(0, height/2);
