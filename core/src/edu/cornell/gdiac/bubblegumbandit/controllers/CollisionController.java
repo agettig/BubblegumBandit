@@ -1,63 +1,87 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
+import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
 
 public class CollisionController implements ContactListener {
 
-    public static final short CATEGORY_PLAYER = 0x0001;
+    public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_ENEMY = 0x0002;
     public static final short CATEGORY_TERRAIN = 0x0004;
     public static final short CATEGORY_GUM = 0x0008;
     public static final short CATEGORY_PROJECTILE = 0x0010;
+    public static final short CATEGORY_ENEMY_LISTENING = 0x0040;
 
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
     public static final short MASK_TERRAIN = -1; // Collides with everything
-    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
+    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM| CATEGORY_ENEMY_LISTENING);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
+    public static final short MASK_ENEMY_LISTENING = CATEGORY_PLAYER;
 
-    /** The amount of gum collected when collecting floating gum */
+    /**
+     * The amount of gum collected when collecting floating gum
+     */
     private static final int AMMO_AMOUNT = 5;
     /**
      * Mark set to handle more sophisticated collision callbacks
      */
     protected ObjectSet<Fixture> sensorFixtures;
 
-    /** Bubblegum Controller reference */
+    /**
+     * Bubblegum Controller reference
+     */
     private final BubblegumController bubblegumController;
 
-    /** Reference to the LevelModel */
+    /**
+     * Reference to the LevelModel
+     */
     private LevelModel levelModel;
+
+    /** Reference to the game camera */
+    private GameCamera camera;
 
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
-    public void resetWinCondition(){
+    public void resetWinCondition() {
         winConditionMet = false;
     }
 
 
     /**
      * Construct a new CollisionController.
-     *
+     * <p>
      * This constructor initializes all the caching objects so that
      * there is no heap allocation during collision detection.
+     *
+     * @param levelModel the level model
+     * @param controller the bubblegum controller
      */
-    public CollisionController(LevelModel levelModel, BubblegumController controller){
+    public CollisionController(LevelModel levelModel, BubblegumController controller) {
         sensorFixtures = new ObjectSet<Fixture>();
         bubblegumController = controller;
         this.levelModel = levelModel;
+    }
+
+    /** Initializes this CollisionController
+     *
+     * @param camera the game camera for the scene
+     */
+    public void initialize(GameCamera camera) {
+        this.camera = camera;
     }
 
     /**
@@ -78,17 +102,23 @@ public class CollisionController implements ContactListener {
         Body bodyA = fixA.getBody();
         Body bodyB = fixB.getBody();
 
-        try{
+        try {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
-            resolveGumCollision(obstacleA, obstacleB);
+            resolveEnemyHearing(fixA, fixB, obstacleB, obstacleA, true);
+
+            // TODO fix collision filtering
+            if (!(fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor") || fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))){
+                resolveGumCollision(obstacleA, obstacleB);
+            }
+
             resolveWinCondition(obstacleA, obstacleB);
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -122,6 +152,21 @@ public class CollisionController implements ContactListener {
                 avatar.setGrounded(false);
             }
         }
+
+        try{
+            Obstacle ob1 = (Obstacle) body1.getUserData();
+            Obstacle ob2 = (Obstacle) body2.getUserData();
+
+            if (ob1.getName().equals("cameratile") && avatar == bd2) {
+                updateCamera(ob1);
+            } else if (ob2.getName().equals("cameratile") && avatar == bd1) {
+                updateCamera(ob2);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -134,11 +179,60 @@ public class CollisionController implements ContactListener {
 
     }
 
+    /** Updates the camera based on the collision between the player and the camera tile.
+     *
+     * @param ob the camera tile */
+    private void updateCamera(Obstacle ob) {
+        CameraTileModel camTile = (CameraTileModel) ob;
+        BanditModel avatar = levelModel.getBandit();
+
+        Vector2 ul;
+        Vector2 lr;
+        boolean isFirst = !((camTile.isHorizontal() && avatar.getX() > camTile.getX()) ||
+                (!camTile.isHorizontal() && avatar.getY() < camTile.getY()));
+        if (isFirst) {
+            ul = camTile.getFirstUpperLeft();
+            lr = camTile.getFirstLowerRight();
+        } else {
+            ul = camTile.getSecondUpperLeft();
+            lr = camTile.getSecondLowerRight();
+        }
+        Vector2 scale = levelModel.getScale();
+        float zoomWidth = 0;
+        float zoomHeight = 0;
+        boolean fixCamera = false;
+
+        if ((isFirst && camTile.isFirstFixedX()) || (!isFirst && camTile.isSecondFixedX())) {
+            float centerX = (ul.x + lr.x) * scale.x / 2f;
+            zoomWidth = Math.abs(ul.x - lr.x) * scale.x;
+            camera.setFixedX(true);
+            camera.setTargetX(centerX);
+            fixCamera = true;
+        }
+        if ((isFirst && camTile.isFirstFixedY()) || (!isFirst && camTile.isSecondFixedY())) {
+            float centerY = (ul.y + lr.y) * scale.y / 2f;
+            zoomHeight = Math.abs(ul.y - lr.y) * scale.y;
+            camera.setFixedY(true);
+            camera.setTargetY(centerY);
+            fixCamera = true;
+        }
+        if (fixCamera) {
+            System.out.println("Zoom width: " + zoomWidth + " height: " + zoomHeight);
+            camera.setZoom(zoomWidth, zoomHeight);
+        }
+        else {
+            // Change camera to track the player
+            camera.setFixedX(false);
+            camera.setFixedY(false);
+            camera.setZoom(1);
+        }
+    }
+
     /**
      * Checks if the bandit has collided with the exit and sets the
      * win condition met field accordingly.
-     * */
-    private void resolveWinCondition(Obstacle bodyA, Obstacle bodyB){
+     */
+    private void resolveWinCondition(Obstacle bodyA, Obstacle bodyB) {
         // Check for win condition
         BanditModel bandit = levelModel.getBandit();
         ExitModel door = levelModel.getExit();
@@ -146,32 +240,49 @@ public class CollisionController implements ContactListener {
         boolean winConditionA = bodyA == bandit && bodyB == door;
         boolean winConditionB = bodyA == door && bodyB == bandit;
 
-        if (winConditionA ||winConditionB){ winConditionMet = true;}
+        if (winConditionA || winConditionB) {
+            winConditionMet = true;
+        }
+    }
+
+    private void resolveEnemyHearing(Fixture fixA, Fixture fixB, Obstacle obA, Obstacle obB, boolean beginCollision) {
+        if ((fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor")) ||
+                (fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))
+        ) {
+            if (obB instanceof EnemyModel && obA instanceof BanditModel){
+                ((EnemyModel) obB).setHeardPlayer(beginCollision);
+            } else if (obA instanceof EnemyModel && obB instanceof BanditModel) {
+                ((EnemyModel) obA).setHeardPlayer(beginCollision);
+            }
+        }
     }
 
     /**
-     *  Adds a GumJointPair to the BubblegumController's assembly
-     *  queue if two colliding bodies are a valid gum/body collision.
+     * Adds a GumJointPair to the BubblegumController's assembly
+     * queue if two colliding bodies are a valid gum/body collision.
      *
-     *  @param bodyA The first body in the collision
-     *  @param bodyB The second body in the collision
+     * @param bodyA The first body in the collision
+     * @param bodyB The second body in the collision
      */
-    public void resolveGumCollision(Obstacle bodyA, Obstacle bodyB){
+    public void resolveGumCollision(Obstacle bodyA, Obstacle bodyB) {
         //Safety check.
         if (bodyA == null || bodyB == null) return;
         // Gum should destroy projectiles, but not become sticky gum.
-        if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
+        if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile"))
+            return;
 
         GumModel gum = null;
         Obstacle body = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
-        };
+        }
+        ;
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
-        };
+        }
+        ;
         if (gum != null && gum.getName().equals("gumProjectile")) {
             // Do this once gum is turning from a projectile to sticky
             gum.setVX(0);
@@ -184,7 +295,7 @@ public class CollisionController implements ContactListener {
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
 
-        if (gum != null && gum.canAddObstacle(body)){
+        if (gum != null && gum.canAddObstacle(body)) {
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
@@ -198,6 +309,7 @@ public class CollisionController implements ContactListener {
      * <p>
      * Examines two Obstacles in a collision.
      * *
+     *
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
@@ -205,7 +317,8 @@ public class CollisionController implements ContactListener {
 
         // Check that obstacles are not null and not an enemy
         if (bd1 == null || bd2 == null) return;
-        if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
+        if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy"))
+            return;
 
         if (bd1.getName().equals("projectile")) {
             resolveProjectileCollision((ProjectileModel) bd1, bd2);
@@ -216,13 +329,14 @@ public class CollisionController implements ContactListener {
 
     /**
      * Resolves the effects of a projectile collision
+     *
      * @param p
      * @param o
      */
-    private void resolveProjectileCollision(ProjectileModel p, Obstacle o){
+    private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
-        if (o.getName().equals("avatar")){
-           levelModel.getBandit().hitPlayer(p.getDamage());
+        if (o.getName().equals("avatar")) {
+            levelModel.getBandit().hitPlayer(p.getDamage());
         }
         p.destroy();
     }
@@ -230,8 +344,8 @@ public class CollisionController implements ContactListener {
     /**
      * Resolves collisions for ground contact, adding the necessary
      * sensor fixtures.
-     * */
-    private void resolveGroundContact(Obstacle bodyA, Fixture fixA, Obstacle bodyB, Fixture fixB){
+     */
+    private void resolveGroundContact(Obstacle bodyA, Fixture fixA, Obstacle bodyB, Fixture fixB) {
 
         BanditModel bandit = levelModel.getBandit();
 
@@ -264,22 +378,22 @@ public class CollisionController implements ContactListener {
      * bandit has collided with the exit.
      *
      * @return true if win condition has been met, false otherwise.
-     * */
-    public boolean isWinConditionMet(){
+     */
+    public boolean isWinConditionMet() {
         return winConditionMet;
     }
 
-    public void clearSensorFixtures(){
+    public void clearSensorFixtures() {
         sensorFixtures.clear();
     }
 
     public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2){
-        if (bd1 instanceof FloatingGum && bd2 == levelModel.getBandit() && !((FloatingGum) bd1).getCollected()){
+        if (bd1 instanceof Collectible && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
-            ((FloatingGum) bd1).setCollected(true);
-        } else if (bd2 instanceof FloatingGum && bd1 == levelModel.getBandit() && !((FloatingGum) bd2).getCollected()) {
+            ((Collectible) bd1).setCollected(true);
+        } else if (bd2 instanceof Collectible && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
-            ((FloatingGum) bd2).setCollected(true);
+            ((Collectible) bd2).setCollected(true);
         }
     }
 

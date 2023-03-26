@@ -144,54 +144,11 @@
     "texture": "small_robot",
     "debugcolor": "white",
     "debugopacity": 192,
-    "sensorcolor": "red",
+    "sensorcolor": "yellow",
     "sensoropacity": 192,
     "visionradius": 3.0,
-    "numsensors": 3,
-    "sensors": {
-      "enemyGroundSensor": {
-        "sensorsize": [
-          0.183,
-          0.05
-        ],
-        "sensorcenter": [
-          0,
-          -0.305
-        ],
-        "printoffset": [
-          0,
-          0.305
-        ]
-      },
-      "enemyRightSensor": {
-        "sensorsize": [
-          0.183,
-          0.3
-        ],
-        "sensorcenter": [
-          0,
-          0
-        ],
-        "printoffset": [
-          0.45,
-          0
-        ]
-      },
-      "enemyLeftSensor": {
-        "sensorsize": [
-          0.183,
-          0.3
-        ],
-        "sensorcenter": [
-          0,
-          0
-        ],
-        "printoffset": [
-          -0.45,
-          0
-        ]
-      }
-    }
+    "sensorname": "listeningsensor",
+    "listeningradius": 6
   },
   "exit": {
     "size": [

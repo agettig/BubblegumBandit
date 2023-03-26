@@ -14,6 +14,8 @@ import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
+
 /**
  * Abstract enemy class.
  * <p>
@@ -24,6 +26,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     // Physics constants
     private int id;
+
+    private boolean heardPlayer = false;
 
     /**
      * The factor to multiply by the input
@@ -81,6 +85,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
+
+    // SENSOR FIELDS
+    /** Ground sensor to represent our feet */
+    private Fixture sensorFixture;
+    private CircleShape sensorShape;
+    /** The name of the sensor for detection purposes */
+    private String sensorName;
+    /** The color to paint the sensor in debug mode */
+
 
     // endRegion
 
@@ -274,38 +287,23 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
-        // initialize sensors
-        int numSensors = constantsJson.get("numsensors").asInt();
-        initializeSensors(constantsJson, numSensors);
+        // Get the sensor information
+        int listeningRadius = constantsJson.get("listeningradius").asInt();
+
+        sensorShape = new CircleShape();
+        sensorShape.setRadius(listeningRadius);
 
         // Reflection is best way to convert name to color
         try {
             String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-            sensorColor = new Color((Color) field.get(null));
+            sensorColor = new Color((Color)field.get(null));
         } catch (Exception e) {
             sensorColor = null; // Not defined
         }
         opacity = constantsJson.get("sensoropacity").asInt();
-        sensorColor.mul(opacity / 255.0f);
-        sensorColor = Color.RED;
-
-    }
-
-    public void initializeSensors(JsonValue json, int numSensors) {
-        // Get the sensor information
-        sensors = new Sensor[numSensors];
-        String sensorName;
-        JsonValue sensor = json.get("sensors").child();
-        for (int i = 0; i < numSensors; i++) {
-            float[] sSize = sensor.get("sensorsize").asFloatArray();
-            float[] sCenter = sensor.get("sensorcenter").asFloatArray();
-            float[] printLoc = sensor.get("printOffset").asFloatArray();
-            sensorName = sensor.name();
-            sensors[i] = new Sensor(new Vector2(sCenter[0], sCenter[1]), sSize[0],
-                sSize[1], sensorName, printLoc[0], printLoc[1]);
-            sensor = sensor.next();
-        }
+        sensorColor.mul(opacity/255.0f);
+        sensorName = constantsJson.get("sensorname").asString();
     }
 
 
@@ -339,21 +337,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-//        for (Sensor s : sensors) {
-//            float y = getY();
-//            float x = getX();
-//            if (angle == 3.14f) {
-//                y += s.printY();
-//                x -= s.printX();
-//            }
-//
-//            else {
-//                y -= s.printY();
-//                x += s.printX();
-//            }
-//            canvas.drawPhysics(s.getSensorShape(), sensorColor,
-//                x, y, getAngle(), drawScale.x, drawScale.y);
-//        }
+        canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
@@ -385,15 +369,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         // To determine whether or not the dude is on the ground,
         // we create a thin sensor under his feet, which reports
         // collisions with the world but has no collision response.
-        FixtureDef sensorDef;
-        for (Sensor sensor : sensors) {
-            sensorDef = new FixtureDef();
-            sensorDef.density = getDensity();
-            sensorDef.isSensor = true;
-            sensorDef.shape = sensor.getSensorShape();
-            sensor.setFixture(body.createFixture(sensorDef));
-            sensor.getFixture().setUserData(sensor.getSensorName());
-        }
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = getDensity();
+        sensorDef.isSensor = true;
+        sensorDef.shape = sensorShape;
+        sensorFixture = body.createFixture(sensorDef);
+        sensorFixture.getFilterData().categoryBits = CATEGORY_ENEMY_LISTENING;
+        sensorFixture.getFilterData().maskBits = MASK_ENEMY_LISTENING;
+        sensorFixture.setUserData(sensorName);
         return true;
     }
 
@@ -411,6 +394,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
      */
     public void flippedGravity() {
         isFlipped = !isFlipped;
+    }
+
+    public void setHeardPlayer(boolean heardPlayer){
+        this.heardPlayer = heardPlayer;
+        System.out.println(this.getName() + heardPlayer);
     }
 
 }
