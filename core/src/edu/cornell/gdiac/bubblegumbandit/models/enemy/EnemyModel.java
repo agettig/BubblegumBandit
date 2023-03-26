@@ -69,6 +69,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public Vision vision;
 
+    private Vision sensing;
+
     private World world;
 
     /**
@@ -238,6 +240,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         this.world = world;
         this.id = id;
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        sensing = new Vision(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
     }
 
     /**
@@ -330,7 +333,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
-//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 
@@ -339,11 +343,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
     public void updateVision() {
         vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
+        sensing.setDirection(!faceRight? (float) 0 : (float) Math.PI);
         vision.update(world, getPosition());
+        sensing.update(world, getPosition());
     }
 
     /**
@@ -397,8 +404,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     }
 
     public void setHeardPlayer(boolean heardPlayer){
-        this.heardPlayer = heardPlayer;
-        System.out.println(this.getName() + heardPlayer);
+          this.heardPlayer = heardPlayer;
     }
 
 }

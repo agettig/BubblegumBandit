@@ -25,7 +25,7 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast per radius unit */
-    private int numRays = 20;
+    private int numRays = 10;
 
     boolean resetRadius = false;
 
