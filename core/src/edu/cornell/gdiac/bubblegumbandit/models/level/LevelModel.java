@@ -15,12 +15,12 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -333,14 +333,19 @@ public class LevelModel {
 
         //move to own method after testing
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(.5f);
-        //rayHandler.setShadows(true);
-        // light = new PointLight(rayHandler, 20, Color.WHITE, 5, 0, 0);
+        rayHandler.setAmbientLight(.8f);
+        //rayHandler.setAmbientLight(.1f, .4f, .5f, .2f);
+        rayHandler.setShadows(true); //not working
         lights = new PointLight[(int) (bounds.width/8-1)];
         for(int i = 0; i<lights.length; i++) {
-            lights[i] = new PointLight(rayHandler, 100,
-                Color.WHITE,  2,  8+8*i, bounds.height);
+            lights[i] = new PointLight(rayHandler, 20,
+                Color.WHITE,  8*scale.x,  (8+8*i)*scale.x,
+                (bounds.height-1)*scale.x);
+            lights[i].setSoft(true);
+            lights[i].setColor(1f,1f,1f,.9f);
         }
+
+
     }
 
     /**
@@ -589,6 +594,7 @@ public class LevelModel {
         if (backgroundRegion != null) {
             drawBackground(canvas);
         }
+
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
@@ -600,8 +606,10 @@ public class LevelModel {
 
         canvas.end();
 
-        rayHandler.setCombinedMatrix(canvas.getCamera()); //maybe..
+
+        rayHandler.setCombinedMatrix(canvas.getCamera()); //how to scale down to physics?
         rayHandler.render();
+
 
         if (debug) {
             canvas.beginDebug();
