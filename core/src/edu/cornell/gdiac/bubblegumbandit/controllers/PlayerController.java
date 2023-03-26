@@ -102,7 +102,6 @@ public class PlayerController{
     private boolean gravityUpPrevious;
 
     /** If gum was collected */
-
     private boolean collect;
 
     /** An X-Box controller (if it is connected) */
@@ -376,6 +375,8 @@ public class PlayerController{
         collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
         cameraPressed = (secondary && cameraPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_2));
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
+        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
+        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);

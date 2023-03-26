@@ -185,6 +185,12 @@ public class GameController implements Screen {
     /** The gravity control mode for the player controller */
     private boolean gravityToggle = false;
 
+    /** The number of the current level. */
+    private int levelNum;
+
+    /** The number of levels in the game. */
+    private final int NUM_LEVELS = 2;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -274,7 +280,7 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("crosshair2.png"));
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/crosshair2.png"));
 // Set hotspot to the middle of it (0,0 would be the top-left corner)
         int xHotspot = 16, yHotspot = 16;
         Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
@@ -287,6 +293,7 @@ public class GameController implements Screen {
         failed = false;
         active = false;
         countdown = -1;
+        levelNum = 1;
         setComplete(false);
         setFailure(false);
 
@@ -340,7 +347,7 @@ public class GameController implements Screen {
         jumpSound = directory.getEntry("jump", SoundEffect.class);
 
         // This represents the level but does not BUILD it
-        levelFormat = directory.getEntry("level1", JsonValue.class);
+        levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         constantsJson = directory.getEntry("constants", JsonValue.class);
         tilesetJson = directory.getEntry("tileset", JsonValue.class);
 
@@ -361,13 +368,15 @@ public class GameController implements Screen {
 
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
+        collisionController.resetWinCondition();
 
-         level.dispose();
+        level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
         bubblegumController.resetAmmo();
+        levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
 
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);
@@ -396,6 +405,20 @@ public class GameController implements Screen {
         if (input.didReset()) {reset();}
         if (input.didCameraSwap()) { canvas.getCamera().toggleMode(); }
         if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
+        if (input.didAdvance()) {
+            levelNum++;
+            if (levelNum > NUM_LEVELS) {
+                levelNum = 1;
+            }
+            reset();
+        }
+        if (input.didRetreat()) {
+            levelNum--;
+            if (levelNum < 1) {
+                levelNum = NUM_LEVELS;
+            }
+            reset();
+        }
 
         // Switch screens if necessary.
         if (input.didExit()) {
@@ -427,9 +450,12 @@ public class GameController implements Screen {
      */
     public void update(float dt) {
 
-        if(collisionController.isWinConditionMet()) {
+        if(collisionController.isWinConditionMet() && !isComplete()) {
+            levelNum++;
+            if (levelNum > NUM_LEVELS) {
+                levelNum = 1;
+            }
             setComplete(true);
-            collisionController.resetWinCondition();
         }
 
         PlayerController inputResults = PlayerController.getInstance();
