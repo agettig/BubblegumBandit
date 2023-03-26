@@ -233,57 +233,59 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * this JSON value is limited to the dude subtree
      *
      * @param directory the asset manager
-     * @param json      the JSON subtree defining the dude
+     * @param id the id of this enemy
+     * @param x the x position of this enemy
+     * @param y the y position of this enemy
+     * @param constantsJson the JSON subtree defining all enemies
      */
-    public void initialize(AssetDirectory directory, JsonValue json) {
-        setName(json.get("name").asString());
-        float[] pos = json.get("pos").asFloatArray();
-        float[] size = json.get("size").asFloatArray();
-        setPosition(pos[0], pos[1]);
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
+        setName("enemy" + id);
+        float[] size = constantsJson.get("size").asFloatArray();
+        setPosition(x, y);
         setDimension(size[0], size[1]);
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
         setBodyType(BodyDef.BodyType.DynamicBody);
-        setDensity(json.get("density").asFloat());
-        setFriction(json.get("friction").asFloat());
-        setRestitution(json.get("restitution").asFloat());
-        setForce(json.get("force").asFloat());
-        setDamping(json.get("damping").asFloat());
-        setMaxSpeed(json.get("maxspeed").asFloat());
+        setDensity(constantsJson.get("density").asFloat());
+        setFriction(constantsJson.get("friction").asFloat());
+        setRestitution(constantsJson.get("restitution").asFloat());
+        setForce(constantsJson.get("force").asFloat());
+        setDamping(constantsJson.get("damping").asFloat());
+        setMaxSpeed(constantsJson.get("maxspeed").asFloat());
 
         // Reflection is best way to convert name to color
         Color debugColor;
         try {
-            String cname = json.get("debugcolor").asString().toUpperCase();
+            String cname = constantsJson.get("debugcolor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             debugColor = new Color((Color) field.get(null));
         } catch (Exception e) {
             debugColor = null; // Not defined
         }
-        int opacity = json.get("debugopacity").asInt();
+        int opacity = constantsJson.get("debugopacity").asInt();
         assert debugColor != null;
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
 
         // Now get the texture from the AssetManager singleton
-        String key = json.get("texture").asString();
+        String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
         // initialize sensors
-        int numSensors = json.get("numsensors").asInt();
-        initializeSensors(json, numSensors);
+        int numSensors = constantsJson.get("numsensors").asInt();
+        initializeSensors(constantsJson, numSensors);
 
         // Reflection is best way to convert name to color
         try {
-            String cname = json.get("sensorcolor").asString().toUpperCase();
+            String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             sensorColor = new Color((Color) field.get(null));
         } catch (Exception e) {
             sensorColor = null; // Not defined
         }
-        opacity = json.get("sensoropacity").asInt();
+        opacity = constantsJson.get("sensoropacity").asInt();
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
 
