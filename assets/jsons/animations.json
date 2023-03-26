@@ -1,14 +1,7 @@
 {
   "player": {
-    "sheet": "dude",
-    "width": 128,
-    "height": 128,
-    "origin": "bottom",
-    "fps": 4,
-    "animations": {
-      "idle": 2,
-      "run": 4
+      "run": "bandit_run"
     }
-  }
+
 }
 
