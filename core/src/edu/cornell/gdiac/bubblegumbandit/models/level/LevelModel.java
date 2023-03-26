@@ -15,10 +15,14 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -121,6 +125,12 @@ public class LevelModel {
     }
 
     private Board board;
+
+    /**
+     * Lighting system
+     */
+    private RayHandler rayHandler;
+    private PointLight[] lights;
 
 
     /**
@@ -231,6 +241,7 @@ public class LevelModel {
         }
         objects.clear();
         if (world != null) {
+            rayHandler.dispose();
             world.dispose();
             world = null;
         }
@@ -319,6 +330,17 @@ public class LevelModel {
             obj.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
             floor = floor.next();
         }
+
+        //move to own method after testing
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(.5f);
+        //rayHandler.setShadows(true);
+        // light = new PointLight(rayHandler, 20, Color.WHITE, 5, 0, 0);
+        lights = new PointLight[(int) (bounds.width/8-1)];
+        for(int i = 0; i<lights.length; i++) {
+            lights[i] = new PointLight(rayHandler, 100,
+                Color.WHITE,  2,  8+8*i, bounds.height);
+        }
     }
 
     /**
@@ -397,6 +419,8 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
+        rayHandler.update();
+        //setting combined matrix??
     }
 
     /**
@@ -560,6 +584,8 @@ public class LevelModel {
 
         canvas.begin();
 
+
+
         if (backgroundRegion != null) {
             drawBackground(canvas);
         }
@@ -573,6 +599,9 @@ public class LevelModel {
         }
 
         canvas.end();
+
+        rayHandler.setCombinedMatrix(canvas.getCamera()); //maybe..
+        rayHandler.render();
 
         if (debug) {
             canvas.beginDebug();
