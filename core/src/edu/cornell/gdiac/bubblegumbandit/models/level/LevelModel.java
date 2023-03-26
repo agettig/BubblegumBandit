@@ -253,12 +253,13 @@ public class LevelModel {
         scale.y = pSize[1];
         int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
-        while (tileset != null) {
-            if (tileset.get("source").asString().equals("board.tsx")) {
-                boardIdOffset = tileset.getInt("firstgid");
-            }
-            tileset = tileset.next();
-        }
+        boardIdOffset = tileset.next().getInt("firstgid");
+//        while (tileset != null) {
+//            if (tileset.get("source").asString().equals("..\\/..\\/Tiled\\/board.tsx")) {
+//                boardIdOffset = tileset.getInt("firstgid");
+//            }
+//            tileset = tileset.next();
+//        }
 
         board = new Board(boardLayer, boardIdOffset, scale);
 
