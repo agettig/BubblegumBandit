@@ -280,6 +280,7 @@ public class LevelModel {
         float gravity = levelFormat.getFloat("gravity");
         float[] pSize = levelFormat.get("physicsSize").asFloatArray();
 
+
         board = new Board(levelFormat.get("board"), scale);
 
         world = new World(new Vector2(0, gravity), false);

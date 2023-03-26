@@ -36,60 +36,13 @@
     "topsensorname": "dudeTopSensor"
   },
   "walls": {
-    "wall1": {
-      "vertices": 12,
-      "boundary": [
-        12.0,
-        24.0,
-        12.0,
-        23.0,
-        1.0,
-        23.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        24.0
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.2,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
-    },
-    "wall2": {
-      "vertices": 12,
-      "boundary": [
-        48.0,
-        24.0,
-        48.0,
-        0.0,
-        47.0,
-        0.0,
-        47.0,
-        23.0,
-        12.0,
-        23.0,
-        12.0,
-        24.0
-      ],
-      "bodytype": "static",
-      "density": 0.0,
-      "friction": 0.4,
-      "restitution": 0.0,
-      "texture": "earth",
-      "debugcolor": "yellow",
-      "debugopacity": 200
-    }
+
   },
   "platforms": {
     "floor1": {
       "pos": [
         24,
-        0.5
+        0
       ],
       "size": [
         48,
@@ -106,7 +59,7 @@
     "floor2": {
       "pos": [
         2,
-        4.5
+        5
       ],
       "size": [
         2,
@@ -123,7 +76,7 @@
     "floor3": {
       "pos": [
         2,
-        8.5
+        9
       ],
       "size": [
         4,
@@ -139,7 +92,7 @@
     },
     "floor4": {
       "pos": [
-        8.5,
+        9,
         4
       ],
       "size": [
@@ -156,8 +109,8 @@
     },
     "floor5": {
       "pos": [
-        25,
-        15.5
+        26,
+        16
       ],
       "size": [
         8,
@@ -173,8 +126,8 @@
     },
     "floor6": {
       "pos": [
-        29.5,
-        14.5
+        30,
+        15
       ],
       "size": [
         1,
@@ -190,8 +143,8 @@
     },
     "floor7": {
       "pos": [
-        29.5,
-        1.5
+        30,
+        1
       ],
       "size": [
         1,
@@ -208,7 +161,7 @@
     "floor8": {
       "pos": [
         5,
-        18.5
+        19
       ],
       "size": [
         10,
@@ -224,8 +177,8 @@
     },
     "floor9": {
       "pos": [
-        22.5,
-        5.5
+        23,
+        6
       ],
       "size": [
         15,
@@ -241,12 +194,63 @@
     },
     "floor10": {
       "pos": [
-        13.5,
+        14,
         18
       ],
       "size": [
         1,
         12
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor11": {
+      "pos": [
+        24,
+        24
+      ],
+      "size": [
+        49,
+        1
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor12": {
+      "pos": [
+        48,
+        12
+      ],
+      "size": [
+        1,
+        24
+      ],
+      "bodytype": "static",
+      "density": 0.0,
+      "friction": 0.4,
+      "restitution": 0.0,
+      "texture": "earth",
+      "debugcolor": "yellow",
+      "debugopacity": 200
+    },
+    "floor13": {
+      "pos": [
+        0,
+        12
+      ],
+      "size": [
+        1,
+        24
       ],
       "bodytype": "static",
       "density": 0.0,
