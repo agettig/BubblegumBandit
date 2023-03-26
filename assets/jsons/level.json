@@ -807,21 +807,24 @@
           28,
           17
         ] ,
-        "texture": "box"
+        "texture": "chair",
+        "faceRight": "false"
       },
       {
         "pos": [
           2,
           21
         ],
-        "texture": "powercell"
+        "texture": "powercell",
+        "faceRight": "true"
       },
       {
         "pos": [
           26,
           1
         ],
-        "texture": "box"
+        "texture": "box",
+        "faceRight": "true"
       }
     ]
   }
