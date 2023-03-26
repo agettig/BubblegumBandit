@@ -65,6 +65,10 @@
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
+  "cameratile": {
+    "debugcolor": "yellow",
+    "debugopacity": 200
+  },
   "mediumrobot": {
     "type": "moving",
     "size": [

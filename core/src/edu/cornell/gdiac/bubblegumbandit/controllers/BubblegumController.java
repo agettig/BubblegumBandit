@@ -107,9 +107,7 @@ public class BubblegumController {
     /**
      * Adds a GumJointPair to the queue of active Bubblegum.
      * */
-    public void addToStuckBubblegum(GumJointPair pair){
-
-        //TODO: Fix this architecture so the method can be private.
+    private void addToStuckBubblegum(GumJointPair pair){
 
         if(pair == null) return;
         if(pair.getGum() == null || pair.getJoint() == null) return;

@@ -1,13 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
-import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -50,10 +49,14 @@ public class CollisionController implements ContactListener {
      */
     private LevelModel levelModel;
 
-    /** Reference to the game camera */
+    /**
+     * Reference to the game camera
+     */
     private GameCamera camera;
 
-    /** true if the win condition has been met */
+    /**
+     * true if the win condition has been met
+     */
     private boolean winConditionMet;
 
     public void resetWinCondition() {
@@ -76,7 +79,8 @@ public class CollisionController implements ContactListener {
         this.levelModel = levelModel;
     }
 
-    /** Initializes this CollisionController
+    /**
+     * Initializes this CollisionController
      *
      * @param camera the game camera for the scene
      */
@@ -153,9 +157,11 @@ public class CollisionController implements ContactListener {
             }
         }
 
-        try{
+
+        try {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
+            resolveEnemyHearing(fix1, fix2, ob1, ob2, false);
 
             if (ob1.getName().equals("cameratile") && avatar == bd2) {
                 updateCamera(ob1);
@@ -163,7 +169,7 @@ public class CollisionController implements ContactListener {
                 updateCamera(ob2);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -179,9 +185,11 @@ public class CollisionController implements ContactListener {
 
     }
 
-    /** Updates the camera based on the collision between the player and the camera tile.
+    /**
+     * Updates the camera based on the collision between the player and the camera tile.
      *
-     * @param ob the camera tile */
+     * @param ob the camera tile
+     */
     private void updateCamera(Obstacle ob) {
         CameraTileModel camTile = (CameraTileModel) ob;
         BanditModel avatar = levelModel.getBandit();
@@ -219,8 +227,7 @@ public class CollisionController implements ContactListener {
         if (fixCamera) {
             System.out.println("Zoom width: " + zoomWidth + " height: " + zoomHeight);
             camera.setZoom(zoomWidth, zoomHeight);
-        }
-        else {
+        } else {
             // Change camera to track the player
             camera.setFixedX(false);
             camera.setFixedY(false);
@@ -387,8 +394,8 @@ public class CollisionController implements ContactListener {
         sensorFixtures.clear();
     }
 
-    public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2){
-        if (bd1 instanceof Collectible && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
+    public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2) {
+        if (bd1 instanceof Collectible && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
         } else if (bd2 instanceof Collectible && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {

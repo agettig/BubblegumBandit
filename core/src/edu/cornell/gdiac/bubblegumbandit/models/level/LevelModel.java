@@ -31,7 +31,6 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -258,12 +257,13 @@ public class LevelModel {
         scale.y = pSize[1];
         int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
-        while (tileset != null) {
-            if (tileset.get("source").asString().equals("board.tsx")) {
-                boardIdOffset = tileset.getInt("firstgid");
-            }
-            tileset = tileset.next();
-        }
+        boardIdOffset = tileset.next().getInt("firstgid");
+//        while (tileset != null) {
+//            if (tileset.get("source").asString().equals("..\\/..\\/Tiled\\/board.tsx")) {
+//                boardIdOffset = tileset.getInt("firstgid");
+//            }
+//            tileset = tileset.next();
+//        }
 
         board = new Board(boardLayer, boardIdOffset, scale);
 
@@ -323,9 +323,15 @@ public class LevelModel {
                     }
                     break;
                 case "Gum":
-                    FloatingGum gum = new FloatingGum();
+                    Collectible gum = new Collectible();
                     gum.initialize(directory, x, y, scale, constants.get("floatingGums"));
                     activate(gum);
+                    break;
+                case "Camera":
+                    CameraTileModel cam = new CameraTileModel();
+                    cam.initialize(x, y, levelHeight, object, constants.get("cameratile"));
+                    cam.setDrawScale(scale);
+                    activate(cam);
                     break;
                 default:
                     throw new UnsupportedOperationException(objName + " is not a valid object");
@@ -395,9 +401,9 @@ public class LevelModel {
             }
         }
 
-        for (EnemyController controller : enemyControllers){
-            controller.getEnemyStateMachine().update();
-        }
+//        for (EnemyController controller : enemyControllers){
+//            controller.getEnemyStateMachine().update();
+//        }
     }
 
     /**
