@@ -1,5 +1,4 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -8,7 +7,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
+import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -356,12 +355,12 @@ public class CollisionController implements ContactListener {
     }
 
     public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2){
-        if (bd1 instanceof FloatingGum && bd2 == levelModel.getBandit() && !((FloatingGum) bd1).getCollected()){
+        if (bd1 instanceof Collectible && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
-            ((FloatingGum) bd1).setCollected(true);
-        } else if (bd2 instanceof FloatingGum && bd1 == levelModel.getBandit() && !((FloatingGum) bd2).getCollected()) {
+            ((Collectible) bd1).setCollected(true);
+        } else if (bd2 instanceof Collectible && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
-            ((FloatingGum) bd2).setCollected(true);
+            ((Collectible) bd2).setCollected(true);
         }
     }
 
