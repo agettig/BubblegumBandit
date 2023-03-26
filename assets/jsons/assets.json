@@ -25,7 +25,8 @@
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
         "box": "textures/box.png",
-        "powercell": "textures/powercell.png"
+        "powercell": "textures/powercell.png",
+        "chair": "textures/chair.png"
     },
     "fonts": {
         "display": {

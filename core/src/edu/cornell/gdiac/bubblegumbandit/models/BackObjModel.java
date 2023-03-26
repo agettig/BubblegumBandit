@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 
 import java.lang.reflect.Field;
 
@@ -15,6 +17,15 @@ import java.lang.reflect.Field;
  */
 public class BackObjModel extends BoxObstacle {
 
+    /**
+     * Which direction is the object facing
+     */
+    private boolean faceRight;
+
+    /**
+     * Whether this enemy is flipped
+     */
+    protected boolean isFlipped;
     public BackObjModel(float x, float y, float width, float height){
         super(x, y, width, height);
     }
@@ -35,13 +46,29 @@ public class BackObjModel extends BoxObstacle {
     public void initialize(AssetDirectory directory, JsonValue json, JsonValue info) {
         setName(json.get("name").asString());
 
-        // Technically, we should do error checking here.
-        // A JSON field might accidentally be missing
+        //physics information
         setBodyType(BodyDef.BodyType.DynamicBody);
         setDensity(json.get("density").asFloat());
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
 
+        setDebug(json);
+
+        //unique information
+        String key = info.get("texture").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+
+        int[] p = info.get("pos").asIntArray();
+        setPosition(p[0] ,p[1]);
+        setTexture(texture);
+
+        setWidth(texture.getRegionWidth()/64f);
+        setHeight(texture.getRegionHeight()/64f);
+
+        faceRight = info.get("faceRight").asBoolean();
+    }
+
+    private void setDebug(JsonValue json){
         // Reflection is best way to convert name to color
         Color debugColor;
         try {
@@ -55,18 +82,19 @@ public class BackObjModel extends BoxObstacle {
         assert debugColor != null;
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
-
-        String key = info.get("texture").asString();
-        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
-        setInfo(info, texture);
     }
 
-    public void setInfo(JsonValue info, TextureRegion texture){
-        int[] p = info.get("pos").asIntArray();
-        setPosition(p[0] ,p[1]);
-        setTexture(texture);
-
-        setWidth(texture.getRegionWidth()/64f);
-        setHeight(texture.getRegionHeight()/64f);
+    /**
+     * Draws the physics object.
+     *
+     * @param canvas Drawing context
+     */
+    public void draw(GameCanvas canvas) {
+        if (texture != null) {
+            float effect = faceRight ? 1.0f : -1.0f;
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                    getY() * drawScale.y, getAngle() , effect, 1);
+//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        }
     }
 }
