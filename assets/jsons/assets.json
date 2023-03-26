@@ -43,6 +43,7 @@
   		"jump" : "sounds/jump.mp3"
 	},
 	"jsons" : {
+        "animations" : "jsons/animations.json",
 		"level1" : "jsons/level.json"
     }
 }
