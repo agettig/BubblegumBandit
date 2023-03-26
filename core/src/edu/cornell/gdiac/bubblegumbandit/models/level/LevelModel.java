@@ -35,6 +35,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -331,16 +332,14 @@ public class LevelModel {
             floor = floor.next();
         }
 
-        //move to own method after testing
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(.8f);
-        //rayHandler.setAmbientLight(.1f, .4f, .5f, .2f);
         rayHandler.setShadows(true); //not working
         lights = new PointLight[(int) (bounds.width/8-1)];
         for(int i = 0; i<lights.length; i++) {
             lights[i] = new PointLight(rayHandler, 20,
-                Color.WHITE,  8*scale.x,  (8+8*i)*scale.x,
-                (bounds.height-1)*scale.x);
+                Color.WHITE,  8,  (8+8*i),
+                (bounds.height-1.5f));
             lights[i].setSoft(true);
             lights[i].setColor(1f,1f,1f,.9f);
         }
@@ -606,8 +605,8 @@ public class LevelModel {
 
         canvas.end();
 
-
-        rayHandler.setCombinedMatrix(canvas.getCamera()); //how to scale down to physics?
+        GameCamera cam = canvas.getCamera();
+        rayHandler.setCombinedMatrix(cam.combined.scl(scale.x), cam.position.x / scale.x, cam.position.y / scale.y, cam.viewportWidth * cam.zoom / scale.x, cam.viewportHeight * cam.zoom / scale.y); //how to scale down to physics?
         rayHandler.render();
 
 
