@@ -16,22 +16,26 @@
 
 package edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph;
 
+
 import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 
-public class FlatTiledGraph {
+public class TiledGraph implements IndexedGraph<TiledNode>{
 	protected int width;
 
 	protected int height;
 
+	private int boardOffset;
+
 	private Vector2 scale;
 
-	protected Array<TiledNode> nodes;
-
-	public boolean diagonal;
-	public TiledNode startNode;
+	protected TiledNode[] nodes;
 
 
 	private static final int GRAVITY_DOWN_TILE = 1;
@@ -41,56 +45,56 @@ public class FlatTiledGraph {
 	private static final int BOTH_GRAVITY_TILE = 2;
 
 
-	public FlatTiledGraph (JsonValue boardJson, int boardIdOffset, Vector2 scale) {
+	public TiledGraph(JsonValue boardJson, int boardIdOffset, Vector2 scale) {
 		this.scale = scale;
 		this.height = boardJson.getInt("height");
 		this.width = boardJson.getInt("width");
-		this.nodes = new Array<TiledNode>(width * height);
-		this.diagonal = false;
-		this.startNode = null;
+		this.nodes = new TiledNode[width * height];
+		this.boardOffset = boardIdOffset;
 
-		for (int i = 0; i < width; i++){
-			for (int j = 0; j < height; j++){
-				nodes.add(new TiledNode(i, j, , 4));
+		int[] jsonTiles = boardJson.get("data").asIntArray();
+		int x = 0;
+		int y = height - 1;
+		for (int i = 0; i < jsonTiles.length; i++) {
+			int type = 0;
+			if (jsonTiles[i] != 0) {
+				type = jsonTiles[i] - boardIdOffset + 1;
+			}
+			nodes[y * width + x] = new TiledNode(x, y, type );
+			x++;
+			if (x == width) {
+				y--;
+				x = 0;
+			}
+		}
+
+
+		for (int j = 0; j < height; j++) {
+			int idx = j * width;
+			for (int k = 0; k < width; k++) {
+				TiledNode n = nodes[idx + k];
+				if (k > 0) addConnection(n, -1, 0);
+				if (j > 0) addConnection(n, 0, -1);
+				if (k < width - 1) addConnection(n, 1, 0);
+				if (j < height - 1) addConnection(n, 0, 1);
 			}
 		}
 	}
 
-	public void init (int roomCount, int roomMinSize, int roomMaxSize, int squashIterations) {
-//		int map[][] = DungeonUtils.generate(sizeX, sizeY, roomCount, roomMinSize, roomMaxSize, squashIterations);
-//		for (int x = 0; x < sizeX; x++) {
-//			for (int y = 0; y < sizeY; y++) {
-//				nodes.add(new FlatTiledNode(x, y, map[x][y], 4));
-//			}
-//		}
-//
-//		// Each node has up to 4 neighbors, therefore no diagonal movement is possible
-//		for (int x = 0; x < sizeX; x++) {
-//			int idx = x * sizeY;
-//			for (int y = 0; y < sizeY; y++) {
-//				FlatTiledNode n = nodes.get(idx + y);
-//				if (x > 0) addConnection(n, -1, 0);
-//				if (y > 0) addConnection(n, 0, -1);
-//				if (x < sizeX - 1) addConnection(n, 1, 0);
-//				if (y < sizeY - 1) addConnection(n, 0, 1);
-//			}
-//		}
-	}
-
 	public TiledNode getNode (int x, int y) {
-		return nodes.get(x * sizeY + y);
+		return nodes[y * width + x];
 	}
 
 	public TiledNode getNode (int index) {
-		return nodes.get(index);
+		return nodes[index];
 	}
 
 	public int getIndex (TiledNode node) {
-		return node.getIndex();
+		return node.getX() * height + node.getY();
 	}
 
 	public int getNodeCount () {
-		return nodes.size;
+		return nodes.length;
 	}
 
 	public Array<Connection<TiledNode>> getConnections (TiledNode fromNode) {
@@ -98,8 +102,32 @@ public class FlatTiledGraph {
 	}
 
 	private void addConnection (TiledNode n, int xOffset, int yOffset) {
-		TiledNode target = getNode(n.x + xOffset, n.y + yOffset);
-		if (target.type == TiledNode.TILE_FLOOR) n.getConnections().add(new FlatTiledConnection(this, n, target));
+		int a = n.getX() + xOffset;
+		int b = n.getY() + yOffset;
+
+		TiledNode target = getNode(n.getX() + xOffset, n.getY() + yOffset);
+		n.getConnections().add(new TiledEdge(this, n, target));
+	}
+
+	public void drawGraph(GameCanvas canvas) {
+		PolygonShape s = new PolygonShape();
+		s.setAsBox(this.scale.x*3/8, this.scale.y*3/8); //smaller than grid squares
+		float margin = this.scale.x*1/2;
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				int val = nodes[j * width + i].getType();
+				if (val != 0) {
+					Color color;
+					if (val == GRAVITY_UP_TILE) color = Color.BLUE;
+					else if (val == GRAVITY_DOWN_TILE) {
+						color = Color.RED;
+					} else {
+						color = Color.GREEN;
+					}
+					canvas.drawPhysics(s, color, i * scale.x + margin, j * scale.y + margin);
+				}
+			}
+		}
 	}
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.ai.tests.pfa.tests.tiled;
+package edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph;
 
 import com.badlogic.gdx.ai.pfa.Heuristic;
 
@@ -24,13 +24,14 @@ import com.badlogic.gdx.ai.pfa.Heuristic;
  * @param <N> Type of node, either flat or hierarchical, extending the {@link TiledNode} class
  * 
  * @author davebaol */
-public class TiledManhattanDistance<N extends TiledNode<N>> implements Heuristic<N> {
+public class TiledManhattanDistance implements Heuristic<TiledNode> {
 
-	public TiledManhattanDistance () {
+	public TiledManhattanDistance() {
 	}
 
+
 	@Override
-	public float estimate (N node, N endNode) {
-		return Math.abs(endNode.x - node.x) + Math.abs(endNode.y - node.y);
+	public float estimate(TiledNode node, TiledNode endNode) {
+		return Math.abs(endNode.getX() - node.getX()) + Math.abs(endNode.getY() - node.getY());
 	}
 }

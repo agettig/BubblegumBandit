@@ -18,7 +18,6 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -27,6 +26,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
@@ -117,6 +117,8 @@ public class LevelModel {
     }
 
     private Board board;
+
+    private TiledGraph tiledGraph;
 
     /** The width of the level. */
     private int levelWidth;
@@ -257,10 +259,13 @@ public class LevelModel {
             if (tileset.get("source").asString().equals("board.tsx")) {
                 boardIdOffset = tileset.getInt("firstgid");
             }
+            System.out.println(boardIdOffset);
             tileset = tileset.next();
         }
 
         board = new Board(boardLayer, boardIdOffset, scale);
+
+        tiledGraph = new TiledGraph(boardLayer, boardIdOffset, scale);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);
@@ -570,6 +575,7 @@ public class LevelModel {
             drawGrid(canvas);
             if (board != null) {
                 board.drawBoard(canvas);
+                tiledGraph.drawGraph(canvas);
             }
             canvas.endDebug();
 

@@ -18,39 +18,37 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
 
-public enum EnemyState implements State<MovingEnemyModel> {
+public enum EnemyState implements State<EnemyController> {
 
+    // Initial state of all npcs
     SPAWN() {
         @Override
-        public void enter (MovingEnemyModel enemy) {
+        public void enter (EnemyController  aiController) {
             // if the miner is not already located at the goldmine, he must
             // change location to the gold mine
-            talk(enemy, "Enter spawn");
+            talk(aiController, "Enter spawn");
         }
 
         @Override
-        public void update (MovingEnemyModel enemy) {
+        public void update (EnemyController  aiController) {
             // Now EnemyModel is at the goldmine he digs for gold until he
             // is carrying in excess of MAX_NUGGETS. If he gets thirsty during
             // his digging he packs up work for a while and changes state to
             // go to the saloon for a whiskey.
-            talk(enemy, "In spawn");
-            enemy.getEnemyStateMachine().changeState(WANDER);
+            talk(aiController, "In spawn");
+            aiController.getEnemyStateMachine().changeState(WANDER);
 
         }
         @Override
-        public void exit (MovingEnemyModel enemy) {
-            talk(enemy, "Leave spawn");
+        public void exit (EnemyController aiController) {
+            talk(aiController, "Leave spawn");
         }
     },
 
     WANDER() {
-        public void enter (MovingEnemyModel enemy) {
+        public void enter (EnemyController aiController) {
 //            if (EnemyModel.getLocation() != Location.SHACK) {
 //                talk(EnemyModel, "Walkin' home");
 //                EnemyModel.setLocation(Location.SHACK);
@@ -66,7 +64,7 @@ public enum EnemyState implements State<MovingEnemyModel> {
         }
 
         @Override
-        public void update (MovingEnemyModel enemy) {
+        public void update (EnemyController aiController) {
 //            // if miner is not fatigued start to dig for nuggets again.
 //            if (!EnemyModel.isFatigued()) {
 //                talk(EnemyModel, "All mah fatigue has drained away. Time to find more gold!");
@@ -77,16 +75,16 @@ public enum EnemyState implements State<MovingEnemyModel> {
 //                EnemyModel.decreaseFatigue();
 //                talk(EnemyModel, "ZZZZ... ");
 //            }
-            talk(enemy, "In Wander");
-            enemy.getEnemyStateMachine().changeState(CHASE);
+            talk(aiController, "In Wander");
+            aiController.getEnemyStateMachine().changeState(CHASE);
         }
 
         @Override
-        public void exit (MovingEnemyModel enemy) {
+        public void exit (EnemyController aiController) {
         }
 
         @Override
-        public boolean onMessage (MovingEnemyModel enemy, Telegram telegram) {
+        public boolean onMessage (EnemyController aiController, Telegram telegram) {
 //            if (telegram.message == MessageType.STEW_READY) {
 //
 //                talk(EnemyModel, "Message STEW_READY handled at time: " + GdxAI.getTimepiece().getTime());
@@ -104,7 +102,7 @@ public enum EnemyState implements State<MovingEnemyModel> {
 
      CHASE() {
         @Override
-        public void enter (MovingEnemyModel enemy) {
+        public void enter (EnemyController aiController) {
 //            if (EnemyModel.getLocation() != Location.SALOON) {
 //                EnemyModel.setLocation(Location.SALOON);
 //
@@ -113,25 +111,25 @@ public enum EnemyState implements State<MovingEnemyModel> {
         }
 
         @Override
-        public void update (MovingEnemyModel enemy) {
+        public void update (EnemyController aiController) {
 //            EnemyModel.buyAndDrinkAWhiskey();
 //
 //            talk(EnemyModel, "That's mighty fine sippin liquer");
 //
 //            EnemyModel.getStateMachine().changeState(ENTER_MINE_AND_DIG_FOR_NUGGET);
-            talk(enemy, "In Chase");
-            enemy.getEnemyStateMachine().changeState(ATTACK);
+            talk(aiController, "In Chase");
+            aiController.getEnemyStateMachine().changeState(ATTACK);
         }
 
         @Override
-        public void exit (MovingEnemyModel enemy) {
-            talk(enemy, "Leaving the saloon, feelin' good");
+        public void exit (EnemyController aiController) {
+            talk(aiController, "Leaving the saloon, feelin' good");
         }
     },
 
     ATTACK() {
         @Override
-        public void enter (MovingEnemyModel enemy) {
+        public void enter (EnemyController aiController) {
 //            // On entry EnemyModel makes sure he is located at the bank
 //            if (EnemyModel.getLocation() != Location.BANK) {
 //                talk(EnemyModel, "Goin' to the bank. Yes siree");
@@ -141,7 +139,7 @@ public enum EnemyState implements State<MovingEnemyModel> {
         }
 
         @Override
-        public void update (MovingEnemyModel enemy) {
+        public void update (EnemyController aiController) {
 //            // Deposit the gold
 //            EnemyModel.addToWealth(EnemyModel.getGoldCarried());
 //
@@ -157,23 +155,34 @@ public enum EnemyState implements State<MovingEnemyModel> {
 //            } else { // otherwise get more gold
 //                EnemyModel.getStateMachine().changeState(ENTER_MINE_AND_DIG_FOR_NUGGET);
 //            }
-            talk(enemy, "In attack");
-            enemy.getEnemyStateMachine().changeState(WANDER);
+            talk(aiController, "In attack");
+            aiController.getEnemyStateMachine().changeState(WANDER);
         }
 
         @Override
-        public void exit (MovingEnemyModel enemy) {
+        public void exit (EnemyController aiController) {
 //            talk(EnemyModel, "Leavin' the bank");
         }
+    },
+
+    PERCEIVE(){
+        @Override
+        public void enter(EnemyController aiController){};
+
+        @Override
+        public void update(EnemyController aiController){};
+        @Override
+        public void exit(EnemyController aiController){};
+
     };
 
     @Override
-    public boolean onMessage (MovingEnemyModel enemy, Telegram telegram) {
+    public boolean onMessage (EnemyController aiController, Telegram telegram) {
         return false;
     }
 
-    protected void talk (MovingEnemyModel enemy, String msg) {
-        GdxAI.getLogger().info(enemy.getName(), msg);
+    protected void talk (EnemyController aiController, String msg) {
+        GdxAI.getLogger().info(aiController.getEnemy().getName(), msg);
     }
 
 }
