@@ -34,6 +34,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -185,6 +186,12 @@ public class GameController implements Screen {
     /** The gravity control mode for the player controller */
     private boolean gravityToggle = false;
 
+    /** The number of the current level. */
+    private int levelNum;
+
+    /** The number of levels in the game. */
+    private final int NUM_LEVELS = 3;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -274,7 +281,7 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("crosshair2.png"));
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/crosshair2.png"));
 // Set hotspot to the middle of it (0,0 would be the top-left corner)
         int xHotspot = 16, yHotspot = 16;
         Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
@@ -287,6 +294,7 @@ public class GameController implements Screen {
         failed = false;
         active = false;
         countdown = -1;
+        levelNum = 1;
         setComplete(false);
         setFailure(false);
 
@@ -340,7 +348,7 @@ public class GameController implements Screen {
         jumpSound = directory.getEntry("jump", SoundEffect.class);
 
         // This represents the level but does not BUILD it
-        levelFormat = directory.getEntry("level1", JsonValue.class);
+        levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         constantsJson = directory.getEntry("constants", JsonValue.class);
         tilesetJson = directory.getEntry("tileset", JsonValue.class);
 
@@ -361,18 +369,24 @@ public class GameController implements Screen {
 
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
+        collisionController.resetWinCondition();
 
-         level.dispose();
+        level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
         bubblegumController.resetAmmo();
+        levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
+        canvas.getCamera().setFixedX(false);
+        canvas.getCamera().setFixedY(false);
+        canvas.getCamera().setZoom(1);
 
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
+        collisionController.initialize(canvas.getCamera());
     }
 
     /**
@@ -394,8 +408,21 @@ public class GameController implements Screen {
         // Toggle debug and handle resets.
         if (input.didDebug()) {level.setDebug(!level.getDebug());}
         if (input.didReset()) {reset();}
-        if (input.didCameraSwap()) { canvas.getCamera().toggleMode(); }
         if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
+        if (input.didAdvance()) {
+            levelNum++;
+            if (levelNum > NUM_LEVELS) {
+                levelNum = 1;
+            }
+            reset();
+        }
+        if (input.didRetreat()) {
+            levelNum--;
+            if (levelNum < 1) {
+                levelNum = NUM_LEVELS;
+            }
+            reset();
+        }
 
         // Switch screens if necessary.
         if (input.didExit()) {
@@ -426,10 +453,12 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-
-        if(collisionController.isWinConditionMet()) {
+        if(collisionController.isWinConditionMet() && !isComplete()) {
+            levelNum++;
+            if (levelNum > NUM_LEVELS) {
+                levelNum = 1;
+            }
             setComplete(true);
-            collisionController.resetWinCondition();
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -505,9 +534,15 @@ public class GameController implements Screen {
         projectileController.update();
 
         // Update the camera
+        GameCamera cam = canvas.getCamera();
         Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
-        canvas.getCamera().setTarget(bandit.getCameraTarget());
-        canvas.getCamera().setSecondaryTarget(target);
+        if (!cam.isFixedX()) {
+            cam.setTargetX(bandit.getCameraTarget().x);
+            cam.setSecondaryTargetX(target.x);
+        } if (!cam.isFixedY()) {
+            cam.setTargetY(bandit.getCameraTarget().y);
+            cam.setSecondaryTargetY(target.y);
+        }
         canvas.getCamera().update(dt);
 
         // Turn the physics engine crank.

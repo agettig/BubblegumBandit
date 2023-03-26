@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.bubblegumbandit.models.level.gum;
+package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,12 +8,11 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
 import java.lang.reflect.Field;
 
-public class FloatingGum extends WheelObstacle {
+public class Collectible extends WheelObstacle {
 
     /** Whether the gum has been collected */
     private boolean collected;
@@ -31,7 +30,7 @@ public class FloatingGum extends WheelObstacle {
     /** The speed the gum bobs */
     private float bobSpeed;
 
-    public FloatingGum() {
+    public Collectible() {
         super(0, 0, 1f);
         setSensor(true);
         collected = false;
