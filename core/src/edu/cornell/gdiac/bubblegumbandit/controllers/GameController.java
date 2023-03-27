@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -447,6 +448,7 @@ public class GameController implements Screen {
             collisionController.clearSensorFixtures();
 
             for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            for (BackObjModel o : level.getBackgroundObjects()) o.flip();
         }
 
 
