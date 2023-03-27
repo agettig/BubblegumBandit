@@ -194,14 +194,22 @@ public class BubblegumController {
     /**
      * Returns a WeldJointDef connecting gum and another obstacle.
      */
-    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob, boolean vertical) {
+        Vector2 gumPos = gum.getPosition();
+        Vector2 obPos = ob.getPosition();
+        Float yDiff = gumPos.y - obPos.y;
+        Float xDiff = gumPos.x - obPos.x;
+
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = gum.getBody();
         jointDef.bodyB = ob.getBody();
         jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
         Vector2 anchor = new Vector2();
         jointDef.localAnchorA.set(anchor);
-        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY() - yDiff*0.25f);
+        if (vertical) {
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.25f, gum.getY() - ob.getY());
+        }
         jointDef.localAnchorB.set(anchor);
         return jointDef;
     }
@@ -239,7 +247,6 @@ public class BubblegumController {
         }
 
         float radius = texture.getRegionWidth() / (2.0f * scale.x);
-
         //Create a new GumModel and assign it to the BubblegumController.
         GumModel gum = new GumModel(origin.x, origin.y, radius);
         gum.setName(gumJV.name());
