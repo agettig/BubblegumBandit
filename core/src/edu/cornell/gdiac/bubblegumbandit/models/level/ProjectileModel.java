@@ -31,6 +31,7 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
      */
     public ProjectileModel(JsonValue data, float x, float y, float radius){
         super(x, y, radius);
+        setName("projectile");
         activatePhysics(data);
         alive = true;
     }

@@ -160,6 +160,8 @@ public class CollisionController implements ContactListener {
     public void resolveGumCollision(Obstacle bodyA, Obstacle bodyB){
         //Safety check.
         if (bodyA == null || bodyB == null) return;
+        // Gum should destroy projectiles, but not become sticky gum.
+        if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
 
         GumModel gum = null;
         Obstacle body = null;
@@ -171,19 +173,24 @@ public class CollisionController implements ContactListener {
             gum = (GumModel) bodyB;
             body = bodyA;
         };
-
-        if (gum != null && gum.getObjectsStuck() < 2){
+        if (gum != null && gum.getName().equals("gumProjectile")) {
+            // Do this once gum is turning from a projectile to sticky
             gum.setVX(0);
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
+            gum.setName("stickyGum");
+            gum.setRadius(gum.getRadius() * 1.5f);
+            // Changing radius resets filter for some reason
+            gum.getFilterData().maskBits = MASK_GUM;
+            gum.getFilterData().categoryBits = CATEGORY_GUM;
+        }
 
+        if (gum != null && gum.canAddObstacle(body)){
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
-            gum.incrementStuckObjects();
-            if (gum.getObjectsStuck() == 2){
-                gum.setFilter(CATEGORY_GUM, MASK_GUM_LIMIT);
-            }
+            gum.addObstacle(body);
+            gum.setCollisionFilters();
         }
     }
 
