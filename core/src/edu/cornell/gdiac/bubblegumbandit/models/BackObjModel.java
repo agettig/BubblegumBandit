@@ -23,12 +23,14 @@ public class BackObjModel extends BoxObstacle {
     private boolean faceRight;
 
     /**
-     * Whether this enemy is flipped
+     * Whether this object is flipped
      */
     protected boolean isFlipped;
-    public BackObjModel(float x, float y, float width, float height){
-        super(x, y, width, height);
-    }
+
+    /**
+     * The y scale of this object (for flipping when gravity swaps)
+     */
+    private float yScale;
 
     public BackObjModel(){
         super (0, 0, 1, 1);
@@ -66,6 +68,7 @@ public class BackObjModel extends BoxObstacle {
         setHeight(texture.getRegionHeight()/64f);
 
         faceRight = info.get("faceRight").asBoolean();
+        yScale = 1;
     }
 
     private void setDebug(JsonValue json){
@@ -84,6 +87,15 @@ public class BackObjModel extends BoxObstacle {
         setDebugColor(debugColor);
     }
 
+    public void update() {
+        if (yScale < 1f && !isFlipped) {
+            yScale += 0.1f;
+        } else if (yScale > -1f && isFlipped) {
+            yScale -= 0.1f;
+        }
+    }
+
+
     /**
      * Draws the physics object.
      *
@@ -91,10 +103,9 @@ public class BackObjModel extends BoxObstacle {
      */
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            float effect = faceRight ? 1.0f : -1.0f;
+            float direction = faceRight ? 1.0f : -1.0f;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                    getY() * drawScale.y, getAngle() , effect, 1);
-//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+                    getY() * drawScale.y, getAngle() , direction, 1);
         }
     }
 }
