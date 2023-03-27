@@ -129,7 +129,7 @@ public class CameraTileModel extends BoxObstacle {
         setDebugColor(debugColor);
 
         // Set object data
-        isHorizontal = objectJson.getString("type").equals("h");
+        isHorizontal = objectJson.getString("type").equals("camera_h");
 
         isFirstFixedX = false;
         isFirstFixedY = false;

@@ -190,7 +190,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 3;
+    private final int NUM_LEVELS = 2;
 
     /**
      * Returns true if the level is completed.

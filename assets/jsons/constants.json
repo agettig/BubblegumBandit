@@ -4,7 +4,7 @@
     64.0
   ],
   "background": "background",
-  "avatar": {
+  "bandit": {
     "size": [
       1,
       1.75
@@ -16,7 +16,7 @@
     "force": 30.0,
     "damping": 20.0,
     "maxspeed": 7.0,
-    "texture": "dude",
+    "texture": "bandit",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorsize": [
@@ -55,11 +55,21 @@
     "texture": "gumProjectile",
     "stuckTexture": "gum"
   },
-  "floatingGums": {
+  "floatinggum": {
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "texture": "floatingGum",
+    "texture": "floatinggum",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "bobAmount":  0.1,
+    "bobSpeed": 3
+  },
+  "orb": {
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": "orb",
     "debugcolor": "yellow",
     "debugopacity": 200,
     "bobAmount":  0.1,
@@ -81,7 +91,7 @@
     "force": 0.0,
     "damping": 0.0,
     "maxspeed": 50.0,
-    "texture": "med_robot",
+    "texture": "mediumrobot",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "red",
@@ -145,7 +155,7 @@
     "force": 10.0,
     "damping": 10.0,
     "maxspeed": 5.0,
-    "texture": "small_robot",
+    "texture": "smallrobot",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "red",
@@ -206,7 +216,7 @@
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "texture": "goal",
+    "texture": "exit",
     "debugcolor": "yellow",
     "debugopacity": 200
   },
