@@ -13,13 +13,13 @@ public class GameCamera  extends OrthographicCamera {
     private final float ySpeed = 6f;
 
     /** The speed at which the camera converges on a new zoom. */
-    private final float zoomSpeed = 4f;
+    private final float zoomSpeed = 6f;
 
     /** The weight of the secondary target */
     private final float secondaryWeight = 0.25f;
 
     /** Defines how far the target y can be from the camera position y, as a proportion of the screen height. */
-    private final float yClampFactor = 1f;
+    private final float yClampFactor = 1;
 
     // CAMERA FIELDS
     /** The target the camera is focused on. */

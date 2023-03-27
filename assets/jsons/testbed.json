@@ -388,39 +388,6 @@
                 {
                  "gid":7,
                  "height":64,
-                 "id":53,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"greenx1",
-                         "type":"float",
-                         "value":32
-                        }, 
-                        {
-                         "name":"greenx2",
-                         "type":"float",
-                         "value":51
-                        }, 
-                        {
-                         "name":"greeny1",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"greeny2",
-                         "type":"float",
-                         "value":10
-                        }],
-                 "rotation":0,
-                 "type":"v",
-                 "visible":true,
-                 "width":64,
-                 "x":2880,
-                 "y":704
-                }, 
-                {
-                 "gid":7,
-                 "height":64,
                  "id":54,
                  "name":"Camera",
                  "properties":[
@@ -447,46 +414,13 @@
                  "rotation":0,
                  "type":"v",
                  "visible":true,
-                 "width":64,
+                 "width":128,
                  "x":2816,
                  "y":704
                 }, 
                 {
                  "gid":8,
-                 "height":64,
-                 "id":58,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"pinkx1",
-                         "type":"float",
-                         "value":9
-                        }, 
-                        {
-                         "name":"pinkx2",
-                         "type":"float",
-                         "value":20
-                        }, 
-                        {
-                         "name":"pinky1",
-                         "type":"float",
-                         "value":21
-                        }, 
-                        {
-                         "name":"pinky2",
-                         "type":"float",
-                         "value":34
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":576,
-                 "y":1856
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
+                 "height":192,
                  "id":62,
                  "name":"Camera",
                  "properties":[
@@ -515,77 +449,11 @@
                  "visible":true,
                  "width":64,
                  "x":576,
-                 "y":1792
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":63,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"pinkx1",
-                         "type":"float",
-                         "value":9
-                        }, 
-                        {
-                         "name":"pinkx2",
-                         "type":"float",
-                         "value":20
-                        }, 
-                        {
-                         "name":"pinky1",
-                         "type":"float",
-                         "value":21
-                        }, 
-                        {
-                         "name":"pinky2",
-                         "type":"float",
-                         "value":34
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":576,
                  "y":1920
                 }, 
                 {
                  "gid":8,
-                 "height":64,
-                 "id":64,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"greenx1",
-                         "type":"float",
-                         "value":9
-                        }, 
-                        {
-                         "name":"greenx2",
-                         "type":"float",
-                         "value":20
-                        }, 
-                        {
-                         "name":"greeny1",
-                         "type":"float",
-                         "value":21
-                        }, 
-                        {
-                         "name":"greeny2",
-                         "type":"float",
-                         "value":34
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":1344,
-                 "y":1856
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
+                 "height":192,
                  "id":65,
                  "name":"Camera",
                  "properties":[
@@ -614,143 +482,11 @@
                  "visible":true,
                  "width":64,
                  "x":1344,
-                 "y":1792
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":66,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"greenx1",
-                         "type":"float",
-                         "value":9
-                        }, 
-                        {
-                         "name":"greenx2",
-                         "type":"float",
-                         "value":20
-                        }, 
-                        {
-                         "name":"greeny1",
-                         "type":"float",
-                         "value":21
-                        }, 
-                        {
-                         "name":"greeny2",
-                         "type":"float",
-                         "value":34
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":1344,
                  "y":1920
                 }, 
                 {
                  "gid":8,
-                 "height":64,
-                 "id":67,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"pinkx1",
-                         "type":"float",
-                         "value":32
-                        }, 
-                        {
-                         "name":"pinkx2",
-                         "type":"float",
-                         "value":51
-                        }, 
-                        {
-                         "name":"pinky1",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"pinky2",
-                         "type":"float",
-                         "value":10
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":2048,
-                 "y":448
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":72,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"pinkx1",
-                         "type":"float",
-                         "value":32
-                        }, 
-                        {
-                         "name":"pinkx2",
-                         "type":"float",
-                         "value":51
-                        }, 
-                        {
-                         "name":"pinky1",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"pinky2",
-                         "type":"float",
-                         "value":10
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":2048,
-                 "y":576
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":73,
-                 "name":"Camera",
-                 "properties":[
-                        {
-                         "name":"pinkx1",
-                         "type":"float",
-                         "value":32
-                        }, 
-                        {
-                         "name":"pinkx2",
-                         "type":"float",
-                         "value":51
-                        }, 
-                        {
-                         "name":"pinky1",
-                         "type":"float",
-                         "value":0
-                        }, 
-                        {
-                         "name":"pinky2",
-                         "type":"float",
-                         "value":10
-                        }],
-                 "rotation":0,
-                 "type":"h",
-                 "visible":true,
-                 "width":64,
-                 "x":2048,
-                 "y":640
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
+                 "height":256,
                  "id":74,
                  "name":"Camera",
                  "properties":[
@@ -779,7 +515,7 @@
                  "visible":true,
                  "width":64,
                  "x":2048,
-                 "y":512
+                 "y":640
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -788,18 +524,13 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":75,
+ "nextobjectid":79,
  "orientation":"orthogonal",
  "properties":[
         {
          "name":"gravity",
          "type":"float",
          "value":-15
-        }, 
-        {
-         "name":"numenemies",
-         "type":"int",
-         "value":13
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",

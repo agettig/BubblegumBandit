@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
@@ -108,9 +109,9 @@ public class LevelModel {
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
-    private AIController[] aiControllers;
+    private Array<AIController> aiControllers;
 
-    public AIController[] getEnemyControllers() {
+    public Array<AIController> getEnemyControllers() {
         return aiControllers;
     }
 
@@ -266,7 +267,7 @@ public class LevelModel {
         backgroundRegion = new TextureRegion(backgroundText);
 
         TextureRegion[] textures = TiledParser.createTileset(directory, tilesetJson);
-        aiControllers = new AIController[numEnemies];
+        aiControllers = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -308,7 +309,7 @@ public class LevelModel {
                         enemy.setDrawScale(scale);
                         activate(enemy);
                         enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                        aiControllers[enemyCount] = new AIController(enemy, bandit, board);
+                        aiControllers.add(new AIController(enemy, bandit, board));
                         enemyCount++;
                     }
                     break;
@@ -319,8 +320,7 @@ public class LevelModel {
                     break;
                 case "Camera":
                     CameraTileModel cam = new CameraTileModel();
-                    cam.initialize(x, y, levelHeight, object, constants.get("cameratile"));
-                    cam.setDrawScale(scale);
+                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
                     break;
                 default:
@@ -572,7 +572,7 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
-            drawGrid(canvas);
+            // drawGrid(canvas);
             if (board != null) {
                 board.drawBoard(canvas);
             }
