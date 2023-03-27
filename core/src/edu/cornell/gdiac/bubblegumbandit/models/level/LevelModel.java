@@ -401,9 +401,9 @@ public class LevelModel {
             }
         }
 
-//        for (EnemyController controller : enemyControllers){
-//            controller.getEnemyStateMachine().update();
-//        }
+        for (EnemyController controller : enemyControllers){
+            controller.getEnemyStateMachine().update();
+        }
     }
 
     /**

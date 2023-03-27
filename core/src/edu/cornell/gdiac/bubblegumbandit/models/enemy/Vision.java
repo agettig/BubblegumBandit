@@ -132,6 +132,10 @@ public class Vision {
         return bodies.contains(obstacle.getBody(), true);
     }
 
+    public Array<Body> getBodies(){
+        return bodies;
+    }
+
 
     /**
      * Modifies the direction of the FOV, maintains range

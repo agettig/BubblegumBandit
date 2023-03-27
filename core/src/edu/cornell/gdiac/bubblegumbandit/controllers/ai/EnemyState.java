@@ -161,7 +161,41 @@ public enum EnemyState implements State<EnemyController> {
             talk(aiController, "leave perceive");
         };
 
-    };
+    },
+
+    STUCK(){
+        @Override
+        public void enter(EnemyController aiController){
+            talk(aiController, "enter stuck");
+        };
+
+        @Override
+        public void update(EnemyController aiController){
+            talk(aiController, "in stuck");
+        };
+        @Override
+        public void exit(EnemyController aiController){
+            talk(aiController, "leave stuck");
+        };
+
+    },
+
+    RETREAT(){
+        @Override
+        public void enter(EnemyController aiController){
+            talk(aiController, "enter retreat");
+        };
+
+        @Override
+        public void update(EnemyController aiController){
+            talk(aiController, "in retreat");
+        };
+        @Override
+        public void exit(EnemyController aiController){
+            talk(aiController, "leave retreat");
+        };
+
+    };;
 
     @Override
     public boolean onMessage (EnemyController aiController, Telegram telegram) {
