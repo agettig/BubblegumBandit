@@ -223,7 +223,7 @@ public class BubblegumController {
         gumVel.nor();
 
         // Prevent player from shooting themselves by clicking on player
-        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
+        // 1TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
         if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
             return null;
         } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {

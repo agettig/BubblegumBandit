@@ -31,6 +31,8 @@ public interface InputController {
 	public static final int CONTROL_MOVE_DOWN  = 0x08;
 	/** Fire the ship weapon */
 	public static final int CONTROL_FIRE 	   = 0x10;
+	/** Free-falling*/
+	public static final int CONTROL_FREE_FALLING = 0x20;
 
 	/**
 	 * Return the action of this ship (but do not process)

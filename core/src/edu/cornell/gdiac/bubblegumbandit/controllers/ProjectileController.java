@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 
@@ -66,7 +67,7 @@ public class ProjectileController{
      *
      * @param controller The AIController that is firing
      */
-    public ProjectileModel fireWeapon(AIController controller, float targetX, float targetY){
+    public ProjectileModel fireWeapon(EnemyController controller, float targetX, float targetY){
         EnemyModel e = controller.getEnemy();
         ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY(), radius);
         //set velocity

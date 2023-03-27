@@ -33,6 +33,8 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
     private TiledGraph tiledGraph;
 
     private GraphPath graphPath;
+
+    private int ticks;
     /**
      * The entity that owns this state machine.
      */
@@ -69,6 +71,7 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         this.pathFinder = new IndexedAStarPathFinder<>(tiledGraph, true);
         this.heuristic = new TiledManhattanDistance();
         this.graphPath = new DefaultGraphPath<>();
+        this.ticks = 0;
 
     }
 
@@ -120,6 +123,7 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
      */
     @Override
     public void update() {
+        ticks++;
         // Execute the global state (if any)
         if (globalState != null) globalState.update(owner);
 
@@ -227,5 +231,9 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         int y = (int) ((EnemyController) owner).getEnemy().getY();
 
         return tiledGraph.getNode(x, y).getType() != 0;
+    }
+
+    public int getTicks(){
+        return ticks;
     }
 }

@@ -185,7 +185,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 2;
+    private final int NUM_LEVELS = 3;
 
     /**
      * Returns true if the level is completed.
@@ -490,15 +490,6 @@ public class GameController implements Screen {
             }
         }
 
-//       for (AIController controller: level.getEnemyControllers()){
-//
-//           //TODO fix adjust for drift
-//
-////            adjustForDrift(controller.getEnemy());
-//
-//            //get action from controller
-//            int action = controller.getAction();
-//
 //            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
 //                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
 //                level.activate(newProj);
@@ -514,6 +505,16 @@ public class GameController implements Screen {
 //       }
 
         level.update(dt);
+        for (EnemyController controller: level.getenemies()){
+            if (controller.getEnemy().fired()){
+                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                level.activate(newProj);
+                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+            }
+            else{
+                controller.coolDown(true);
+            }
+        }
         projectileController.update();
 
         // Update the camera

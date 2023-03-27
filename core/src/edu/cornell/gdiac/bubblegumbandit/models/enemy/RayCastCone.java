@@ -10,7 +10,7 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 
 /** Fields of vision for enemies */
-public class Vision {
+public class RayCastCone {
 
     /** The color of the FOV graphic. */
     private Color color;
@@ -46,7 +46,7 @@ public class Vision {
      * @param range the range in radians of the FOV
      * @param color the color of the FOV for drawing, will always be drawn translucent
      */
-    public Vision(float radius, float direction, float range, Color color) {
+    public RayCastCone(float radius, float direction, float range, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
         this.direction = direction;
@@ -59,7 +59,7 @@ public class Vision {
      * @param radius the radius of the FOV
      * @param color the color of the FOV for drawing, will always be translucent
      */
-    public Vision(float radius, Color color) {
+    public RayCastCone(float radius, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
         this.direction = (float) Math.PI/2;

@@ -64,9 +64,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     //endRegion
 
-    public Vision vision;
+    public RayCastCone vision;
 
-    private Vision sensing;
+    private RayCastCone sensing;
+
+    private RayCastCone attacking;
 
     private World world;
 
@@ -243,8 +245,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         nextAction = CONTROL_NO_ACTION;
         this.world = world;
         this.id = id;
-        vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
-        sensing = new Vision(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
+        vision = new RayCastCone(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        sensing = new RayCastCone(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
+        attacking = new RayCastCone(6f, 0, (float) Math.PI/2, Color.BLUE);
     }
 
     /**
@@ -254,7 +257,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
      * this JSON value is limited to the dude subtree
      *
      * @param directory the asset manager
-     * @param id the id of this enemy
      * @param x the x position of this enemy
      * @param y the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
@@ -322,8 +324,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         }
         updateMovement(nextAction);
 
-        updateVision();
+        updateRayCasts();
 
+    }
+
+    public boolean fired(){
+        return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
+    }
+
+
+
+    public RayCastCone getAttacking() {
+        return attacking;
     }
 
     public void updateMovement(int nextAction){
@@ -378,8 +390,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
-//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-//            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 
@@ -391,11 +404,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
-    public void updateVision() {
+    public void updateRayCasts() {
         vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
         sensing.setDirection(!faceRight? (float) 0 : (float) Math.PI);
+        attacking.setDirection(faceRight? (float) 0 : (float) Math.PI);
         vision.update(world, getPosition());
         sensing.update(world, getPosition());
+        attacking.update(world, getPosition());
     }
 
     /**
