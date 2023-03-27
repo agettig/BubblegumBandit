@@ -66,6 +66,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public RayCastCone vision;
 
+    public RayCastCone getSensing() {
+        return sensing;
+    }
+
     private RayCastCone sensing;
 
     private RayCastCone attacking;
@@ -322,9 +326,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         } else if (yScale > -1f && isFlipped) {
             yScale -= 0.1f;
         }
+        updateRayCasts();
         updateMovement(nextAction);
 
-        updateRayCasts();
 
     }
 
@@ -390,9 +394,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
-            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 
@@ -402,6 +406,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        attacking.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
     public void updateRayCasts() {
