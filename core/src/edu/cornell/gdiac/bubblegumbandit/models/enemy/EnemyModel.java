@@ -62,12 +62,22 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     private Color sensorColor;
 
+    private boolean isJumping;
+
     //endRegion
 
     public RayCastCone vision;
 
     public RayCastCone getSensing() {
         return sensing;
+    }
+
+    public boolean isJumping(){
+        return isJumping;
+    }
+
+    public void setIsJumping(boolean b){
+        isJumping = b;
     }
 
     private RayCastCone sensing;
@@ -348,13 +358,20 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
         boolean movingDown  = (nextAction & CONTROL_MOVE_DOWN) != 0;
+        boolean jumping = (nextAction & CONTROL_JUMP) != 0;
+
+        if (jumping){
+            setVY(4);
+            setVX(4);
+            return;
+        }
 
         // Process movement command.
         if (movingLeft) {
-            setVX(-4);
+            setVX(-3);
             setFaceRight(false);
         } else if (movingRight) {
-            setVX(4);
+            setVX(3);
             setFaceRight(true);
         } else if (movingUp) {
             if (!isFlipped){

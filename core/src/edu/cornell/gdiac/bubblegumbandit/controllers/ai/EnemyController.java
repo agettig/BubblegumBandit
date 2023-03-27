@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
@@ -11,7 +13,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
 
-public class EnemyController {
+public class EnemyController implements Telegraph {
     /**
      * ticks in update loop
      */
@@ -137,5 +139,17 @@ public class EnemyController {
 
     public void flipEnemy(){
         enemy.flippedGravity();
+    }
+
+    /**
+     * Returns the type of tile the player is currently on
+     * */
+    public int getTileType(){
+        return tiledGraph.getNode((int) enemy.getX(), (int)enemy.getY()).getType();
+    }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        return enemyfsm.handleMessage(msg);
     }
 }

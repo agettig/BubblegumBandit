@@ -34,6 +34,8 @@ public interface InputController {
 	/** Free-falling*/
 	public static final int CONTROL_FREE_FALLING = 0x20;
 
+	public static final int CONTROL_JUMP = 0x40;
+
 	/**
 	 * Return the action of this ship (but do not process)
 	 *

@@ -20,7 +20,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.fsm;
 /** @author davebaol */
 public class MessageType {
 
-	public static final int HI_HONEY_I_M_HOME = 0;
-	public static final int STEW_READY = 1;
+	public static final int HIT_BY_GUM = 0;
+	public static final int ORB_TAKEN = 1;
 
 }
