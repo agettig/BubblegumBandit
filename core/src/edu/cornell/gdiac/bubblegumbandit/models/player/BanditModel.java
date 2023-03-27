@@ -90,6 +90,9 @@ public class BanditModel extends CapsuleObstacle {
 	/** Camera target for player */
 	private final Vector2 cameraTarget;
 
+	/** Whether the player has collected the orb. */
+	private boolean orbCollected;
+
 	/**
 	 * Returns the camera target for the player.
 	 *
@@ -124,6 +127,11 @@ public class BanditModel extends CapsuleObstacle {
 		health = Math.min(MAX_HEALTH,health+heal);
 	}
 
+	/** Collects the orb. */
+	public void collectOrb() { orbCollected = true; }
+
+	/** Gets whether the orb has been collected. */
+	public boolean isOrbCollected() { return orbCollected; }
 
 
 	/**
@@ -327,9 +335,8 @@ public class BanditModel extends CapsuleObstacle {
 		yScale = 1.0f;
 
 		health = MAX_HEALTH;
-
-
 		cameraTarget = new Vector2();
+		orbCollected = false;
 	}
 
 	/**
