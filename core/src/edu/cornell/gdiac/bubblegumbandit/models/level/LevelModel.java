@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
@@ -37,6 +38,7 @@ import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
@@ -115,15 +117,11 @@ public class LevelModel {
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
-    private AIController[] aiControllers;
+    private Array<AIController> aiControllers;
 
-    private EnemyController[] enemyControllers;
+    private Array<EnemyController> enemyControllers;
 
-    public AIController[] getEnemyControllers() {
-        return aiControllers;
-    }
-
-    public EnemyController[] getenemies(){
+    public Array<EnemyController> getenemies(){
         return enemyControllers;
     }
 
@@ -267,12 +265,6 @@ public class LevelModel {
         int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
-//        while (tileset != null) {
-//            if (tileset.get("source").asString().equals("..\\/..\\/Tiled\\/board.tsx")) {
-//                boardIdOffset = tileset.getInt("firstgid");
-//            }
-//            tileset = tileset.next();
-//        }
 
         board = new Board(boardLayer, boardIdOffset, scale);
 
@@ -282,9 +274,9 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        TextureRegion[] textures = TiledParser.createTileset(directory, tilesetJson);
-        aiControllers = new AIController[numEnemies];
-        enemyControllers = new EnemyController[numEnemies];
+        enemyControllers = new Array<>();
+
+        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, tilesetJson);
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -293,7 +285,7 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
-                newTile.initialize(textures[tileVal], x, y, constants.get("tiles"));
+                newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
@@ -304,46 +296,48 @@ public class LevelModel {
         JsonValue object = objects.child();
         int enemyCount = 0;
         while (object != null) {
-            String objName = object.get("name").asString();
+            String objType = object.get("type").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
-            switch (objName) {
-                case "Player":
+            switch (objType) {
+                case "bandit":
                     bandit = new BanditModel(world);
-                    bandit.initialize(directory, x, y, constants.get("avatar"));
+                    bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);
                     break;
-                case "Exit":
+                case "exit":
                     goalDoor = new ExitModel();
-                    goalDoor.initialize(directory, x, y, constants.get("exit"));
+                    goalDoor.initialize(directory, x, y, constants.get(objType));
                     goalDoor.setDrawScale(scale);
                     break;
-                case "Enemy":
-                    JsonValue enemyConstants = constants.get(object.get("type").asString());
+                case "smallrobot":
+                case "mediumrobot":
+                    JsonValue enemyConstants = constants.get(objType);
                     if (enemyConstants.get("type").asString().equals("moving")) {
                         EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
                         enemy.initialize(directory, x, y, enemyConstants);
                         enemy.setDrawScale(scale);
                         activate(enemy);
                         enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                        aiControllers[enemyCount] = new AIController(enemy, bandit, board);
-                        enemyControllers[enemyCount] = new EnemyController(enemy, bandit, tiledGraph);
+
+                        enemyControllers.add(new EnemyController(enemy, bandit, tiledGraph));
                         enemyCount++;
                     }
                     break;
-                case "Gum":
+                case "floatinggum":
+                case "orb":
                     Collectible gum = new Collectible();
-                    gum.initialize(directory, x, y, scale, constants.get("floatingGums"));
+                    gum.initialize(directory, x, y, scale, constants.get(objType));
                     activate(gum);
                     break;
-                case "Camera":
+                case "camera_v":
+                case "camera_h":
                     CameraTileModel cam = new CameraTileModel();
-                    cam.initialize(x, y, levelHeight, object, constants.get("cameratile"));
-                    cam.setDrawScale(scale);
+                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
                     break;
                 default:
-                    throw new UnsupportedOperationException(objName + " is not a valid object");
+                    throw new UnsupportedOperationException(objType + " is not a valid object");
 
             }
             object = object.next();
@@ -597,7 +591,7 @@ public class LevelModel {
             for (Obstacle obj : objects) {
                 obj.drawDebug(canvas);
             }
-            drawGrid(canvas);
+            // drawGrid(canvas);
             if (board != null) {
                 board.drawBoard(canvas);
                 tiledGraph.drawGraph(canvas);
