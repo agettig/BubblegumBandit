@@ -253,8 +253,6 @@ public class LevelModel {
             String propName = property.get("name").asString();
             if (propName.equals("gravity")) {
                 gravity = property.getFloat("value");
-            } else if (propName.equals("numenemies")) {
-                numEnemies = property.getInt("value");
             }
             property = property.next();
         }
