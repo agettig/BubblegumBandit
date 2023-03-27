@@ -223,7 +223,6 @@ public class LevelModel {
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
         JsonValue boardLayer = null;
-
         JsonValue tileLayer = null;
         JsonValue objects = null;
 
@@ -232,11 +231,19 @@ public class LevelModel {
             String layerName = layer.getString("name");
             switch (layerName) {
                 case "Board":
+                case "board":
                     boardLayer = layer;
+                    break;
                 case "Terrain":
+                case "terrain":
                     tileLayer = layer;
+                    break;
                 case "Objects":
+                case "objects":
                     objects = layer.get("Objects");
+                    break;
+                default:
+                    throw new RuntimeException("Invalid layer name");
             }
             layer = layer.next();
         }
@@ -299,6 +306,9 @@ public class LevelModel {
             }
         }
 
+        bandit = null;
+        goalDoor = null;
+
         // Create objects
         JsonValue object = objects.child();
         int enemyCount = 0;
@@ -341,6 +351,7 @@ public class LevelModel {
                     CameraTileModel cam = new CameraTileModel();
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
+                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
@@ -348,6 +359,13 @@ public class LevelModel {
             }
             object = object.next();
         }
+        if (goalDoor == null) {
+            throw new RuntimeException("Level missing exit");
+        }
+        if (bandit == null) {
+            throw new RuntimeException("Level missing bandit");
+        }
+
         activate(goalDoor);
         // Add bandit at the end because this affects draw order
         activate(bandit);
