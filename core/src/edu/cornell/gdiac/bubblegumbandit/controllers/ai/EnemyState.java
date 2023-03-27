@@ -19,6 +19,12 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_LEFT;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
 
 public enum EnemyState implements State<EnemyController> {
 
@@ -54,18 +60,43 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update (EnemyController aiController) {
-//            // if miner is not fatigued start to dig for nuggets again.
-//            if (!EnemyModel.isFatigued()) {
-//                talk(EnemyModel, "All mah fatigue has drained away. Time to find more gold!");
-//
-//                EnemyModel.getStateMachine().changeState(ENTER_MINE_AND_DIG_FOR_NUGGET);
-//            } else {
-//                // sleep
-//                EnemyModel.decreaseFatigue();
-//                talk(EnemyModel, "ZZZZ... ");
-//            }
-            talk(aiController, "In Wander");
-            aiController.getEnemyStateMachine().changeState(CHASE);
+            EnemyModel enemy = aiController.getEnemy();
+            BanditModel bandit = aiController.getBandit();
+            if(enemy.vision.canSee(bandit)){
+                aiController.getEnemyStateMachine().changeState(CHASE);
+            }
+            setAction(aiController);
+        }
+
+        public void setAction(EnemyController aiController){
+            EnemyModel enemy = aiController.getEnemy();
+
+            int moveRight;
+            int moveLeft;
+            int action = CONTROL_NO_ACTION;
+
+            moveLeft = aiController.getEnemyStateMachine().getNextMove((int)enemy.getX() - 1, (int) enemy.getY());
+
+            moveRight = aiController.getEnemyStateMachine().getNextMove((int)enemy.getX() + 1, (int) enemy.getY());
+
+            if (enemy.getFaceRight()){
+                if ( moveRight != CONTROL_NO_ACTION){
+                    action = moveRight;
+                }
+                else{
+                    action = moveLeft;
+                }
+
+            }
+            else{
+                if ( moveLeft != CONTROL_NO_ACTION){
+                    action = moveLeft;
+                }
+                else{
+                    action = moveRight;
+                }
+            }
+            enemy.setNextAction(action);
         }
 
         @Override
@@ -103,8 +134,22 @@ public enum EnemyState implements State<EnemyController> {
 //            talk(EnemyModel, "That's mighty fine sippin liquer");
 //
 //            EnemyModel.getStateMachine().changeState(ENTER_MINE_AND_DIG_FOR_NUGGET);
-            talk(aiController, "In Chase");
-            aiController.getEnemyStateMachine().changeState(ATTACK);
+            setAction(aiController);
+//            aiController.getEnemyStateMachine().changeState(ATTACK);
+        }
+
+        private void setAction(EnemyController aiController){
+            BanditModel banditModel = aiController.getBandit();
+            int move = CONTROL_NO_ACTION;
+            if (!aiController.getEnemyStateMachine().canMove()){
+
+            }
+            else{
+                move = aiController.getEnemyStateMachine().getNextMove(
+                        (int) banditModel.getX(),
+                        (int) banditModel.getY());
+            }
+            aiController.getEnemy().setNextAction(move);
         }
 
         @Override
@@ -154,7 +199,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController aiController){
-            talk(aiController, "perceive gather information");
+//            talk(aiController, "perceive gather information");
         };
         @Override
         public void exit(EnemyController aiController){

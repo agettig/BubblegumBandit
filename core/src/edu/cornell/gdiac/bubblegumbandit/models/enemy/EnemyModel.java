@@ -9,12 +9,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.Sensor;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
 /**
  * Abstract enemy class.
@@ -59,10 +59,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     private boolean isGrounded;
 
     // SENSOR FIELDS
-    /**
-     * Ground sensor to represent our feet
-     */
-    private Sensor[] sensors;
+
     private Color sensorColor;
 
     //endRegion
@@ -73,10 +70,16 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     private World world;
 
+    private int nextAction;
+
     /**
      * Cache for internal force calculations
      */
     private Vector2 forceCache = new Vector2();
+
+    public void setNextAction(int nextAction) {
+        this.nextAction = nextAction;
+    }
 
     /**
      * Whether this enemy is flipped
@@ -237,6 +240,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         faceRight = true;
         isFlipped = false;
         yScale = 1f;
+        nextAction = CONTROL_NO_ACTION;
         this.world = world;
         this.id = id;
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
@@ -310,14 +314,55 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     }
 
 
-    public void update(int controlCode) {
+    public void update(float delta) {
         if (yScale < 1f && !isFlipped) {
             yScale += 0.1f;
         } else if (yScale > -1f && isFlipped) {
             yScale -= 0.1f;
         }
+        updateMovement(nextAction);
+
         updateVision();
 
+    }
+
+    public void updateMovement(int nextAction){
+        // Determine how we are moving.
+        boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
+        boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
+        boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
+        boolean movingDown  = (nextAction & CONTROL_MOVE_DOWN) != 0;
+
+        // Process movement command.
+        if (movingLeft) {
+            setVX(-4);
+            setFaceRight(false);
+        } else if (movingRight) {
+            setVX(4);
+            setFaceRight(true);
+        } else if (movingUp) {
+            if (!isFlipped){
+                setVY(4f);
+                body.applyForceToCenter(0, 5,true);
+            }
+            else{
+                setVY(0);
+            }
+            setVX(0);
+        } else if (movingDown) {
+            if (isFlipped){
+                setVY(-4f);
+                body.applyForceToCenter(0, -5,true);
+
+            }
+            else{
+                setVY(0);
+            }
+            setVX(0);
+        } else {
+            setVX(0);
+
+        }
     }
 
 
@@ -333,8 +378,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
-            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 

@@ -54,6 +54,11 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  */
 public class LevelModel {
 
+
+    /** How close to the center of the tile we need to be to stop drifting */
+    private static final float DRIFT_TOLER = .2f;
+    /** How fast we drift to the tile center when paused */
+    private static final float DRIFT_SPEED = 0.325f;
     /**
      * The gap between each dot in the trajectory diagram (for raytraced trajectory.)
      * TODO: Move to another class?
@@ -116,6 +121,10 @@ public class LevelModel {
 
     public AIController[] getEnemyControllers() {
         return aiControllers;
+    }
+
+    public EnemyController[] getenemies(){
+        return enemyControllers;
     }
 
     private Board board;
@@ -389,6 +398,10 @@ public class LevelModel {
      */
     public void update(float dt) {
         // Garbage collect the deleted objects.
+        for (EnemyController controller : enemyControllers){
+            controller.getEnemyStateMachine().update();
+//            adjustForDrift(controller.getEnemy());
+        }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
             PooledList<Obstacle>.Entry entry = iterator.next();
@@ -401,9 +414,7 @@ public class LevelModel {
             }
         }
 
-        for (EnemyController controller : enemyControllers){
-            controller.getEnemyStateMachine().update();
-        }
+
     }
 
     /**
@@ -618,6 +629,35 @@ public class LevelModel {
                 backgroundRegion.setRegionHeight(backgroundText.getHeight());
                 backgroundRegion.setRegionWidth(backgroundText.getWidth());
 
+            }
+        }
+    }
+    /**
+     * Nudges the ship back to the center of a tile if it is not moving.
+     *
+     * @param enemy The Enemy to adjust
+     */
+    private void adjustForDrift(EnemyModel enemy) {
+        // Drift to line up vertically with the grid.
+
+        if (enemy.getVX() == 0.0f) {
+            float offset = getBoard().centerOffset(enemy.getX());
+            if (offset < -DRIFT_TOLER) {
+                enemy.setX(enemy.getX()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setX(enemy.getX()-DRIFT_SPEED);
+            }
+        }
+
+        // Drift to line up horizontally with the grid.
+        if (enemy.getVY() == 0.0f) {
+            float y = enemy.getY();
+            if (enemy.getId()==0){y -= 1;}
+            float offset = getBoard().centerOffset(y);
+            if (offset < -DRIFT_TOLER) {
+                enemy.setY(enemy.getY()+DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setY(enemy.getY()-DRIFT_SPEED);
             }
         }
     }
