@@ -18,6 +18,7 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -536,10 +537,18 @@ public class LevelModel {
         dir = new Vector2(intersect.x - origin.x, intersect.y - origin.y);
         int numSegments = (int) (dir.len() / trajectoryGap); // Truncate to find number before colliding
         dir.nor();
-        for (int i = 0; i < numSegments + 1; i++) {
+        Color[] colors = new Color[]{new Color(1, .619f, .62f, 1),
+                                     new Color(1, .73f, .73f, .9f),
+                                     new Color(1, .81f, .81f, .8f),
+                                     new Color(1,.86f,.86f, .7f),
+                                     new Color(1,.905f,.905f, .6f),
+                                     new Color(1,1,1,.5f)};
+        int range = numSegments + 1;
+        if (range > 6) range = 6;
+        for (int i = 0; i < range; i++) {
             x = origin.x + (dir.x * i * trajectoryGap);
             y = origin.y + (dir.y * i * trajectoryGap);
-            canvas.draw(asset, Color.PINK, asset.getRegionWidth() / 2f, asset.getRegionHeight() / 2f, x * scale.x,
+            canvas.draw(asset, colors[i], asset.getRegionWidth() / 2f, asset.getRegionHeight() / 2f, x * scale.x,
                     y * scale.y, asset.getRegionWidth() * trajectoryScale, asset.getRegionHeight() * trajectoryScale);
         }
     }
@@ -600,6 +609,7 @@ public class LevelModel {
     /**
      * Draws a repeating background, and crops off any overhangs outside the level
      * to maintain resolution and aspect ratio.
+     *
      * @param canvas the current canvas
      */
     private void drawBackground(GameCanvas canvas) {
