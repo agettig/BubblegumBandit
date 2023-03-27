@@ -8,85 +8,62 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":6,
+ "tilecount":7,
  "tiledversion":"1.10.0",
  "tileheight":129,
  "tiles":[
         {
          "id":0,
-         "image":"map\/bandit.png",
+         "image":"..\/..\/Tiled\/map\/bandit.png",
          "imageheight":113,
          "imagewidth":64,
-         "properties":[
-                {
-                 "name":"file",
-                 "type":"string",
-                 "value":"dude"
-                }]
+         "type":"bandit"
         }, 
         {
          "id":1,
-         "image":"map\/medium_enemy.png",
+         "image":"..\/..\/Tiled\/map\/medium_enemy.png",
          "imageheight":129,
          "imagewidth":117,
-         "properties":[
-                {
-                 "name":"file",
-                 "type":"string",
-                 "value":"med_robot"
-                }]
+         "type":"mediumrobot"
         }, 
         {
          "id":2,
-         "image":"map\/small_enemy.png",
+         "image":"..\/..\/Tiled\/map\/small_enemy.png",
          "imageheight":65,
          "imagewidth":43,
-         "properties":[
-                {
-                 "name":"file",
-                 "type":"string",
-                 "value":"small_robot"
-                }]
+         "type":"smallrobot"
         }, 
         {
          "id":3,
-         "image":"map\/gum.png",
+         "image":"..\/..\/Tiled\/map\/gum.png",
          "imageheight":25,
          "imagewidth":25,
-         "properties":[
-                {
-                 "name":"file",
-                 "type":"string",
-                 "value":"gumProjectile"
-                }]
+         "type":"floatinggum"
         }, 
         {
          "height":64,
          "id":4,
-         "image":"map\/texture_draft.png",
+         "image":"..\/..\/Tiled\/map\/texture_draft.png",
          "imageheight":267,
          "imagewidth":268,
-         "properties":[
-                {
-                 "name":"file",
-                 "type":"string",
-                 "value":"earth"
-                }],
+         "type":"earth",
          "width":64,
          "x":0,
          "y":0
         }, 
         {
          "id":5,
-         "image":"map\/goaldoor.png",
+         "image":"..\/..\/Tiled\/map\/goaldoor.png",
          "imageheight":96,
          "imagewidth":96,
-         "properties":[
-                {
-                 "name":"file",
-                 "type":"string",
-                 "value":"goal"
-                }]
+         "type":"exit"
+        }, 
+        {
+         "id":9,
+         "image":"..\/..\/Tiled\/map\/orb.png",
+         "imageheight":40,
+         "imagewidth":40,
+         "type":"orb"
         }],
  "tilewidth":117,
  "type":"tileset",

@@ -10,12 +10,13 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "dude": "textures/bandit.png",
-        "small_robot": "textures/small_enemy.png",
-        "big_robot": "textures/big_enemy.png",
-        "med_robot": "textures/medium_enemy.png",
-        "goal": "textures/goaldoor.png",
+        "bandit": "textures/bandit.png",
+        "smallrobot": "textures/small_enemy.png",
+        "bigrobot": "textures/big_enemy.png",
+        "mediumrobot": "textures/medium_enemy.png",
+        "exit": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
+        "floatinggum": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
         "gum": "textures/stuck_gum2.png",
         "rotatedGum": "textures/rotated_gum.png",
@@ -25,7 +26,8 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
-        "gummed_robot": "textures/tinted_small_enemy.png"
+        "gummed_robot": "textures/tinted_small_enemy.png",
+        "orb": "textures/orb.png"
     },
     "fonts": {
         "display": {
@@ -45,7 +47,8 @@
   		"jump" : "sounds/jump.mp3"
 	},
 	"jsons" : {
-		"level1" : "jsons/level1.json",
+		"level1" : "jsons/camera_demo.json",
+        "level2":"jsons/level1.json",
         "constants": "jsons/constants.json",
         "tileset": "jsons/objects.json"
     }
