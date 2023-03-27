@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -58,10 +59,7 @@ import javax.swing.*;
 public class GameController implements Screen {
     // ASSETS
 
-    /** How close to the center of the tile we need to be to stop drifting */
-    private static final float DRIFT_TOLER = .2f;
-    /** How fast we drift to the tile center when paused */
-    private static final float DRIFT_SPEED = 0.325f;
+
 
     /**
      * Need an ongoing reference to the asset directory
@@ -470,8 +468,8 @@ public class GameController implements Screen {
             bandit.setGrounded(false);
             collisionController.clearSensorFixtures();
 
-            if (level.getEnemyControllers() != null) {
-                for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            if (level.getenemies() != null) {
+                for (EnemyController ai : level.getenemies()) ai.flipEnemy();
             }
         }
 
@@ -492,28 +490,28 @@ public class GameController implements Screen {
             }
         }
 
-       for (AIController controller: level.getEnemyControllers()){
-
-           //TODO fix adjust for drift
-
-//            adjustForDrift(controller.getEnemy());
-
-            //get action from controller
-            int action = controller.getAction();
-
-            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                level.activate(newProj);
-                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-            } else {
-                controller.coolDown(true);
-            }
-
-            //pass to enemy, update the enemy with that action
-           // TODO this probably means enemies are updated twice per frame, once with this update method
-           // TODO and once with their parent. Switching to sense-think-act should fix this
-           controller.getEnemy().update(action);
-       }
+//       for (AIController controller: level.getEnemyControllers()){
+//
+//           //TODO fix adjust for drift
+//
+////            adjustForDrift(controller.getEnemy());
+//
+//            //get action from controller
+//            int action = controller.getAction();
+//
+//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+//                level.activate(newProj);
+//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+//            } else {
+//                controller.coolDown(true);
+//            }
+//
+//            //pass to enemy, update the enemy with that action
+//           // TODO this probably means enemies are updated twice per frame, once with this update method
+//           // TODO and once with their parent. Switching to sense-think-act should fix this
+//           controller.getEnemy().update(action);
+//       }
 
         level.update(dt);
         projectileController.update();
@@ -691,33 +689,4 @@ public class GameController implements Screen {
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    /**
-     * Nudges the ship back to the center of a tile if it is not moving.
-     *
-     * @param enemy The Enemy to adjust
-     */
-    private void adjustForDrift(EnemyModel enemy) {
-        // Drift to line up vertically with the grid.
-
-        if (enemy.getVX() == 0.0f) {
-            float offset = level.getBoard().centerOffset(enemy.getX());
-            if (offset < -DRIFT_TOLER) {
-                enemy.setX(enemy.getX()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setX(enemy.getX()-DRIFT_SPEED);
-            }
-        }
-
-        // Drift to line up horizontally with the grid.
-        if (enemy.getVY() == 0.0f) {
-            float y = enemy.getY();
-            if (enemy.getId()==0){y -= 1;}
-            float offset = level.getBoard().centerOffset(y);
-            if (offset < -DRIFT_TOLER) {
-                enemy.setY(enemy.getY()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setY(enemy.getY()-DRIFT_SPEED);
-            }
-        }
-    }
 }

@@ -106,7 +106,9 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 		int b = n.getY() + yOffset;
 
 		TiledNode target = getNode(n.getX() + xOffset, n.getY() + yOffset);
-		n.getConnections().add(new TiledEdge(this, n, target));
+		if (target.getType() != 0){
+			n.getConnections().add(new TiledEdge(this, n, target));
+		}
 	}
 
 	public void drawGraph(GameCanvas canvas) {

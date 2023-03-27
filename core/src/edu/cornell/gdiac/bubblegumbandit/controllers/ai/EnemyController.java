@@ -76,10 +76,14 @@ public class EnemyController {
         return enemy;
     }
 
+    public BanditModel getBandit() {
+        return bandit;
+    }
+
     public EnemyController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraph) {
         this.tiledGraph = tiledGraph;
         this.enemy = enemy;
-        this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraph);
+        this.enemyfsm = new EnemyStateMachine(this, EnemyState.WANDER, EnemyState.PERCEIVE, tiledGraph);
         this.bandit = bandit;
         move = CONTROL_NO_ACTION;
         ticks = 0;
