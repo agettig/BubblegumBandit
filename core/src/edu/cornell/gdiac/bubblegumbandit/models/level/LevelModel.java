@@ -244,10 +244,15 @@ public class LevelModel {
             switch (layerName) {
                 case "Board":
                     boardLayer = layer;
+                    break;
                 case "Terrain":
                     tileLayer = layer;
+                    break;
                 case "Objects":
                     objects = layer.get("Objects");
+                    break;
+                default:
+                    throw new RuntimeException("Invalid layer name");
             }
             layer = layer.next();
         }
@@ -300,12 +305,16 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
+
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
             }
         }
+
+        bandit = null;
+        goalDoor = null;
 
         // Create objects
         JsonValue object = objects.child();
@@ -357,6 +366,13 @@ public class LevelModel {
             }
             object = object.next();
         }
+        if (goalDoor == null) {
+            throw new RuntimeException("Level missing exit");
+        }
+        if (bandit == null) {
+            throw new RuntimeException("Level missing bandit");
+        }
+
         activate(goalDoor);
         // Add bandit at the end because this affects draw order
         activate(bandit);
