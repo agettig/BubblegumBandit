@@ -95,6 +95,11 @@ public class LevelModel {
     private FloatingGum[] floatingGum;
 
     /**
+     * Reference to background elements in the game
+     */
+    private BackObjModel[] backgroundObjects;
+
+    /**
      * Whether or not the level is in debug more (showing off physics)
      */
     private boolean debug;
@@ -297,6 +302,8 @@ public class LevelModel {
         int numObj = backJV.get("numObj").asInt();
         JsonValue info = backJV.get("objects").child();
 
+        backgroundObjects = new BackObjModel[numObj];
+
         for (int i = 0; i < numObj; i ++){
             BackObjModel o = new BackObjModel();
             o.initialize(directory, backJV, info);
@@ -306,6 +313,8 @@ public class LevelModel {
             o.setFilter(CATEGORY_BACK, MASK_BACK);
 
             info = info.next();
+
+            backgroundObjects[i] = o;
         }
 
         //------------------------------------------------
@@ -630,5 +639,10 @@ public class LevelModel {
 
             }
         }
+    }
+
+    /** Return a reference to all the background objects */
+    public BackObjModel[] getBackgroundObjects(){
+        return backgroundObjects;
     }
 }

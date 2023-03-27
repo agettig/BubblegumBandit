@@ -27,13 +27,12 @@ public class BackObjModel extends BoxObstacle {
      */
     protected boolean isFlipped;
 
-    /**
-     * The y scale of this object (for flipping when gravity swaps)
-     */
-    private float yScale;
+    /** Manager for the scale for flipping during gravity swaps */
+    private FlippingObject fo = new FlippingObject();
 
     public BackObjModel(){
         super (0, 0, 1, 1);
+        isFlipped = false;
     }
 
     /**
@@ -68,7 +67,6 @@ public class BackObjModel extends BoxObstacle {
         setHeight(texture.getRegionHeight()/64f);
 
         faceRight = info.get("faceRight").asBoolean();
-        yScale = 1;
     }
 
     private void setDebug(JsonValue json){
@@ -87,14 +85,22 @@ public class BackObjModel extends BoxObstacle {
         setDebugColor(debugColor);
     }
 
-    public void update() {
-        if (yScale < 1f && !isFlipped) {
-            yScale += 0.1f;
-        } else if (yScale > -1f && isFlipped) {
-            yScale -= 0.1f;
-        }
+    public void update(float dt) {
+//        if (yScale < 1f && !isFlipped) {
+//            yScale += 0.1f;
+//        } else if (yScale > -1f && isFlipped) {
+//            yScale -= 0.1f;
+//        }
+        fo.updateYScale(isFlipped);
+
     }
 
+    /**
+     * Set the objects flipped state after world gravity is flipped
+     */
+    public void flip() {
+        isFlipped = !isFlipped;
+    }
 
     /**
      * Draws the physics object.
@@ -105,7 +111,7 @@ public class BackObjModel extends BoxObstacle {
         if (texture != null) {
             float direction = faceRight ? 1.0f : -1.0f;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                    getY() * drawScale.y, getAngle() , direction, 1);
+                    getY() * drawScale.y, getAngle() , direction, fo.getYScale());
         }
     }
 }
