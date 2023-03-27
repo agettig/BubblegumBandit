@@ -53,7 +53,8 @@
     "speed": 15.0,
     "density": 10.0,
     "texture": "gumProjectile",
-    "stuckTexture": "gum"
+    "stuckTexture": "gum",
+    "rotatedStuckTexture": "rotatedGum"
   },
   "floatingGums": {
     "density": 0.0,

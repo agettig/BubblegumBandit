@@ -9,6 +9,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.FloatingGum;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -193,7 +194,7 @@ public class CollisionController implements ContactListener {
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
             gum.setName("stickyGum");
-            gum.setRadius(gum.getRadius() * 1.5f);
+            gum.setRadius(gum.getRadius());
             // Changing radius resets filter for some reason
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
@@ -205,17 +206,25 @@ public class CollisionController implements ContactListener {
                 enemy.setGummedTexture();
                 enemy.setGummed(true);
             }
-            else {
-                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
-                GumJointPair pair = new GumJointPair(gum, weldJointDef);
-                bubblegumController.addToAssemblyQueue(pair);
-                gum.addObstacle(body);
-                gum.setCollisionFilters();
+            else if (body instanceof TileModel) {
+                checkGumPosition(gum, body);
                 gum.onTile(true);
             }
+            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
+            GumJointPair pair = new GumJointPair(gum, weldJointDef);
+            bubblegumController.addToAssemblyQueue(pair);
+            gum.addObstacle(body);
+            gum.setCollisionFilters();
         }
     }
 
+    public void checkGumPosition(GumModel gum, Obstacle tile) {
+        Vector2 gumPos = gum.getPosition();
+        Vector2 tilePos = tile.getPosition();
+        if (Math.abs(gumPos.x - tilePos.x) > 0.5f) {
+            gum.setTexture(bubblegumController.getRotatedGumTexture());
+        }
+    }
     /**
      * Adds a joint that sticks enemies to the tile if the enemy has been hit with gum
      * @param ob1
