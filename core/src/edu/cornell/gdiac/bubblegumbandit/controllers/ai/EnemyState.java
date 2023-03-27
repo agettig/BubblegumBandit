@@ -18,12 +18,16 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.fsm.MessageType;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph.GRAVITY_DOWN_TILE;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph.JUMP_TILE;
 
 public enum EnemyState implements State<EnemyController> {
 
@@ -72,12 +76,22 @@ public enum EnemyState implements State<EnemyController> {
             EnemyModel enemy = aiController.getEnemy();
             BanditModel bandit = aiController.getBandit();
 
+            // if player comes within sensing ray cast
+            // the enemy will turn around
             if (enemy.getSensing().canSee(bandit)){
                 boolean facingRight = enemy.getFaceRight();
                 enemy.setFaceRight(!facingRight);
                 enemy.setNextAction(facingRight ? CONTROL_MOVE_LEFT : CONTROL_MOVE_RIGHT);
                 return;
             }
+
+            if (aiController.getTileType() == JUMP_TILE || enemy.isJumping()){
+                enemy.setNextAction(CONTROL_JUMP);
+                enemy.setIsJumping(true);
+                return;
+            }
+
+            if(aiController.getTileType() == GRAVITY_DOWN_TILE) enemy.setIsJumping(false);
 
             int moveRight;
             int moveLeft;
@@ -153,6 +167,9 @@ public enum EnemyState implements State<EnemyController> {
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
             }
+            if (move == CONTROL_NO_ACTION){
+                aiController.getEnemyStateMachine().changeState(WANDER);
+            }
             aiController.getEnemy().setNextAction(move);
         }
 
@@ -210,6 +227,7 @@ public enum EnemyState implements State<EnemyController> {
             talk(aiController, "leave perceive");
         };
 
+
     },
 
     STUCK(){
@@ -248,11 +266,23 @@ public enum EnemyState implements State<EnemyController> {
 
     @Override
     public boolean onMessage (EnemyController aiController, Telegram telegram) {
+
+
         return false;
     }
 
     protected void talk (EnemyController aiController, String msg) {
         GdxAI.getLogger().info(aiController.getEnemy().getName(), msg);
     }
+
+    public void sendMessage(EnemyController owner, EnemyController recipient, int messageType ){
+        MessageManager.getInstance().dispatchMessage(
+                0.0f,
+                owner,
+                recipient,
+                messageType,
+                null);
+    }
+
 
 }

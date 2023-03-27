@@ -38,11 +38,13 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 	protected TiledNode[] nodes;
 
 
-	private static final int GRAVITY_DOWN_TILE = 1;
+	public static final int GRAVITY_DOWN_TILE = 1;
 
 	private static final int GRAVITY_UP_TILE = 3;
 
 	private static final int BOTH_GRAVITY_TILE = 2;
+
+	public static final int JUMP_TILE = 4;
 
 
 	public TiledGraph(JsonValue boardJson, int boardIdOffset, Vector2 scale) {
@@ -123,8 +125,11 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 					if (val == GRAVITY_UP_TILE) color = Color.BLUE;
 					else if (val == GRAVITY_DOWN_TILE) {
 						color = Color.RED;
-					} else {
+					} else if (val == BOTH_GRAVITY_TILE){
 						color = Color.GREEN;
+					}
+					else{
+						color = Color.PURPLE;
 					}
 					canvas.drawPhysics(s, color, i * scale.x + margin, j * scale.y + margin);
 				}
