@@ -222,14 +222,31 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
-        JsonValue boardLayer = levelFormat.get("layers").child();
+        JsonValue boardLayer = null;
 
-        JsonValue tileLayer = boardLayer.next();
-        JsonValue objects = tileLayer.next().get("Objects");
+        JsonValue tileLayer = null;
+        JsonValue objects = null;
+
+        JsonValue layer = levelFormat.get("layers").child();
+        while (layer != null) {
+            String layerName = layer.getString("name");
+            switch (layerName) {
+                case "Board":
+                    boardLayer = layer;
+                case "Terrain":
+                    tileLayer = layer;
+                case "Objects":
+                    objects = layer.get("Objects");
+            }
+            layer = layer.next();
+        }
+
+        if (boardLayer == null || tileLayer == null || objects == null) {
+            throw new RuntimeException("Missing layer data");
+        }
 
         int[] worldData = tileLayer.get("data").asIntArray();
         float gravity = 0;
-        int numEnemies = 0;
 
         JsonValue property = levelFormat.get("properties").child();
         while (property != null) {
