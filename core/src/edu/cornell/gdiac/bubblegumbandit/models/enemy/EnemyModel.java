@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.Sensor;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -76,12 +77,20 @@ public abstract class EnemyModel extends CapsuleObstacle {
      */
     protected boolean isFlipped;
 
-    /**
-     * The y scale of this enemy (for flipping when gravity swaps)
-     */
-    private float yScale;
+//    /**
+//     * The y scale of this enemy (for flipping when gravity swaps)
+//     */
+//    private float yScale;
 
     // endRegion
+
+
+    /** Manager for the scale for flipping during gravity swaps */
+    private FlippingObject fo = new FlippingObject();
+
+
+
+
 
     /**
      * Returns left/right movement of this character.
@@ -220,7 +229,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isGrounded = true;
         faceRight = true;
         isFlipped = false;
-        yScale = 1f;
+//        yScale = 1f;
         this.world = world;
         this.id = id;
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
@@ -307,12 +316,14 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
 
     public void update(int controlCode) {
-        if (yScale < 1f && !isFlipped) {
-            yScale += 0.1f;
-        } else if (yScale > -1f && isFlipped) {
-            yScale -= 0.1f;
-        }
+//        if (yScale < 1f && !isFlipped) {
+//            yScale += 0.1f;
+//        } else if (yScale > -1f && isFlipped) {
+//            yScale -= 0.1f;
+//        }
+        fo.updateYScale(isFlipped);
         updateVision();
+//        System.out.println(fo.getYScale());
 
     }
 
@@ -326,9 +337,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                getY() * drawScale.y, getAngle(), effect, yScale);
+                getY() * drawScale.y, getAngle(), effect, fo.getYScale());//yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }

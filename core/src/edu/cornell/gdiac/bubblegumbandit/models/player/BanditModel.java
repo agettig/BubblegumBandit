@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import java.lang.reflect.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
 
@@ -29,7 +30,7 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * Note that the constructor does very little.  The true initialization happens
  * by reading the JSON value.
  */
-public class BanditModel extends CapsuleObstacle {
+public class BanditModel extends CapsuleObstacle{
 	// Physics constants
 	/** The factor to multiply by the input */
 	private float force;
@@ -84,8 +85,11 @@ public class BanditModel extends CapsuleObstacle {
 	/** Whether this player is flipped */
 	private boolean isFlipped;
 
-	/** The y scale for this player (used for flip effect) */
-	private float yScale;
+//	/** The y scale for this player (used for flip effect) */
+//	private float yScale;
+
+	/** Manager for the scale for flipping during gravity swaps */
+	private FlippingObject fo = new FlippingObject();
 
 	/** Camera target for player */
 	private final Vector2 cameraTarget;
@@ -161,7 +165,8 @@ public class BanditModel extends CapsuleObstacle {
 	 * @return the value of the player's yScale.
 	 */
 	public float getYScale() {
-		return yScale;
+//		return yScale;/
+		return fo.getYScale();
 	}
 
 	/**
@@ -324,7 +329,7 @@ public class BanditModel extends CapsuleObstacle {
 		shootCooldown = 0;
 
 		isFlipped = false;
-		yScale = 1.0f;
+//		yScale = 1.0f;
 
 		health = MAX_HEALTH;
 
@@ -500,11 +505,12 @@ public class BanditModel extends CapsuleObstacle {
 			shootCooldown = Math.max(0, shootCooldown - 1);
 		}
 
-		if (yScale < 1f && !isFlipped) {
-			yScale += 0.1f;
-		} else if (yScale > -1f && isFlipped) {
-			yScale -= 0.1f;
-		}
+//		if (yScale < 1f && !isFlipped) {
+//			yScale += 0.1f;
+//		} else if (yScale > -1f && isFlipped) {
+//			yScale -= 0.1f;
+//		}
+		fo.updateYScale(isFlipped);
 
 		// Change camera target
 		cameraTarget.x = getX()*drawScale.x;
@@ -523,7 +529,7 @@ public class BanditModel extends CapsuleObstacle {
 			float effect = faceRight ? 1.0f : -1.0f;
 
 			canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
-					getY()*drawScale.y,getAngle(),effect,yScale);
+					getY()*drawScale.y,getAngle(),effect,fo.getYScale());//yScale);
 
 		}
 
