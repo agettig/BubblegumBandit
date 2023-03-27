@@ -23,8 +23,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
-import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_LEFT;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
 public enum EnemyState implements State<EnemyController> {
 
@@ -43,9 +42,10 @@ public enum EnemyState implements State<EnemyController> {
             // is carrying in excess of MAX_NUGGETS. If he gets thirsty during
             // his digging he packs up work for a while and changes state to
             // go to the saloon for a whiskey.
-            talk(aiController, "In spawn");
-            aiController.getEnemyStateMachine().changeState(WANDER);
-
+            if (aiController.getEnemyStateMachine().getTicks() > 120){
+                aiController.getEnemyStateMachine().changeState(WANDER);
+            }
+            aiController.getEnemy().setNextAction(CONTROL_NO_ACTION);
         }
         @Override
         public void exit (EnemyController aiController) {
@@ -86,7 +86,6 @@ public enum EnemyState implements State<EnemyController> {
                 else{
                     action = moveLeft;
                 }
-
             }
             else{
                 if ( moveLeft != CONTROL_NO_ACTION){
@@ -129,13 +128,10 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update (EnemyController aiController) {
-//            EnemyModel.buyAndDrinkAWhiskey();
-//
-//            talk(EnemyModel, "That's mighty fine sippin liquer");
-//
-//            EnemyModel.getStateMachine().changeState(ENTER_MINE_AND_DIG_FOR_NUGGET);
             setAction(aiController);
-//            aiController.getEnemyStateMachine().changeState(ATTACK);
+            if(aiController.getEnemy().getAttacking().canSee(aiController.getBandit())){
+                aiController.getEnemyStateMachine().changeState(ATTACK);
+            }
         }
 
         private void setAction(EnemyController aiController){
@@ -166,23 +162,23 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update (EnemyController aiController) {
-//            // Deposit the gold
-//            EnemyModel.addToWealth(EnemyModel.getGoldCarried());
-//
-//            EnemyModel.setGoldCarried(0);
-//
-//            talk(EnemyModel, "Depositing gold. Total savings now: " + EnemyModel.getWealth());
-//
-//            // Wealthy enough to have a well earned rest?
-//            if (EnemyModel.getWealth() >= EnemyModel.COMFORT_LEVEL) {
-//                talk(EnemyModel, "WooHoo! Rich enough for now. Back home to mah li'lle lady");
-//
-//                EnemyModel.getStateMachine().changeState(GO_HOME_AND_SLEEP_TILL_RESTED);
-//            } else { // otherwise get more gold
-//                EnemyModel.getStateMachine().changeState(ENTER_MINE_AND_DIG_FOR_NUGGET);
-//            }
-            talk(aiController, "In attack");
-            aiController.getEnemyStateMachine().changeState(WANDER);
+            BanditModel banditModel = aiController.getBandit();
+            int move = CONTROL_NO_ACTION;
+            if (!aiController.getEnemyStateMachine().canMove()){
+
+            }
+            else{
+                move = aiController.getEnemyStateMachine().getNextMove(
+                        (int) banditModel.getX(),
+                        (int) banditModel.getY());
+            }
+            if (aiController.canShootTarget()){
+                move = move | CONTROL_FIRE;
+            }
+            if (move == 0){
+                aiController.getEnemyStateMachine().changeState(WANDER);
+            }
+            aiController.getEnemy().setNextAction(move);
         }
 
         @Override
