@@ -221,10 +221,22 @@ public class CollisionController implements ContactListener {
     public boolean checkGumPosition(GumModel gum, Obstacle tile) {
         Vector2 gumPos = gum.getPosition();
         Vector2 tilePos = tile.getPosition();
-        Float pos = Math.abs(gum.getX() - tile.getX());
-        System.out.println(tilePos);
+        Boolean x = gumPos.x > (tilePos.x + 0.5f) || gumPos.x < (tilePos.x - 0.5f);
+        Boolean y = gumPos.y < (tilePos.x + 0.5f) || gumPos.y > (tilePos.x - 0.5f);
+        Vector2 corner1 = new Vector2(tilePos.x + 0.5f, tilePos.y + 0.5f);
+        Vector2 corner2 = new Vector2(tilePos.x + 0.5f, tilePos.y - 0.5f);
+        Vector2 corner3 = new Vector2(tilePos.x - 0.5f, tilePos.y + 0.5f);
+        Vector2 corner4 = new Vector2(tilePos.x - 0.5f, tilePos.y - 0.5f);
+
         System.out.println(gumPos);
-        if (pos > 0.5f) {
+        System.out.println(corner1);
+        System.out.println(corner2);
+        System.out.println(corner3);
+        System.out.println(corner4);
+        if (gumPos.equals(corner1) || gumPos.equals(corner2) || gumPos.equals(corner3) || gumPos.equals(corner4)) {
+            System.out.println("true");
+        }
+        if (x & y) {
             gum.setTexture(bubblegumController.getRotatedGumTexture());
             return true;
         }
