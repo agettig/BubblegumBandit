@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 
 import java.lang.reflect.Field;
@@ -98,15 +99,18 @@ public class CameraTileModel extends BoxObstacle {
      *
      * @param x the x position of the camera tile
      * @param y the y position of the camera tile
+     * @parma scale the scale of the level
      * @param levelHeight the height of the level
      * @param objectJson the json value representing the camera tile
      * @param constants the json value representing the constants of the camera tile
      */
-    public void initialize(float x, float y, float levelHeight, JsonValue objectJson, JsonValue constants) {
+    public void initialize(float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants) {
         // make the body fixture into a sensor
         setName("cameratile");
         setPosition(x,y);
-        setDimension(1, 1);
+        float width = objectJson.getFloat("width") / scale.x;
+        float height = objectJson.getFloat("height") / scale.y;
+        setDimension(width, height);
         setSensor(true);
 
         setBodyType(BodyDef.BodyType.StaticBody);
@@ -175,5 +179,6 @@ public class CameraTileModel extends BoxObstacle {
             }
             property = property.next();
         }
+        setDrawScale(scale);
     }
 }

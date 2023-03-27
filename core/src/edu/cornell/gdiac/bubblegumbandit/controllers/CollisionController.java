@@ -204,7 +204,6 @@ public class CollisionController implements ContactListener {
             fixCamera = true;
         }
         if (fixCamera) {
-            System.out.println("Zoom width: " + zoomWidth + " height: " + zoomHeight);
             camera.setZoom(zoomWidth, zoomHeight);
         }
         else {
