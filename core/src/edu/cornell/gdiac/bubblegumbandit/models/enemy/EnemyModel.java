@@ -85,6 +85,8 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     private boolean gummed;
 
+    private boolean stuck;
+
     // endRegion
 
     /**
@@ -218,9 +220,13 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public void setGummed(boolean value) {gummed = value; }
+    public void setGummed(boolean value) {gummed = value; stuck = value;}
 
     public boolean getGummed() {return gummed; }
+
+    public void setStuck(boolean value) {stuck = value; }
+
+    public boolean getStuck() {return stuck; }
 
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
@@ -233,6 +239,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         this.id = id;
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
         gummed = false;
+        stuck = false;
     }
 
     /**

@@ -201,10 +201,15 @@ public class CollisionController implements ContactListener {
         }
         Boolean vertical = false;
         if (gum != null && gum.canAddObstacle(body)){
-            if (enemy != null && gum.onTile() != true) {
-                gum.markRemoved(true);
-                enemy.setGummedTexture();
-                enemy.setGummed(true);
+            if (enemy != null) {
+                if (!gum.onTile()) {
+                    gum.markRemoved(true);
+                    enemy.setGummedTexture();
+                    enemy.setGummed(true);
+                }
+                else {
+                    enemy.setStuck(true);
+                }
             }
             else if (body instanceof TileModel) {
                 vertical = checkGumPosition(gum, body);
