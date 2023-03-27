@@ -218,6 +218,12 @@ public class CollisionController implements ContactListener {
         }
     }
 
+    /**
+     * Check if gum hit a vertical side of the tile.
+     * @param gum
+     * @param tile
+     * @return
+     */
     public boolean checkGumPosition(GumModel gum, Obstacle tile) {
         Vector2 gumPos = gum.getPosition();
         Vector2 tilePos = tile.getPosition();
