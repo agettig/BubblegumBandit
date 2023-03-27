@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
@@ -16,7 +17,7 @@ public class RayCastCone {
     private Color color;
 
     /** The color of the rays of the FOV during debug mode. */
-    private Color DEBUGCOLOR = Color.RED;
+    private Color DEBUGCOLOR;
 
     /** The direction of the FOV. In LibGdx, 0 is up. */
     private float direction;
@@ -25,8 +26,7 @@ public class RayCastCone {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast per radius unit */
-    private int numRays = 4;
-
+    private int numRays = 10;
     boolean resetRadius = false;
 
     /**
@@ -51,6 +51,7 @@ public class RayCastCone {
         this.radius = radius;
         this.direction = direction;
         this.range = range;
+        this.DEBUGCOLOR = color;
         for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
     }
 

@@ -70,6 +70,14 @@ public enum EnemyState implements State<EnemyController> {
 
         public void setAction(EnemyController aiController){
             EnemyModel enemy = aiController.getEnemy();
+            BanditModel bandit = aiController.getBandit();
+
+            if (enemy.getSensing().canSee(bandit)){
+                boolean facingRight = enemy.getFaceRight();
+                enemy.setFaceRight(!facingRight);
+                enemy.setNextAction(facingRight ? CONTROL_MOVE_LEFT : CONTROL_MOVE_RIGHT);
+                return;
+            }
 
             int moveRight;
             int moveLeft;
@@ -175,7 +183,7 @@ public enum EnemyState implements State<EnemyController> {
             if (aiController.canShootTarget()){
                 move = move | CONTROL_FIRE;
             }
-            if (move == 0){
+            if (move == CONTROL_NO_ACTION){
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
             aiController.getEnemy().setNextAction(move);
