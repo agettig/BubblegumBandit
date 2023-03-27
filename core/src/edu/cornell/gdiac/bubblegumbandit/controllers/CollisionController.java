@@ -25,7 +25,7 @@ public class CollisionController implements ContactListener {
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
     public static final short MASK_TERRAIN = -1; // Collides with everything
-    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM| CATEGORY_ENEMY_LISTENING);
+    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY_LISTENING);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
     public static final short MASK_ENEMY_LISTENING = CATEGORY_PLAYER;
@@ -113,7 +113,7 @@ public class CollisionController implements ContactListener {
             resolveEnemyHearing(fixA, fixB, obstacleB, obstacleA, true);
 
             // TODO fix collision filtering
-            if (!(fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor") || fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))){
+            if (!(fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor") || fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))) {
                 resolveGumCollision(obstacleA, obstacleB);
             }
 
@@ -121,6 +121,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
+            resolveOrbCollision(obstacleA, obstacleB);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -225,7 +226,6 @@ public class CollisionController implements ContactListener {
             fixCamera = true;
         }
         if (fixCamera) {
-            System.out.println("Zoom width: " + zoomWidth + " height: " + zoomHeight);
             camera.setZoom(zoomWidth, zoomHeight);
         } else {
             // Change camera to track the player
@@ -247,7 +247,7 @@ public class CollisionController implements ContactListener {
         boolean winConditionA = bodyA == bandit && bodyB == door;
         boolean winConditionB = bodyA == door && bodyB == bandit;
 
-        if (winConditionA || winConditionB) {
+        if (bandit.isOrbCollected() && (winConditionA || winConditionB)) {
             winConditionMet = true;
         }
     }
@@ -256,7 +256,7 @@ public class CollisionController implements ContactListener {
         if ((fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor")) ||
                 (fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))
         ) {
-            if (obB instanceof EnemyModel && obA instanceof BanditModel){
+            if (obB instanceof EnemyModel && obA instanceof BanditModel) {
                 ((EnemyModel) obB).setHeardPlayer(beginCollision);
             } else if (obA instanceof EnemyModel && obB instanceof BanditModel) {
                 ((EnemyModel) obA).setHeardPlayer(beginCollision);
@@ -342,7 +342,7 @@ public class CollisionController implements ContactListener {
      */
     private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
-        if (o.getName().equals("avatar")) {
+        if (o.equals(levelModel.getBandit())) {
             levelModel.getBandit().hitPlayer(p.getDamage());
         }
         p.destroy();
@@ -394,13 +394,29 @@ public class CollisionController implements ContactListener {
         sensorFixtures.clear();
     }
 
+
     public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2) {
-        if (bd1 instanceof Collectible && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
+        if (bd1.getName().equals("floatinggum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
-        } else if (bd2 instanceof Collectible && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
+        } else if (bd2.getName().equals("floatinggum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
+        }
+    }
+
+    /**
+     * Check if there was a collision between the player and the orb, if so have the player collect the orb
+     */
+    public void resolveOrbCollision(Obstacle bd1, Obstacle bd2) {
+        if (bd1.getName().equals("orb") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
+            ((Collectible) bd1).setCollected(true);
+            levelModel.getBandit().collectOrb();
+            bd1.markRemoved(true);
+        } else if (bd2.getName().equals("orb") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
+            ((Collectible) bd2).setCollected(true);
+            levelModel.getBandit().collectOrb();
+            bd2.markRemoved(true);
         }
     }
 
