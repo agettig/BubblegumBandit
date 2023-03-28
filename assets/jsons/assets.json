@@ -5,6 +5,9 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "terrain": {
+            "file": "textures/tileset.png"
+        },
         "background": {
             "file": "textures/background.png",
             "wrapU": "repeated",
@@ -49,7 +52,6 @@
 	"jsons" : {
 		"level1" : "jsons/camera_demo.json",
         "level2":"jsons/level1.json",
-        "constants": "jsons/constants.json",
-        "tileset": "jsons/objects.json"
+        "constants": "jsons/constants.json"
     }
 }
