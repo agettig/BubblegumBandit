@@ -66,6 +66,9 @@ public enum EnemyState implements State<EnemyController> {
             if(enemy.vision.canSee(bandit)){
                 aiController.getEnemyStateMachine().changeState(CHASE);
             }
+            if (aiController.enemyHeardBandit()) {
+                aiController.getEnemyStateMachine().changeState(CHASE);
+            }
             setAction(aiController);
         }
 

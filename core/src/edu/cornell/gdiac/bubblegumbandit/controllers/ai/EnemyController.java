@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -106,6 +107,21 @@ public class EnemyController implements Telegraph {
      */
     public boolean canShootTarget() {
         return canFire() && enemy.getAttacking().canSee(bandit);
+    }
+
+    /**Returns true if the bandit is within listening range of the enemy */
+    public boolean enemyHeardBandit() {
+        Vector2 playerPosition = bandit.getPosition();
+        Vector2 enemyPosition = enemy.getPosition();
+        CircleShape hearingCircle = enemy.getSensorShape();
+
+        Float xDiff = Math.abs(playerPosition.x - enemyPosition.x);
+        Float yDiff = Math.abs(playerPosition.y - enemyPosition.y);
+        Double distance = Math.sqrt(Math.pow(xDiff + yDiff, 2));
+        if (distance < hearingCircle.getRadius()) {
+            return true;
+        }
+        else return false;
     }
 
     /**
