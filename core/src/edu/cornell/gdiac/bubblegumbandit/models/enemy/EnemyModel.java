@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.Sensor;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -86,6 +87,9 @@ public abstract class EnemyModel extends CapsuleObstacle {
     private boolean gummed;
 
     private boolean stuck;
+
+    /**tile that the robot is currently standing on, or last stood on if in the air */
+    private TileModel tile;
 
     // endRegion
 
@@ -220,7 +224,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public void setGummed(boolean value) {gummed = value; stuck = value;}
+    public void setGummed(boolean value) {gummed = value;}
 
     public boolean getGummed() {return gummed; }
 
@@ -240,6 +244,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
         gummed = false;
         stuck = false;
+        tile = null;
     }
 
     /**
@@ -312,6 +317,13 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     public void setGummedTexture() {
         setTexture(gummed_robot);
+    }
+
+    public TileModel getTile() {
+        return tile;
+    }
+    public void setTile(TileModel tile) {
+        this.tile = tile;
     }
 
     public void initializeSensors(JsonValue json, int numSensors) {
