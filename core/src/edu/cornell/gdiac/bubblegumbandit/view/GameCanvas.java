@@ -742,13 +742,8 @@ public class GameCanvas {
 
     public void drawWithShadow(TextureRegion region, Color tint, float ox, float oy,
                                float x, float y, float angle, float sx, float sy) {
-
         draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);
         draw(region, tint, ox, oy, x, y, angle, sx, sy);
-
-
-
-
     }
 
     /**
