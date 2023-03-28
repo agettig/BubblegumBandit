@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.JointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -32,6 +33,7 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -39,6 +41,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -377,7 +380,7 @@ public class GameController implements Screen {
         setFailure(false);
         countdown = -1;
         bubblegumController.resetAmmo();
-        collisionController.resetRobotJoints();
+        collisionController.resetRobots();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
@@ -548,6 +551,12 @@ public class GameController implements Screen {
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
+
+        for (EnemyModel enemy : collisionController.getGummedRobots()) {
+            TileModel tile = enemy.getTile();
+            collisionController.createEnemyTileJoint(tile, enemy);
+        }
+        collisionController.clearGummedRobots();
 
         // Add all of the pending joints to the world.
         bubblegumController.addJointsToWorld(level);
