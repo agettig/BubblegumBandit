@@ -37,6 +37,15 @@ public class GameCamera  extends OrthographicCamera {
     /** The target zoom of the camera (does not instantly change) */
     private float targetZoom;
 
+    /** Whether the camera is in debug mode. */
+    private boolean isCameraDebug;
+
+    /** The width of the level in pixels */
+    private float levelWidth;
+
+    /** The height of the level in pixels */
+    private float levelHeight;
+
     public GameCamera() {
         super();
     }
@@ -53,6 +62,12 @@ public class GameCamera  extends OrthographicCamera {
         isFixedX = false;
         isFixedY = false;
         targetZoom = 1f;
+        isCameraDebug = false;
+    }
+
+    /** Toggles the debug mode of the camera. */
+    public void toggleDebug() {
+        isCameraDebug = !isCameraDebug;
     }
 
     /** Toggles the camera mode between using a secondary target or not.
@@ -193,6 +208,16 @@ public class GameCamera  extends OrthographicCamera {
     }
 
     /**
+     * Sets the width and height of the level for the debug view.
+     * @param width the width of the level
+     * @param height the height of the level
+     */
+    public void setLevelSize(float width, float height) {
+        levelWidth = width;
+        levelHeight = height;
+    }
+
+    /**
      * Updates this camera.
      */
     public void update(float dt) {
@@ -203,6 +228,20 @@ public class GameCamera  extends OrthographicCamera {
      * Updates this camera based on its target.
      */
     public void update(boolean updateFrustum, float dt) {
+        if (isCameraDebug) {
+            position.x = levelWidth / 2;
+            position.y = levelHeight / 2;
+            float aspectRatio = viewportWidth / viewportHeight;
+            if ((levelWidth / levelHeight) > aspectRatio) {
+                // width is the limiting factor
+                zoom = levelWidth / viewportWidth;
+            } else {
+                // height is the limiting factor
+                zoom = levelHeight / viewportHeight;
+            }
+            super.update(updateFrustum);
+            return;
+        }
         float newTargetX = target.x;
         if (!isFixedX) {
             newTargetX = target.x * (1 - secondaryWeight) + secondaryTarget.x * secondaryWeight;

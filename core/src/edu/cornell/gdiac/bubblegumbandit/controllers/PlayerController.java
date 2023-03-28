@@ -248,9 +248,9 @@ public class PlayerController{
     }
 
     /**
-     * Returns true if the player wants to go toggle the controls mode.
+     * Returns true if the player wants to go toggle the full camera view.
      *
-     * @return true if the player wants to go toggle the controls mode.
+     * @return true if the player wants to go toggle the full camera view.
      */
     public boolean didControlsSwap() {
         return controlTogglePressed && !controlTogglePrevious;
