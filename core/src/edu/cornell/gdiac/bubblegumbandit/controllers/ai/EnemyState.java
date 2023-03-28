@@ -154,6 +154,9 @@ public enum EnemyState implements State<EnemyController> {
             if(aiController.getEnemy().getAttacking().canSee(aiController.getBandit())){
                 aiController.getEnemyStateMachine().changeState(ATTACK);
             }
+            if (!aiController.enemyHeardBandit()) {
+                aiController.getEnemyStateMachine().changeState(WANDER);
+            }
         }
 
         private void setAction(EnemyController aiController){
@@ -189,6 +192,9 @@ public enum EnemyState implements State<EnemyController> {
         public void update (EnemyController aiController) {
             BanditModel banditModel = aiController.getBandit();
             int move = CONTROL_NO_ACTION;
+            if (!aiController.enemyHeardBandit()) {
+                aiController.getEnemyStateMachine().changeState(WANDER);
+            }
             if (!aiController.getEnemyStateMachine().canMove()){
 
             }
