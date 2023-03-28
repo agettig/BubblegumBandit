@@ -256,7 +256,7 @@ public class LevelModel {
                 case "BoardGravityDown":
                     boardGravityDownLayer = layer;
                     break;
-                case "BoardGravityUpLayer":
+                case "BoardGravityUp":
                     boardGravityUpLayer = layer;
                 case "Terrain":
                     tileLayer = layer;
