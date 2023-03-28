@@ -434,7 +434,7 @@ public class LevelModel {
     public void update(float dt) {
         // Garbage collect the deleted objects.
         for (EnemyController controller : enemyControllers) {
-            adjustForDrift(controller.getEnemy());
+//            adjustForDrift(controller.getEnemy());
             controller.getEnemyStateMachine().update();
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();

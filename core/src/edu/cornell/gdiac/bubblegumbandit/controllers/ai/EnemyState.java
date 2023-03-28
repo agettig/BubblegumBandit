@@ -220,10 +220,10 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController aiController){
-            if (aiController.getBandit().isOrbCollected()){
+            if (aiController.getBandit().isOrbCollected() && !aiController.getEnemyStateMachine().isInState(STUCK)){
                 aiController.getEnemyStateMachine().changeState(PURSUE);
             }
-        };
+      };
         @Override
         public void exit(EnemyController aiController){
             talk(aiController, "leave perceive");
@@ -240,7 +240,20 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController aiController){
-            talk(aiController, "in stuck");
+            // if player comes within sensing ray cast
+            // the enemy will turn around
+            EnemyModel enemy = aiController.getEnemy();
+            BanditModel bandit = aiController.getBandit();
+            if (enemy.getSensing().canSee(bandit)){
+                boolean facingRight = enemy.getFaceRight();
+                enemy.setFaceRight(!facingRight);
+                enemy.setNextAction(facingRight ? CONTROL_MOVE_LEFT : CONTROL_MOVE_RIGHT);
+            }
+            int move = CONTROL_NO_ACTION;
+            if (aiController.canShootTarget()){
+                move = move | CONTROL_FIRE;
+            }
+            aiController.getEnemy().setNextAction(move);
         };
         @Override
         public void exit(EnemyController aiController){

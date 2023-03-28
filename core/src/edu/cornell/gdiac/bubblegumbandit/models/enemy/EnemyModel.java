@@ -91,12 +91,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     private int nextAction;
 
+    private int previousAction;
+
     /**
      * Cache for internal force calculations
      */
     private Vector2 forceCache = new Vector2();
 
     public void setNextAction(int nextAction) {
+        this.previousAction = this.nextAction;
         this.nextAction = nextAction;
     }
 
@@ -384,7 +387,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public void updateMovement(int nextAction){
         // Determine how we are moving.
-        //System.out.println(nextAction);
+        System.out.println(nextAction);
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
@@ -392,26 +395,34 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
         // Process movement command.
         if (movingLeft) {
+            if (previousAction != CONTROL_MOVE_LEFT){
+                setY((int) getY() + .5f);
+            }
             setVX(-3);
             setFaceRight(false);
         } else if (movingRight) {
+            if (previousAction != CONTROL_MOVE_RIGHT){
+                setY((int) getY() + .5f);
+            }
             setVX(3);
             setFaceRight(true);
         } else if (movingUp) {
-            setX((int) getPosition().x + .5f);
+
             if (!isFlipped){
+               setX((int) getPosition().x + .5f);
                 setVY(4f);
             }
             else{
-
+                setX((int) getPosition().x + .5f);
             }
             setVX(0);
         } else if (movingDown) {
             if (isFlipped){
+                setX((int) getPosition().x + .5f);
                 setVY(-4f);
             }
             else{
-
+                setX((int) getPosition().x + .5f);
             }
             setVX(0);
         } else {
