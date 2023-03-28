@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.models;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -29,6 +30,9 @@ public class BackObjModel extends BoxObstacle {
 
     /** Manager for the scale for flipping during gravity swaps */
     private FlippingObject fo = new FlippingObject();
+
+    /** offset around angle for deciding which direction to rotate around */
+    private static final float ANGLE_OFFSET = 0.1f;
 
     public BackObjModel(){
         super (0, 0, 1, 1);
@@ -59,7 +63,7 @@ public class BackObjModel extends BoxObstacle {
         String key = info.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 
-        int[] p = info.get("pos").asIntArray();
+        float[] p = info.get("pos").asFloatArray();
         setPosition(p[0] ,p[1]);
         setTexture(texture);
 
@@ -86,11 +90,6 @@ public class BackObjModel extends BoxObstacle {
     }
 
     public void update(float dt) {
-//        if (yScale < 1f && !isFlipped) {
-//            yScale += 0.1f;
-//        } else if (yScale > -1f && isFlipped) {
-//            yScale -= 0.1f;
-//        }
         fo.updateYScale(isFlipped);
 
     }
@@ -110,8 +109,18 @@ public class BackObjModel extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float direction = faceRight ? 1.0f : -1.0f;
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                    getY() * drawScale.y, getAngle() , direction, fo.getYScale());
+            float angle = MathUtils.cos(this.getAngle());
+
+            //flip around a different axis when rotated 90 degrees
+            if (angle < ANGLE_OFFSET && angle > -ANGLE_OFFSET){
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle() , fo.getScale(), direction);
+            }
+            else{
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle() , direction, fo.getScale());
+            }
+
         }
     }
 }
