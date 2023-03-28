@@ -1004,9 +1004,10 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
+        font.getData().setScale(camera.zoom);
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (getWidth() - layout.width) / 2.0f;
-        float y = (getHeight() + layout.height) / 2.0f;
+        float y = (getHeight() + layout.height)/ 2.0f;
         Vector3 coords = camera.unproject(new Vector3(x, y, 0));
         font.draw(spriteBatch, layout, coords.x, coords.y + offset);
     }
