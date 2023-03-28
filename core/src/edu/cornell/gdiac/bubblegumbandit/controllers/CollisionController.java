@@ -300,6 +300,7 @@ public class CollisionController implements ContactListener {
                     enemy.setGummedTexture();
                     enemy.setGummed(true);
                     levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().sendMessage(levelModel.getenemies().get(0), MessageType.HIT_BY_GUM);
+                    levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
                 }
                 else {
                     enemy.setStuck(true);
