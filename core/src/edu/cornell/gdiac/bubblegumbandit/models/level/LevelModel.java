@@ -129,8 +129,6 @@ public class LevelModel {
         return enemyControllers;
     }
 
-    private Board board;
-
     private TiledGraph tiledGraphGravityUp;
 
     private TiledGraph tiledGraphGravityDown;
@@ -230,9 +228,6 @@ public class LevelModel {
 
     }
 
-    public Board getBoard() {
-        return board;
-    }
 
     /**
      * Lays out the game geography from the given JSON file
@@ -258,6 +253,7 @@ public class LevelModel {
                     break;
                 case "BoardGravityUp":
                     boardGravityUpLayer = layer;
+                    break;
                 case "Terrain":
                     tileLayer = layer;
                     break;
@@ -299,8 +295,8 @@ public class LevelModel {
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
 
-        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale);
-        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale);
+        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3/8);
+        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 3/8);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);
@@ -318,7 +314,8 @@ public class LevelModel {
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
 
-                newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
+                // TODO fix tile Val
+                newTile.initialize(textures.get(5), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
@@ -349,6 +346,7 @@ public class LevelModel {
                 case "smallrobot":
                 case "mediumrobot":
                     JsonValue enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     if (enemyConstants.get("type").asString().equals("moving")) {
                         EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
                         enemy.initialize(directory, x, y, enemyConstants);
@@ -406,7 +404,7 @@ public class LevelModel {
     /**
      * Immediately adds the object to the physics world
      *
-     * @param obj The object to add
+     * @param obj The objexct to add
      */
     public void activate(Obstacle obj) {
         assert inBounds(obj) : "Object is not in bounds";
@@ -436,8 +434,8 @@ public class LevelModel {
     public void update(float dt) {
         // Garbage collect the deleted objects.
         for (EnemyController controller : enemyControllers) {
+            adjustForDrift(controller.getEnemy());
             controller.getEnemyStateMachine().update();
-//            adjustForDrift(controller.getEnemy());
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
@@ -635,8 +633,7 @@ public class LevelModel {
                 obj.drawDebug(canvas);
             }
             // drawGrid(canvas);
-            if (board != null) {
-                board.drawBoard(canvas);
+            if (tiledGraphGravityUp != null && tiledGraphGravityDown != null) {
                 tiledGraphGravityDown.drawGraph(canvas);
                 tiledGraphGravityUp.drawGraph(canvas);
             }
@@ -680,7 +677,13 @@ public class LevelModel {
         // Drift to line up vertically with the grid.
 
         if (enemy.getVX() == 0.0f) {
-            float offset = getBoard().centerOffset(enemy.getX());
+            float offset = enemy.getX() - (int) enemy.getX();
+            if (offset > .5){
+                offset -= .5;
+            }
+            else{
+                offset = .5f -offset;
+            }
             if (offset < -DRIFT_TOLER) {
                 enemy.setX(enemy.getX() + DRIFT_SPEED);
             } else if (offset > DRIFT_TOLER) {
@@ -690,11 +693,13 @@ public class LevelModel {
 
         // Drift to line up horizontally with the grid.
         if (enemy.getVY() == 0.0f) {
-            float y = enemy.getY();
-            if (enemy.getId() == 0) {
-                y -= 1;
+            float offset = enemy.getY() - (int) enemy.getY();
+            if (offset > .5){
+                offset -= .5;
             }
-            float offset = getBoard().centerOffset(y);
+            else{
+                offset = .5f -offset;
+            }
             if (offset < -DRIFT_TOLER) {
                 enemy.setY(enemy.getY() + DRIFT_SPEED);
             } else if (offset > DRIFT_TOLER) {

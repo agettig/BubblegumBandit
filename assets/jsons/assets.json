@@ -47,7 +47,7 @@
   		"jump" : "sounds/jump.mp3"
 	},
 	"jsons" : {
-		"level1" : "jsons/2BoardLayerTest.json",
+		"level1" : "jsons/2BoardLayerTest3.json",
         "level2":"jsons/level1.json",
         "level3": "jsons/jumping.json",
         "constants": "jsons/constants.json",

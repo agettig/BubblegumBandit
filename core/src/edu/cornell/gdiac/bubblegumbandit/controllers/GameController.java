@@ -364,7 +364,7 @@ public class GameController implements Screen {
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
-        canvas.getCamera().setZoom(1);
+        canvas.getCamera().setZoom(2.3f);
 
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);

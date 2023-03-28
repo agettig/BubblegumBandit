@@ -228,7 +228,7 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
                     heuristic, graphPath);
         }
         else{
-            found = pathFinderGravityUp.searchNodePath(tiledGravityDownGraph.getNode(startX,
+            found = pathFinderGravityDown.searchNodePath(tiledGravityDownGraph.getNode(startX,
                             startY),
                     tiledGravityDownGraph.getNode(targetX, targetY),
                     heuristic, graphPath);

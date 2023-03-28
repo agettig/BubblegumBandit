@@ -18,12 +18,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.ai.steer.behaviors.Pursue;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
-import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
-import edu.cornell.gdiac.bubblegumbandit.controllers.fsm.MessageType;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
@@ -87,13 +82,13 @@ public enum EnemyState implements State<EnemyController> {
                 return;
             }
 
-            if (aiController.getTileType() == JUMP_TILE || enemy.isJumping()){
-                enemy.setNextAction(CONTROL_JUMP);
-                enemy.setIsJumping(true);
-                return;
-            }
-
-            if(aiController.getTileType() == GRAVITY_DOWN_TILE) enemy.setIsJumping(false);
+//            if (aiController.getTileType() == JUMP_TILE || enemy.isJumping()){
+//                enemy.setNextAction(CONTROL_JUMP);
+//                enemy.setIsJumping(true);
+//                return;
+//            }
+//
+//            if(aiController.getTileType() == GRAVITY_DOWN_TILE) enemy.setIsJumping(false);
 
             int moveRight;
             int moveLeft;
@@ -169,9 +164,9 @@ public enum EnemyState implements State<EnemyController> {
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
             }
-            if (move == CONTROL_NO_ACTION){
-                aiController.getEnemyStateMachine().changeState(WANDER);
-            }
+//            if (move == CONTROL_NO_ACTION){
+//                aiController.getEnemyStateMachine().changeState(WANDER);
+//            }
             aiController.getEnemy().setNextAction(move);
         }
 
@@ -202,9 +197,9 @@ public enum EnemyState implements State<EnemyController> {
             if (aiController.canShootTarget()){
                 move = move | CONTROL_FIRE;
             }
-            if (move == CONTROL_NO_ACTION){
-                aiController.getEnemyStateMachine().changeState(WANDER);
-            }
+//            if (move == CONTROL_NO_ACTION){
+//                aiController.getEnemyStateMachine().changeState(WANDER);
+//            }
             aiController.getEnemy().setNextAction(move);
         }
 
