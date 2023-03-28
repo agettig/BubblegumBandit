@@ -260,7 +260,7 @@
                  "visible":true,
                  "width":64,
                  "x":1344,
-                 "y":1217.53795740033
+                 "y":1217.54
                 }, 
                 {
                  "gid":14,
@@ -390,6 +390,11 @@
          "name":"gravity",
          "type":"float",
          "value":-15
+        }, 
+        {
+         "name":"timer",
+         "type":"int",
+         "value":30
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",

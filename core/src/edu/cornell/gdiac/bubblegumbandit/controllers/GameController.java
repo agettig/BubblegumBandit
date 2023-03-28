@@ -192,6 +192,12 @@ public class GameController implements Screen {
     /** The number of levels in the game. */
     private final int NUM_LEVELS = 2;
 
+    /** Whether the orb has been collected. */
+    private boolean orbCollected;
+
+    /** Countdown timer after collecting the orb. */
+    private float orbCountdown;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -294,6 +300,7 @@ public class GameController implements Screen {
         failed = false;
         active = false;
         countdown = -1;
+        orbCountdown = -1;
         levelNum = 1;
         setComplete(false);
         setFailure(false);
@@ -369,13 +376,15 @@ public class GameController implements Screen {
 
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
-        collisionController.resetWinCondition();
+        collisionController.reset();
 
         level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
         bubblegumController.resetAmmo();
         collisionController.resetRobotJoints();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -435,6 +444,12 @@ public class GameController implements Screen {
             reset();
         }
 
+        if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
+
+        else if (orbCollected && orbCountdown <= 0) {
+            level.getBandit().hitPlayer(level.getBandit().getHealth());
+        }
+
         //Check for failure.
         if (!getFailure() && level.getBandit().getHealth() <= 0) {
             setFailure(true);
@@ -460,6 +475,11 @@ public class GameController implements Screen {
                 levelNum = 1;
             }
             setComplete(true);
+        }
+
+        if (!orbCollected && level.getBandit().isOrbCollected()) {
+            orbCollected = true;
+            orbCountdown = level.getOrbCountdown();
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -569,7 +589,7 @@ public class GameController implements Screen {
         canvas.clear();
 
         level.draw(canvas, constantsJson, gumSpeed, gumGravity, trajectoryProjectile);
-        hud.draw(level, bubblegumController);
+        hud.draw(level, bubblegumController, (int) orbCountdown);
 
         // Final message
         if (complete && !failed) {

@@ -104,6 +104,11 @@ public class LevelModel {
      */
     private TextureRegion backgroundRegion;
 
+    /**
+     * The amount of time counted down after the orb is collected.
+     */
+    private float timer = 60;
+
 
     /**
      * All the objects in the world.
@@ -261,6 +266,9 @@ public class LevelModel {
             if (propName.equals("gravity")) {
                 gravity = property.getFloat("value");
             }
+            if (propName.equals("timer")) {
+                timer = property.getFloat("value");
+            }
             property = property.next();
         }
 
@@ -342,9 +350,10 @@ public class LevelModel {
                     break;
                 case "floatinggum":
                 case "orb":
-                    Collectible gum = new Collectible();
-                    gum.initialize(directory, x, y, scale, constants.get(objType));
-                    activate(gum);
+                    Collectible coll = new Collectible();
+                    coll.initialize(directory, x, y, scale, constants.get(objType));
+                    activate(coll);
+                    coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     break;
                 case "camera_v":
                 case "camera_h":
@@ -642,5 +651,10 @@ public class LevelModel {
 
             }
         }
+    }
+
+    /** Returns the amount of time the player has to escape. */
+    public float getOrbCountdown() {
+        return timer;
     }
 }

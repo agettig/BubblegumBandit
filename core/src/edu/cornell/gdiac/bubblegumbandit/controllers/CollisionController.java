@@ -27,6 +27,7 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_PROJECTILE = 0x0010;
     public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_EVENTTILE = 0x0040;
+    public static final short CATEGORY_COLLECTIBLE = 0x0080;
 
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
@@ -35,6 +36,7 @@ public class CollisionController implements ContactListener {
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
     public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
+    public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
 
     /** The amount of gum collected when collecting floating gum */
     private static final int AMMO_AMOUNT = 5;
@@ -58,10 +60,10 @@ public class CollisionController implements ContactListener {
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
 
-    public void resetWinCondition(){
+    /** Resets this CollisionController. */
+    public void reset(){
         winConditionMet = false;
     }
-
 
     /**
      * Construct a new CollisionController.
