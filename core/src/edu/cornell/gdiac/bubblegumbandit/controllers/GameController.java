@@ -360,6 +360,7 @@ public class GameController implements Screen {
         setFailure(false);
         countdown = -1;
         bubblegumController.resetAmmo();
+        collisionController.resetRobotJoints();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
@@ -534,6 +535,7 @@ public class GameController implements Screen {
 
         // Add all of the pending joints to the world.
         bubblegumController.addJointsToWorld(level);
+        collisionController.addRobotJoints(level);
     }
 
 

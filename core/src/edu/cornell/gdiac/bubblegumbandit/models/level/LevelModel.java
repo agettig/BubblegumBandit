@@ -57,9 +57,13 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
 public class LevelModel {
 
 
-    /** How close to the center of the tile we need to be to stop drifting */
+    /**
+     * How close to the center of the tile we need to be to stop drifting
+     */
     private static final float DRIFT_TOLER = .2f;
-    /** How fast we drift to the tile center when paused */
+    /**
+     * How fast we drift to the tile center when paused
+     */
     private static final float DRIFT_SPEED = 0.325f;
     /**
      * The gap between each dot in the trajectory diagram (for raytraced trajectory.)
@@ -121,17 +125,23 @@ public class LevelModel {
 
     private Array<EnemyController> enemyControllers;
 
-    public Array<EnemyController> getenemies(){
+    public Array<EnemyController> getenemies() {
         return enemyControllers;
     }
 
     private Board board;
 
-    private TiledGraph tiledGraph;
+    private TiledGraph tiledGraphGravityUp;
 
-    /** The width of the level. */
+    private TiledGraph tiledGraphGravityDown;
+
+    /**
+     * The width of the level.
+     */
     private int levelWidth;
-    /** The height of the level. */
+    /**
+     * The height of the level.
+     */
     private int levelHeight;
 
 
@@ -233,7 +243,8 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
-        JsonValue boardLayer = null;
+        JsonValue boardGravityDownLayer = null;
+        JsonValue boardGravityUpLayer = null;
 
         JsonValue tileLayer = null;
         JsonValue objects = null;
@@ -242,9 +253,11 @@ public class LevelModel {
         while (layer != null) {
             String layerName = layer.getString("name");
             switch (layerName) {
-                case "Board":
-                    boardLayer = layer;
+                case "BoardGravityDown":
+                    boardGravityDownLayer = layer;
                     break;
+                case "BoardGravityUpLayer":
+                    boardGravityUpLayer = layer;
                 case "Terrain":
                     tileLayer = layer;
                     break;
@@ -257,7 +270,7 @@ public class LevelModel {
             layer = layer.next();
         }
 
-        if (boardLayer == null || tileLayer == null || objects == null) {
+        if (boardGravityDownLayer == null || boardGravityUpLayer == null || tileLayer == null || objects == null) {
             throw new RuntimeException("Missing layer data");
         }
 
@@ -286,9 +299,8 @@ public class LevelModel {
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
 
-        board = new Board(boardLayer, boardIdOffset, scale);
-
-        tiledGraph = new TiledGraph(boardLayer, boardIdOffset, scale);
+        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale);
+        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);
@@ -344,7 +356,7 @@ public class LevelModel {
                         activate(enemy);
                         enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
 
-                        enemyControllers.add(new EnemyController(enemy, bandit, tiledGraph));
+                        enemyControllers.add(new EnemyController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                         enemyCount++;
                     }
                     break;
@@ -423,7 +435,7 @@ public class LevelModel {
      */
     public void update(float dt) {
         // Garbage collect the deleted objects.
-        for (EnemyController controller : enemyControllers){
+        for (EnemyController controller : enemyControllers) {
             controller.getEnemyStateMachine().update();
 //            adjustForDrift(controller.getEnemy());
         }
@@ -563,9 +575,9 @@ public class LevelModel {
         Color[] colors = new Color[]{new Color(1, .619f, .62f, 1),
                                      new Color(1, .73f, .73f, .9f),
                                      new Color(1, .81f, .81f, .8f),
-                                     new Color(1,.86f,.86f, .7f),
-                                     new Color(1,.905f,.905f, .6f),
-                                     new Color(1,1,1,.5f)};
+                                     new Color(1, .86f, .86f, .7f),
+                                     new Color(1, .905f, .905f, .6f),
+                                     new Color(1, 1, 1, .5f)};
         int range = numSegments + 1;
         if (range > 6) range = 6;
         for (int i = 0; i < range; i++) {
@@ -625,7 +637,8 @@ public class LevelModel {
             // drawGrid(canvas);
             if (board != null) {
                 board.drawBoard(canvas);
-                tiledGraph.drawGraph(canvas);
+                tiledGraphGravityDown.drawGraph(canvas);
+                tiledGraphGravityUp.drawGraph(canvas);
             }
             canvas.endDebug();
 
@@ -657,6 +670,7 @@ public class LevelModel {
             }
         }
     }
+
     /**
      * Nudges the ship back to the center of a tile if it is not moving.
      *
@@ -668,21 +682,23 @@ public class LevelModel {
         if (enemy.getVX() == 0.0f) {
             float offset = getBoard().centerOffset(enemy.getX());
             if (offset < -DRIFT_TOLER) {
-                enemy.setX(enemy.getX()+DRIFT_SPEED);
+                enemy.setX(enemy.getX() + DRIFT_SPEED);
             } else if (offset > DRIFT_TOLER) {
-                enemy.setX(enemy.getX()-DRIFT_SPEED);
+                enemy.setX(enemy.getX() - DRIFT_SPEED);
             }
         }
 
         // Drift to line up horizontally with the grid.
         if (enemy.getVY() == 0.0f) {
             float y = enemy.getY();
-            if (enemy.getId()==0){y -= 1;}
+            if (enemy.getId() == 0) {
+                y -= 1;
+            }
             float offset = getBoard().centerOffset(y);
             if (offset < -DRIFT_TOLER) {
-                enemy.setY(enemy.getY()+DRIFT_SPEED);
+                enemy.setY(enemy.getY() + DRIFT_SPEED);
             } else if (offset > DRIFT_TOLER) {
-                enemy.setY(enemy.getY()-DRIFT_SPEED);
+                enemy.setY(enemy.getY() - DRIFT_SPEED);
             }
         }
     }
