@@ -89,6 +89,7 @@ public class EnemyController implements Telegraph {
         this.enemy = enemy;
         this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraphGravityUp, tiledGraphGravityDown);
         this.bandit = bandit;
+        this.tiledGraphGravityDown = tiledGraphGravityDown;
         move = CONTROL_NO_ACTION;
         ticks = 0;
         firecool = 0;

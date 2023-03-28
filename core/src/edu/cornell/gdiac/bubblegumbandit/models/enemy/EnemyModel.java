@@ -86,6 +86,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     private World world;
 
+    public int getNextAction() {
+        return nextAction;
+    }
+
     private int nextAction;
 
     /**
@@ -379,17 +383,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public void updateMovement(int nextAction){
         // Determine how we are moving.
+        System.out.println(nextAction);
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
         boolean movingDown  = (nextAction & CONTROL_MOVE_DOWN) != 0;
-        boolean jumping = (nextAction & CONTROL_JUMP) != 0;
-
-        if (jumping){
-            setVY(4);
-            setVX(4);
-            return;
-        }
 
         // Process movement command.
         if (movingLeft) {
@@ -399,22 +397,20 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             setVX(3);
             setFaceRight(true);
         } else if (movingUp) {
+            setX((int) getPosition().x + .5f);
             if (!isFlipped){
                 setVY(4f);
-                body.applyForceToCenter(0, 5,true);
             }
             else{
-                setVY(0);
+
             }
             setVX(0);
         } else if (movingDown) {
             if (isFlipped){
                 setVY(-4f);
-                body.applyForceToCenter(0, -5,true);
-
             }
             else{
-                setVY(0);
+
             }
             setVX(0);
         } else {

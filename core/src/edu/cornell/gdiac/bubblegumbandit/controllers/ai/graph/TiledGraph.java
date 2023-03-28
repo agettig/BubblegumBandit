@@ -46,13 +46,16 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 
 	public static final int JUMP_TILE = 4;
 
+	private float debugSize;
 
-	public TiledGraph(JsonValue boardJson, int boardIdOffset, Vector2 scale) {
+
+	public TiledGraph(JsonValue boardJson, int boardIdOffset, Vector2 scale, float debugSize) {
 		this.scale = scale;
 		this.height = boardJson.getInt("height");
 		this.width = boardJson.getInt("width");
 		this.nodes = new TiledNode[width * height];
 		this.boardOffset = boardIdOffset;
+		this.debugSize = debugSize;
 
 		int[] jsonTiles = boardJson.get("data").asIntArray();
 		int x = 0;
