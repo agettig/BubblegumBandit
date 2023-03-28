@@ -48,7 +48,9 @@ public class EnemyController implements Telegraph {
      * graph for pathfinding
      */
 
-    private TiledGraph tiledGraph;
+    private TiledGraph tiledGraphGravityUp;
+
+    private TiledGraph tiledGraphGravityDown;
 
     private EnemyStateMachine<EnemyController, EnemyState> enemyfsm;
 
@@ -82,10 +84,10 @@ public class EnemyController implements Telegraph {
         return bandit;
     }
 
-    public EnemyController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraph) {
-        this.tiledGraph = tiledGraph;
+    public EnemyController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraphGravityUp, TiledGraph tiledGraphGravityDown) {
+        this.tiledGraphGravityUp = tiledGraphGravityUp;
         this.enemy = enemy;
-        this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraph);
+        this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraphGravityUp, tiledGraphGravityDown);
         this.bandit = bandit;
         move = CONTROL_NO_ACTION;
         ticks = 0;
@@ -145,7 +147,10 @@ public class EnemyController implements Telegraph {
      * Returns the type of tile the player is currently on
      * */
     public int getTileType(){
-        return tiledGraph.getNode((int) enemy.getX(), (int)enemy.getY()).getType();
+        if (enemy.isFlipped()){
+            return tiledGraphGravityUp.getNode((int) enemy.getX(), (int)enemy.getY()).getType();
+        }
+        return tiledGraphGravityDown.getNode((int) enemy.getX(), (int)enemy.getY()).getType();
     }
 
     @Override

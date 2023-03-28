@@ -8,15 +8,11 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
-import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledManhattanDistance;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledNode;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
-
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 /**
  * Default implementation of the {@link StateMachine} interface.
@@ -28,10 +24,14 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E, S> {
 
 
-    private IndexedAStarPathFinder<TiledNode> pathFinder;
+    private IndexedAStarPathFinder<TiledNode> pathFinderGravityUp;
+
+    private IndexedAStarPathFinder<TiledNode> pathFinderGravityDown;
 
     private Heuristic heuristic;
-    private TiledGraph tiledGraph;
+    private TiledGraph tiledGravityUpGraph;
+
+    private TiledGraph tiledGravityDownGraph;
 
     private GraphPath graphPath;
 
@@ -64,12 +64,14 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
      * @param initialState the initial state
      * @param globalState  the global state
      */
-    public EnemyStateMachine(E owner, S initialState, S globalState, TiledGraph tiledGraph) {
+    public EnemyStateMachine(E owner, S initialState, S globalState, TiledGraph tiledGravityUpGraph, TiledGraph tiledGravityDownGraph) {
         this.owner = owner;
         this.setInitialState(initialState);
         this.setGlobalState(globalState);
-        this.tiledGraph = tiledGraph;
-        this.pathFinder = new IndexedAStarPathFinder<>(tiledGraph, true);
+        this.tiledGravityUpGraph = tiledGravityUpGraph;
+        this.tiledGravityDownGraph = tiledGravityDownGraph;
+        this.pathFinderGravityDown = new IndexedAStarPathFinder<>(tiledGravityDownGraph, true);
+        this.pathFinderGravityUp = new IndexedAStarPathFinder<>(tiledGravityUpGraph, true);
         this.heuristic = new TiledManhattanDistance();
         this.graphPath = new DefaultGraphPath<>();
         this.ticks = 0;
@@ -192,6 +194,10 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
             return true;
         }
 
+//        System.out.println(telegram.message);
+//        System.out.println(telegram.receiver);
+//        System.out.println(telegram.sender);
+
         return false;
     }
 
@@ -214,10 +220,20 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         int startX = (int) controller.getEnemy().getX();
         int startY = (int) controller.getEnemy().getY();
         if (startX == targetX && startY == targetY) return CONTROL_NO_ACTION;
-        boolean found = pathFinder.searchNodePath(tiledGraph.getNode(startX,
-                        startY),
-                tiledGraph.getNode(targetX, targetY),
-                heuristic, graphPath);
+        boolean found = false;
+        if (((EnemyController) owner).getEnemy().isFlipped()){
+            found = pathFinderGravityUp.searchNodePath(tiledGravityUpGraph.getNode(startX,
+                            startY),
+                    tiledGravityUpGraph.getNode(targetX, targetY),
+                    heuristic, graphPath);
+        }
+        else{
+            found = pathFinderGravityUp.searchNodePath(tiledGravityDownGraph.getNode(startX,
+                            startY),
+                    tiledGravityDownGraph.getNode(targetX, targetY),
+                    heuristic, graphPath);
+        }
+
         if (found) {
             int nextX = ((TiledNode) graphPath.get(1)).getX();
             int nextY = ((TiledNode) graphPath.get(1)).getY();
@@ -231,11 +247,25 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         int x = (int) ((EnemyController) owner).getEnemy().getX();
         int y = (int) ((EnemyController) owner).getEnemy().getY();
 
-        return tiledGraph.getNode(x, y).getType() != 0;
+        if (((EnemyController) owner).getEnemy().isFlipped()){
+            return tiledGravityUpGraph.getNode(x, y).getType() != 0;
+        }
+        else{
+            return tiledGravityDownGraph.getNode(x,y).getType() != 0;
+        }
     }
 
     public int getTicks(){
         return ticks;
+    }
+
+    public void sendMessage(EnemyController recipient, int messageType ){
+        MessageManager.getInstance().dispatchMessage(
+                0.0f,
+                this,
+                recipient,
+                messageType,
+                null);
     }
 
 }

@@ -116,6 +116,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     /** The color to paint the sensor in debug mode */
 
 
+    private TextureRegion gummed_robot;
+
+    private boolean gummed;
+
+    private boolean stuck;
+
     // endRegion
 
     /**
@@ -249,6 +255,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         isGrounded = value;
     }
 
+    public void setGummed(boolean value) {gummed = value; stuck = value;}
+
+    public boolean getGummed() {return gummed; }
+
+    public void setStuck(boolean value) {stuck = value; }
+
+    public boolean getStuck() {return stuck; }
+
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -315,6 +329,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
         sensorShape = new CircleShape();
         sensorShape.setRadius(listeningRadius);
+        String gummedKey = constantsJson.get("gummedTexture").asString();
+        gummed_robot = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+
+        // initialize sensors
 
         // Reflection is best way to convert name to color
         try {
@@ -327,6 +345,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         opacity = constantsJson.get("sensoropacity").asInt();
         sensorColor.mul(opacity/255.0f);
         sensorName = constantsJson.get("sensorname").asString();
+        sensorColor.mul(opacity / 255.0f);
+        sensorColor = Color.RED;
+
+    }
+
+    public void setGummedTexture() {
+        setTexture(gummed_robot);
     }
 
 
@@ -397,8 +422,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
         }
     }
-
-
 
     /**
      * Draws the physics object.

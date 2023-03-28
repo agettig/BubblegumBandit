@@ -20,6 +20,8 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.steer.behaviors.Pursue;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.fsm.MessageType;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -220,7 +222,9 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController aiController){
-//            talk(aiController, "perceive gather information");
+            if (aiController.getBandit().isOrbCollected()){
+                aiController.getEnemyStateMachine().changeState(PURSUE);
+            }
         };
         @Override
         public void exit(EnemyController aiController){
@@ -262,7 +266,40 @@ public enum EnemyState implements State<EnemyController> {
             talk(aiController, "leave retreat");
         };
 
-    };;
+    },
+
+    PURSUE(){
+        @Override
+        public void enter(EnemyController aiController){
+            // set more agressive setting, smaller cooldown and faster speed
+            talk(aiController, "enter pursue");
+        };
+
+        @Override
+        public void update(EnemyController aiController){
+            BanditModel banditModel = aiController.getBandit();
+            int move = CONTROL_NO_ACTION;
+            if (!aiController.getEnemyStateMachine().canMove()){
+
+            }
+            else{
+                move = aiController.getEnemyStateMachine().getNextMove(
+                        (int) banditModel.getX(),
+                        (int) banditModel.getY());
+            }
+            if (aiController.canShootTarget()){
+                move = move | CONTROL_FIRE;
+            }
+            if (move == CONTROL_NO_ACTION){
+                aiController.getEnemyStateMachine().changeState(WANDER);
+            }
+            aiController.getEnemy().setNextAction(move);
+        };
+        @Override
+        public void exit(EnemyController aiController){
+            talk(aiController, "leave pursue");
+        };
+    };
 
     @Override
     public boolean onMessage (EnemyController aiController, Telegram telegram) {
@@ -273,15 +310,6 @@ public enum EnemyState implements State<EnemyController> {
 
     protected void talk (EnemyController aiController, String msg) {
         GdxAI.getLogger().info(aiController.getEnemy().getName(), msg);
-    }
-
-    public void sendMessage(EnemyController owner, EnemyController recipient, int messageType ){
-        MessageManager.getInstance().dispatchMessage(
-                0.0f,
-                owner,
-                recipient,
-                messageType,
-                null);
     }
 
 
