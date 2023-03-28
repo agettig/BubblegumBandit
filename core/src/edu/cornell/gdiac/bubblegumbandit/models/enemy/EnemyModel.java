@@ -68,6 +68,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public RayCastCone vision;
 
+
     public RayCastCone getSensing() {
         return sensing;
     }
@@ -118,8 +119,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     /** The name of the sensor for detection purposes */
     private String sensorName;
     /** The color to paint the sensor in debug mode */
-
-
     private TextureRegion gummed_robot;
 
     private boolean gummed;
@@ -280,6 +279,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         vision = new RayCastCone(7f, 0f, (float) Math.PI/2, Color.YELLOW);
         sensing = new RayCastCone(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
         attacking = new RayCastCone(6f, 0, (float) Math.PI/2, Color.BLUE);
+
     }
 
     /**
@@ -358,6 +358,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         setTexture(gummed_robot);
     }
 
+    public CircleShape getSensorShape() {
+        return sensorShape;
+    }
 
     public void update(float delta) {
         if (yScale < 1f && !isFlipped) {
@@ -383,7 +386,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public void updateMovement(int nextAction){
         // Determine how we are moving.
-        System.out.println(nextAction);
+        //System.out.println(nextAction);
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
