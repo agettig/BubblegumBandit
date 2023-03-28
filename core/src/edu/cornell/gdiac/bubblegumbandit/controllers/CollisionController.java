@@ -113,8 +113,6 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
-            resolveEnemyHearing(fixA, fixB, obstacleB, obstacleA, true);
-
             // TODO fix collision filtering
             if (!(fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor") || fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))) {
                 resolveGumCollision(obstacleA, obstacleB);
@@ -165,7 +163,6 @@ public class CollisionController implements ContactListener {
         try{
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
-            resolveEnemyHearing(fix1, fix2, ob1, ob2, false);
 
             if (ob1.getName().equals("cameratile") && avatar == bd2) {
                 updateCamera(ob1);
@@ -251,18 +248,6 @@ public class CollisionController implements ContactListener {
 
         if (bandit.isOrbCollected() && (winConditionA || winConditionB)) {
             winConditionMet = true;
-        }
-    }
-
-    private void resolveEnemyHearing(Fixture fixA, Fixture fixB, Obstacle obA, Obstacle obB, boolean beginCollision) {
-        if ((fixA.getUserData() != null && fixA.getUserData().equals("listeningsensor")) ||
-                (fixB.getUserData() != null && fixB.getUserData().equals("listeningsensor"))
-        ) {
-            if (obB instanceof EnemyModel && obA instanceof BanditModel) {
-                ((EnemyModel) obB).setHeardPlayer(beginCollision);
-            } else if (obA instanceof EnemyModel && obB instanceof BanditModel) {
-                ((EnemyModel) obA).setHeardPlayer(beginCollision);
-            }
         }
     }
 

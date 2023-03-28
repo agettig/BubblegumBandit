@@ -27,8 +27,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     // Physics constants
     private int id;
 
-    private boolean heardPlayer = false;
-
     /**
      * The factor to multiply by the input
      */
@@ -505,10 +503,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
      */
     public void flippedGravity() {
         isFlipped = !isFlipped;
-    }
-
-    public void setHeardPlayer(boolean heardPlayer){
-          this.heardPlayer = heardPlayer;
     }
 
 }
