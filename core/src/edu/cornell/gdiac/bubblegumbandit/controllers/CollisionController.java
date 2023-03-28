@@ -114,7 +114,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
-            resolveEnemyGumCollision(obstacleA, obstacleB);
+            resolveEnemyTileCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
@@ -326,11 +326,11 @@ public class CollisionController implements ContactListener {
         return false;
     }
     /**
-     * Adds a joint that sticks enemies to the tile if the enemy has been hit with gum
+     * Adds the tile that the enemy is currently standing on
      * @param ob1
      * @param ob2
      */
-    public void resolveEnemyGumCollision(Obstacle ob1, Obstacle ob2) {
+    public void resolveEnemyTileCollision(Obstacle ob1, Obstacle ob2) {
         EnemyModel enemy;
 
         if (ob1 instanceof EnemyModel) {
