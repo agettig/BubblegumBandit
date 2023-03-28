@@ -297,7 +297,7 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, tilesetJson);
+        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         aiControllers = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
