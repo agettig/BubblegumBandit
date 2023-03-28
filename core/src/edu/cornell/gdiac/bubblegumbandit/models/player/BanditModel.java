@@ -166,7 +166,7 @@ public class BanditModel extends CapsuleObstacle{
 	 */
 	public float getYScale() {
 //		return yScale;/
-		return fo.getYScale();
+		return fo.getScale();
 	}
 
 	/**
@@ -529,7 +529,7 @@ public class BanditModel extends CapsuleObstacle{
 			float effect = faceRight ? 1.0f : -1.0f;
 
 			canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
-					getY()*drawScale.y,getAngle(),effect,fo.getYScale());//yScale);
+					getY()*drawScale.y,getAngle(),effect,fo.getScale());//yScale);
 
 		}
 

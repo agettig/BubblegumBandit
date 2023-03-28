@@ -338,7 +338,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                getY() * drawScale.y, getAngle(), effect, fo.getYScale());//yScale);
+                getY() * drawScale.y, getAngle(), effect, fo.getScale());//yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }

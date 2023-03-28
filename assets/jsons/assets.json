@@ -26,7 +26,8 @@
         "bullet": "textures/bullet.png",
         "box": "textures/box.png",
         "powercell": "textures/powercell.png",
-        "chair": "textures/chair.png"
+        "chair": "textures/chair.png",
+        "frame": "textures/frame.png"
     },
     "fonts": {
         "display": {

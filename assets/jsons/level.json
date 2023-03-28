@@ -258,7 +258,7 @@
     }
   },
   "enemies": {
-    "numenemies": 6,
+    "numenemies": 1,
     "enemylist": [
       {
         "name": "enemy1",
@@ -794,8 +794,8 @@
     "texture": "bullet"
   },
   "backgroundObj": {
-    "name": "box",
-    "numObj": 3,
+    "name": "bgo",
+    "numObj": 8,
     "density": 1.0,
     "friction": 0.4,
     "restitution": 0.0,
@@ -804,8 +804,32 @@
     "objects": [
       {
         "pos": [
-          28,
-          17
+          10,
+          4
+        ] ,
+        "texture": "box",
+        "faceRight": "false"
+      },
+      {
+        "pos": [
+          10.6,
+          3
+        ] ,
+        "texture": "box",
+        "faceRight": "false"
+      },
+      {
+        "pos": [
+          27,
+          18
+        ] ,
+        "texture": "chair",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          29,
+          18
         ] ,
         "texture": "chair",
         "faceRight": "false"
@@ -815,13 +839,45 @@
           2,
           21
         ],
-        "texture": "powercell",
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25.5,
+          1
+        ],
+        "texture": "box",
         "faceRight": "true"
       },
       {
         "pos": [
           26,
-          1
+          2
+        ],
+        "texture": "powercell",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25.7,
+          3
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          27,
+          2
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          27,
+          3
         ],
         "texture": "box",
         "faceRight": "true"
