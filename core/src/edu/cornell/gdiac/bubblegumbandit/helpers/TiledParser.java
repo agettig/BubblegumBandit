@@ -21,18 +21,37 @@ public class TiledParser {
         while (tileJson != null) {
             int idOffset = tileJson.getInt("firstgid");
             JsonValue tile = tileJson.get("tiles").child();
-            while (tile != null) {
-                JsonValue textureName = tile.get("type");
-                TextureRegion texture = null;
-                if (textureName != null) {
-                    // Texture name may be empty, or may not refer to an actual texture
-                    Texture t = directory.getEntry(textureName.asString(), Texture.class);
-                    if (t != null) {
-                        texture = new TextureRegion(directory.getEntry(textureName.asString(), Texture.class));
+            if (tileJson.get("image") != null) { // Tileset represents one image (texture atlas)
+                Texture t = directory.getEntry(tile.get("type").asString(), Texture.class);
+                int imgWidth = tileJson.getInt("imagewidth");
+                int tileWidth = tileJson.getInt("tilewidth");
+                int tileHeight = tileJson.getInt("tileheight");
+                int offsetX = 0;
+                int offsetY = 0;
+                while (tile != null) {
+                    TextureRegion texture = new TextureRegion(t, offsetX, offsetY, tileWidth, tileHeight);
+                    tileset.put(tile.getInt("id") + idOffset, texture);
+                    offsetX += tileWidth;
+                    if (offsetX == imgWidth) {
+                        offsetX = 0;
+                        offsetY += tileHeight;
                     }
+                    tile = tile.next();
                 }
-                tileset.put(tile.getInt("id") + idOffset, texture);
-                tile = tile.next();
+            } else { // Tileset represents multiple images = multiple textures
+                while (tile != null) {
+                    JsonValue textureName = tile.get("type");
+                    TextureRegion texture = null;
+                    if (textureName != null) {
+                        // Texture name may be empty, or may not refer to an actual texture
+                        Texture t = directory.getEntry(textureName.asString(), Texture.class);
+                        if (t != null) {
+                            texture = new TextureRegion(directory.getEntry(textureName.asString(), Texture.class));
+                        }
+                    }
+                    tileset.put(tile.getInt("id") + idOffset, texture);
+                    tile = tile.next();
+                }
             }
             tileJson = tileJson.next();
         }
