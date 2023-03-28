@@ -387,7 +387,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public void updateMovement(int nextAction){
         // Determine how we are moving.
-        System.out.println(nextAction);
+        //System.out.println(nextAction);
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;

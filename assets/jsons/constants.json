@@ -165,7 +165,7 @@
     "sensoropacity": 192,
     "visionradius": 3.0,
     "sensorname": "listeningsensor",
-    "listeningradius": 10
+    "listeningradius": 7
   },
   "exit": {
     "size": [
