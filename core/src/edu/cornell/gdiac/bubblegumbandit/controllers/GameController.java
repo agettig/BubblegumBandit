@@ -397,6 +397,7 @@ public class GameController implements Screen {
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
+        canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
     }
 
     /**
@@ -418,6 +419,9 @@ public class GameController implements Screen {
         // Toggle debug and handle resets.
         if (input.didDebug()) {level.setDebug(!level.getDebug());}
         if (input.didReset()) {reset();}
+        if (input.didCameraSwap()) {
+            canvas.getCamera().toggleDebug();
+        }
         if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
         if (input.didAdvance()) {
             levelNum++;
