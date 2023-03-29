@@ -13,13 +13,20 @@ public class GameCamera  extends OrthographicCamera {
     private final float ySpeed = 6f;
 
     /** The speed at which the camera converges on a new zoom. */
-    private final float zoomSpeed = 6f;
+    private final float zoomSpeed = 3f;
 
     /** The weight of the secondary target */
     private final float secondaryWeight = 0.25f;
 
-    /** Defines how far the target y can be from the camera position y, as a proportion of the screen height. */
-    private final float yClampFactor = 1;
+    /** Defines how far the target y can be from the camera position y, as a proportion of the screen height.
+     * Temporarily disabled when in fixed camera position. */
+    private final float targetYClamp = 0.15f;
+
+    /** The speed to converge on the target y clamp when transitioning from a fixed camera. */
+    private final float clampSpeed = 6f;
+
+    /** The speed to carry out the smoothstep. */
+    private final float smoothstepSpeed = 400f;
 
     // CAMERA FIELDS
     /** The target the camera is focused on. */
@@ -46,6 +53,9 @@ public class GameCamera  extends OrthographicCamera {
     /** The height of the level in pixels */
     private float levelHeight;
 
+    /** The current yClamp of the camera */
+    private float curYClamp;
+
     public GameCamera() {
         super();
     }
@@ -63,6 +73,7 @@ public class GameCamera  extends OrthographicCamera {
         isFixedY = false;
         targetZoom = 1f;
         isCameraDebug = false;
+        curYClamp = targetYClamp;
     }
 
     /** Toggles the debug mode of the camera. */
@@ -111,6 +122,7 @@ public class GameCamera  extends OrthographicCamera {
      */
     public void setFixedX(boolean isFixedX) {
         this.isFixedX = isFixedX;
+        // if (isFixedX) { curYClamp = 1; }
     }
 
 
@@ -120,6 +132,7 @@ public class GameCamera  extends OrthographicCamera {
      */
     public void setFixedY(boolean isFixedY) {
         this.isFixedY = isFixedY;
+        if (isFixedY) { curYClamp = 1; }
     }
 
 
@@ -242,20 +255,27 @@ public class GameCamera  extends OrthographicCamera {
             super.update(updateFrustum);
             return;
         }
+
         float newTargetX = target.x;
         if (!isFixedX) {
             newTargetX = target.x * (1 - secondaryWeight) + secondaryTarget.x * secondaryWeight;
         }
-        position.x += (newTargetX - position.x) * xSpeed * dt;
 
         float newTargetY = target.y;
         if (!isFixedY) {
             newTargetY = target.y * (1 - secondaryWeight) + secondaryTarget.y * secondaryWeight;
         }
+
+        position.x += (newTargetX - position.x) * xSpeed * dt;
         position.y += (newTargetY - position.y) * ySpeed * dt;
 
+        // Adjust y clamp
+        if (!isFixedY) {
+            curYClamp += (targetYClamp - curYClamp) * clampSpeed * dt;
+        }
+
         // Cap how far offscreen
-        float maxDistY = viewportHeight * yClampFactor * zoom;
+        float maxDistY = viewportHeight * curYClamp;
         if (position.y - target.y > maxDistY) {
             position.y = target.y + maxDistY;
         } else if (target.y - position.y > maxDistY) {
@@ -264,7 +284,6 @@ public class GameCamera  extends OrthographicCamera {
 
         // Adjust zoom
         zoom += (targetZoom - zoom) * zoomSpeed * dt;
-
         super.update(updateFrustum);
     }
 
