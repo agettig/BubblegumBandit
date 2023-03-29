@@ -2,12 +2,11 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
-import edu.cornell.gdiac.bubblegumbandit.controllers.fsm.MessageType;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.MessageType;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
@@ -302,7 +301,7 @@ public class CollisionController implements ContactListener {
                     gum.markRemoved(true);
                     enemy.setGummedTexture();
                     enemy.setGummed(true);
-                    levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().sendMessage(levelModel.getenemies().get(0), MessageType.HIT_BY_GUM);
+                    levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().sendMessage(levelModel.getenemies().get(0), MessageType.HIT_BY_GUM, null);
                     levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
                     gummedRobots.addLast(enemy);
                 }

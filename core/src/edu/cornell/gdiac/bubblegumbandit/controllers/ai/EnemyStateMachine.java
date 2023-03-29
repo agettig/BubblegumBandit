@@ -2,6 +2,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
@@ -249,7 +250,7 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
     public boolean canMove(){
         int x = (int) ((EnemyController) owner).getEnemy().getX();
         int y = (int) ((EnemyController) owner).getEnemy().getY();
-
+        // TODO fix tile types
         if (((EnemyController) owner).getEnemy().isFlipped()){
             return tiledGravityUpGraph.getNode(x, y).getType() != 0;
         }
@@ -262,13 +263,17 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         return ticks;
     }
 
-    public void sendMessage(EnemyController recipient, int messageType ){
+    public void sendMessage(EnemyController recipient, int messageType, Object extraInfo ){
         MessageManager.getInstance().dispatchMessage(
                 0.0f,
                 this,
                 recipient,
                 messageType,
-                null);
+                extraInfo);
+    }
+
+    public void broadcastMessage(int messageType, Object extraInfo){
+        MessageManager.getInstance().dispatchMessage(messageType, extraInfo);
     }
 
 }

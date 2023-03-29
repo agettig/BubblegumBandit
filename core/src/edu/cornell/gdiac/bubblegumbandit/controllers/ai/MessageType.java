@@ -14,9 +14,14 @@
  * limitations under the License.
  ******************************************************************************/
 
-package edu.cornell.gdiac.bubblegumbandit.controllers.fsm;
+package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
+
 
 /** @author davebaol */
-public enum Location {
-	SHACK, GOLD_MINE, BANK, SALOON;
+public class MessageType {
+	public static final int HIT_BY_GUM = 0;
+
+	public static final int NEED_BACKUP = 1;
+	public static final int ORB_TAKEN = 2;
+
 }

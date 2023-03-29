@@ -160,7 +160,20 @@
           "width":43,
           "x":1203.91855517528,
           "y":315.589908426603
-        }],
+        },
+        {
+          "gid":3,
+          "height":65,
+          "id":9,
+          "name":"",
+          "rotation":0,
+          "type":"smallrobot",
+          "visible":true,
+          "width":43,
+          "x":1534.24877439645,
+          "y":251.655027287022
+        }
+      ],
       "opacity":1,
       "type":"objectgroup",
       "visible":false,
