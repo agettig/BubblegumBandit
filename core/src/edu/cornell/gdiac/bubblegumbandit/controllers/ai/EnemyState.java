@@ -21,6 +21,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import static edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel.*;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph.GRAVITY_DOWN_TILE;
@@ -32,20 +33,16 @@ public enum EnemyState implements State<EnemyController> {
     SPAWN() {
         @Override
         public void enter (EnemyController  aiController) {
-            // if the miner is not already located at the goldmine, he must
-            // change location to the gold mine
             talk(aiController, "Enter spawn");
         }
 
         @Override
         public void update (EnemyController  aiController) {
-            // Now EnemyModel is at the goldmine he digs for gold until he
-            // is carrying in excess of MAX_NUGGETS. If he gets thirsty during
-            // his digging he packs up work for a while and changes state to
-            // go to the saloon for a whiskey.
+            // change to wander after 120 ticks
             if (aiController.getEnemyStateMachine().getTicks() > 120){
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
+            // set next action to no action
             aiController.getEnemy().setNextAction(CONTROL_NO_ACTION);
         }
         @Override
@@ -57,16 +54,15 @@ public enum EnemyState implements State<EnemyController> {
     WANDER() {
         public void enter (EnemyController aiController) {
             talk(aiController, "enter wander");
+            aiController.getEnemy().changeSpeed(WANDER_SPEED);
         }
 
         @Override
         public void update (EnemyController aiController) {
             EnemyModel enemy = aiController.getEnemy();
             BanditModel bandit = aiController.getBandit();
-            if(enemy.vision.canSee(bandit)){
-                aiController.getEnemyStateMachine().changeState(CHASE);
-            }
-            if (aiController.enemyHeardBandit()) {
+            // change to chase if enemy can see or hear bandit
+            if(enemy.vision.canSee(bandit) || aiController.enemyHeardBandit()){
                 aiController.getEnemyStateMachine().changeState(CHASE);
             }
             setAction(aiController);
@@ -85,22 +81,20 @@ public enum EnemyState implements State<EnemyController> {
                 return;
             }
 
-//            if (aiController.getTileType() == JUMP_TILE || enemy.isJumping()){
-//                enemy.setNextAction(CONTROL_JUMP);
-//                enemy.setIsJumping(true);
-//                return;
-//            }
-//
-//            if(aiController.getTileType() == GRAVITY_DOWN_TILE) enemy.setIsJumping(false);
-
             int moveRight;
             int moveLeft;
             int action = CONTROL_NO_ACTION;
 
+            // action from moving to the left
             moveLeft = aiController.getEnemyStateMachine().getNextMove((int)enemy.getX() - 1, (int) enemy.getY());
 
+            // action from moving to the right
             moveRight = aiController.getEnemyStateMachine().getNextMove((int)enemy.getX() + 1, (int) enemy.getY());
 
+            // if enemy can move right and is facing right move right
+            // if enemy can move left and is facing left move left
+            // try other direction if can't move in direction the enemy is facing
+            // else don't move
             if (enemy.getFaceRight()){
                 if ( moveRight != CONTROL_NO_ACTION){
                     action = moveRight;
@@ -127,17 +121,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public boolean onMessage (EnemyController aiController, Telegram telegram) {
-//            if (telegram.message == MessageType.STEW_READY) {
-//
-//                talk(EnemyModel, "Message STEW_READY handled at time: " + GdxAI.getTimepiece().getTime());
-//
-//                talk(EnemyModel, "Okay Hun, ahm a comin'!");
-//
-//                EnemyModel.getStateMachine().changeState(EAT_STEW);
-//
-//                return true;
-//            }
-//
+
             return false; // send message to global message handler
         }
     },
@@ -146,33 +130,36 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter (EnemyController aiController) {
             talk(aiController, "enter chase");
+            aiController.getEnemy().changeSpeed(CHASE_SPEED);
         }
 
         @Override
         public void update (EnemyController aiController) {
-            setAction(aiController);
+
+            // enter attack if player is in attack range
             if(aiController.getEnemy().getAttacking().canSee(aiController.getBandit())){
                 aiController.getEnemyStateMachine().changeState(ATTACK);
             }
+            // enter wander if enemy is out of hearing range
             if (!aiController.enemyHeardBandit()) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
+            // update action
+            setAction(aiController);
         }
 
         private void setAction(EnemyController aiController){
             BanditModel banditModel = aiController.getBandit();
             int move = CONTROL_NO_ACTION;
-            if (!aiController.getEnemyStateMachine().canMove()){
 
-            }
-            else{
+            // get next move if enemy is on a board path
+            if (aiController.getEnemyStateMachine().canMove()){
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
             }
-//            if (move == CONTROL_NO_ACTION){
-//                aiController.getEnemyStateMachine().changeState(WANDER);
-//            }
+
+            // set next action
             aiController.getEnemy().setNextAction(move);
         }
 
@@ -186,29 +173,32 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter (EnemyController aiController) {
             talk(aiController, "enter attack");
+            aiController.getEnemy().changeSpeed(CHASE_SPEED);
         }
 
         @Override
         public void update (EnemyController aiController) {
             BanditModel banditModel = aiController.getBandit();
             int move = CONTROL_NO_ACTION;
+
+            // set state to wander if enemy can not hear bandit
             if (!aiController.enemyHeardBandit()) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
-            if (!aiController.getEnemyStateMachine().canMove()){
 
-            }
-            else{
+            // if can move find next move
+            if (aiController.getEnemyStateMachine().canMove()){
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
             }
+
+            // shoot player
             if (aiController.canShootTarget()){
                 move = move | CONTROL_FIRE;
             }
-//            if (move == CONTROL_NO_ACTION){
-//                aiController.getEnemyStateMachine().changeState(WANDER);
-//            }
+
+            // set next action
             aiController.getEnemy().setNextAction(move);
         }
 
@@ -226,6 +216,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController aiController){
+            // if orb is collected and enemy is not stuck, change state to pursue
             if (aiController.getBandit().isOrbCollected() && !aiController.getEnemyStateMachine().isInState(STUCK)){
                 aiController.getEnemyStateMachine().changeState(PURSUE);
             }
@@ -290,26 +281,27 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController aiController){
             // set more agressive setting, smaller cooldown and faster speed
             talk(aiController, "enter pursue");
+            aiController.getEnemy().changeSpeed(PURSUE_SPEED);
         };
 
         @Override
         public void update(EnemyController aiController){
             BanditModel banditModel = aiController.getBandit();
             int move = CONTROL_NO_ACTION;
-            if (!aiController.getEnemyStateMachine().canMove()){
 
-            }
-            else{
+            // get next move
+            if (aiController.getEnemyStateMachine().canMove()){
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
             }
+
+            // determine if enemy can shoot
             if (aiController.canShootTarget()){
                 move = move | CONTROL_FIRE;
             }
-            if (move == CONTROL_NO_ACTION){
-                aiController.getEnemyStateMachine().changeState(WANDER);
-            }
+
+            // set next move
             aiController.getEnemy().setNextAction(move);
         };
         @Override

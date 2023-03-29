@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
-public class MovingEnemyModel extends EnemyModel {
+public class ProjectileEnemyModel extends EnemyModel {
 
     /**Maximum speed/velocity of a moving enemy. */
     private static float MAX_SPEED = 1f;
@@ -42,7 +42,7 @@ public class MovingEnemyModel extends EnemyModel {
      * @param world The box2d world
      * @param id the id of this Enemy
      * */
-    public MovingEnemyModel(World world, int id){
+    public ProjectileEnemyModel(World world, int id){
         super(world, id);
     }
 

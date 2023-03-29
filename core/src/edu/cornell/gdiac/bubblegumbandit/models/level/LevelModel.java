@@ -31,7 +31,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -348,7 +348,7 @@ public class LevelModel {
                     JsonValue enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     if (enemyConstants.get("type").asString().equals("moving")) {
-                        EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
+                        EnemyModel enemy = new ProjectileEnemyModel(world, enemyCount);
                         enemy.initialize(directory, x, y, enemyConstants);
                         enemy.setDrawScale(scale);
                         activate(enemy);

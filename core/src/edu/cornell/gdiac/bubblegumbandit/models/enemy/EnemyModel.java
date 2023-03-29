@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
@@ -125,6 +126,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     private boolean gummed;
 
     private boolean stuck;
+
+    private float speed;
+
+    public static float WANDER_SPEED;
+
+    public static float CHASE_SPEED;
+
+    public static float PURSUE_SPEED;
+
+    /**tile that the robot is currently standing on, or last stood on if in the air */
+    private TileModel tile;
 
     // endRegion
 
@@ -259,7 +271,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         isGrounded = value;
     }
 
-    public void setGummed(boolean value) {gummed = value; stuck = value;}
+    public void setGummed(boolean value) {gummed = value;}
 
     public boolean getGummed() {return gummed; }
 
@@ -280,7 +292,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         vision = new RayCastCone(7f, 0f, (float) Math.PI/2, Color.YELLOW);
         sensing = new RayCastCone(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
         attacking = new RayCastCone(6f, 0, (float) Math.PI/2, Color.BLUE);
-
+        gummed = false;
+        stuck = false;
+        tile = null;
     }
 
     /**
@@ -309,6 +323,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         setForce(constantsJson.get("force").asFloat());
         setDamping(constantsJson.get("damping").asFloat());
         setMaxSpeed(constantsJson.get("maxspeed").asFloat());
+        WANDER_SPEED = constantsJson.get("wanderspeed").asFloat();
+        CHASE_SPEED = constantsJson.get("chasespeed").asFloat();
+        PURSUE_SPEED = constantsJson.get("pursuespeed").asFloat();
+        speed = WANDER_SPEED;
 
         // Reflection is best way to convert name to color
         Color debugColor;
@@ -362,6 +380,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     public CircleShape getSensorShape() {
         return sensorShape;
     }
+    public TileModel getTile() {
+        return tile;
+    }
+    public void setTile(TileModel tile) {
+        this.tile = tile;
+
+    }
 
     public void update(float delta) {
         if (yScale < 1f && !isFlipped) {
@@ -387,7 +412,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public void updateMovement(int nextAction){
         // Determine how we are moving.
-        //System.out.println(nextAction);
+//        System.out.println(nextAction);
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
@@ -398,19 +423,19 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             if (previousAction != CONTROL_MOVE_LEFT){
                 setY((int) getY() + .5f);
             }
-            setVX(-3);
+            setVX(-speed);
             setFaceRight(false);
         } else if (movingRight) {
             if (previousAction != CONTROL_MOVE_RIGHT){
                 setY((int) getY() + .5f);
             }
-            setVX(3);
+            setVX(speed);
             setFaceRight(true);
         } else if (movingUp) {
 
             if (!isFlipped){
                setX((int) getPosition().x + .5f);
-                setVY(4f);
+                setVY(speed);
             }
             else{
                 setX((int) getPosition().x + .5f);
@@ -419,7 +444,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         } else if (movingDown) {
             if (isFlipped){
                 setX((int) getPosition().x + .5f);
-                setVY(-4f);
+                setVY(-speed);
             }
             else{
                 setX((int) getPosition().x + .5f);
@@ -427,7 +452,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
             setVX(0);
         } else {
             setVX(0);
-
+            setVX(0);
         }
     }
 
@@ -514,6 +539,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
      */
     public void flippedGravity() {
         isFlipped = !isFlipped;
+    }
+
+    public void changeSpeed(float speed){
+        this.speed = speed;
     }
 
 }

@@ -63,6 +63,9 @@ public class CollisionController implements ContactListener {
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
 
+    /**Queue for storing gummed robots */
+    private Queue<EnemyModel> gummedRobots = new Queue<>();
+
     public void resetWinCondition(){
         winConditionMet = false;
     }
@@ -122,7 +125,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
-            resolveEnemyGumCollision(obstacleA, obstacleB);
+            resolveEnemyTileCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
 
         } catch (Exception e) {
@@ -301,6 +304,7 @@ public class CollisionController implements ContactListener {
                     enemy.setGummed(true);
                     levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().sendMessage(levelModel.getenemies().get(0), MessageType.HIT_BY_GUM);
                     levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
+                    gummedRobots.addLast(enemy);
                 }
                 else {
                     enemy.setStuck(true);
@@ -338,23 +342,23 @@ public class CollisionController implements ContactListener {
         return false;
     }
     /**
-     * Adds a joint that sticks enemies to the tile if the enemy has been hit with gum
+     * Adds the tile that the enemy is currently standing on
      * @param ob1
      * @param ob2
      */
-    public void resolveEnemyGumCollision(Obstacle ob1, Obstacle ob2) {
+    public void resolveEnemyTileCollision(Obstacle ob1, Obstacle ob2) {
         EnemyModel enemy;
 
         if (ob1 instanceof EnemyModel) {
             enemy = (EnemyModel) ob1;
-            if ((ob2.getName().contains("tile") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
-                createEnemyTileJoint(ob2, ob1);
+            if ((ob2.getName().contains("tile") || ob2.getName().contains("wall"))) {
+                enemy.setTile((TileModel) ob2);
             }
         }
         if (ob2 instanceof EnemyModel) {
             enemy = (EnemyModel) ob2;
-            if ((ob1.getName().contains("tile") || ob1.getName().contains("wall")) && enemy.getGummed() == true) {
-                createEnemyTileJoint(ob1, ob2);
+            if ((ob1.getName().contains("tile") || ob1.getName().contains("wall"))) {
+                enemy.setTile((TileModel) ob1);
             }
         }
     }
@@ -386,9 +390,15 @@ public class CollisionController implements ContactListener {
         }
     }
 
-    public void resetRobotJoints() {
-        stickRobots.clear();
+    public void resetRobots() {
+        stickRobots.clear(); gummedRobots.clear();
     }
+
+    public void clearGummedRobots() {
+        gummedRobots.clear();
+    }
+
+    public Queue<EnemyModel> getGummedRobots() {return gummedRobots; }
 
     /**
      * Checks if there was an enemy projectile collision in the Box2D world.

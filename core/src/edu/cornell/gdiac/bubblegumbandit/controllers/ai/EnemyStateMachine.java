@@ -243,6 +243,9 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         return CONTROL_NO_ACTION;
     }
 
+    /**
+     * Returns true if enemy is on a valid path tile, not free-falling
+     * */
     public boolean canMove(){
         int x = (int) ((EnemyController) owner).getEnemy().getX();
         int y = (int) ((EnemyController) owner).getEnemy().getY();
