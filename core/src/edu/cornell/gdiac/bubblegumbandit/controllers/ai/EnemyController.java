@@ -1,15 +1,11 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
-import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.Board;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
@@ -115,9 +111,9 @@ public class EnemyController implements Telegraph {
         Vector2 enemyPosition = enemy.getPosition();
         CircleShape hearingCircle = enemy.getSensorShape();
 
-        Float xDiff = Math.abs(playerPosition.x - enemyPosition.x);
-        Float yDiff = Math.abs(playerPosition.y - enemyPosition.y);
-        Double distance = Math.sqrt(Math.pow(xDiff + yDiff, 2));
+        float xDiff = Math.abs(playerPosition.x - enemyPosition.x);
+        float yDiff = Math.abs(playerPosition.y - enemyPosition.y);
+        double distance = Math.sqrt(Math.pow(xDiff + yDiff, 2));
         if (distance < hearingCircle.getRadius()) {
             return true;
         }
