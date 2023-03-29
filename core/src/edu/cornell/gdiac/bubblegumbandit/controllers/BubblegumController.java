@@ -228,15 +228,15 @@ public class BubblegumController {
         jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
         Vector2 anchor = new Vector2();
         jointDef.localAnchorA.set(anchor);
-        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY() - yDiff*0.5f);
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY() - yDiff*0.4f);
         if (orientation == 1) {
-            anchor.set(gum.getX() - ob.getX() - xDiff*0.5f, gum.getY() - ob.getY());
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.4f, gum.getY() - ob.getY());
         }
         else if (orientation == 2) {
-            anchor.set(gum.getX() - ob.getX() - xDiff*0.5f, gum.getY() - ob.getY() - yDiff*0.75f);
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.5f, gum.getY() - ob.getY() - yDiff*0.65f);
         }
         else if (orientation == 3) {
-            anchor.set(gum.getX() - ob.getX() - xDiff*0.75f, gum.getY() - ob.getY() - yDiff*0.75f);
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.75f, gum.getY() - ob.getY() - yDiff*0.65f);
         }
         jointDef.localAnchorB.set(anchor);
         return jointDef;
@@ -276,7 +276,7 @@ public class BubblegumController {
 
         float radius = texture.getRegionWidth() / (2.0f * scale.x);
         //Create a new GumModel and assign it to the BubblegumController.
-        GumModel gum = new GumModel(origin.x, origin.y, radius*2);
+        GumModel gum = new GumModel(origin.x, origin.y, radius*2f);
         gum.setName(gumJV.name());
         gum.setDensity(gumJV.getFloat("density", 0));
         gum.setDrawScale(scale);
