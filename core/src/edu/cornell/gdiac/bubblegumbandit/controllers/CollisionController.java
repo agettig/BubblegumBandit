@@ -283,7 +283,8 @@ public class CollisionController implements ContactListener {
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
-        Boolean vertical = false;
+        //0 = horizontal, 1 = vertical, 2 = rightCorner, 3 = leftCorner
+        int orientation = 0;
         if (gum != null && gum.canAddObstacle(body)){
             if (enemy != null) {
                 if (!gum.onTile()) {
@@ -298,30 +299,34 @@ public class CollisionController implements ContactListener {
             }
             else if (body instanceof TileModel) {
                 tile = (TileModel) body;
-                vertical = checkGumPosition(gum, body);
+                orientation = checkGumPosition(gum, body);
                 gum.onTile(true);
                 if (tile.hasCorner()) {
                     Vector2 gumPos = gum.getPosition();
                     Vector2 tilePos = tile.getPosition();
                         if (gumPos.x > tilePos.x + 0.35f) {
-                            if (tile.topRight() && gumPos.y > tilePos.y + 0.35f) {
+                            if (tile.topRight() && gumPos.y > tilePos.y + 0.5f) {
                                 gum.setTexture(bubblegumController.getTopRightGumTexture());
+                                orientation = 2;
                             }
-                            if (tile.bottomRight() && gumPos.y < tilePos.y + 0.35f) {
+                            if (tile.bottomRight() && gumPos.y < tilePos.y + 0.5f) {
                                 gum.setTexture(bubblegumController.getBottomRightGumTexture());
+                                orientation = 2;
                             }
                         }
                         if (gumPos.x < tilePos.x - 0.35f) {
-                            if (tile.bottomLeft() && gumPos.y < tilePos.y + 0.35f) {
+                            if (tile.bottomLeft() && gumPos.y < tilePos.y + 0.5f) {
                                 gum.setTexture(bubblegumController.getBottomLeftGumTexture());
+                                orientation = 3;
                             }
-                            if (tile.topLeft() && gumPos.y > tilePos.y + 0.35f) {
+                            if (tile.topLeft() && gumPos.y > tilePos.y + 0.5f) {
                                 gum.setTexture(bubblegumController.getTopLeftGumTexture());
+                                orientation = 3;
                             }
                         }
                     }
                 }
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, vertical);
+            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
@@ -335,7 +340,7 @@ public class CollisionController implements ContactListener {
      * @param tile
      * @return
      */
-    public boolean checkGumPosition(GumModel gum, Obstacle tile) {
+    public int checkGumPosition(GumModel gum, Obstacle tile) {
         Vector2 gumPos = gum.getPosition();
         Vector2 tilePos = tile.getPosition();
         Boolean x = gumPos.x > (tilePos.x + 0.5f) || gumPos.x < (tilePos.x - 0.5f);
@@ -343,9 +348,9 @@ public class CollisionController implements ContactListener {
 
         if (x && y) {
             gum.setTexture(bubblegumController.getRotatedGumTexture());
-            return true;
+            return 1;
         }
-        return false;
+        return 0;
     }
     /**
      * Adds the tile that the enemy is currently standing on

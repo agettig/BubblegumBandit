@@ -18,7 +18,7 @@
         "gumProjectile": "textures/gum.png",
         "floatinggum": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
-        "gum": "textures/stuck_gum2.png",
+        "gum": "textures/stuck_gum.png",
         "topRightGum": "textures/topRightGum.png",
         "bottomRightGum": "textures/bottomRightGum.png",
         "bottomLeftGum": "textures/bottomLeftGum.png",
