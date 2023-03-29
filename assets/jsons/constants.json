@@ -54,7 +54,8 @@
     "density": 10.0,
     "texture": "gumProjectile",
     "stuckTexture": "gum",
-    "rotatedStuckTexture": "rotatedGum"
+    "rotatedStuckTexture": "rotatedGum",
+    "cornerStuckTexture": "cornerGum"
   },
   "floatinggum": {
     "density": 0.0,
