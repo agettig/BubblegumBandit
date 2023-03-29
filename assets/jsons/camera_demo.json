@@ -258,13 +258,13 @@
                  "rotation":0,
                  "type":"camera_h",
                  "visible":true,
-                 "width":64,
-                 "x":1344,
+                 "width":1,
+                 "x":1406,
                  "y":1217.54
                 }, 
                 {
                  "gid":14,
-                 "height":64,
+                 "height":1,
                  "id":124,
                  "name":"",
                  "properties":[
@@ -283,7 +283,7 @@
                  "visible":true,
                  "width":320,
                  "x":2624,
-                 "y":1664
+                 "y":1601
                 }, 
                 {
                  "gid":15,
@@ -314,13 +314,13 @@
                  "rotation":0,
                  "type":"camera_h",
                  "visible":true,
-                 "width":64,
+                 "width":1,
                  "x":2304,
                  "y":1600
                 }, 
                 {
                  "gid":14,
-                 "height":64,
+                 "height":1,
                  "id":128,
                  "name":"",
                  "properties":[
@@ -339,11 +339,11 @@
                  "visible":true,
                  "width":320,
                  "x":2624,
-                 "y":2880
+                 "y":2814
                 }, 
                 {
                  "gid":14,
-                 "height":64,
+                 "height":1,
                  "id":129,
                  "name":"",
                  "properties":[
@@ -362,7 +362,7 @@
                  "visible":true,
                  "width":320,
                  "x":1792,
-                 "y":2752
+                 "y":2698
                 }, 
                 {
                  "gid":10,
