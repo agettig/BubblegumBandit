@@ -303,18 +303,24 @@ public class CollisionController implements ContactListener {
                 if (tile.hasCorner()) {
                     Vector2 gumPos = gum.getPosition();
                     Vector2 tilePos = tile.getPosition();
-                    if (tile.topRight() || tile.bottomRight()) {
-                        if (gumPos.x > tilePos.x + 0.4f) {
-                            gum.setTexture(bubblegumController.getCornerGumTexture());
+                        if (gumPos.x > tilePos.x + 0.35f) {
+                            if (tile.topRight() && gumPos.y > tilePos.y + 0.35f) {
+                                gum.setTexture(bubblegumController.getTopRightGumTexture());
+                            }
+                            if (tile.bottomRight() && gumPos.y < tilePos.y + 0.35f) {
+                                gum.setTexture(bubblegumController.getBottomRightGumTexture());
+                            }
                         }
-                    }
-                    if (tile.topLeft() || tile.bottomLeft()) {
-                        if (gumPos.x < tilePos.x - 0.4f) {
-                            gum.setTexture(bubblegumController.getCornerGumTexture());
+                        if (gumPos.x < tilePos.x - 0.35f) {
+                            if (tile.bottomLeft() && gumPos.y < tilePos.y + 0.35f) {
+                                gum.setTexture(bubblegumController.getBottomLeftGumTexture());
+                            }
+                            if (tile.topLeft() && gumPos.y > tilePos.y + 0.35f) {
+                                gum.setTexture(bubblegumController.getTopLeftGumTexture());
+                            }
                         }
                     }
                 }
-            }
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, vertical);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
