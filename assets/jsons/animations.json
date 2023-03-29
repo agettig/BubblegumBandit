@@ -1,7 +1,5 @@
 {
-  "player": {
-      "run": "bandit_run"
-    }
-
+  "bandit" : {
+    "run": "bandit.run"
+  }
 }
-
