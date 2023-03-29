@@ -299,33 +299,9 @@ public class CollisionController implements ContactListener {
             }
             else if (body instanceof TileModel) {
                 tile = (TileModel) body;
-                orientation = checkGumPosition(gum, body);
+                orientation = checkGumPosition(gum, tile);
                 gum.onTile(true);
-                if (tile.hasCorner()) {
-                    Vector2 gumPos = gum.getPosition();
-                    Vector2 tilePos = tile.getPosition();
-                        if (gumPos.x > tilePos.x + 0.35f) {
-                            if (tile.topRight() && gumPos.y > tilePos.y + 0.5f) {
-                                gum.setTexture(bubblegumController.getTopRightGumTexture());
-                                orientation = 2;
-                            }
-                            if (tile.bottomRight() && gumPos.y < tilePos.y + 0.5f) {
-                                gum.setTexture(bubblegumController.getBottomRightGumTexture());
-                                orientation = 2;
-                            }
-                        }
-                        if (gumPos.x < tilePos.x - 0.35f) {
-                            if (tile.bottomLeft() && gumPos.y < tilePos.y + 0.5f) {
-                                gum.setTexture(bubblegumController.getBottomLeftGumTexture());
-                                orientation = 3;
-                            }
-                            if (tile.topLeft() && gumPos.y > tilePos.y + 0.5f) {
-                                gum.setTexture(bubblegumController.getTopLeftGumTexture());
-                                orientation = 3;
-                            }
-                        }
-                    }
-                }
+            }
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
@@ -340,7 +316,7 @@ public class CollisionController implements ContactListener {
      * @param tile
      * @return
      */
-    public int checkGumPosition(GumModel gum, Obstacle tile) {
+    public int checkGumPosition(GumModel gum, TileModel tile) {
         Vector2 gumPos = gum.getPosition();
         Vector2 tilePos = tile.getPosition();
         Boolean x = gumPos.x > (tilePos.x + 0.5f) || gumPos.x < (tilePos.x - 0.5f);
@@ -349,6 +325,28 @@ public class CollisionController implements ContactListener {
         if (x && y) {
             gum.setTexture(bubblegumController.getRotatedGumTexture());
             return 1;
+        }
+        if (tile.hasCorner()) {
+            if (gumPos.x > tilePos.x + 0.35f) {
+                if (tile.topRight() && gumPos.y > tilePos.y + 0.5f) {
+                    gum.setTexture(bubblegumController.getTopRightGumTexture());
+                    return 2;
+                }
+                if (tile.bottomRight() && gumPos.y < tilePos.y + 0.5f) {
+                    gum.setTexture(bubblegumController.getBottomRightGumTexture());
+                    return 2;
+                }
+            }
+            if (gumPos.x < tilePos.x - 0.35f) {
+                if (tile.bottomLeft() && gumPos.y < tilePos.y + 0.5f) {
+                    gum.setTexture(bubblegumController.getBottomLeftGumTexture());
+                     return 3;
+                }
+                if (tile.topLeft() && gumPos.y > tilePos.y + 0.5f) {
+                    gum.setTexture(bubblegumController.getTopLeftGumTexture());
+                    return 3;
+                }
+            }
         }
         return 0;
     }
