@@ -18,14 +18,35 @@ public class TileModel extends BoxObstacle {
     /** The texture of this tile */
     private TextureRegion tileTexture;
 
+    private boolean hasCorner;
+    private boolean topRight;
+    private boolean topLeft;
+    private boolean bottomRight;
+    private boolean bottomLeft;
+
     /**
      * Create a new TileModel with degenerate settings
      */
     public TileModel() {
         super(0,0,1,1);
         tileTexture = null;
+        hasCorner = false;
+        topRight = false;
+        topLeft = false;
+        bottomRight = false;
+        bottomLeft = false;
     }
 
+    public boolean hasCorner() {return hasCorner;}
+    public void hasCorner(boolean value) {hasCorner = value;}
+    public boolean topRight() {return topRight;}
+    public void topRight(boolean value) {topRight = value;}
+    public boolean topLeft() {return topLeft;}
+    public void topLeft(boolean value) {topLeft = value;}
+    public boolean bottomLeft() {return bottomLeft;}
+    public void bottomLeft(boolean value) {bottomLeft = value;}
+    public boolean bottomRight() {return bottomRight;}
+    public void bottomRight(boolean value) {bottomRight = value;}
 
     /**
      * Initializes the platform via the given JSON value

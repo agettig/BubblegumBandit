@@ -257,6 +257,7 @@ public class CollisionController implements ContactListener {
         GumModel gum = null;
         Obstacle body = null;
         EnemyModel enemy = null;
+        TileModel tile = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
@@ -296,8 +297,23 @@ public class CollisionController implements ContactListener {
                 }
             }
             else if (body instanceof TileModel) {
+                tile = (TileModel) body;
                 vertical = checkGumPosition(gum, body);
                 gum.onTile(true);
+                if (tile.hasCorner()) {
+                    Vector2 gumPos = gum.getPosition();
+                    Vector2 tilePos = tile.getPosition();
+                    if (tile.topRight() || tile.bottomRight()) {
+                        if (gumPos.x > tilePos.x + 0.4f) {
+                            gum.setTexture(bubblegumController.getCornerGumTexture());
+                        }
+                    }
+                    if (tile.topLeft() || tile.bottomLeft()) {
+                        if (gumPos.x < tilePos.x - 0.4f) {
+                            gum.setTexture(bubblegumController.getCornerGumTexture());
+                        }
+                    }
+                }
             }
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, vertical);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);

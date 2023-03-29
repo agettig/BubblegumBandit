@@ -43,6 +43,10 @@ public class BubblegumController {
     /**Stores rotated gum */
     private TextureRegion rotatedStuckGumTexture;
 
+    /**Stores corner gum */
+    private TextureRegion cornerGumTexture;
+
+
     /**
      * Instantiates the Bubblegum controller and its queues.
      * */
@@ -60,6 +64,8 @@ public class BubblegumController {
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         String key2 = json.get("rotatedStuckTexture").asString();
         rotatedStuckGumTexture = new TextureRegion(directory.getEntry(key2, Texture.class));
+        String key3 = json.get("cornerStuckTexture").asString();
+        cornerGumTexture = new TextureRegion(directory.getEntry(key3, Texture.class));
     }
 
     public void resetAmmo() {
@@ -84,6 +90,7 @@ public class BubblegumController {
     public TextureRegion getStuckGumTexture() { return stuckGumTexture; }
 
     public TextureRegion getRotatedGumTexture() {return rotatedStuckGumTexture; }
+    public TextureRegion getCornerGumTexture() {return cornerGumTexture; }
 
     /**
      * Adds a GumJointPair to the assembly queue if possible.
