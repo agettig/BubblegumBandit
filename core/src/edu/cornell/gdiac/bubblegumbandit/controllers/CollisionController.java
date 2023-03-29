@@ -311,10 +311,10 @@ public class CollisionController implements ContactListener {
     }
 
     /**
-     * Check if gum hit a vertical side of the tile.
+     * Check if gum hit a vertical side or corner of a tile.
      * @param gum
      * @param tile
-     * @return
+     * @return int that corresponds with gum orientation.
      */
     public int checkGumPosition(GumModel gum, TileModel tile) {
         Vector2 gumPos = gum.getPosition();
@@ -399,10 +399,16 @@ public class CollisionController implements ContactListener {
         }
     }
 
+    /**
+     * Clears all robots stuck or gummed. Called when level reset.
+     */
     public void resetRobots() {
         stickRobots.clear(); gummedRobots.clear();
     }
 
+    /**
+     * Clears all gummed robots. Needed to clear in gameController.
+     */
     public void clearGummedRobots() {
         gummedRobots.clear();
     }

@@ -17,11 +17,15 @@ import java.lang.reflect.Field;
 public class TileModel extends BoxObstacle {
     /** The texture of this tile */
     private TextureRegion tileTexture;
-
+    /** Whether the tile has an open corner */
     private boolean hasCorner;
+    /** Whether the tile has a corner in the top right */
     private boolean topRight;
+    /** Whether the tile has a corner in the top left */
     private boolean topLeft;
+    /** Whether the tile has a corner in the bottom right */
     private boolean bottomRight;
+    /** Whether the tile has a corner in the bottom left */
     private boolean bottomLeft;
 
     /**
@@ -37,6 +41,10 @@ public class TileModel extends BoxObstacle {
         bottomLeft = false;
     }
 
+    /**
+     * Getters and setters for tile corners
+     * @return
+     */
     public boolean hasCorner() {return hasCorner;}
     public void hasCorner(boolean value) {hasCorner = value;}
     public boolean topRight() {return topRight;}
