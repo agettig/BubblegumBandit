@@ -332,13 +332,13 @@ public class CollisionController implements ContactListener {
                     gum.setTexture(bubblegumController.getTopRightGumTexture());
                     return 2;
                 }
-                if (tile.bottomRight() && gumPos.y < tilePos.y + 0.5f) {
+                if (tile.bottomRight() && gumPos.y < tilePos.y - 0.5f) {
                     gum.setTexture(bubblegumController.getBottomRightGumTexture());
                     return 2;
                 }
             }
             if (gumPos.x < tilePos.x - 0.35f) {
-                if (tile.bottomLeft() && gumPos.y < tilePos.y + 0.5f) {
+                if (tile.bottomLeft() && gumPos.y < tilePos.y - 0.5f) {
                     gum.setTexture(bubblegumController.getBottomLeftGumTexture());
                      return 3;
                 }
