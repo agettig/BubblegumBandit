@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.math.Vector2;
@@ -91,6 +92,7 @@ public class EnemyController implements Telegraph {
         ticks = 0;
         firecool = 0;
         target = null;
+        MessageManager.getInstance().addListener(this, MessageType.NEED_BACKUP);
     }
 
     /**

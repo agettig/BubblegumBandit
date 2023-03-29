@@ -138,6 +138,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     /**tile that the robot is currently standing on, or last stood on if in the air */
     private TileModel tile;
 
+    /** Position of enemy in need of help */
+    private Vector2 helpingTarget;
+
     // endRegion
 
     /**
@@ -295,6 +298,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         gummed = false;
         stuck = false;
         tile = null;
+        helpingTarget = null;
+    }
+
+    public Vector2 getHelpingTarget() {
+        return helpingTarget;
+    }
+
+    public void setHelpingTarget(Vector2 helpingTarget) {
+        this.helpingTarget = helpingTarget;
     }
 
     /**
