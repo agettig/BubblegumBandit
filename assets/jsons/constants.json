@@ -55,7 +55,10 @@
     "texture": "gumProjectile",
     "stuckTexture": "gum",
     "rotatedStuckTexture": "rotatedGum",
-    "cornerStuckTexture": "cornerGum"
+    "topRightStuckTexture": "topRightGum",
+    "bottomRightStuckTexture": "bottomRightGum",
+    "bottomLeftStuckTexture": "bottomLeftGum",
+    "topLeftStuckTexture": "topLeftGum"
   },
   "floatinggum": {
     "density": 0.0,

@@ -44,7 +44,10 @@ public class BubblegumController {
     private TextureRegion rotatedStuckGumTexture;
 
     /**Stores corner gum */
-    private TextureRegion cornerGumTexture;
+    private TextureRegion topRightGumTexture;
+    private TextureRegion bottomRightGumTexture;
+    private TextureRegion bottomLeftGumTexture;
+    private TextureRegion topLeftGumTexture;
 
 
     /**
@@ -64,8 +67,14 @@ public class BubblegumController {
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         String key2 = json.get("rotatedStuckTexture").asString();
         rotatedStuckGumTexture = new TextureRegion(directory.getEntry(key2, Texture.class));
-        String key3 = json.get("cornerStuckTexture").asString();
-        cornerGumTexture = new TextureRegion(directory.getEntry(key3, Texture.class));
+        String key3 = json.get("topRightStuckTexture").asString();
+        topRightGumTexture = new TextureRegion(directory.getEntry(key3, Texture.class));
+        String key4 = json.get("bottomRightStuckTexture").asString();
+        bottomRightGumTexture = new TextureRegion(directory.getEntry(key4, Texture.class));
+        String key5 = json.get("bottomLeftStuckTexture").asString();
+        bottomLeftGumTexture = new TextureRegion(directory.getEntry(key5, Texture.class));
+        String key6 = json.get("topLeftStuckTexture").asString();
+        topLeftGumTexture = new TextureRegion(directory.getEntry(key6, Texture.class));
     }
 
     public void resetAmmo() {
@@ -90,7 +99,13 @@ public class BubblegumController {
     public TextureRegion getStuckGumTexture() { return stuckGumTexture; }
 
     public TextureRegion getRotatedGumTexture() {return rotatedStuckGumTexture; }
-    public TextureRegion getCornerGumTexture() {return cornerGumTexture; }
+    public TextureRegion getTopRightGumTexture() {return topRightGumTexture; }
+
+    public TextureRegion getBottomRightGumTexture() {return bottomRightGumTexture;}
+
+    public TextureRegion getBottomLeftGumTexture() {return bottomLeftGumTexture;}
+
+    public TextureRegion getTopLeftGumTexture() {return topLeftGumTexture;}
 
     /**
      * Adds a GumJointPair to the assembly queue if possible.
