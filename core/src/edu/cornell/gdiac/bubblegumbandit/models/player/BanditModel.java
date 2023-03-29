@@ -353,7 +353,7 @@ public class BanditModel extends CapsuleObstacle {
 		cameraTarget.set(pos[0]*drawScale.x, pos[1]*drawScale.y);
 		setDimension(size[0],size[1]);
 
-		animationController = new AnimationController(directory,"player");
+		animationController = new AnimationController(directory,"bandit");
 
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
@@ -527,7 +527,6 @@ public class BanditModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-
 			canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
 			getY()*drawScale.y,getAngle(),effect,yScale);
 
