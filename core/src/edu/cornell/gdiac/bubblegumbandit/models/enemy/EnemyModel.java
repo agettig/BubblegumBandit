@@ -84,8 +84,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     private TextureRegion gummed_robot;
 
+    /**Represents whether the robot has been hit with gum and should turn pink */
     private boolean gummed;
 
+    /**Determines if the robot has been stuck to gum already on a tile */
     private boolean stuck;
 
     /**tile that the robot is currently standing on, or last stood on if in the air */
