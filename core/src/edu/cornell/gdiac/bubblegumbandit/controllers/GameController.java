@@ -24,25 +24,24 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.JointDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Queue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.util.ScreenListener;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
+
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 /**
  * Gameplay controller for the game.
