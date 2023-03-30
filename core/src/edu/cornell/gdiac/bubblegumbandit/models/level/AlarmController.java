@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -65,11 +66,20 @@ public class AlarmController {
    * @param scale The physics to world scale (should be 64x64 in BGB)
    */
   public void drawLights(GameCamera camera, GameCanvas canvas, Vector2 scale) {
-    FitViewport view = canvas.getFitviewport();
+    //this is a whole mess of scaling confusion
+
+
+    //rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
+    //    view.getScreenWidth(), view.getScreenHeight());
+
+
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
-        camera.position.y / scale.y, view.getWorldWidth()* camera.zoom / scale.x,
-        view.getWorldHeight() * camera.zoom / scale.y); //how to scale down to physics?
+        camera.position.y / scale.y, camera.viewportWidth* camera.zoom / scale.x,
+        camera.viewportHeight * camera.zoom / scale.y);
+
+
     rays.render();
+
   }
 
   /**
