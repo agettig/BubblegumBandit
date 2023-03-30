@@ -740,14 +740,18 @@ public class GameCanvas {
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
     }
 
+    /** Draws a shadow to the right of the drawn object in the color black */
     public void drawWithShadow(TextureRegion region, Color tint, float ox, float oy,
                                float x, float y, float angle, float sx, float sy) {
+        drawWithColoredShadow(region, tint, ox, oy, x, y, angle, sx, sy, Color.BLACK);
+    }
 
-        draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);
+    /** Draws a shadow to the right of the drawn object in the color black */
+    public void drawWithColoredShadow(TextureRegion region, Color tint, float ox, float oy,
+                               float x, float y, float angle, float sx, float sy, Color shadowColor) {
+
+        draw(region, shadowColor, ox, oy, x+shadowOffset, y, angle, sx, sy);
         draw(region, tint, ox, oy, x, y, angle, sx, sy);
-
-
-
 
     }
 

@@ -49,7 +49,7 @@ public class BackObjModel extends BoxObstacle {
      * @param json      the JSON subtree defining the dude
      */
     public void initialize(AssetDirectory directory, JsonValue json, JsonValue info) {
-        setName(json.get("name").asString());
+
 
         //physics information
         setBodyType(BodyDef.BodyType.DynamicBody);
@@ -61,6 +61,7 @@ public class BackObjModel extends BoxObstacle {
 
         //unique information
         String key = info.get("texture").asString();
+        setName(key);
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 
         float[] p = info.get("pos").asFloatArray();
@@ -111,13 +112,24 @@ public class BackObjModel extends BoxObstacle {
             float direction = faceRight ? 1.0f : -1.0f;
             float angle = MathUtils.cos(this.getAngle());
 
+//            Color color = Color.WHITE;
+//            Color color = new Color (0.043f, 0.349f, 0.4196f, 0.8f);
+//            Color shadowColor = new Color (0.043f, 0.349f, 0.4196f, 1f);
+//            Color color = new Color (1, 1, 1, 0.6f);
+            Color color = new Color(0.0118f, 0.279f, 0.34f, 0.5f);
+            Color shadowColor = new Color(0.0118f, 0.279f, 0.34f, 1f);
+
             //flip around a different axis when rotated 90 degrees
             if (angle < ANGLE_OFFSET && angle > -ANGLE_OFFSET){
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle() , fo.getScale(), direction);
+                canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x,
                         getY() * drawScale.y, getAngle() , fo.getScale(), direction);
             }
             else{
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle() , direction, fo.getScale());
+                canvas.draw(texture, color, origin.x, origin.y, getX() * drawScale.x,
                         getY() * drawScale.y, getAngle() , direction, fo.getScale());
             }
 

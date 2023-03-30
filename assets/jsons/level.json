@@ -717,12 +717,12 @@
   },
   "exit": {
     "pos": [
-      46,
-      1.92
+      45,
+      2.5
     ],
     "size": [
-      1.92,
-      1.92
+      1.5,
+      3
     ],
     "bodytype": "static",
     "density": 0.0,
@@ -795,7 +795,7 @@
   },
   "backgroundObj": {
     "name": "bgo",
-    "numObj": 8,
+    "numObj": 14,
     "density": 1.0,
     "friction": 0.4,
     "restitution": 0.0,
@@ -805,17 +805,33 @@
       {
         "pos": [
           10,
-          4
+          2
+        ] ,
+        "texture": "frame",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          10,
+          1
         ] ,
         "texture": "box",
         "faceRight": "false"
       },
       {
         "pos": [
-          10.6,
-          3
+          25.5,
+          18
         ] ,
-        "texture": "box",
+        "texture": "chair",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          28.5,
+          18
+        ] ,
+        "texture": "chair",
         "faceRight": "false"
       },
       {
@@ -823,28 +839,28 @@
           27,
           18
         ] ,
-        "texture": "chair",
-        "faceRight": "true"
+        "texture": "box",
+        "faceRight": "false"
       },
       {
         "pos": [
-          29,
-          18
+          27,
+          19
         ] ,
-        "texture": "chair",
-        "faceRight": "false"
+        "texture": "frame",
+        "faceRight": "true"
       },
       {
         "pos": [
           2,
           21
         ],
-        "texture": "box",
+        "texture": "powercell",
         "faceRight": "true"
       },
       {
         "pos": [
-          25.5,
+          25.8,
           1
         ],
         "texture": "box",
@@ -855,12 +871,12 @@
           26,
           2
         ],
-        "texture": "powercell",
+        "texture": "box",
         "faceRight": "true"
       },
       {
         "pos": [
-          25.7,
+          25.6,
           3
         ],
         "texture": "box",
@@ -877,7 +893,23 @@
       {
         "pos": [
           27,
-          3
+          2
+        ],
+        "texture": "powercell",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25,
+          1
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25,
+          2
         ],
         "texture": "box",
         "faceRight": "true"
