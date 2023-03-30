@@ -18,6 +18,9 @@ public class LaserEnemyModel extends EnemyModel{
     /** How long a LaserEnemyModel has been waiting to fire again */
     private float laserTimer;
 
+    /** true if this LaserEnemyModel is firing a laser*/
+    private boolean firing;
+
     /**Creates a LaserEnemy.
      *
      * @param world The box2d world
@@ -104,5 +107,18 @@ public class LaserEnemyModel extends EnemyModel{
         return laserTimer <= 0;
     }
 
+    /**
+     * Returns true if this LaserEnemyModel is firing a LaserModel.
+     *
+     * @return true if this LaserEnemyModel is firing a LaserModel, otherwise,
+     * return false.
+     * */
+    public boolean isFiringLaser() { return firing; }
 
+    /**
+     * Sets whether this LaserEnemyModel is firing a LaserModel.
+     *
+     * @param firing true if this LaserEnemyModel is firing a laser.
+     * */
+    public void setFiringLaser(boolean firing) { this.firing = firing; }
 }

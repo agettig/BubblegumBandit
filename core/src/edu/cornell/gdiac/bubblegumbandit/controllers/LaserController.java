@@ -109,6 +109,7 @@ public class LaserController {
 
         //Attach the laser to the enemy, start the cool down, and return.
         ((LaserEnemyModel)enemy).resetCooldown();
+        ((LaserEnemyModel)enemy).setFiringLaser(true);
         lasers.put(enemy, laser);
         return laser;
     }
@@ -170,6 +171,9 @@ public class LaserController {
         if(owner == null) return;
         if(!lasers.containsKey(owner)) return;
         LaserModel laserToRemove = lasers.get(owner);
+        ((LaserEnemyModel)owner).setFiringLaser(false);
         laserToRemove.markRemoved(true);
     }
+
+
 }

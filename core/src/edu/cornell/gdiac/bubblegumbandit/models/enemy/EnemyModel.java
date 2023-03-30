@@ -53,17 +53,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
     /** EnemyModel's y-scale: used for flipping gravity. */
     private float yScale;
 
-    /** EnemyType of this EnemyModel */
-    private ENEMY_TYPE type;
-
-    /** Enumeration to rerpesent different EnemyModels  */
-    public enum ENEMY_TYPE{
-        ROLLING,
-        PROJECTILE,
-        LASER
-    }
-
-
 
     /**Returns this EnemyModel's unique integer ID.
      *
