@@ -219,14 +219,14 @@ public class BubblegumController {
     /**
      * Adds every joint in the joint queue to the world before clearing the queue.
      */
-    public void addJointsToWorld(LevelModel level, SoundEffect gumSplat, long gumSplatId) {
+    public void addJointsToWorld(LevelModel level) {
         for(int i = 0; i < numActivePairsToAssemble(); i++){
             GumJointPair pairToAssemble = dequeueAssembly();
             WeldJointDef weldJointDef = pairToAssemble.getJointDef();
             WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             addToStuckBubblegum(activePair);
-            gumSplatId = GameController.playSound(gumSplat, gumSplatId, 0.25f);
+            SoundController.playSound("gumSplat", 0.5f);
         }
     }
 

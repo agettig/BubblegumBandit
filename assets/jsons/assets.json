@@ -47,7 +47,8 @@
   		"jump" : "sounds/jump.mp3",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
-        "robotSplat": "sounds/splatRobot.wav"
+        "robotSplat": "sounds/splatRobot.wav",
+        "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
 		"level1" : "jsons/camera_demo.json",
