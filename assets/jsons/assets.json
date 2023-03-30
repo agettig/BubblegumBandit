@@ -23,7 +23,9 @@
         "health_icon": "textures/UI_heart.png",
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
-        "bullet": "textures/bullet.png"
+        "bullet": "textures/bullet.png",
+        "alarm_on": "textures/alarm_on.png",
+        "alarm_off": "textures/alarm_off.png"
     },
     "fonts": {
         "display": {

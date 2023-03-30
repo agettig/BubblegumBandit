@@ -130,8 +130,8 @@ public class LevelModel {
     /**
      * Lighting system
      */
-    private RayHandler rayHandler;
-    private PointLight[] lights;
+    private AlarmController alarms;
+
 
 
     /**
@@ -242,7 +242,7 @@ public class LevelModel {
         }
         objects.clear();
         if (world != null) {
-            rayHandler.dispose();
+            alarms.dispose();
             world.dispose();
             world = null;
         }
@@ -332,17 +332,9 @@ public class LevelModel {
             floor = floor.next();
         }
 
-        rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(.8f);
-        rayHandler.setShadows(true); //not working
-        lights = new PointLight[(int) (bounds.width/8-1)];
-        for(int i = 0; i<lights.length; i++) {
-            lights[i] = new PointLight(rayHandler, 20,
-                Color.WHITE,  8,  (8+8*i),
-                (bounds.height-1.5f));
-            lights[i].setSoft(true);
-            lights[i].setColor(1f,1f,1f,.9f);
-        }
+        //example of how to make the alarms, not 100% on how to incorporate into tiled
+        int[][] alarmLocs = new int[][] {{20,4},{3, 4}};
+        alarms = new AlarmController(alarmLocs,directory,world);
 
 
     }
@@ -423,8 +415,7 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
-        rayHandler.update();
-        //setting combined matrix??
+       alarms.update();
     }
 
     /**
@@ -594,6 +585,8 @@ public class LevelModel {
             drawBackground(canvas);
         }
 
+        alarms.drawAlarms(canvas, scale);
+
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
@@ -605,9 +598,7 @@ public class LevelModel {
 
         canvas.end();
 
-        GameCamera cam = canvas.getCamera();
-        rayHandler.setCombinedMatrix(cam.combined.scl(scale.x), cam.position.x / scale.x, cam.position.y / scale.y, cam.viewportWidth * cam.zoom / scale.x, cam.viewportHeight * cam.zoom / scale.y); //how to scale down to physics?
-        rayHandler.render();
+        alarms.drawLights(canvas.getCamera(), scale);
 
 
         if (debug) {
