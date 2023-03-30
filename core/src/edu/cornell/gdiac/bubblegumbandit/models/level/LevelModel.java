@@ -333,7 +333,7 @@ public class LevelModel {
         }
 
         //example of how to make the alarms, not 100% on how to incorporate into tiled
-        int[][] alarmLocs = new int[][] {{20,4},{3, 4}};
+        int[][] alarmLocs = new int[][] {{20,4},{6, 4}, {8,5}, {16, 4}};
         alarms = new AlarmController(alarmLocs,directory,world);
 
 

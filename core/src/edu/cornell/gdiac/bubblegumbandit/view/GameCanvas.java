@@ -176,7 +176,7 @@ public class GameCanvas {
         vertex = new Vector2();
     }
 
-    public FitViewport getFitviewport() {return viewport;}
+    public FitViewport getUIViewport() {return viewport;}
     /**
      * Eliminate any resources that should be garbage collected manually.
      */
