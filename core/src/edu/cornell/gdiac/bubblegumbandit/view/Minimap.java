@@ -23,10 +23,10 @@ public class Minimap {
     private int height;
 
     /**Width of the map */
-    private final int MAP_WIDTH = 34;
+    private final int MAP_WIDTH = 26;
 
     /**Height of the map */
-    private final int MAP_HEIGHT = 20;
+    private final int MAP_HEIGHT = 16;
 
     /**Size of a Tile in the Minimap */
     private final float MAP_TILE_SIZE = 10f;
@@ -44,10 +44,10 @@ public class Minimap {
     private Table minimapTable;
 
     /**Ratio of the Minimap's length to the screen width  */
-    private final float HORZ_SCALE = .3f;
+    private final float HORZ_SCALE = .25f;
 
     /**Ratio of the Minimap's height to the screen height  */
-    private final float VERT_SCALE = .35f;
+    private final float VERT_SCALE = .3f;
 
 
     /**
