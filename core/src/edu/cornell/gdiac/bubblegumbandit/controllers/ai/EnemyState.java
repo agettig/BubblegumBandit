@@ -392,6 +392,32 @@ public enum EnemyState implements State<EnemyController> {
             return false;
         }
 
+    },
+
+    GUARD(){
+        // guard enemies do not move, they will only shoot if bandit is nearby
+        @Override
+        public void enter(EnemyController aiController){
+            talk(aiController, "enter guard");
+        }
+
+        @Override
+        public void update(EnemyController aiController){
+            EnemyModel enemy = aiController.getEnemy();
+            BanditModel bandit = aiController.getBandit();
+            if (enemy.getSensing().canSee(bandit)) {
+                boolean facingRight = enemy.getFaceRight();
+                enemy.setFaceRight(!facingRight);
+            }
+
+            // shoot player
+            aiController.getEnemy().setNextAction(aiController.canShootTarget() ? CONTROL_FIRE: CONTROL_NO_ACTION);
+        }
+
+        @Override
+        public void exit(EnemyController aiController){
+            talk(aiController, "exit guard");
+        }
     };
 
     @Override
