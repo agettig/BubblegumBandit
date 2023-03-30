@@ -63,10 +63,10 @@ public class AlarmController {
    * @param camera The current game camera
    * @param scale The physics to world scale (should be 64x64 in BGB)
    */
-  public void drawLights(GameCamera camera, Vector2 scale) {
+  public void drawLights(GameCamera camera, GameCanvas canvas, Vector2 scale) {
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
-        camera.position.y / scale.y, camera.viewportWidth * camera.zoom / scale.x,
-        camera.viewportHeight * camera.zoom / scale.y); //how to scale down to physics?
+        camera.position.y / scale.y, canvas.getUIviewport().getScreenWidth()* camera.zoom / scale.x,
+        canvas.getUIviewport().getScreenHeight() * camera.zoom / scale.y); //how to scale down to physics?
     rays.render();
   }
 

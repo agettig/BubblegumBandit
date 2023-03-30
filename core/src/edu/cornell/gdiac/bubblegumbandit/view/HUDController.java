@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
@@ -58,7 +60,6 @@ public class HUDController {
     font = directory.getEntry("display", BitmapFont.class);
     stage = new Stage();
 
-
     table = new Table();
     table.align(Align.topLeft);
     stage.addActor(table);
@@ -94,6 +95,15 @@ public class HUDController {
 
 
   }
+
+  public boolean hasViewport() {
+    return stage.getViewport() != null;
+  }
+
+  public void setViewport(Viewport view) {
+    stage.setViewport(view);
+  }
+
 
   public void draw(LevelModel level, BubblegumController bubblegumController) {
 
