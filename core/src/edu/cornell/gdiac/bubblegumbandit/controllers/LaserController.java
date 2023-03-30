@@ -100,8 +100,10 @@ public class LaserController {
         float enemyY = enemy.getY();
 
         //Create the laser (which itself is the charging sensor)
-        LaserModel laser = new LaserModel(laserJSON, Math.signum(targetX),
-                enemyX + Math.signum(targetX) * drawScale.x/4, enemyY,
+
+        float sign = Math.signum(targetX - enemyX);
+        LaserModel laser = new LaserModel(laserJSON, sign,
+                enemyX + sign * drawScale.x/4, enemyY,
                         drawScale.x/2, enemy.getHeight());
         laser.setDrawScale(drawScale);
 
