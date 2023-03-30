@@ -46,6 +46,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Gameplay controller for the game.
@@ -105,6 +106,21 @@ public class GameController implements Screen {
     private SoundEffect smallEnemyShootingSound;
     /** Id for small enemy shooting */
     private long smallEnemyShootingId = -2;
+    /**
+     * The gum splat sound.  We only want to play once.
+     */
+    private SoundEffect gumSplatSound;
+    /** Id for gum splat sound */
+    private long gumSplatId = -3;
+    /**
+     * The sound when robot is hit with gume.  We only want to play once.
+     */
+    private SoundEffect robotSplatSound;
+    /** Id for robot splat sound */
+    private long robotSplatId = -4;
+
+    /**Array holding all sounds */
+    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound};
 
     /**
      * Exit code for quitting the game
@@ -358,6 +374,8 @@ public class GameController implements Screen {
 
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
+        gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);
+        robotSplatSound = directory.getEntry("robotSplat", SoundEffect.class);
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -531,7 +549,7 @@ public class GameController implements Screen {
 
             if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                playSound(smallEnemyShootingSound, smallEnemyShootingId);
+                smallEnemyShootingId = playSound(smallEnemyShootingSound, smallEnemyShootingId, 0.25f);
                 level.activate(newProj);
                 newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
             } else {
@@ -564,12 +582,12 @@ public class GameController implements Screen {
 
         for (EnemyModel enemy : collisionController.getGummedRobots()) {
             TileModel tile = enemy.getTile();
-            collisionController.createEnemyTileJoint(tile, enemy);
+            robotSplatId = collisionController.createEnemyTileJoint(tile, enemy, robotSplatSound, robotSplatId);
         }
         collisionController.clearGummedRobots();
 
         // Add all of the pending joints to the world.
-        bubblegumController.addJointsToWorld(level);
+        bubblegumController.addJointsToWorld(level, gumSplatSound, gumSplatId);
         collisionController.addRobotJoints(level);
     }
 
@@ -643,8 +661,10 @@ public class GameController implements Screen {
      */
     public void pause() {
         // We need this method to stop all sounds when we pause.
-        if (jumpSound.isPlaying(jumpId)) {
-            jumpSound.stop(jumpId);
+        for (int i = 0; i < soundEffects.length; i++) {
+            if (soundEffects[i].isPlaying(-1*i)) {
+                soundEffects[i].stop(-1*i);
+            }
         }
     }
 
@@ -695,7 +715,7 @@ public class GameController implements Screen {
      * @param soundId The previously playing sound instance
      * @return the new sound instance for this asset.
      */
-    public long playSound(SoundEffect sound, long soundId) {
+    public static long playSound(SoundEffect sound, long soundId) {
         return playSound(sound, soundId, 1.0f);
     }
 
@@ -713,7 +733,7 @@ public class GameController implements Screen {
      * @param volume  The sound volume
      * @return the new sound instance for this asset.
      */
-    public long playSound(SoundEffect sound, long soundId, float volume) {
+    public static long playSound(SoundEffect sound, long soundId, float volume) {
         if (soundId != -1 && sound.isPlaying(soundId)) {
             sound.stop(soundId);
         }
