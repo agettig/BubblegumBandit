@@ -11,10 +11,10 @@
             "wrapV": "repeated"
         },
         "dude": "textures/bandit.png",
-        "small_robot": "textures/small_enemy.png",
+        "small_robot": "textures/small_enemy_o.png",
         "big_robot": "textures/big_enemy.png",
         "med_robot": "textures/medium_enemy.png",
-        "goal": "textures/goaldoor.png",
+        "goal": "textures/shipdoor.png",
         "gumProjectile": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
         "gum": "textures/stuck_gum.png",
