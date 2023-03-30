@@ -25,7 +25,8 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
-        "orb": "textures/orb.png"
+        "orb": "textures/orb.png",
+        "star": "textures/star.png"
     },
     "fonts": {
         "display": {

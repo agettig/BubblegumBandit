@@ -315,6 +315,7 @@ public class LevelModel {
                         enemyCount++;
                     }
                     break;
+                case "star":
                 case "floatinggum":
                 case "orb":
                     Collectible gum = new Collectible();

@@ -64,6 +64,13 @@
          "imageheight":40,
          "imagewidth":40,
          "type":"orb"
+        },
+        {
+          "id":10,
+          "image":"..\/..\/Tiled\/map\/star.png",
+          "imageheight":25,
+          "imagewidth":25,
+          "type":"star"
         }],
  "tilewidth":117,
  "type":"tileset",

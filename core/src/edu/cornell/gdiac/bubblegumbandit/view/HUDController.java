@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -52,6 +52,8 @@ public class HUDController {
   private Image bubbleIcon;
   private Label gumCount;
 
+  private Label starCount;
+
 
   public HUDController(AssetDirectory directory) {
 
@@ -88,10 +90,16 @@ public class HUDController {
     gumCount = new Label("x0", new Label.LabelStyle(font, Color.WHITE));
     gumCount.setFontScale(0.5f);
 
+    starCount = new Label("x0", new Label.LabelStyle(font, Color.WHITE));
+    starCount.setFontScale(0.5f);
+
     table.add(gumCount).padLeft(10);
 
     table.padLeft(30).padTop(60);
 
+    table.add(starCount).padLeft(10);
+
+    table.padLeft(30).padTop(60);
 
   }
 
@@ -114,6 +122,8 @@ public class HUDController {
     healthFill.setWidth(healthFillRegion.getRegionWidth());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
     gumCount.setText("x" + bubblegumController.getAmmo() );
+    System.out.println(level.getBandit().getNumStars());
+    starCount.setText("Stars: " + level.getBandit().getNumStars() );
 
     stage.draw();
 
