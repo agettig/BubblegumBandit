@@ -15,7 +15,11 @@ public class LaserModel extends BoxObstacle {
     /**true if this LaserModel is done charging and is now attacking. */
     private boolean attacking;
 
+    /**true if this LaserModel hit its target */
     private boolean hitTarget;
+
+    /**sign of this LaserModel */
+    private float sign;
 
 
 
@@ -29,9 +33,10 @@ public class LaserModel extends BoxObstacle {
      * @param length How far a LaserModel extends from an EnemyModel.
      * @param girth Distance from the top to bottom of a LaserModel.
      * */
-    public LaserModel(JsonValue laserJSON,
+    public LaserModel(JsonValue laserJSON, float sign,
                       float x, float y, float length, float girth) {
         super(x, y, length, girth);
+        this.sign = sign;
         activatePhysics(laserJSON);
     }
 
@@ -57,6 +62,13 @@ public class LaserModel extends BoxObstacle {
         if(amount < 0) return;
         age += amount;
     }
+
+    /**
+     * Returns the sign of this LaserModel: which way it should shoot.
+     *
+     * @return the sign of this LaserModel
+     * */
+    public float getSign(){return sign;}
 
     /**
      * Returns the time that this LaserModel has lived in the level.

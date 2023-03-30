@@ -538,8 +538,7 @@ public class GameController implements Screen {
                     LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
 
                     if(laserController.canFireLaser(laserEnemy)){
-                        LaserModel newLaser = laserController.fireLaser(controller,
-                                level.getBandit().getX());
+                        LaserModel newLaser = laserController.fireLaser(controller, level.getBandit().getX());
                         level.activate(newLaser);
                     }
                 }

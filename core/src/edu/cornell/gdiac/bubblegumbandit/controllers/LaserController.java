@@ -90,8 +90,9 @@ public class LaserController {
     /**
      * Fires a LaserModel in the direction of a target.
      * @param controller Controller of the EnemyModel shooting this laser
+     * @param targetX the X-position of the target.
      * */
-    public LaserModel fireLaser(AIController controller){
+    public LaserModel fireLaser(AIController controller, float targetX){
 
         //Calculate laser texture width and height
         EnemyModel enemy = controller.getEnemy();
@@ -99,8 +100,9 @@ public class LaserController {
         float enemyY = enemy.getY();
 
         //Create the laser (which itself is the charging sensor)
-        LaserModel laser = new LaserModel(laserJSON,
-                        enemyX + 16, enemyY, drawScale.x/2, enemy.getHeight());
+        LaserModel laser = new LaserModel(laserJSON, Math.signum(targetX),
+                enemyX + Math.signum(targetX) * drawScale.x/4, enemyY,
+                        drawScale.x/2, enemy.getHeight());
         laser.setDrawScale(drawScale);
 
         //Attach the laser to the enemy, start the cool down, and return.
@@ -119,6 +121,7 @@ public class LaserController {
             LaserModel laser = lasers.get(enemy);
             float laserSpeed = 2f;
             float laserEpsilon = .01f;
+            float sign = laser.getSign();
             laser.ageLaser(dt);
             laser.setY(enemy.getY());
 
@@ -143,7 +146,7 @@ public class LaserController {
             //Check if the laser is currently attacking
             else if (laser.isAttacking()){
                 laser.setWidth(laser.getWidth() + laserSpeed);
-                laser.setX(laser.getX() + laserSpeed/2);
+                laser.setX(laser.getX() + laserSpeed/2 * sign);
 
                 TextureRegion attackTextureRegion = new TextureRegion(attackTexture);
                 attackTextureRegion.setRegionWidth((int) (laser.getWidth() * drawScale.x));
