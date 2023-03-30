@@ -1,10 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
@@ -352,7 +354,7 @@ public class CollisionController implements ContactListener {
      * @param ob1
      * @param ob2
      */
-    public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
+    public long createEnemyTileJoint(Obstacle ob1, Obstacle ob2, SoundEffect robotSplat, long robotSplatId) {
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = ob2.getBody();
         jointDef.bodyB = ob1.getBody();
@@ -361,6 +363,7 @@ public class CollisionController implements ContactListener {
         anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
         jointDef.localAnchorA.set(anchor);
         stickRobots.addLast(jointDef);
+        return GameController.playSound(robotSplat, robotSplatId);
     }
 
     /**
