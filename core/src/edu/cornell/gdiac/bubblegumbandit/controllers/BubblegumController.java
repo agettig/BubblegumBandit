@@ -4,15 +4,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Queue;
+import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import com.badlogic.gdx.utils.JsonValue;
 
 
 /**
@@ -28,11 +26,14 @@ public class BubblegumController {
     /**Amount of active gum. */
     private static int activeGum;
 
-    /**The queue of stuck Bubblegum obstacles and their joints. */
-    private static Queue<GumJointPair> stuckBubblegumQueue;
+    /**The map of stuck Bubblegum obstacles to their joints. */
+    private static ObjectMap<GumModel, Array<GumJointPair>> stuckBubblegum;
 
     /**The queue of non-assembled Bubblegum obstacles and their jointDefs. */
     private static Queue<GumJointPair> bubblegumAssemblyQueue;
+
+    /**The queue of joints to remove. */
+    private static Queue<GumJointPair> jointsToRemove;
 
     /**The queue of mid-air Bubblegum obstacles. */
     private static Queue<GumModel> midAirBubblegumQueue;
@@ -47,9 +48,10 @@ public class BubblegumController {
      * Instantiates the Bubblegum controller and its queues.
      * */
     public BubblegumController(){
-        stuckBubblegumQueue = new Queue<GumJointPair>();
-        bubblegumAssemblyQueue = new Queue<GumJointPair>();
-        midAirBubblegumQueue = new Queue<GumModel>();
+        stuckBubblegum = new ObjectMap<>();
+        bubblegumAssemblyQueue = new Queue<>();
+        midAirBubblegumQueue = new Queue<>();
+        jointsToRemove = new Queue<>();
     }
 
     /** Initialize bubblegumController stats */
@@ -121,7 +123,27 @@ public class BubblegumController {
         if(pair.getGum() == null || pair.getJoint() == null) return;
         if(pair.getJointDef() != null) return;
 
-        stuckBubblegumQueue.addLast(pair);
+        Array<GumJointPair> gumJoints = stuckBubblegum.get(pair.getGum());
+        if (gumJoints == null) {
+            gumJoints = new Array<>();
+            gumJoints.add(pair);
+            stuckBubblegum.put(pair.getGum(), gumJoints);
+        } else {
+            gumJoints.add(pair);
+        }
+    }
+
+    /**
+     * Queues a gum instance and its associated joints to be removed at the next opportunity.
+     *
+     * @param gum the gum model to be removed
+     */
+    public void removeGum(GumModel gum) {
+        for (GumJointPair j : stuckBubblegum.get(gum)) {
+            jointsToRemove.addLast(j);
+        }
+        stuckBubblegum.remove(gum);
+
     }
 
     /**
@@ -130,11 +152,11 @@ public class BubblegumController {
     public void resetAllBubblegum(){
         if(activeGum == 0) return;
         if(bubblegumAssemblyQueue == null) return;
-        if(stuckBubblegumQueue == null) return;
+        if(stuckBubblegum == null) return;
         if(midAirBubblegumQueue == null) return;
 
         bubblegumAssemblyQueue.clear();
-        stuckBubblegumQueue.clear();
+        stuckBubblegum.clear();
         midAirBubblegumQueue.clear();
         activeGum = 0;
     }
@@ -147,15 +169,6 @@ public class BubblegumController {
      * */
     public void collectBubblegum(){
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the number of GumJointPairs that have yet to be assembled.
-     *
-     * @returns the number of GumJointPairs to assemble
-     * */
-    public int numActivePairsToAssemble(){
-        return bubblegumAssemblyQueue.size;
     }
 
     /**
@@ -197,8 +210,8 @@ public class BubblegumController {
     public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob, boolean vertical) {
         Vector2 gumPos = gum.getPosition();
         Vector2 obPos = ob.getPosition();
-        Float yDiff = gumPos.y - obPos.y;
-        Float xDiff = gumPos.x - obPos.x;
+        float yDiff = gumPos.y - obPos.y;
+        float xDiff = gumPos.x - obPos.x;
 
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = gum.getBody();
@@ -217,22 +230,34 @@ public class BubblegumController {
 
     /**
      * Adds every joint in the joint queue to the world before clearing the queue.
+     * Also removes every joint in the queue of joints to be removed.
      */
-    public void addJointsToWorld(LevelModel level) {
-        for(int i = 0; i < numActivePairsToAssemble(); i++){
+    public void updateJoints(LevelModel level) {
+        for(int i = 0; i < bubblegumAssemblyQueue.size; i++){
             GumJointPair pairToAssemble = dequeueAssembly();
             WeldJointDef weldJointDef = pairToAssemble.getJointDef();
             WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             addToStuckBubblegum(activePair);
         }
+        for (GumJointPair gumJoint : jointsToRemove) {
+            gumJoint.getGum().markRemoved(true);
+            try {
+                Obstacle ob1 = (Obstacle) gumJoint.getJoint().getBodyA().getUserData();
+                Obstacle ob2 = (Obstacle) gumJoint.getJoint().getBodyB().getUserData();
+                ob1.setStuck(false);
+                ob2.setStuck(false);
+            } catch (Exception ignored) {
+
+            }
+
+        }
     }
 
     /**
      * Add a new gum projectile to the world and send it in the right direction.
      */
-    public GumModel createGumProjectile(Vector2 target, JsonValue gumJV, BanditModel avatar, Vector2 origin, Vector2 scale,
-                                        float gumSpeed, float gumGravity, TextureRegion texture) {
+    public GumModel createGumProjectile(Vector2 target, JsonValue gumJV, BanditModel avatar, Vector2 origin, Vector2 scale, TextureRegion texture) {
 
 
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
@@ -254,15 +279,12 @@ public class BubblegumController {
         gum.setDrawScale(scale);
         gum.setTexture(texture);
         gum.setBullet(true);
-        gum.setGravityScale(gumGravity);
+        gum.setGravityScale(gumJV.getFloat("gravity", 0));
         addNewBubblegum(gum);
 
         // Compute position and velocity
-        if (gumSpeed == 0) { // Use default gum speed
-            gumVel.scl(gumJV.getFloat("speed", 0));
-        } else { // Use slider gum speed
-            gumVel.scl(gumSpeed);
-        }
+        gumVel.scl(gumJV.getFloat("speed", 0));
+
         gum.setVX(gumVel.x);
         gum.setVY(gumVel.y);
 
