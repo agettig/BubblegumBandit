@@ -12,5 +12,11 @@
       "strip": "bandit_fall.fall",
       "fps": 2
     }
+  },
+  "small_robot" : {
+    "patrol": {
+      "strip": "small_robot_patrol.patrol",
+      "fps": 6
+    }
   }
 }

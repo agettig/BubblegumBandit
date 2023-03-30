@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.Sensor;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -80,6 +81,11 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
+
+    /**
+     * Animation controller, controls animations
+     */
+    private AnimationController animationController;
 
     // endRegion
 
@@ -267,9 +273,16 @@ public abstract class EnemyModel extends CapsuleObstacle {
         setDebugColor(debugColor);
 
         // Now get the texture from the AssetManager singleton
+        //below code is obsolete with animations
         String key = json.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
+        String animationKey;
+        if((animationKey = json.get("animations").asString())!=null) {
+            animationController = new AnimationController(directory, animationKey);
+        }
+
+
 
         // initialize sensors
         int numSensors = json.get("numsensors").asInt();
@@ -327,7 +340,13 @@ public abstract class EnemyModel extends CapsuleObstacle {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
             float yFlip = isFlipped ? -1 : 1;
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+            TextureRegion drawn = texture;
+            float x = getX() * drawScale.x;
+            if(animationController!=null) {
+                drawn = animationController.getFrame();
+                x-=getWidth()/2*drawScale.x*effect;
+            }
+            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
