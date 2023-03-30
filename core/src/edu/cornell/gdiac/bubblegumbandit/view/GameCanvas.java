@@ -144,7 +144,7 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
-    private FitViewport UIviewport;
+
 
     /**
      * Creates a new GameCanvas determined by the application configuration.
@@ -163,9 +163,8 @@ public class GameCanvas {
         // Set the projection matrix (for proper scaling)
         camera = new GameCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
-        viewport = new FitViewport(getWidth(), getHeight(), camera);
-        viewport.apply();
-        UIviewport = new FitViewport(getWidth(), getHeight());
+        viewport = new FitViewport(getWidth(), getHeight(), camera); //why
+        viewport.apply(true);
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
         fovRender.setProjectionMatrix(camera.combined);
@@ -177,7 +176,7 @@ public class GameCanvas {
         vertex = new Vector2();
     }
 
-    public FitViewport getUIviewport() {return UIviewport;}
+    public FitViewport getFitviewport() {return viewport;}
     /**
      * Eliminate any resources that should be garbage collected manually.
      */
