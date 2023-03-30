@@ -100,8 +100,9 @@ public class HUDController {
     return stage.getViewport() != null;
   }
 
-  public void setViewport(Viewport view) {
-    stage.setViewport(view);
+  public void setViewport(Viewport view) { //not working..
+   // stage.setViewport(view);
+    view.apply(true);
   }
 
 
@@ -121,7 +122,7 @@ public class HUDController {
       lastFrac = healthFraction;
     }
 
-    healthFill.setWidth(healthFillRegion.getRegionWidth());
+    healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
     gumCount.setText("x" + bubblegumController.getAmmo() );
 

@@ -519,8 +519,10 @@ public class GameController implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
+
         level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
-        if(!hud.hasViewport()) hud.setViewport(canvas.getUIviewport());
+        if(!hud.hasViewport()) hud.setViewport(canvas.getFitviewport());
+        canvas.getFitviewport().apply();
         hud.draw(level, bubblegumController);
 
         // Final message
