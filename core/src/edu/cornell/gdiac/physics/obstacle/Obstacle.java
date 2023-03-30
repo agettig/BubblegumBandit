@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 /**
@@ -66,6 +67,39 @@ public abstract class Obstacle {
 	protected Vector2 centroidCache = new Vector2();
 	/** A cache value for when the user wants to access the drawing scale */
 	protected Vector2 scaleCache = new Vector2();
+
+	// Gum fields
+	/** Whether this obstacle is coated with gum (can stick other objects). */
+	protected boolean gummed;
+
+	/** Whether this obstacle is stuck to a gummed object. */
+	protected boolean stuck;
+
+	/** The obstacles this obstacle is colliding with. Must be non-null if the object is gummable. */
+	protected ObjectSet<Obstacle> collidedObs = null;
+
+	// Gum methods
+	public void setGummed(boolean value) {gummed = value; stuck = value;}
+
+	public boolean getGummed() {return gummed; }
+
+	public void setStuck(boolean value) {stuck = value; }
+
+	public boolean getStuck() {return stuck; }
+
+	public void startCollision(Obstacle ob) {
+		assert collidedObs != null;
+		collidedObs.add(ob);
+	}
+
+	public void endCollision(Obstacle ob) {
+		assert collidedObs != null;
+		collidedObs.remove(ob);
+	}
+
+	public ObjectSet<Obstacle> getCollisions() {
+		return collidedObs;
+	}
 
 
 	/// BodyDef Methods

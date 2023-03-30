@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -110,12 +111,19 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
+            if (obstacleA instanceof Gummable) {
+                obstacleA.startCollision(obstacleB);
+            }
+            if (obstacleB instanceof Gummable) {
+                obstacleB.startCollision(obstacleA);
+            }
+
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
-            resolveEnemyGumCollision(obstacleA, obstacleB);
+            resolveGummableGumCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
@@ -156,6 +164,13 @@ public class CollisionController implements ContactListener {
         try{
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
+
+            if (ob1 instanceof Gummable) {
+                ob1.endCollision(ob2);
+            }
+            if (ob2 instanceof Gummable) {
+                ob2.endCollision(ob1);
+            }
 
             if (ob1.getName().equals("cameratile") && avatar == bd2) {
                 updateCamera(ob1);
@@ -257,19 +272,19 @@ public class CollisionController implements ContactListener {
 
         GumModel gum = null;
         Obstacle body = null;
-        EnemyModel enemy = null;
+        Gummable gummable = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
-            if (bodyB instanceof EnemyModel) {
-                enemy = (EnemyModel) bodyB;
+            if (bodyB instanceof Gummable) {
+                gummable = (Gummable) bodyB;
             }
         };
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
-            if (bodyA instanceof EnemyModel) {
-                enemy = (EnemyModel) bodyA;
+            if (bodyA instanceof Gummable) {
+                gummable = (Gummable) bodyA;
             }
         };
         if (gum != null && gum.getName().equals("gumProjectile")) {
@@ -285,14 +300,18 @@ public class CollisionController implements ContactListener {
         }
         Boolean vertical = false;
         if (gum != null && gum.canAddObstacle(body)){
-            if (enemy != null) {
+            if (gummable != null) {
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
-                    enemy.setGummedTexture();
-                    enemy.setGummed(true);
+                    gummable.setGummedTexture();
+                    gummable.setGummed(true);
+                    gummable.endCollision(gum);
+                    for (Obstacle ob : gummable.getCollisions()) {
+                        createJoint(ob, (Obstacle) gummable);
+                    }
                 }
                 else {
-                    enemy.setStuck(true);
+                    gummable.setStuck(true);
                 }
             }
             else if (body instanceof TileModel) {
@@ -326,33 +345,33 @@ public class CollisionController implements ContactListener {
         return false;
     }
     /**
-     * Adds a joint that sticks enemies to the tile if the enemy has been hit with gum
+     * Adds a joint that sticks gummable obstacles to the tile if the gummable has been hit with gum
      * @param ob1
      * @param ob2
      */
-    public void resolveEnemyGumCollision(Obstacle ob1, Obstacle ob2) {
-        EnemyModel enemy;
+    public void resolveGummableGumCollision(Obstacle ob1, Obstacle ob2) {
+        Gummable gummable;
 
-        if (ob1 instanceof EnemyModel) {
-            enemy = (EnemyModel) ob1;
-            if ((ob2.getName().contains("tile") || ob2.getName().contains("wall")) && enemy.getGummed() == true) {
-                createEnemyTileJoint(ob2, ob1);
+        if (ob1 instanceof Gummable) {
+            gummable = (Gummable) ob1;
+            if ((ob2.getName().equals("tile") || ob2.getName().equals("wall")) && gummable.getGummed()) {
+                createJoint(ob2, ob1);
             }
         }
-        if (ob2 instanceof EnemyModel) {
-            enemy = (EnemyModel) ob2;
-            if ((ob1.getName().contains("tile") || ob1.getName().contains("wall")) && enemy.getGummed() == true) {
-                createEnemyTileJoint(ob1, ob2);
+        if (ob2 instanceof Gummable) {
+            gummable = (Gummable) ob2;
+            if ((ob1.getName().equals("tile") || ob1.getName().equals("wall")) && gummable.getGummed()) {
+                createJoint(ob1, ob2);
             }
         }
     }
 
     /**
-     * Helper for creating joints between enemy and tiles
+     * Helper for creating joints between two obstacles
      * @param ob1
      * @param ob2
      */
-    public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
+    public void createJoint(Obstacle ob1, Obstacle ob2) {
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = ob2.getBody();
         jointDef.bodyB = ob1.getBody();
