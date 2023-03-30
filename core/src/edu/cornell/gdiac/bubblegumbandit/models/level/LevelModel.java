@@ -222,22 +222,44 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
-        JsonValue boardLayer = levelFormat.get("layers").child();
+        JsonValue boardLayer = null;
+        JsonValue tileLayer = null;
+        JsonValue objects = null;
 
-        JsonValue tileLayer = boardLayer.next();
-        JsonValue objects = tileLayer.next().get("Objects");
+        JsonValue layer = levelFormat.get("layers").child();
+        while (layer != null) {
+            String layerName = layer.getString("name");
+            switch (layerName) {
+                case "Board":
+                case "board":
+                    boardLayer = layer;
+                    break;
+                case "Terrain":
+                case "terrain":
+                    tileLayer = layer;
+                    break;
+                case "Objects":
+                case "objects":
+                    objects = layer.get("Objects");
+                    break;
+                default:
+                    throw new RuntimeException("Invalid layer name");
+            }
+            layer = layer.next();
+        }
+
+        if (boardLayer == null || tileLayer == null || objects == null) {
+            throw new RuntimeException("Missing layer data");
+        }
 
         int[] worldData = tileLayer.get("data").asIntArray();
         float gravity = 0;
-        int numEnemies = 0;
 
         JsonValue property = levelFormat.get("properties").child();
         while (property != null) {
             String propName = property.get("name").asString();
             if (propName.equals("gravity")) {
                 gravity = property.getFloat("value");
-            } else if (propName.equals("numenemies")) {
-                numEnemies = property.getInt("value");
             }
             property = property.next();
         }
@@ -284,6 +306,9 @@ public class LevelModel {
             }
         }
 
+        bandit = null;
+        goalDoor = null;
+
         // Create objects
         JsonValue object = objects.child();
         int enemyCount = 0;
@@ -326,6 +351,7 @@ public class LevelModel {
                     CameraTileModel cam = new CameraTileModel();
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
+                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
@@ -333,6 +359,13 @@ public class LevelModel {
             }
             object = object.next();
         }
+        if (goalDoor == null) {
+            throw new RuntimeException("Level missing exit");
+        }
+        if (bandit == null) {
+            throw new RuntimeException("Level missing bandit");
+        }
+
         activate(goalDoor);
         // Add bandit at the end because this affects draw order
         activate(bandit);
