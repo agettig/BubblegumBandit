@@ -363,7 +363,7 @@ public class CollisionController implements ContactListener {
         anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
         jointDef.localAnchorA.set(anchor);
         stickRobots.addLast(jointDef);
-        return GameController.playSound(robotSplat, robotSplatId);
+        return SoundController.playSound("robotSplat", 1f);
     }
 
     /**
@@ -471,9 +471,11 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("floatinggum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("floatinggum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 
@@ -483,10 +485,12 @@ public class CollisionController implements ContactListener {
             ((Collectible) bd1).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd1.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("orb") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             ((Collectible) bd2).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd2.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 

@@ -118,9 +118,15 @@ public class GameController implements Screen {
     private SoundEffect robotSplatSound;
     /** Id for robot splat sound */
     private long robotSplatId = -4;
+    /**
+     * The sound when an item is collected.  We only want to play once.
+     */
+    private SoundEffect collectItemSound;
+    /** Id for collectible item sound */
+    private long collectItemId = -4;
 
     /**Array holding all sounds */
-    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound};
+    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound, collectItemSound};
 
     /**
      * Exit code for quitting the game
@@ -372,10 +378,7 @@ public class GameController implements Screen {
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
 
-        jumpSound = directory.getEntry("jump", SoundEffect.class);
-        smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
-        gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);
-        robotSplatSound = directory.getEntry("robotSplat", SoundEffect.class);
+        SoundController.initialize(directory);
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -510,7 +513,7 @@ public class GameController implements Screen {
         ) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
-            jumpId = playSound(jumpSound, jumpId);
+            jumpId = SoundController.playSound("jump", 0.25f);
             level.getWorld().setGravity(currentGravity);
             bandit.flippedGravity();
             bandit.setGrounded(false);
@@ -549,7 +552,7 @@ public class GameController implements Screen {
 
             if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                smallEnemyShootingId = playSound(smallEnemyShootingSound, smallEnemyShootingId, 0.25f);
+                smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                 level.activate(newProj);
                 newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
             } else {
@@ -587,7 +590,7 @@ public class GameController implements Screen {
         collisionController.clearGummedRobots();
 
         // Add all of the pending joints to the world.
-        bubblegumController.addJointsToWorld(level, gumSplatSound, gumSplatId);
+        bubblegumController.addJointsToWorld(level);
         collisionController.addRobotJoints(level);
     }
 
