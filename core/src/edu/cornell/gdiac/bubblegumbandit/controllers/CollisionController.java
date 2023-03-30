@@ -278,7 +278,6 @@ public class CollisionController implements ContactListener {
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
             gum.setName("stickyGum");
-            gum.setRadius(gum.getRadius());
             // Changing radius resets filter for some reason
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
