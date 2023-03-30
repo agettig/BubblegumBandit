@@ -598,7 +598,7 @@ public class LevelModel {
 
         canvas.end();
 
-        alarms.drawLights(canvas.getCamera(), scale);
+        alarms.drawLights(canvas.getCamera(), canvas, scale);
 
 
         if (debug) {
