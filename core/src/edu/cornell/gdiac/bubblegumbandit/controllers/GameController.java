@@ -100,6 +100,13 @@ public class GameController implements Screen {
     private long jumpId = -1;
 
     /**
+     * The small enemy shooting sound.  We only want to play once.
+     */
+    private SoundEffect smallEnemyShootingSound;
+    /** Id for small enemy shooting */
+    private long smallEnemyShootingId = -2;
+
+    /**
      * Exit code for quitting the game
      */
     public static final int EXIT_QUIT = 0;
@@ -348,7 +355,9 @@ public class GameController implements Screen {
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
+
         jumpSound = directory.getEntry("jump", SoundEffect.class);
+        smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -522,6 +531,7 @@ public class GameController implements Screen {
 
             if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                playSound(smallEnemyShootingSound, smallEnemyShootingId);
                 level.activate(newProj);
                 newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
             } else {
