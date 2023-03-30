@@ -11,7 +11,7 @@
             "wrapV": "repeated"
         },
         "dude": "textures/bandit.png",
-        "bandit":  {
+        "bandit_run":  {
             "file": "textures/bandit_run.png",
             "wrap": false,
             "sprites": {
@@ -19,6 +19,28 @@
                     "size": 4,
                     "rows": 1,
                     "cols": 4
+                }
+            }
+        },
+        "bandit_idle":  {
+            "file": "textures/bandit_idle.png",
+            "wrap": false,
+            "sprites": {
+                "idle": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "bandit_fall":  {
+            "file": "textures/bandit_fall.png",
+            "wrap": false,
+            "sprites": {
+                "fall": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
                 }
             }
         },
