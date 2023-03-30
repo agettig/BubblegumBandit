@@ -21,17 +21,17 @@
         }, 
         {
          "id":1,
-         "image":"..\/..\/Tiled\/map\/medium_enemy.png",
+         "image":"..\/..\/Tiled\/map\/rollingrobot.png",
          "imageheight":129,
          "imagewidth":117,
-         "type":"mediumrobot"
+         "type":"rollingrobot"
         }, 
         {
          "id":2,
-         "image":"..\/..\/Tiled\/map\/small_enemy.png",
+         "image":"..\/..\/Tiled\/map\/projectileenemy.png",
          "imageheight":65,
          "imagewidth":43,
-         "type":"smallrobot"
+         "type":"projectilerobot"
         }, 
         {
          "id":3,

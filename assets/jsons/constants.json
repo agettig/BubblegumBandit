@@ -79,8 +79,8 @@
     "debugcolor": "magenta",
     "debugopacity": 200
   },
-  "mediumrobot": {
-    "type": "moving",
+  "rollingrobot": {
+    "type": "rollingrobot",
     "size": [
       2,
       2
@@ -91,7 +91,7 @@
     "force": 0.0,
     "damping": 0.0,
     "maxspeed": 50.0,
-    "texture": "mediumrobot",
+    "texture": "rollingrobot",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "red",
@@ -143,8 +143,8 @@
       }
     }
   },
-  "smallrobot": {
-    "type": "moving",
+  "projectilerobot": {
+    "type": "projectilerobot",
     "size": [
       0.5,
       1.0
@@ -155,7 +155,71 @@
     "force": 10.0,
     "damping": 10.0,
     "maxspeed": 5.0,
-    "texture": "smallrobot",
+    "texture": "projectilerobot",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "numsensors": 3,
+    "sensors": {
+      "enemyGroundSensor": {
+        "sensorsize": [
+          0.183,
+          0.05
+        ],
+        "sensorcenter": [
+          0,
+          -0.305
+        ],
+        "printoffset": [
+          0,
+          0.305
+        ]
+      },
+      "enemyRightSensor": {
+        "sensorsize": [
+          0.183,
+          0.3
+        ],
+        "sensorcenter": [
+          0,
+          0
+        ],
+        "printoffset": [
+          0.45,
+          0
+        ]
+      },
+      "enemyLeftSensor": {
+        "sensorsize": [
+          0.183,
+          0.3
+        ],
+        "sensorcenter": [
+          0,
+          0
+        ],
+        "printoffset": [
+          -0.45,
+          0
+        ]
+      }
+    }
+  },
+  "laserrobot": {
+    "type": "laserrobot",
+    "size": [
+      1.0,
+      2.0
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 5.0,
+    "texture": "laserrobot",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "red",
@@ -226,5 +290,16 @@
     "speed": 7.0,
     "density": 10.0,
     "texture": "bullet"
+  },
+  "laser": {
+    "offsetX": 0.0,
+    "offsetY": 0.0,
+    "range": 10.0,
+    "girth": 2.0,
+    "density" : 1.0,
+    "charge_time" : 1.0,
+    "attack_time" : 1.0,
+    "charge_texture": "charge_laser",
+    "attack_texture": "attack_laser"
   }
 }

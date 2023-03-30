@@ -154,7 +154,7 @@
     "enemylist": [
       {
         "name": "enemy1",
-        "class": "med_robot",
+        "class": "projectilerobot",
         "pos": [
           4,
           2
@@ -162,7 +162,7 @@
       },
       {
         "name": "enemy2",
-        "class": "small_robot",
+        "class": "projectilerobot",
         "pos": [
           5.5,
           19.5
@@ -170,7 +170,7 @@
       },
       {
         "name": "enemy3",
-        "class": "smalL_robot",
+        "class": "projectilerobot",
         "pos": [
           20.0,
           1.0
@@ -178,7 +178,7 @@
       },
       {
         "name": "enemy4",
-        "class": "smalL_robot",
+        "class": "projectilerobot",
         "pos": [
           24.0,
           1.0
@@ -186,7 +186,7 @@
       },
       {
         "name": "enemy5",
-        "class": "smalL_robot",
+        "class": "projectilerobot",
         "pos": [
           28.0,
           1.0
@@ -194,7 +194,7 @@
       },
       {
         "name": "enemy6",
-        "class": "smalL_robot",
+        "class": "projectilerobot",
         "pos": [
           26.0,
           1.0

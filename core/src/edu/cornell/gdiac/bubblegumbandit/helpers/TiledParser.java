@@ -19,6 +19,7 @@ public class TiledParser {
         JsonValue tile = tileJson.get("tiles").child();
         while (tile != null) {
             String textureName = tile.getString("type");
+            System.out.println(textureName);
             TextureRegion texture = new TextureRegion(directory.getEntry(textureName, Texture.class));
             tileset.put(tile.getInt("id") + 1, texture);
             tile = tile.next();

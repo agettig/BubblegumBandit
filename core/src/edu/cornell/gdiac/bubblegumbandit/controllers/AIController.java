@@ -257,19 +257,11 @@ public class AIController implements InputController {
             case CHASE: // Do not pre-empt with FSMState in a case
 
             case ATTACK:
-                // Insert code here to mark tiles we can attack from, (see
-                // canShootTargetFrom); set setGoal to true if we marked any tiles.
-
-                // Insert code to mark tiles that will cause us to chase the target;
-                // set setGoal to true if we marked any tiles.
-
-                //#region PUT YOUR CODE HERE
+                //Set the GoalTile to Bandit's position.
                 Vector2 pos = bandit.getPosition();
                 board.setGoal((int) pos.x, (int) pos.y);
                 setGoal = true;
-                //#endregion
                 break;
-            //#endregion
         }
 
         // If we have no goals, mark current position as a goal
@@ -326,6 +318,15 @@ public class AIController implements InputController {
     }
 
     public void flipEnemy(){
-        enemy.flippedGravity();
+        enemy.flip();
+    }
+
+    /**
+     * Returns the class of the EnemyModel controlled by this AIController.
+     *
+     * @return the class of the EnemyModel controlled by this AIController.
+     * */
+    public Object getEnemyClass(){
+        return getEnemy().getClass();
     }
 }

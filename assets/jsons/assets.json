@@ -11,9 +11,9 @@
             "wrapV": "repeated"
         },
         "bandit": "textures/bandit.png",
-        "smallrobot": "textures/small_enemy.png",
-        "bigrobot": "textures/big_enemy.png",
-        "mediumrobot": "textures/medium_enemy.png",
+        "projectilerobot": "textures/projectilerobot.png",
+        "laserrobot": "textures/laserrobot.png",
+        "rollingrobot": "textures/rollingrobot.png",
         "exit": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
         "floatinggum": "textures/gum.png",
@@ -25,7 +25,9 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
-        "orb": "textures/orb.png"
+        "orb": "textures/orb.png",
+        "charge_laser": "textures/charging_laser.png",
+        "attack_laser": "textures/attacking_laser.png"
     },
     "fonts": {
         "display": {

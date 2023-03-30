@@ -16,153 +16,86 @@ import java.lang.reflect.Field;
 /**
  * Abstract enemy class.
  * <p>
- * Initialization is done by reading the json
- * Note, enemies can only be initiated as stationary or moving enemies
+ * Initialization is done by reading JSON level files.
  */
 public abstract class EnemyModel extends CapsuleObstacle {
 
-    // Physics constants
+    /** EnemyModel's unique ID */
     private int id;
 
-    /**
-     * The factor to multiply by the input
-     */
-    private float force;
-    /**
-     * The amount to slow the character down
-     */
+    /** The amount to slow the character down  */
     private float damping;
-    /**
-     * The maximum character speed
-     */
-    private float maxspeed;
-    /**
-     * The current horizontal movement of the character
-     */
-    private float movement;
-    /**
-     * Which direction is the character facing
-     */
+
+    /** Default vision radius for an EnemyModel */
+    private final float DEFAULT_VISION_RADIUS = 7f;
+
+    /** true if this EnemyModel is facing right; false if facing left */
     private boolean faceRight;
-    /**
-     * Cache for flipping player orientation
-     */
-    private float angle;
-    /**
-     * Whether our feet are on the ground
-     */
+
+    /** true if the EnemyModel's feet are on the ground */
     private boolean isGrounded;
 
-    // SENSOR FIELDS
-    /**
-     * Ground sensor to represent our feet
-     */
+    /** Sensors associated with this EnemyModel  */
     private Sensor[] sensors;
+
+    /**Color to represent an EnemyModel sensor */
     private Color sensorColor;
 
-    //endRegion
-
+    /**EnemyModel's vision component for RayCasting */
     public Vision vision;
 
+    /**Reference to the Box2D world */
     private World world;
 
-    /**
-     * Cache for internal force calculations
-     */
-    private Vector2 forceCache = new Vector2();
-
-    /**
-     * Whether this enemy is flipped
-     */
+    /** true if this EnemyModel is upside-down.*/
     protected boolean isFlipped;
 
-    /**
-     * The y scale of this enemy (for flipping when gravity swaps)
-     */
+    /** EnemyModel's y-scale: used for flipping gravity. */
     private float yScale;
 
-    // endRegion
+    /** EnemyType of this EnemyModel */
+    private ENEMY_TYPE type;
 
-    /**
-     * Returns left/right movement of this character.
-     * <p>
-     * This is the result of input times dude force.
-     *
-     * @return left/right movement of this character.
-     */
-    public float getMovement() {
-        return movement;
+    /** Enumeration to rerpesent different EnemyModels  */
+    public enum ENEMY_TYPE{
+        ROLLING,
+        PROJECTILE,
+        LASER
     }
 
-    /**
-     * Sets left/right movement of this character.
-     * <p>
-     * This is the result of input times dude force.
-     *
-     * @param value left/right movement of this character.
-     */
-    public void setMovement(float value) {
-        movement = value;
-        // Change facing if appropriate
-        if (movement < 0) {
-            faceRight = false;
-        } else if (movement > 0) {
-            faceRight = true;
-        }
-    }
 
-    /**
-     * Returns how much force to apply to get the dude moving
-     * <p>
-     * Multiply this by the input to get the movement value.
-     *
-     * @return how much force to apply to get the dude moving
-     */
-    public float getForce() {
-        return force;
-    }
 
-    /**Returns this enemy's ID
+    /**Returns this EnemyModel's unique integer ID.
      *
-     * @returns the id of this enemy*/
-    public int getId(){ return id; };
+     * @returns this EnemyModel's unique ID. */
+    public int getId() { return id; };
 
-    /**
-     * Sets how much force to apply to get the dude moving
-     * <p>
-     * Multiply this by the input to get the movement value.
-     *
-     * @param value how much force to apply to get the dude moving
-     */
-    public void setForce(float value) {
-        force = value;
-    }
 
-    /** Returns whether or not the dude is facing right
+    /** Returns true if this EnemyModel is facing right;
+     * otherwise, returns false.
      *
-     * @return whether or not the enemy is facing right*/
+     * @return true if this EnemyModel is facing right;
+     *        otherwise, false.*/
     public boolean getFaceRight(){
         return faceRight;
     }
 
-    /** Changes the direction the dude is facing
+
+    /** Makes this EnemyModel face right.
      *
-     *@param isRight whether or not the dude is facing right*/
+     *@param isRight if this EnemyModel is facing right.*/
     public void setFaceRight(boolean isRight) {
         faceRight = isRight;
     }
 
-    public boolean isFlipped() {
-        return isFlipped;
-    }
 
     /**
-     * Returns how hard the brakes are applied to get a dude to stop moving
+     * Returns true if this EnemyModel is upside-down.
      *
-     * @return how hard the brakes are applied to get a dude to stop moving
-     */
-    public float getDamping() {
-        return damping;
+     * @returns true if this EnemyModel is upside-down.
+     * */
+    public boolean isFlipped() {
+        return isFlipped;
     }
 
     /**
@@ -174,46 +107,13 @@ public abstract class EnemyModel extends CapsuleObstacle {
         damping = value;
     }
 
-    /**
-     * Returns the upper limit on dude left-right movement.
-     * <p>
-     * This does NOT apply to vertical movement.
-     *
-     * @return the upper limit on dude left-right movement.
-     */
-    public float getMaxSpeed() {
-        return maxspeed;
-    }
 
     /**
-     * Sets the upper limit on dude left-right movement.
-     * <p>
-     * This does NOT apply to vertical movement.
+     * Creates an EnemyModel.
      *
-     * @param value the upper limit on dude left-right movement.
-     */
-    public void setMaxSpeed(float value) {
-        maxspeed = value;
-    }
-
-    /**
-     * Returns true if the dude is on the ground.
-     *
-     * @return true if the dude is on the ground.
-     */
-    public boolean isGrounded() {
-        return isGrounded;
-    }
-
-    /**
-     * Sets whether the dude is on the ground.
-     *
-     * @param value whether the dude is on the ground.
-     */
-    public void setGrounded(boolean value) {
-        isGrounded = value;
-    }
-
+     * @param world The Box2D world.
+     * @param id The unique ID to assign to this EnemyModel.
+     * */
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -223,20 +123,28 @@ public abstract class EnemyModel extends CapsuleObstacle {
         yScale = 1f;
         this.world = world;
         this.id = id;
-        vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        setVision(DEFAULT_VISION_RADIUS);
     }
 
     /**
-     * Initializes the dude via the given JSON value
-     * <p>
-     * The JSON value has been parsed and is part of a bigger level file.  However,
-     * this JSON value is limited to the dude subtree
+     * Assigns a Vision component to this EnemyModel with a specified
+     * radius.
+     *
+     * @param radius the radius of the Vision
+     * */
+    protected void setVision(float radius){
+        float range = (float) Math.PI/2;
+        vision = new Vision(radius, 0f,range, Color.YELLOW);
+    }
+
+
+    /**
+     * Initializes this EnemyModel's physics values from JSON.
      *
      * @param directory the asset manager
-     * @param id the id of this enemy
-     * @param x the x position of this enemy
-     * @param y the y position of this enemy
-     * @param constantsJson the JSON subtree defining all enemies
+     * @param x the x position of this EnemyModel
+     * @param y the y position of this EnemyModel
+     * @param constantsJson the JSON subtree defining all EnemyModels
      */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
         setName("enemy" + id);
@@ -250,9 +158,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         setDensity(constantsJson.get("density").asFloat());
         setFriction(constantsJson.get("friction").asFloat());
         setRestitution(constantsJson.get("restitution").asFloat());
-        setForce(constantsJson.get("force").asFloat());
         setDamping(constantsJson.get("damping").asFloat());
-        setMaxSpeed(constantsJson.get("maxspeed").asFloat());
 
         // Reflection is best way to convert name to color
         Color debugColor;
@@ -288,9 +194,14 @@ public abstract class EnemyModel extends CapsuleObstacle {
         opacity = constantsJson.get("sensoropacity").asInt();
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
-
     }
 
+    /**
+     * Initializes this EnemyModel's Sensor values from JSON.
+     *
+     * @param json the JSON subtree defining all EnemyModels
+     * @param numSensors the number of Sensors on an EnemyModel
+     */
     public void initializeSensors(JsonValue json, int numSensors) {
         // Get the sensor information
         sensors = new Sensor[numSensors];
@@ -308,81 +219,76 @@ public abstract class EnemyModel extends CapsuleObstacle {
     }
 
 
-    public void update(int controlCode) {
+    /**
+     * Main update loop for an EnemyModel. <p>
+     *
+     * Adjusts y-scale to match its "flipped" status.
+     *
+     * @param controlCode The code that tells this EnemyModel what to do.
+     * @param dt Time since last frame.
+     * */
+    public void update(int controlCode, float dt) {
         if (yScale < 1f && !isFlipped) {
             yScale += 0.1f;
         } else if (yScale > -1f && isFlipped) {
             yScale -= 0.1f;
         }
         updateVision();
-
     }
 
-
-
     /**
-     * Draws the physics object.
+     * Draws this EnemyModel.
      *
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            float yFlip = isFlipped ? -1 : 1;
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                getY() * drawScale.y, getAngle(), effect, yScale);
-//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                    getX() * drawScale.x, getY() * drawScale.y,
+                    getAngle(), effect, yScale);
         }
     }
 
+    /**
+     * Draws this EnemyModel in Debug Mode.
+     *
+     * @param canvas Drawing context
+     */
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-//        for (Sensor s : sensors) {
-//            float y = getY();
-//            float x = getX();
-//            if (angle == 3.14f) {
-//                y += s.printY();
-//                x -= s.printX();
-//            }
-//
-//            else {
-//                y -= s.printY();
-//                x += s.printX();
-//            }
-//            canvas.drawPhysics(s.getSensorShape(), sensorColor,
-//                x, y, getAngle(), drawScale.x, drawScale.y);
-//        }
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
+    /**
+     * Updates this EnemyModel's vision component.
+     */
     public void updateVision() {
         vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
         vision.update(world, getPosition());
     }
 
     /**
-     * Creates the physics Body(s) for this object, adding them to the world.
-     *
-     * This method overrides the base method to keep your ship from spinning.
+     * Creates the physics Body(s) for this EnemyModel and adds
+     * them to the Box2D world.
      *
      * @param world Box2D world to store body
      *
-     * @return true if object allocation succeeded
+     * @return true if object allocation succeeded; otherwise,
+     * false.
      */
     public boolean activatePhysics(World world) {
-        // create the box from our superclass
         if (!super.activatePhysics(world)) {
             return false;
         }
 
         // Ground Sensor
         // -------------
-        // We only allow the dude to jump when he's on the ground.
-        // Double jumping is not allowed.
+        // We only allow the EnemyModel to jump when grounded.
         //
-        // To determine whether or not the dude is on the ground,
-        // we create a thin sensor under his feet, which reports
+        // To determine if the EnemyModel is grounded,
+        // create a thin sensor under its feet, which reports
         // collisions with the world but has no collision response.
         FixtureDef sensorDef;
         for (Sensor sensor : sensors) {
@@ -397,19 +303,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
     }
 
     /**
-     * Shoots at a target position.
-     *
-     * @param targetPosition the screen position to shoot at.
-     * */
-    public void shoot(Vector2 targetPosition){
-        return;
-    }
-
-    /**
-     * Flips the player's angle and direction when the world gravity is flipped
+     * Negates this EnemyModel's current "flipped" state (if it is
+     * grounded).
      */
-    public void flippedGravity() {
+    public void flip() {
         isFlipped = !isFlipped;
     }
-
 }

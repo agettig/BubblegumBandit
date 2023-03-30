@@ -24,12 +24,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.LaserModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -165,6 +164,9 @@ public class GameController implements Screen {
 
     /** A collection of the active projectiles on screen */
     private ProjectileController projectileController;
+
+    /** Reference to LaserController instance */
+    private LaserController laserController;
 
     /**
      * Gum gravity scale when creating gum
@@ -306,6 +308,7 @@ public class GameController implements Screen {
         setFailure(false);
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
+        laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
 
@@ -371,6 +374,7 @@ public class GameController implements Screen {
         projectileController.reset();
         collisionController.resetWinCondition();
 
+
         level.dispose();
 
         setComplete(false);
@@ -385,7 +389,19 @@ public class GameController implements Screen {
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
-        projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
+
+        projectileController.initialize(
+                constantsJson.get("projectile"),
+                directory,
+                level.getScale().x,
+                level.getScale().y);
+
+        laserController.initialize(
+                constantsJson.get("laser"),
+                directory,
+                level.getScale().x,
+                level.getScale().y);
+
         collisionController.initialize(canvas.getCamera());
     }
 
@@ -507,19 +523,33 @@ public class GameController implements Screen {
             }
         }
 
+
        for (AIController controller: level.getEnemyControllers()){
 
            //TODO fix adjust for drift
 
-//            adjustForDrift(controller.getEnemy());
-
-            //get action from controller
+           //get action from controller
             int action = controller.getAction();
 
             if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                level.activate(newProj);
-                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+
+                if(controller.getEnemyClass().equals(LaserEnemyModel.class)){
+
+                    LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
+
+                    if(laserController.canFireLaser(laserEnemy)){
+                        LaserModel newLaser = laserController.fireLaser(controller,
+                                level.getBandit().getX());
+                        level.activate(newLaser);
+                    }
+                }
+                else{
+                    ProjectileModel newProj = projectileController.fireWeapon(controller,
+                            level.getBandit().getX(), level.getBandit().getY());
+                    level.activate(newProj);
+                    newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                }
+
             } else {
                 controller.coolDown(true);
             }
@@ -527,11 +557,12 @@ public class GameController implements Screen {
             //pass to enemy, update the enemy with that action
            // TODO this probably means enemies are updated twice per frame, once with this update method
            // TODO and once with their parent. Switching to sense-think-act should fix this
-           controller.getEnemy().update(action);
+           controller.getEnemy().update(action, dt);
        }
 
         level.update(dt);
         projectileController.update();
+        laserController.updateLasers(dt);
 
         // Update the camera
         GameCamera cam = canvas.getCamera();
@@ -705,35 +736,5 @@ public class GameController implements Screen {
             g = -g;
         }
         level.getWorld().setGravity(new Vector2(0, g));
-    }
-
-    /**
-     * Nudges the ship back to the center of a tile if it is not moving.
-     *
-     * @param enemy The Enemy to adjust
-     */
-    private void adjustForDrift(EnemyModel enemy) {
-        // Drift to line up vertically with the grid.
-
-        if (enemy.getVX() == 0.0f) {
-            float offset = level.getBoard().centerOffset(enemy.getX());
-            if (offset < -DRIFT_TOLER) {
-                enemy.setX(enemy.getX()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setX(enemy.getX()-DRIFT_SPEED);
-            }
-        }
-
-        // Drift to line up horizontally with the grid.
-        if (enemy.getVY() == 0.0f) {
-            float y = enemy.getY();
-            if (enemy.getId()==0){y -= 1;}
-            float offset = level.getBoard().centerOffset(y);
-            if (offset < -DRIFT_TOLER) {
-                enemy.setY(enemy.getY()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setY(enemy.getY()-DRIFT_SPEED);
-            }
-        }
     }
 }

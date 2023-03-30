@@ -29,7 +29,8 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -269,12 +270,6 @@ public class LevelModel {
         int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
-//        while (tileset != null) {
-//            if (tileset.get("source").asString().equals("..\\/..\\/Tiled\\/board.tsx")) {
-//                boardIdOffset = tileset.getInt("firstgid");
-//            }
-//            tileset = tileset.next();
-//        }
 
         board = new Board(boardLayer, boardIdOffset, scale);
 
@@ -301,6 +296,8 @@ public class LevelModel {
 
         // Create objects
         JsonValue object = objects.child();
+        JsonValue enemyConstants;
+        EnemyModel enemy;
         int enemyCount = 0;
         while (object != null) {
             String objType = object.get("type").asString();
@@ -317,18 +314,29 @@ public class LevelModel {
                     goalDoor.initialize(directory, x, y, constants.get(objType));
                     goalDoor.setDrawScale(scale);
                     break;
-                case "smallrobot":
-                case "mediumrobot":
-                    JsonValue enemyConstants = constants.get(objType);
-                    if (enemyConstants.get("type").asString().equals("moving")) {
-                        EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
-                        enemy.initialize(directory, x, y, enemyConstants);
-                        enemy.setDrawScale(scale);
-                        activate(enemy);
-                        enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                        aiControllers.add(new AIController(enemy, bandit, board));
-                        enemyCount++;
-                    }
+                case "rollingrobot":
+                    enemyConstants = constants.get(objType);
+                    enemyCount++;
+                    break;
+                case "projectilerobot":
+                    enemyConstants = constants.get(objType);
+                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    aiControllers.add(new AIController(enemy, bandit, board));
+                    enemyCount++;
+                    break;
+                case "laserrobot":
+                    enemyConstants = constants.get(objType);
+                    enemy = new LaserEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    aiControllers.add(new AIController(enemy, bandit, board));
+                    enemyCount++;
                     break;
                 case "floatinggum":
                 case "orb":
@@ -343,8 +351,8 @@ public class LevelModel {
                     activate(cam);
                     break;
                 default:
+                    enemyConstants = null;
                     throw new UnsupportedOperationException(objType + " is not a valid object");
-
             }
             object = object.next();
         }

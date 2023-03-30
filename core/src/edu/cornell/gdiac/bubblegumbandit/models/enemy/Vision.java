@@ -55,19 +55,6 @@ public class Vision {
     }
 
     /**
-     * Creates a circular FOV
-     * @param radius the radius of the FOV
-     * @param color the color of the FOV for drawing, will always be translucent
-     */
-    public Vision(float radius, Color color) {
-        this.color = new Color(color.r, color.g, color.b, .5f);
-        this.radius = radius;
-        this.direction = (float) Math.PI/2;
-        this.range = (float) Math.PI*2;
-        for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
-    }
-
-    /**
      * Updates the FOV to the current Box2d world state
      * @param world the world
      * @param origin the origin of the FOV in Box2d world coordinates
@@ -160,10 +147,6 @@ public class Vision {
 //        canvas.drawFOV(color, rays, x, y, scalex, scaley);
 //        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
         canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
-    }
-
-    public void setRange(float range) {
-        this.range = range;
     }
 
     public void setRadius(float radius) {
