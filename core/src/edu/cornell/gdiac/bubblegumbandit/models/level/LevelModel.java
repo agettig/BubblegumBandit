@@ -295,8 +295,8 @@ public class LevelModel {
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
 
-        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3/8);
-        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 3/8);
+        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f/8);
+        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f/8);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);

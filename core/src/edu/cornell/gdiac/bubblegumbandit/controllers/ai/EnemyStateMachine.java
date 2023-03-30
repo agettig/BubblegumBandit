@@ -25,9 +25,9 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E, S> {
 
 
-    private IndexedAStarPathFinder<TiledNode> pathFinderGravityUp;
+    private ModifiedIndexedPathFinder<TiledNode> pathFinderGravityUp;
 
-    private IndexedAStarPathFinder<TiledNode> pathFinderGravityDown;
+    private ModifiedIndexedPathFinder<TiledNode> pathFinderGravityDown;
 
     private Heuristic heuristic;
     private TiledGraph tiledGravityUpGraph;
@@ -71,8 +71,8 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         this.setGlobalState(globalState);
         this.tiledGravityUpGraph = tiledGravityUpGraph;
         this.tiledGravityDownGraph = tiledGravityDownGraph;
-        this.pathFinderGravityDown = new IndexedAStarPathFinder<>(tiledGravityDownGraph, true);
-        this.pathFinderGravityUp = new IndexedAStarPathFinder<>(tiledGravityUpGraph, true);
+        this.pathFinderGravityDown = new ModifiedIndexedPathFinder<>(tiledGravityDownGraph, true);
+        this.pathFinderGravityUp = new ModifiedIndexedPathFinder<>(tiledGravityUpGraph, true);
         this.heuristic = new TiledManhattanDistance();
         this.graphPath = new DefaultGraphPath<>();
         this.ticks = 0;

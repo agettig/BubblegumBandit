@@ -29,21 +29,6 @@ public class TiledNode {
 	private int y;
 
 	private int type;
-	private static class TileState {
-
-		/**
-		 * Is this a goal tiles
-		 */
-		public boolean goal = false;
-		/**
-		 * Has this tile been visited (used for pathfinding)?
-		 */
-		public boolean visited = false;
-
-
-		public int value;
-
-	}
 
 	// Getters
 	public int getX() {

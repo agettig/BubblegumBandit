@@ -37,16 +37,16 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 
 	protected TiledNode[] nodes;
 
-
-	public static final int GRAVITY_DOWN_TILE = 1;
-
-	private static final int GRAVITY_UP_TILE = 3;
-
-	private static final int BOTH_GRAVITY_TILE = 2;
-
-	public static final int JUMP_TILE = 4;
-
 	private float debugSize;
+
+
+	public static final int GRAVITY_UP_UNRESTRICTED = 1;
+
+	public static final int GRAVITY_UP_RESTRICRED = 2;
+
+	private static final int GRAVITY_DOWN_UNRESTRICTED = 3;
+
+	public static final int GRAVITY_DOWN_RESTRICTED = 4;
 
 
 	public TiledGraph(JsonValue boardJson, int boardIdOffset, Vector2 scale, float debugSize) {
@@ -118,17 +118,17 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 
 	public void drawGraph(GameCanvas canvas) {
 		PolygonShape s = new PolygonShape();
-		s.setAsBox(this.scale.x*3/8, this.scale.y*3/8); //smaller than grid squares
+		s.setAsBox(this.scale.x*debugSize, this.scale.y*debugSize); //smaller than grid squares
 		float margin = this.scale.x*1/2;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				int val = nodes[j * width + i].getType();
 				if (val != 0) {
 					Color color;
-					if (val == GRAVITY_UP_TILE) color = Color.BLUE;
-					else if (val == GRAVITY_DOWN_TILE) {
+					if (val == GRAVITY_DOWN_UNRESTRICTED) color = Color.BLUE;
+					else if (val == GRAVITY_UP_UNRESTRICTED) {
 						color = Color.RED;
-					} else if (val == BOTH_GRAVITY_TILE){
+					} else if (val == GRAVITY_UP_RESTRICRED){
 						color = Color.GREEN;
 					}
 					else{
