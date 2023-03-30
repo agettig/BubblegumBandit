@@ -101,6 +101,9 @@ public class PlayerController{
     private boolean gravityUp;
     private boolean gravityUpPrevious;
 
+    private boolean unstickPressed;
+    private boolean unstickPrevious;
+
     /** If gum was collected */
     private boolean collect;
 
@@ -191,6 +194,8 @@ public class PlayerController{
     public boolean didShoot() {
         return shootPressed && !shootPrevious;
     }
+
+    public boolean didUnstick() { return unstickPressed && !unstickPrevious; }
 
     /** Returns x coordinate of mouse click*/
     public int getX() {
@@ -297,6 +302,7 @@ public class PlayerController{
         primePrevious  = primePressed;
         secondPrevious = secondPressed;
         shootPrevious = shootPressed;
+        unstickPrevious = unstickPressed;
         resetPrevious  = resetPressed;
         debugPrevious  = debugPressed;
         exitPrevious = exitPressed;
@@ -396,13 +402,9 @@ public class PlayerController{
             vertical -= 1.0f;
         }
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            secondPressed = true;
-            secondPrevious = false;
-        }
-
         // Mouse results
         shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
+        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(Input.Buttons.RIGHT));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }

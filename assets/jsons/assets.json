@@ -30,7 +30,8 @@
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
-        "orb": "textures/orb.png"
+        "orb": "textures/orb.png",
+        "unstickprojectile": "textures/unstick.png"
     },
     "fonts": {
         "display": {

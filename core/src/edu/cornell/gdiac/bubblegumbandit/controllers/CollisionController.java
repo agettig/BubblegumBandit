@@ -29,6 +29,7 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_EVENTTILE = 0x0040;
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
+    public static final short CATEGORY_UNSTICK = 0x0100;
 
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
@@ -38,6 +39,7 @@ public class CollisionController implements ContactListener {
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
     public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
+    public static final short MASK_UNSTICK = ~CATEGORY_PLAYER;
 
     /** The amount of gum collected when collecting floating gum */
     private static final int AMMO_AMOUNT = 5;
@@ -125,6 +127,7 @@ public class CollisionController implements ContactListener {
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
+            resolveUnstickCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -269,6 +272,8 @@ public class CollisionController implements ContactListener {
         if (bodyA == null || bodyB == null) return;
         // Gum should destroy projectiles, but not become sticky gum.
         if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
+        if (bodyA.getName().equals("unstickProjectile") || bodyB.getName().equals("unstickProjectile")) return;
+        if (bodyA.isRemoved() || bodyB.isRemoved()) return;
 
         GumModel gum = null;
         Obstacle body = null;
@@ -298,7 +303,7 @@ public class CollisionController implements ContactListener {
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
-        Boolean vertical = false;
+        boolean vertical = false;
         if (gum != null && gum.canAddObstacle(body)){
             if (gummable != null) {
                 if (!gum.onTile()) {
@@ -327,6 +332,49 @@ public class CollisionController implements ContactListener {
     }
 
     /**
+     *  Removes joint pairs and unsticks object if unsticking projectile collides with object.
+     *
+     *  @param bodyA The first body in the collision
+     *  @param bodyB The second body in the collision
+     */
+    public void resolveUnstickCollision(Obstacle bodyA, Obstacle bodyB){
+        //Safety check.
+        if (bodyA == null || bodyB == null) return;
+        // Gum should destroy projectiles, but not become sticky gum.
+        if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
+        if (bodyA.isRemoved() || bodyB.isRemoved()) return;
+
+        // Figure out what's what.
+        GumModel unstick;
+        Obstacle notUnstick;
+        if (bodyA.getName().equals("unstickProjectile") && bodyB.getName().equals("unstickProjectile") ) {
+            return;
+        } else if (bodyA.getName().equals("unstickProjectile")) {
+            unstick = (GumModel) bodyA;
+            notUnstick = bodyB;
+        } else if (bodyB.getName().equals("unstickProjectile")) {
+            unstick = (GumModel) bodyB;
+            notUnstick = bodyA;
+        } else {
+            return;
+        }
+
+        if (notUnstick.getName().equals("stickyGum")) {
+            // Unstick it
+            bubblegumController.removeGum((GumModel) notUnstick);
+        } else if (notUnstick instanceof Gummable) {
+            Gummable gummable = (Gummable) notUnstick;
+            if (gummable.getGummed()) {
+                // Ungum it
+            }
+        }
+        // Destroy projectile and call it a day
+        unstick.setVX(0);
+        unstick.setVY(0);
+        unstick.markRemoved(true);
+    }
+
+    /**
      * Check if gum hit a vertical side of the tile.
      * @param gum
      * @param tile
@@ -350,6 +398,9 @@ public class CollisionController implements ContactListener {
      * @param ob2
      */
     public void resolveGummableGumCollision(Obstacle ob1, Obstacle ob2) {
+        if (ob1 == null || ob2 == null) return;
+        if (ob1.isRemoved() || ob2.isRemoved()) return;
+
         Gummable gummable;
 
         if (ob1 instanceof Gummable) {

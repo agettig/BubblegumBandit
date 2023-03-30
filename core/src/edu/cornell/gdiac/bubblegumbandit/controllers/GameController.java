@@ -167,16 +167,6 @@ public class GameController implements Screen {
     private ProjectileController projectileController;
 
     /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
-
-    /**
      * The texture of the trajectory projectile
      */
     private TextureRegion trajectoryProjectile;
@@ -524,11 +514,26 @@ public class GameController implements Screen {
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumSpeed, gumGravity, gumTexture);
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
             if (gum != null) {
                 bubblegumController.fireGum();
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
+            }
+        }
+        if (inputResults.didUnstick()) {
+            Vector2 cross = level.getProjTarget(canvas);
+            JsonValue gumJV = constantsJson.get("unstickProjectile");
+            BanditModel avatar = level.getBandit();
+            Vector2 origin = level.getProjOrigin(gumJV, canvas);
+            String key = gumJV.get("texture").asString();
+            Vector2 scale = level.getScale();
+            TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
+            if (gum != null) {
+                bubblegumController.fireGum();
+                level.activate(gum);
+                gum.setFilter(CollisionController.CATEGORY_UNSTICK, CollisionController.MASK_UNSTICK);
             }
         }
 
@@ -573,8 +578,7 @@ public class GameController implements Screen {
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
 
-        // Add all of the pending joints to the world.
-        bubblegumController.addJointsToWorld(level);
+        bubblegumController.updateJoints(level);
         collisionController.addRobotJoints(level);
     }
 
@@ -592,7 +596,7 @@ public class GameController implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
-        level.draw(canvas, constantsJson, gumSpeed, gumGravity, trajectoryProjectile);
+        level.draw(canvas, constantsJson, trajectoryProjectile);
         hud.draw(level, bubblegumController, (int) orbCountdown);
 
         // Final message

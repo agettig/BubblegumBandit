@@ -490,28 +490,25 @@ public class LevelModel {
         return oy + vy * t + .5f * g * t * t;
     }
 
-    public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion
-            gumProjectile, GameCanvas canvas) {
-        Vector2 target = PlayerController.getInstance().getCrossHair();
-        JsonValue gumJV = levelFormat.get("gumProjectile");
-
-        Vector2 origin = getProjOrigin(gumJV, canvas);
-
-        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-        gumVel.nor();
-        if (gumSpeed == 0) { // Use default gum speed
-            gumVel.scl(gumJV.getFloat("speed", 0));
-        } else { // Use slider gum speed
-            gumVel.scl(gumSpeed);
-        }
-        float x, y;
-        for (int i = 1; i < 10; i++) {
-            x = getXTrajectory(origin.x, gumVel.x, i / 10f);
-            y = getYTrajectory(origin.y, gumVel.y, i / 10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.PINK, gumProjectile.getRegionWidth() / 2f, gumProjectile.getRegionHeight() / 2f,
-                    x * 50, y * 50, gumProjectile.getRegionWidth() * trajectoryScale, gumProjectile.getRegionHeight() * trajectoryScale);
-        }
-    }
+//    public void drawProjectile(JsonValue levelFormat, float gumGravity, TextureRegion
+//            gumProjectile, GameCanvas canvas) {
+//        Vector2 target = PlayerController.getInstance().getCrossHair();
+//        JsonValue gumJV = levelFormat.get("gumProjectile");
+//
+//        Vector2 origin = getProjOrigin(gumJV, canvas);
+//
+//        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+//        gumVel.nor();
+//        gumVel.scl(gumJV.getFloat("speed", 0));
+//
+//        float x, y;
+//        for (int i = 1; i < 10; i++) {
+//            x = getXTrajectory(origin.x, gumVel.x, i / 10f);
+//            y = getYTrajectory(origin.y, gumVel.y, i / 10f, gumGravity * world.getGravity().y);
+//            canvas.draw(gumProjectile, Color.PINK, gumProjectile.getRegionWidth() / 2f, gumProjectile.getRegionHeight() / 2f,
+//                    x * 50, y * 50, gumProjectile.getRegionWidth() * trajectoryScale, gumProjectile.getRegionHeight() * trajectoryScale);
+//        }
+//    }
 
     /**
      * Draws the path of the projectile using a raycast. Only works for shooting in a straight line (gravity scale of 0).
@@ -567,17 +564,17 @@ public class LevelModel {
     }
 
 
-    public void drawGrid(GameCanvas canvas) {
-        PolygonShape s = new PolygonShape();
-        int halfWidth = (int) (scale.x / 2);
-        int halfHeight = (int) (scale.y / 2);
-        s.setAsBox(.5f * scale.x, .5f * scale.y);
-        for (int i = 0; i < levelWidth; i++) {
-            for (int j = 0; j < levelHeight; j++) {
-                canvas.drawPhysics(s, Color.RED, i * scale.x + halfWidth, j * scale.y + halfHeight);
-            }
-        }
-    }
+//    public void drawGrid(GameCanvas canvas) {
+//        PolygonShape s = new PolygonShape();
+//        int halfWidth = (int) (scale.x / 2);
+//        int halfHeight = (int) (scale.y / 2);
+//        s.setAsBox(.5f * scale.x, .5f * scale.y);
+//        for (int i = 0; i < levelWidth; i++) {
+//            for (int j = 0; j < levelHeight; j++) {
+//                canvas.drawPhysics(s, Color.RED, i * scale.x + halfWidth, j * scale.y + halfHeight);
+//            }
+//        }
+//    }
 
     /**
      * Draws the level to the given game canvas
@@ -587,7 +584,7 @@ public class LevelModel {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion
+    public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
             gumProjectile) {
         canvas.clear();
 
@@ -599,11 +596,7 @@ public class LevelModel {
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
-        if (gumGravity != 0) {
-            drawProjectile(levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
-        } else {
-            drawProjectileRay(levelFormat, gumProjectile, canvas);
-        }
+        drawProjectileRay(levelFormat, gumProjectile, canvas);
 
         canvas.end();
 
