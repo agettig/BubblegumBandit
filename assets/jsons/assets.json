@@ -44,7 +44,8 @@
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3"
+  		"jump" : "sounds/jump.mp3",
+        "smallEnemyShooting": "sounds/smallEnemyShooting.wav"
 	},
 	"jsons" : {
 		"level1" : "jsons/camera_demo.json",
