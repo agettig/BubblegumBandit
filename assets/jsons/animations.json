@@ -1,5 +1,16 @@
 {
   "bandit" : {
-    "run": "bandit.run"
+    "run": {
+      "strip": "bandit_run.run",
+      "fps": 8
+    },
+    "idle": {
+      "strip": "bandit_idle.idle",
+      "fps": 2
+    },
+    "fall": {
+      "strip": "bandit_fall.fall",
+      "fps": 2
+    }
   }
 }

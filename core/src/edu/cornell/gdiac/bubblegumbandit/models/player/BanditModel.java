@@ -516,6 +516,10 @@ public class BanditModel extends CapsuleObstacle {
 		cameraTarget.x = getX()*drawScale.x;
 		cameraTarget.y = getY()*drawScale.y;
 
+		if(!isGrounded) animationController.setAnimation("fall");
+		else if (getMovement()==0) animationController.setAnimation("idle");
+		else animationController.setAnimation("run");
+
 		super.update(dt);
 	}
 
@@ -527,11 +531,10 @@ public class BanditModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-			canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+			canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,
+					getX()*drawScale.x-getWidth()/2*drawScale.x*effect, //adjust for animation origin
 			getY()*drawScale.y,getAngle(),effect,yScale);
 
-			///canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
-					//getY()*drawScale.y,getAngle(),effect,yScale);
 
 		}
 
