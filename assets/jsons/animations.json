@@ -2,7 +2,7 @@
   "bandit" : {
     "run": {
       "strip": "bandit_run.run",
-      "fps": 8
+      "fps": 6
     },
     "idle": {
       "strip": "bandit_idle.idle",
