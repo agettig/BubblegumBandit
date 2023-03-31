@@ -2,12 +2,15 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -26,17 +29,25 @@ public class AlarmController {
   /** Whether the alarms are currently going off */
   boolean alarming;
   /** The color of the active alarms */
-  Color active = Color.RED;
+  Color active = new Color(1, 0, 0, 1f);
   /** The color of the inactive alarms */
-  Color inactive = Color.TEAL;
-  /** The maximum distance of an alarm while active and the distance while inactive */
-  int MAX_DST = 6;
-  /** The minimum distance of an active alarm */
-  int MIN_DST = 0;
+  Color inactive = new Color(1, 1, 1, 0.6f); // Color.TEAL;
   /** The number of rays used by each box2dlights light */
-  int rayCount = 20;
+  int rayCount = 80;
   /** The degree of change in the distance of a light per physics update */
   float change = .1f;
+
+  /** The inactive ambient light amount */
+  private final float NORMAL_AMBIENT = 0.8f;
+  /** The active ambient light amount */
+  private final float ALARM_AMBIENT = 0.3f;
+  /** The  distance of an alarm while inactive */
+  private final int INACTIVE_DIST = 8;
+  /** The  distance of an alarm while active */
+  private final int ACTIVE_DIST = 8;
+
+
+  private float counter;
 
   /**
    * Creates an alarm system.
@@ -44,19 +55,18 @@ public class AlarmController {
    * @param directory The asset directory containing the alarm textures
    * @param world The physics world
    */
-  public AlarmController(float[][] locations, AssetDirectory directory, World world) {
+  public AlarmController(Array<Vector2> locations, AssetDirectory directory, World world) {
     this.rays = new RayHandler(world);
-    rays.setAmbientLight(.9f);
+    rays.setAmbientLight(0.95f);
     rays.setShadows(true);
-    this.lights = new PointLight[locations.length];
+    this.lights = new PointLight[locations.size];
     this.onTexture = new TextureRegion(directory.getEntry("alarm_on", Texture.class));
     this.offTexture = new TextureRegion(directory.getEntry("alarm_off", Texture.class));
-    for(int i = 0; i<locations.length; i++) {
-      int[] loc = {(int) locations[i][0], (int) locations[i][1]};
-      if(loc.length!=2) System.err.println("Light location not formatted as [x,y].");
-      lights[i] = new PointLight(rays, rayCount, inactive, MAX_DST, loc[0]+.5f, loc[1]+.5f);
+    for(int i = 0; i<locations.size; i++) {
+      lights[i] = new PointLight(rays, rayCount, inactive, INACTIVE_DIST, locations.get(i).x+.5f, locations.get(i).y+.5f);
+      lights[i].setSoft(true);
     }
-    setAlarms(true); //comment out once controlled by events in game controller
+    counter = 0;
   }
 
   /**
@@ -66,16 +76,13 @@ public class AlarmController {
    * @param scale The physics to world scale (should be 64x64 in BGB)
    */
   public void drawLights(GameCamera camera, GameCanvas canvas, Vector2 scale) {
-    //this is a whole mess of scaling confusion
 
     FitViewport view = canvas.getUIViewport();
-    rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
+    rays.useCustomViewport(view.getScreenX(), view.getScreenY(),
         view.getScreenWidth()*2, view.getScreenHeight()*2);
-
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
-        camera.position.y / scale.y, camera.viewportWidth* camera.zoom / scale.x,
+        camera.position.y / scale.y, camera.viewportWidth * camera.zoom / scale.x,
         camera.viewportHeight * camera.zoom / scale.y);
-
 
     rays.render();
 
@@ -88,23 +95,19 @@ public class AlarmController {
    */
   public void drawAlarms(GameCanvas canvas, Vector2 scale) {
     for(PointLight light : lights) {
-      TextureRegion draw = alarming? onTexture : offTexture;
-      canvas.drawWithShadow(draw, Color.WHITE, draw.getRegionWidth()/2,
-          draw.getRegionHeight()/2, light.getX()*scale.x,
-          light.getY()*scale.y,
-          0, 1, 1);
+      TextureRegion draw = alarming ? onTexture : offTexture;
+      canvas.drawWithShadow(draw, Color.WHITE, draw.getRegionWidth()/2, draw.getRegionHeight()/2, (light.getX())*scale.x, (light.getY())*scale.y, 0, 1, 1);
     }
   }
 
   /**
    * Effect: Updates the box2dlights, oscillates distance if alarming.
    */
-  public void update() {
+  public void update(float dt) {
     if(alarming) {
+      counter += dt;
       for(PointLight light : lights) {
-        if(light.getDistance()+change>MAX_DST||
-            light.getDistance()+change<0) change = change *-1;
-        light.setDistance(light.getDistance()+change);
+        light.setDistance(counter - (int) counter < .2 ? 0 : ACTIVE_DIST);
       }
     }
     rays.update();
@@ -124,15 +127,17 @@ public class AlarmController {
   public void setAlarms(boolean set) {
     //change alarm colors
     if(set&&!alarming) {
+      rays.setAmbientLight(ALARM_AMBIENT);
       for(PointLight light : lights) {
         light.setColor(active);
-        rays.setAmbientLight(.6f);
+        light.setDistance(ACTIVE_DIST);
+        light.setSoftnessLength(ACTIVE_DIST);
       }
     } else if (!set&&alarming) {
+      rays.setAmbientLight(NORMAL_AMBIENT);
       for(PointLight light : lights) {
         light.setColor(inactive);
-        light.setDistance(MAX_DST);
-        rays.setAmbientLight(.9f);
+        light.setDistance(INACTIVE_DIST);
       }
     }
     alarming = set;

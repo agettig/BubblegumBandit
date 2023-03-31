@@ -197,13 +197,13 @@ public class GameController implements Screen {
     private TextureRegion stuckGum;
 
     /** The gravity control mode for the player controller */
-    private boolean gravityToggle = false;
+    private boolean gravityToggle = true;
 
     /** The number of the current level. */
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 3;
+    private final int NUM_LEVELS = 1;
 
     /** Whether the orb has been collected. */
     private boolean orbCollected;
@@ -485,6 +485,7 @@ public class GameController implements Screen {
         if (!orbCollected && level.getBandit().isOrbCollected()) {
             orbCollected = true;
             orbCountdown = level.getOrbCountdown();
+            level.startAlarms();
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -609,12 +610,9 @@ public class GameController implements Screen {
 
         level.draw(canvas, constantsJson, trajectoryProjectile);
 
-
-
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
         hud.draw(level, bubblegumController, (int) orbCountdown);
-
 
         // Final message
         if (complete && !failed) {

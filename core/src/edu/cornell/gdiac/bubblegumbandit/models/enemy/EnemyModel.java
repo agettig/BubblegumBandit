@@ -97,11 +97,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     /**
-     * Whether this enemy is flipped
-     */
-    protected boolean isFlipped;
-
-    /**
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
@@ -386,9 +381,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     public void update(float delta) {
-        if (yScale < 1f && !isFlipped) {
+        if (yScale < 1f && !isFlipped && !stuck) {
             yScale += 0.1f;
-        } else if (yScale > -1f && isFlipped) {
+        } else if (yScale > -1f && isFlipped &&!stuck) {
             yScale -= 0.1f;
         }
         updateRayCasts();
@@ -528,13 +523,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
      * */
     public void shoot(Vector2 targetPosition){
         return;
-    }
-
-    /**
-     * Flips the player's angle and direction when the world gravity is flipped
-     */
-    public void flippedGravity() {
-        isFlipped = !isFlipped;
     }
 
     public void changeSpeed(float speed){
