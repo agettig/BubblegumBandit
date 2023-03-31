@@ -310,9 +310,11 @@ public class LevelModel {
 
         scale.x = pSize[0];
         scale.y = pSize[1];
-        int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
-        boardIdOffset = tileset.next().getInt("firstgid");
+        while (!tileset.get("name").asString().equals("board")) {
+            tileset = tileset.next();
+        }
+        int boardIdOffset = tileset.getInt("firstgid");
 
         tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f/8);
         tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f/8);
