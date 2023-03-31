@@ -326,7 +326,7 @@ public class AIController implements InputController {
     }
 
     public void flipEnemy(){
-        if (!enemy.getStuck()) {
+        if (!enemy.getStuck() && !enemy.getGummed()) {
             enemy.flippedGravity();
         }
     }
