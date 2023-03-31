@@ -558,12 +558,4 @@ public class BanditModel extends CapsuleObstacle {
 	public void drawDebug(GameCanvas canvas) {
 		super.drawDebug(canvas);
 	}
-
-	/**
-	 * Flips the player's angle and direction when the world gravity is flipped
-	 *
-	 * */
-	public void flippedGravity(){
-		isFlipped = !isFlipped;
-	}
 }

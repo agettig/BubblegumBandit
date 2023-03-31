@@ -10,7 +10,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 
 import java.lang.reflect.Field;
 
-public class CameraTileModel extends BoxObstacle {
+public class CameraTileModel extends TileModel {
 
     /** Whether this is a horizontal camera tile or a vertical camera tile. */
     private boolean isHorizontal;
@@ -88,7 +88,7 @@ public class CameraTileModel extends BoxObstacle {
      * Uses generic values to start
      */
     public CameraTileModel() {
-        super(0, 0, 1, 1);
+        super();
         firstUpperLeft = new Vector2();
         firstLowerRight = new Vector2();
         secondUpperLeft = new Vector2();

@@ -26,10 +26,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -38,6 +39,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -54,6 +56,15 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  */
 public class LevelModel {
 
+
+    /**
+     * How close to the center of the tile we need to be to stop drifting
+     */
+    private static final float DRIFT_TOLER = .2f;
+    /**
+     * How fast we drift to the tile center when paused
+     */
+    private static final float DRIFT_SPEED = 0.325f;
     /**
      * The gap between each dot in the trajectory diagram (for raytraced trajectory.)
      * TODO: Move to another class?
@@ -104,23 +115,31 @@ public class LevelModel {
      */
     private TextureRegion backgroundRegion;
 
+    /**
+     * The amount of time counted down after the orb is collected.
+     */
+    private float timer = 60;
+
 
     /**
      * All the objects in the world.
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
-    private Array<AIController> aiControllers;
+    private Array<AIController> enemyControllers;
 
-    public Array<AIController> getEnemyControllers() {
-        return aiControllers;
+    public Array<AIController> aiControllers() {
+        return enemyControllers;
     }
 
-    private Board board;
+    private TiledGraph tiledGraphGravityDown;
+    private TiledGraph tiledGraphGravityUp;
 
     /** The width of the level. */
     private int levelWidth;
-    /** The height of the level. */
+    /**
+     * The height of the level.
+     */
     private int levelHeight;
 
 
@@ -209,9 +228,6 @@ public class LevelModel {
 
     }
 
-    public Board getBoard() {
-        return board;
-    }
 
     /**
      * Lays out the game geography from the given JSON file
@@ -222,22 +238,51 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
-        JsonValue boardLayer = levelFormat.get("layers").child();
+        JsonValue boardGravityDownLayer = null;
+        JsonValue boardGravityUpLayer = null;
 
-        JsonValue tileLayer = boardLayer.next();
-        JsonValue objects = tileLayer.next().get("Objects");
+        JsonValue tileLayer = null;
+        JsonValue objects = null;
+
+        JsonValue layer = levelFormat.get("layers").child();
+        while (layer != null) {
+            String layerName = layer.getString("name");
+            switch (layerName) {
+                case "BoardGravityDown":
+                    boardGravityDownLayer = layer;
+                    break;
+                case "BoardGravityUp":
+                    boardGravityUpLayer = layer;
+                    break;
+                case "Terrain":
+                case "terrain":
+                    tileLayer = layer;
+                    break;
+                case "Objects":
+                case "objects":
+                    objects = layer.get("Objects");
+                    break;
+                default:
+                    throw new RuntimeException("Invalid layer name");
+            }
+            layer = layer.next();
+        }
+
+        if (boardGravityDownLayer == null || boardGravityUpLayer == null || tileLayer == null || objects == null) {
+            throw new RuntimeException("Missing layer data");
+        }
 
         int[] worldData = tileLayer.get("data").asIntArray();
         float gravity = 0;
-        int numEnemies = 0;
 
         JsonValue property = levelFormat.get("properties").child();
         while (property != null) {
             String propName = property.get("name").asString();
             if (propName.equals("gravity")) {
                 gravity = property.getFloat("value");
-            } else if (propName.equals("numenemies")) {
-                numEnemies = property.getInt("value");
+            }
+            if (propName.equals("timer")) {
+                timer = property.getFloat("value");
             }
             property = property.next();
         }
@@ -254,21 +299,19 @@ public class LevelModel {
         int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
-//        while (tileset != null) {
-//            if (tileset.get("source").asString().equals("..\\/..\\/Tiled\\/board.tsx")) {
-//                boardIdOffset = tileset.getInt("firstgid");
-//            }
-//            tileset = tileset.next();
-//        }
 
-        board = new Board(boardLayer, boardIdOffset, scale);
+        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f/8);
+        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f/8);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, tilesetJson);
-        aiControllers = new Array<>();
+        enemyControllers = new Array<>();
+
+        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
+        HashMap<Vector2, TileModel> tiles = new HashMap<>();
+        enemyControllers = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -277,12 +320,47 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
+
+                // TODO fix tile Val
+                newTile.initialize(textures.get(5), x, y, constants.get("tiles"));
+                tiles.put(new Vector2(x, y), newTile);
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
             }
         }
+
+        // Iterate over each tile in the world, find and mark open corners of tiles that have them
+        for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
+            Vector2 c = entry.getKey();
+            TileModel tile = entry.getValue();
+            Vector2 top = new Vector2(c.x, c.y + 1);
+            Vector2 right = new Vector2(c.x + 1, c.y);
+            Vector2 left = new Vector2(c.x - 1, c.y);
+            Vector2 bottom = new Vector2(c.x, c.y - 1);
+
+            if (!tiles.containsKey(top) && !tiles.containsKey(right)) {
+                tile.hasCorner(true);
+                tile.topRight(true);
+            }
+            if (!tiles.containsKey(top) && !tiles.containsKey(left)) {
+                tile.hasCorner(true);
+                tile.topLeft(true);
+            }
+            if (!tiles.containsKey(bottom) && !tiles.containsKey(left)) {
+                tile.hasCorner(true);
+                tile.bottomLeft(true);
+            }
+            if (!tiles.containsKey(bottom) && !tiles.containsKey(right)) {
+                tile.hasCorner(true);
+                tile.bottomRight(true);
+            }
+        }
+        tiles.clear();
+
+        bandit = null;
+        goalDoor = null;
 
         // Create objects
         JsonValue object = objects.child();
@@ -305,27 +383,31 @@ public class LevelModel {
                 case "smallrobot":
                 case "mediumrobot":
                     JsonValue enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     if (enemyConstants.get("type").asString().equals("moving")) {
-                        EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
+                        EnemyModel enemy = new ProjectileEnemyModel(world, enemyCount);
                         enemy.initialize(directory, x, y, enemyConstants);
                         enemy.setDrawScale(scale);
                         activate(enemy);
                         enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                        aiControllers.add(new AIController(enemy, bandit, board));
+
+                        enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                         enemyCount++;
                     }
                     break;
                 case "floatinggum":
                 case "orb":
-                    Collectible gum = new Collectible();
-                    gum.initialize(directory, x, y, scale, constants.get(objType));
-                    activate(gum);
+                    Collectible coll = new Collectible();
+                    coll.initialize(directory, x, y, scale, constants.get(objType));
+                    activate(coll);
+                    coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     break;
                 case "camera_v":
                 case "camera_h":
                     CameraTileModel cam = new CameraTileModel();
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
+                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
@@ -333,6 +415,13 @@ public class LevelModel {
             }
             object = object.next();
         }
+        if (goalDoor == null) {
+            throw new RuntimeException("Level missing exit");
+        }
+        if (bandit == null) {
+            throw new RuntimeException("Level missing bandit");
+        }
+
         activate(goalDoor);
         // Add bandit at the end because this affects draw order
         activate(bandit);
@@ -354,7 +443,7 @@ public class LevelModel {
     /**
      * Immediately adds the object to the physics world
      *
-     * @param obj The object to add
+     * @param obj The objexct to add
      */
     public void activate(Obstacle obj) {
         assert inBounds(obj) : "Object is not in bounds";
@@ -383,6 +472,10 @@ public class LevelModel {
      */
     public void update(float dt) {
         // Garbage collect the deleted objects.
+        for (AIController controller : enemyControllers) {
+//            adjustForDrift(controller.getEnemy());
+            controller.getEnemyStateMachine().update();
+        }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
             PooledList<Obstacle>.Entry entry = iterator.next();
@@ -394,6 +487,8 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
+
+
     }
 
     /**
@@ -454,29 +549,6 @@ public class LevelModel {
         return oy + vy * t + .5f * g * t * t;
     }
 
-    public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion
-            gumProjectile, GameCanvas canvas) {
-        Vector2 target = PlayerController.getInstance().getCrossHair();
-        JsonValue gumJV = levelFormat.get("gumProjectile");
-
-        Vector2 origin = getProjOrigin(gumJV, canvas);
-
-        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-        gumVel.nor();
-        if (gumSpeed == 0) { // Use default gum speed
-            gumVel.scl(gumJV.getFloat("speed", 0));
-        } else { // Use slider gum speed
-            gumVel.scl(gumSpeed);
-        }
-        float x, y;
-        for (int i = 1; i < 10; i++) {
-            x = getXTrajectory(origin.x, gumVel.x, i / 10f);
-            y = getYTrajectory(origin.y, gumVel.y, i / 10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.PINK, gumProjectile.getRegionWidth() / 2f, gumProjectile.getRegionHeight() / 2f,
-                    x * 50, y * 50, gumProjectile.getRegionWidth() * trajectoryScale, gumProjectile.getRegionHeight() * trajectoryScale);
-        }
-    }
-
     /**
      * Draws the path of the projectile using a raycast. Only works for shooting in a straight line (gravity scale of 0).
      *
@@ -517,9 +589,9 @@ public class LevelModel {
         Color[] colors = new Color[]{new Color(1, .619f, .62f, 1),
                                      new Color(1, .73f, .73f, .9f),
                                      new Color(1, .81f, .81f, .8f),
-                                     new Color(1,.86f,.86f, .7f),
-                                     new Color(1,.905f,.905f, .6f),
-                                     new Color(1,1,1,.5f)};
+                                     new Color(1, .86f, .86f, .7f),
+                                     new Color(1, .905f, .905f, .6f),
+                                     new Color(1, 1, 1, .5f)};
         int range = numSegments + 1;
         if (range > 6) range = 6;
         for (int i = 0; i < range; i++) {
@@ -551,7 +623,7 @@ public class LevelModel {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion
+    public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
             gumProjectile) {
         canvas.clear();
 
@@ -563,11 +635,7 @@ public class LevelModel {
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
-        if (gumGravity != 0) {
-            drawProjectile(levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
-        } else {
-            drawProjectileRay(levelFormat, gumProjectile, canvas);
-        }
+        drawProjectileRay(levelFormat, gumProjectile, canvas);
 
         canvas.end();
 
@@ -577,8 +645,9 @@ public class LevelModel {
                 obj.drawDebug(canvas);
             }
             // drawGrid(canvas);
-            if (board != null) {
-                board.drawBoard(canvas);
+            if (tiledGraphGravityUp != null && tiledGraphGravityDown != null) {
+                tiledGraphGravityDown.drawGraph(canvas);
+                tiledGraphGravityUp.drawGraph(canvas);
             }
             canvas.endDebug();
 
@@ -609,5 +678,50 @@ public class LevelModel {
 
             }
         }
+    }
+
+    /**
+     * Nudges the ship back to the center of a tile if it is not moving.
+     *
+     * @param enemy The Enemy to adjust
+     */
+    private void adjustForDrift(EnemyModel enemy) {
+        // Drift to line up vertically with the grid.
+
+        if (enemy.getVX() == 0.0f) {
+            float offset = enemy.getX() - (int) enemy.getX();
+            if (offset > .5){
+                offset -= .5;
+            }
+            else{
+                offset = .5f -offset;
+            }
+            if (offset < -DRIFT_TOLER) {
+                enemy.setX(enemy.getX() + DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setX(enemy.getX() - DRIFT_SPEED);
+            }
+        }
+
+        // Drift to line up horizontally with the grid.
+        if (enemy.getVY() == 0.0f) {
+            float offset = enemy.getY() - (int) enemy.getY();
+            if (offset > .5){
+                offset -= .5;
+            }
+            else{
+                offset = .5f -offset;
+            }
+            if (offset < -DRIFT_TOLER) {
+                enemy.setY(enemy.getY() + DRIFT_SPEED);
+            } else if (offset > DRIFT_TOLER) {
+                enemy.setY(enemy.getY() - DRIFT_SPEED);
+            }
+        }
+    }
+
+    /** Returns the amount of time the player has to escape. */
+    public float getOrbCountdown() {
+        return timer;
     }
 }

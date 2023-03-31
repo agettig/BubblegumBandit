@@ -9,9 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-
-
-
+        classpath "com.badlogicgames.gdx:gdx-ai:1.8.1"
     }
 }
 
@@ -25,7 +23,7 @@ allprojects {
         roboVMVersion = '2.3.16'
         box2DLightsVersion = '1.5'
         ashleyVersion = '1.7.4'
-        aiVersion = '1.8.2'
+        aiVersion = '1.8.1'
         gdxControllersVersion = '2.2.2'
     }
 
@@ -40,11 +38,7 @@ allprojects {
     }
 
     dependencies {
-        //constraints {
-        //    implementation("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
-         //       because("Default jamepad version 2.0.14.1 is missing macOS arm64 binaries.")
-         //   }
-       // }
+//        api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
     }
 }
 
@@ -75,6 +69,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         implementation files("../dependencies/soundlib.jar")
+        api "com.badlogicgames.gdx:gdx-ai:1.8.1"
 
 
     }
