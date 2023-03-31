@@ -54,6 +54,7 @@ public class HUDController {
   private Image bubbleIcon;
   private Label gumCount;
   private Label orbCountdown;
+  private Label fpsLabel;
 
 
   public HUDController(AssetDirectory directory) {
@@ -65,7 +66,6 @@ public class HUDController {
     table.align(Align.topLeft);
     stage.addActor(table);
     table.setFillParent(true);
-
 
     healthBar = new Image(directory.getEntry( "health_bar", Texture.class ));
     healthFillText = directory.getEntry( "health_fill", Texture.class );
@@ -92,13 +92,16 @@ public class HUDController {
 
     table.add(gumCount).padLeft(10);
 
-    table.padLeft(30).padTop(60);
-
     orbCountdown = new Label("00", new Label.LabelStyle(font, Color.WHITE));
     orbCountdown.setFontScale(1f);
     orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
     stage.addActor(orbCountdown);
 
+    fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
+    fpsLabel.setFontScale(0.5f);
+    table.add(fpsLabel).padLeft(10);
+
+    table.padLeft(30).padTop(60);
 
   }
 
@@ -111,7 +114,7 @@ public class HUDController {
     view.apply(true);
   }
 
-  public void draw(LevelModel level, BubblegumController bubblegumController, int timer) {
+  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -136,6 +139,12 @@ public class HUDController {
       orbCountdown.setText("0" + timer);
     }else {
       orbCountdown.setText("");
+    }
+
+    if (showFPS) {
+      fpsLabel.setText("FPS: " + fps);
+    } else {
+      fpsLabel.setText("");
     }
 
     stage.draw();

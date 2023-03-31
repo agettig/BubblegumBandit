@@ -612,7 +612,7 @@ public class GameController implements Screen {
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown);
+        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
 
         // Final message
         if (complete && !failed) {
