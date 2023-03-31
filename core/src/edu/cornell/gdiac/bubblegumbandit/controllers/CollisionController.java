@@ -68,6 +68,7 @@ public class CollisionController implements ContactListener {
         winConditionMet = false;
     }
 
+
     /**
      * Construct a new CollisionController.
      *
@@ -278,6 +279,7 @@ public class CollisionController implements ContactListener {
         GumModel gum = null;
         Obstacle body = null;
         Gummable gummable = null;
+        TileModel tile = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
@@ -298,12 +300,12 @@ public class CollisionController implements ContactListener {
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
             gum.setName("stickyGum");
-            gum.setRadius(gum.getRadius());
             // Changing radius resets filter for some reason
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
-        boolean vertical = false;
+        //0 = horizontal, 1 = vertical, 2 = rightCorner, 3 = leftCorner
+        int orientation = 0;
         if (gum != null && gum.canAddObstacle(body)){
             if (gummable != null) {
                 if (!gum.onTile()) {
@@ -320,10 +322,11 @@ public class CollisionController implements ContactListener {
                 }
             }
             else if (body instanceof TileModel) {
-                vertical = checkGumPosition(gum, body);
+                tile = (TileModel) body;
+                orientation = checkGumPosition(gum, tile);
                 gum.onTile(true);
             }
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, vertical);
+            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
@@ -376,12 +379,12 @@ public class CollisionController implements ContactListener {
     }
 
     /**
-     * Check if gum hit a vertical side of the tile.
+     * Check if gum hit a vertical side or corner of a tile.
      * @param gum
      * @param tile
-     * @return
+     * @return int that corresponds with gum orientation.
      */
-    public boolean checkGumPosition(GumModel gum, Obstacle tile) {
+    public int checkGumPosition(GumModel gum, TileModel tile) {
         Vector2 gumPos = gum.getPosition();
         Vector2 tilePos = tile.getPosition();
         Boolean x = gumPos.x > (tilePos.x + 0.5f) || gumPos.x < (tilePos.x - 0.5f);
@@ -389,12 +392,33 @@ public class CollisionController implements ContactListener {
 
         if (x && y) {
             gum.setTexture(bubblegumController.getRotatedGumTexture());
-            return true;
+            return 1;
         }
-        return false;
+        if (tile.hasCorner()) {
+            if (gumPos.x > tilePos.x + 0.35f) {
+                if (tile.topRight() && gumPos.y > tilePos.y + 0.5f) {
+                    gum.setTexture(bubblegumController.getTopRightGumTexture());
+                    return 2;
+                }
+                if (tile.bottomRight() && gumPos.y < tilePos.y - 0.5f) {
+                    gum.setTexture(bubblegumController.getBottomRightGumTexture());
+                    return 2;
+                }
+            }
+            if (gumPos.x < tilePos.x - 0.35f) {
+                if (tile.bottomLeft() && gumPos.y < tilePos.y - 0.5f) {
+                    gum.setTexture(bubblegumController.getBottomLeftGumTexture());
+                     return 3;
+                }
+                if (tile.topLeft() && gumPos.y > tilePos.y + 0.5f) {
+                    gum.setTexture(bubblegumController.getTopLeftGumTexture());
+                    return 3;
+                }
+            }
+        }
+        return 0;
     }
-    /**
-     * Adds a joint that sticks gummable obstacles to the tile if the gummable has been hit with gum
+     /** Adds a joint that sticks gummable obstacles to the tile if the gummable has been hit with gum
      * @param ob1
      * @param ob2
      */

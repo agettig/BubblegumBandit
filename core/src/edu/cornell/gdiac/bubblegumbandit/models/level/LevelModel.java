@@ -38,6 +38,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -218,6 +219,10 @@ public class LevelModel {
         return board;
     }
 
+    public int getIndex(Float y) {
+        return (int) ((int) levelWidth*(levelHeight-y-0.5f));
+    }
+
     /**
      * Lays out the game geography from the given JSON file
      *
@@ -292,6 +297,7 @@ public class LevelModel {
         backgroundRegion = new TextureRegion(backgroundText);
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
+        HashMap<Vector2, TileModel> tiles = new HashMap<>();
         aiControllers = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
@@ -301,15 +307,41 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
-                if (textures.get(tileVal) == null) {
-                    System.out.println(tileVal);
-                }
+                tiles.put(new Vector2(x, y), newTile);
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
             }
         }
+
+        // Iterate over each tile in the world, find and mark open corners of tiles that have them
+        for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
+            Vector2 c = entry.getKey();
+            TileModel tile = entry.getValue();
+            Vector2 top = new Vector2(c.x, c.y + 1);
+            Vector2 right = new Vector2(c.x + 1, c.y);
+            Vector2 left = new Vector2(c.x - 1, c.y);
+            Vector2 bottom = new Vector2(c.x, c.y - 1);
+
+            if (!tiles.containsKey(top) && !tiles.containsKey(right)) {
+                tile.hasCorner(true);
+                tile.topRight(true);
+            }
+            if (!tiles.containsKey(top) && !tiles.containsKey(left)) {
+                tile.hasCorner(true);
+                tile.topLeft(true);
+            }
+            if (!tiles.containsKey(bottom) && !tiles.containsKey(left)) {
+                tile.hasCorner(true);
+                tile.bottomLeft(true);
+            }
+            if (!tiles.containsKey(bottom) && !tiles.containsKey(right)) {
+                tile.hasCorner(true);
+                tile.bottomRight(true);
+            }
+        }
+        tiles.clear();
 
         bandit = null;
         goalDoor = null;

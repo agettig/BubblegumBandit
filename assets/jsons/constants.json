@@ -55,7 +55,11 @@
     "density": 10.0,
     "texture": "gumProjectile",
     "stuckTexture": "gum",
-    "rotatedStuckTexture": "rotatedGum"
+    "rotatedStuckTexture": "rotatedGum",
+    "topRightStuckTexture": "topRightGum",
+    "bottomRightStuckTexture": "bottomRightGum",
+    "bottomLeftStuckTexture": "bottomLeftGum",
+    "topLeftStuckTexture": "topLeftGum"
   },
   "unstickProjectile": {
     "offsetX": 0.6,

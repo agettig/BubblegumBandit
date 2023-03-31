@@ -56,6 +56,13 @@ public class BubblegumController {
     /**Stores rotated gum */
     private TextureRegion rotatedStuckGumTexture;
 
+    /**Stores corner gum */
+    private TextureRegion topRightGumTexture;
+    private TextureRegion bottomRightGumTexture;
+    private TextureRegion bottomLeftGumTexture;
+    private TextureRegion topLeftGumTexture;
+
+
     /**
      * Instantiates the Bubblegum controller and its queues.
      * */
@@ -77,6 +84,14 @@ public class BubblegumController {
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         String key2 = json.get("rotatedStuckTexture").asString();
         rotatedStuckGumTexture = new TextureRegion(directory.getEntry(key2, Texture.class));
+        String key3 = json.get("topRightStuckTexture").asString();
+        topRightGumTexture = new TextureRegion(directory.getEntry(key3, Texture.class));
+        String key4 = json.get("bottomRightStuckTexture").asString();
+        bottomRightGumTexture = new TextureRegion(directory.getEntry(key4, Texture.class));
+        String key5 = json.get("bottomLeftStuckTexture").asString();
+        bottomLeftGumTexture = new TextureRegion(directory.getEntry(key5, Texture.class));
+        String key6 = json.get("topLeftStuckTexture").asString();
+        topLeftGumTexture = new TextureRegion(directory.getEntry(key6, Texture.class));
     }
 
     public void resetAmmo() {
@@ -101,6 +116,13 @@ public class BubblegumController {
     public TextureRegion getStuckGumTexture() { return stuckGumTexture; }
 
     public TextureRegion getRotatedGumTexture() {return rotatedStuckGumTexture; }
+    public TextureRegion getTopRightGumTexture() {return topRightGumTexture; }
+
+    public TextureRegion getBottomRightGumTexture() {return bottomRightGumTexture;}
+
+    public TextureRegion getBottomLeftGumTexture() {return bottomLeftGumTexture;}
+
+    public TextureRegion getTopLeftGumTexture() {return topLeftGumTexture;}
 
     /**
      * Adds a GumJointPair to the assembly queue if possible.
@@ -253,7 +275,7 @@ public class BubblegumController {
     /**
      * Returns a WeldJointDef connecting gum and another obstacle.
      */
-    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob, boolean vertical) {
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob, int orientation) {
         Vector2 gumPos = gum.getPosition();
         Vector2 obPos = ob.getPosition();
         float yDiff = gumPos.y - obPos.y;
@@ -265,9 +287,15 @@ public class BubblegumController {
         jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
         Vector2 anchor = new Vector2();
         jointDef.localAnchorA.set(anchor);
-        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY() - yDiff*0.25f);
-        if (vertical) {
-            anchor.set(gum.getX() - ob.getX() - xDiff*0.25f, gum.getY() - ob.getY());
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY() - yDiff*0.4f);
+        if (orientation == 1) {
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.4f, gum.getY() - ob.getY());
+        }
+        else if (orientation == 2) {
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.5f, gum.getY() - ob.getY() - yDiff*0.65f);
+        }
+        else if (orientation == 3) {
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.75f, gum.getY() - ob.getY() - yDiff*0.65f);
         }
         jointDef.localAnchorB.set(anchor);
         return jointDef;
@@ -365,7 +393,7 @@ public class BubblegumController {
 
         float radius = texture.getRegionWidth() / (2.0f * scale.x);
         //Create a new GumModel and assign it to the BubblegumController.
-        GumModel gum = new GumModel(origin.x, origin.y, radius);
+        GumModel gum = new GumModel(origin.x, origin.y, radius*2f);
         gum.setName(gumJV.name());
         gum.setDensity(gumJV.getFloat("density", 0));
         gum.setDrawScale(scale);

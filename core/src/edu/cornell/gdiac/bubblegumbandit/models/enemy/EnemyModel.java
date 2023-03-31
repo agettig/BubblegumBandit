@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.Sensor;
@@ -81,6 +82,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     private TextureRegion gummedTexture;
 
     private TextureRegion ungummedTexture;
+
+    /**tile that the robot is currently standing on, or last stood on if in the air */
+    private TileModel tile;
 
     // endRegion
 
@@ -224,6 +228,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         gummed = false;
         stuck = false;
         collidedObs = new ObjectSet<>();
+        tile = null;
     }
 
     /**
@@ -302,6 +307,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         }
     }
 
+    public TileModel getTile() {
+        return tile;
+    }
+    public void setTile(TileModel tile) {
+        this.tile = tile;
+    }
+
     public void initializeSensors(JsonValue json, int numSensors) {
         // Get the sensor information
         sensors = new Sensor[numSensors];
@@ -339,7 +351,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
