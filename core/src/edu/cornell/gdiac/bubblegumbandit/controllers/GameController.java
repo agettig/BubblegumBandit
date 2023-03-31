@@ -495,12 +495,13 @@ public class GameController implements Screen {
 
         //move bandit
         float movement = inputResults.getHorizontal() * bandit.getForce();
-        bandit.setMovement(movement);
-        bandit.applyForce();
-
+        if (!bandit.getStuck()) {
+            bandit.setMovement(movement);
+            bandit.applyForce();
+        }
 
         float grav =  level.getWorld().getGravity().y;
-        if (bandit.isGrounded() && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
+        if (bandit.isGrounded() && !bandit.getStuck() && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
         ) {
@@ -526,7 +527,7 @@ public class GameController implements Screen {
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture, false);
             if (gum != null) {
                 bubblegumController.fireGum();
                 level.activate(gum);
@@ -541,7 +542,7 @@ public class GameController implements Screen {
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture, true);
             if (gum != null) {
                 bubblegumController.fireGum();
                 level.activate(gum);
