@@ -44,7 +44,7 @@ public class AlarmController {
    * @param directory The asset directory containing the alarm textures
    * @param world The physics world
    */
-  public AlarmController(int[][] locations, AssetDirectory directory, World world) {
+  public AlarmController(float[][] locations, AssetDirectory directory, World world) {
     this.rays = new RayHandler(world);
     rays.setAmbientLight(.9f);
     rays.setShadows(true);
@@ -52,7 +52,7 @@ public class AlarmController {
     this.onTexture = new TextureRegion(directory.getEntry("alarm_on", Texture.class));
     this.offTexture = new TextureRegion(directory.getEntry("alarm_off", Texture.class));
     for(int i = 0; i<locations.length; i++) {
-      int[] loc = locations[i];
+      int[] loc = {(int) locations[i][0], (int) locations[i][1]};
       if(loc.length!=2) System.err.println("Light location not formatted as [x,y].");
       lights[i] = new PointLight(rays, rayCount, inactive, MAX_DST, loc[0]+.5f, loc[1]+.5f);
     }

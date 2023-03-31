@@ -333,8 +333,8 @@ public class LevelModel {
         }
 
         //example of how to make the alarms, not 100% on how to incorporate into tiled
-        //int[][] alarmLocs = new int[][] {{20,4},{6, 4}, {26, 4}};
-       // alarms = new AlarmController(alarmLocs,directory,world);
+        //float[][] alarmLocs = new float[][] {{20,4},{6, 4}, {26, 4}};
+        //alarms = new AlarmController(alarmLocs,directory,world);
 
 
     }
@@ -585,7 +585,7 @@ public class LevelModel {
             drawBackground(canvas);
         }
 
-        alarms.drawAlarms(canvas, scale);
+       // alarms.drawAlarms(canvas, scale);
 
         for (Obstacle obj : objects) {
             obj.draw(canvas);
@@ -598,7 +598,7 @@ public class LevelModel {
 
         canvas.end();
 
-        alarms.drawLights(canvas.getCamera(), canvas, scale);
+       // alarms.drawLights(canvas.getCamera(), canvas, scale);
 
 
         if (debug) {
