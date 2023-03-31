@@ -301,6 +301,9 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
+                if (textures.get(tileVal) == null) {
+                    System.out.println(tileVal);
+                }
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);

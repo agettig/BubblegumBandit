@@ -77,13 +77,6 @@ public class BanditModel extends CapsuleObstacle {
 	/** Cache for flipping player orientation */
 	private float angle;
 
-	public boolean isFlipped() {
-		return isFlipped;
-	}
-
-	/** Whether this player is flipped */
-	private boolean isFlipped;
-
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
 
@@ -548,13 +541,5 @@ public class BanditModel extends CapsuleObstacle {
 	 */
 	public void drawDebug(GameCanvas canvas) {
 		super.drawDebug(canvas);
-	}
-
-	/**
-	 * Flips the player's angle and direction when the world gravity is flipped
-	 *
-	 * */
-	public void flippedGravity(){
-		isFlipped = !isFlipped;
 	}
 }

@@ -2,11 +2,13 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -27,16 +29,26 @@ public class BubblegumController {
     private static int activeGum;
 
     /**The map of stuck Bubblegum obstacles to their joints. */
-    private static ObjectMap<GumModel, Array<GumJointPair>> stuckBubblegum;
+    private static ObjectMap<GumModel, ObjectSet<GumJointPair>> stuckBubblegum;
+
+    /** The map of Gummable objects to their joints. */
+    private static ObjectMap<Gummable, ObjectSet<Joint>> stuckToGummable;
 
     /**The queue of non-assembled Bubblegum obstacles and their jointDefs. */
     private static Queue<GumJointPair> bubblegumAssemblyQueue;
 
-    /**The queue of joints to remove. */
-    private static Queue<GumJointPair> jointsToRemove;
+    /**The queue of joints between gum and objects to remove. */
+    private static Queue<GumJointPair> gumJointsToRemove;
+
+    /**The queue of joints between gummable objects and objects to remove. */
+    private static Queue<Joint> gummableJointsToRemove;
+
 
     /**The queue of mid-air Bubblegum obstacles. */
     private static Queue<GumModel> midAirBubblegumQueue;
+
+    /** Queue of joints between Gummable object and collided object */
+    private static Queue<WeldJointDef> gummableAssemblyQueue;
 
     /** Stores the stuck gum texture */
     private TextureRegion stuckGumTexture;
@@ -51,7 +63,10 @@ public class BubblegumController {
         stuckBubblegum = new ObjectMap<>();
         bubblegumAssemblyQueue = new Queue<>();
         midAirBubblegumQueue = new Queue<>();
-        jointsToRemove = new Queue<>();
+        gumJointsToRemove = new Queue<>();
+        gummableJointsToRemove = new Queue<>();
+        gummableAssemblyQueue = new Queue<>();
+        stuckToGummable = new ObjectMap<>();
     }
 
     /** Initialize bubblegumController stats */
@@ -123,13 +138,30 @@ public class BubblegumController {
         if(pair.getGum() == null || pair.getJoint() == null) return;
         if(pair.getJointDef() != null) return;
 
-        Array<GumJointPair> gumJoints = stuckBubblegum.get(pair.getGum());
+        ObjectSet<GumJointPair> gumJoints = stuckBubblegum.get(pair.getGum());
         if (gumJoints == null) {
-            gumJoints = new Array<>();
+            gumJoints = new ObjectSet<>();
             gumJoints.add(pair);
             stuckBubblegum.put(pair.getGum(), gumJoints);
         } else {
             gumJoints.add(pair);
+        }
+    }
+
+    /**
+     * Adds a joint between a Gummable and an object to the active joint map.
+     */
+    public void addToGummableMap(Joint joint) {
+        assert joint != null;
+        Gummable gummable = (Gummable) joint.getBodyA().getUserData();
+
+        ObjectSet<Joint> gummableJoints = stuckToGummable.get(gummable);
+        if (gummableJoints == null) {
+            gummableJoints = new ObjectSet<>();
+            gummableJoints.add(joint);
+            stuckToGummable.put(gummable, gummableJoints);
+        } else {
+            gummableJoints.add(joint);
         }
     }
 
@@ -140,10 +172,24 @@ public class BubblegumController {
      */
     public void removeGum(GumModel gum) {
         for (GumJointPair j : stuckBubblegum.get(gum)) {
-            jointsToRemove.addLast(j);
+            gumJointsToRemove.addLast(j);
         }
         stuckBubblegum.remove(gum);
+    }
 
+    /**
+     * Queues a gummable's associated joints to be removed at the next opportunity and ungums the gummable.
+     *
+     * @param gummable the gummable whose joints should be removed
+     */
+    public void removeGummable(Gummable gummable) {
+        gummable.setGummed(false);
+        gummable.updateTexture();
+
+        for (Joint j : stuckToGummable.get(gummable)) {
+            gummableJointsToRemove.addLast(j);
+        }
+        stuckToGummable.remove(gummable);
     }
 
     /**
@@ -227,6 +273,23 @@ public class BubblegumController {
         return jointDef;
     }
 
+    /** Creates a joint between a gummable object and another object and adds it
+     * to the queue of gummable joints.
+     * @param gummable The gummable object to be connected
+     * @param ob The other object to be connected
+     * */
+    public void createGummableJoint(Gummable gummable, Obstacle ob) {
+        WeldJointDef jointDef = new WeldJointDef();
+        Obstacle gummableOb = (Obstacle) gummable;
+        jointDef.bodyA = gummableOb.getBody();
+        jointDef.bodyB = ob.getBody();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorB.set(anchor);
+        anchor.set(ob.getX() - gummableOb.getX(), ob.getY() - gummableOb.getY());
+        jointDef.localAnchorA.set(anchor);
+        gummableAssemblyQueue.addLast(jointDef);
+    }
+
 
     /**
      * Adds every joint in the joint queue to the world before clearing the queue.
@@ -240,17 +303,46 @@ public class BubblegumController {
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             addToStuckBubblegum(activePair);
         }
-        for (GumJointPair gumJoint : jointsToRemove) {
+        for (int i = 0; i < gummableAssemblyQueue.size; i++) {
+            Joint joint = level.getWorld().createJoint(gummableAssemblyQueue.removeFirst());
+            addToGummableMap(joint);
+        }
+        for (int i = 0; i < gumJointsToRemove.size; i++) {
+            GumJointPair gumJoint = gumJointsToRemove.removeFirst();
             gumJoint.getGum().markRemoved(true);
             try {
                 Obstacle ob1 = (Obstacle) gumJoint.getJoint().getBodyA().getUserData();
                 Obstacle ob2 = (Obstacle) gumJoint.getJoint().getBodyB().getUserData();
                 ob1.setStuck(false);
                 ob2.setStuck(false);
+                if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
+                    ob1.flippedGravity();
+                }
+                if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
+                    ob2.flippedGravity();
+                }
             } catch (Exception ignored) {
 
             }
 
+        }
+        for (int i = 0; i < gummableJointsToRemove.size; i++) {
+            Joint j = gummableJointsToRemove.removeFirst();
+            try {
+                Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
+                Obstacle ob2 = (Obstacle) j.getBodyB().getUserData();
+                ob1.setStuck(false);
+                ob2.setStuck(false);
+                if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
+                    ob1.flippedGravity();
+                }
+                if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
+                    ob2.flippedGravity();
+                }
+            } catch (Exception ignored) {
+
+            }
+            level.getWorld().destroyJoint(j);
         }
     }
 

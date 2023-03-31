@@ -78,6 +78,20 @@ public abstract class Obstacle {
 	/** The obstacles this obstacle is colliding with. Must be non-null if the object is gummable. */
 	protected ObjectSet<Obstacle> collidedObs = null;
 
+	public boolean isFlipped() {
+		return isFlipped;
+	}
+
+	/** Whether this obstacle is flipped */
+	protected boolean isFlipped;
+
+	/**
+	 * Flips the player's angle and direction when the world gravity is flipped
+	 */
+	public void flippedGravity() {
+		isFlipped = !isFlipped;
+	}
+
 	// Gum methods
 	public void setGummed(boolean value) {gummed = value; stuck = value;}
 
