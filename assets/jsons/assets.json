@@ -24,10 +24,10 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
-        "box": "textures/box.png",
-        "powercell": "textures/powercell.png",
-        "chair": "textures/chair.png",
-        "frame": "textures/frame.png"
+        "box": "textures/boxb.png",
+        "powercell": "textures/powercellb.png",
+        "chair": "textures/chairb.png",
+        "frame": "textures/frameb.png"
     },
     "fonts": {
         "display": {

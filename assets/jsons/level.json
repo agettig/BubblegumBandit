@@ -258,7 +258,7 @@
     }
   },
   "enemies": {
-    "numenemies": 1,
+    "numenemies": 6,
     "enemylist": [
       {
         "name": "enemy1",

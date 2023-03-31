@@ -116,7 +116,7 @@ public class BackObjModel extends BoxObstacle {
 //            Color color = new Color (0.043f, 0.349f, 0.4196f, 0.8f);
 //            Color shadowColor = new Color (0.043f, 0.349f, 0.4196f, 1f);
 //            Color color = new Color (1, 1, 1, 0.6f);
-            Color color = new Color(0.0118f, 0.279f, 0.34f, 0.5f);
+            Color color = new Color(0.0118f, 0.279f, 0.34f, 0.3f);
             Color shadowColor = new Color(0.0118f, 0.279f, 0.34f, 1f);
 
             //flip around a different axis when rotated 90 degrees
