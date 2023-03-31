@@ -34,8 +34,6 @@ public class AlarmController {
   Color inactive = new Color(1, 1, 1, 0.6f); // Color.TEAL;
   /** The number of rays used by each box2dlights light */
   int rayCount = 80;
-  /** The degree of change in the distance of a light per physics update */
-  float change = .1f;
 
   /** The inactive ambient light amount */
   private final float NORMAL_AMBIENT = 0.8f;
@@ -44,7 +42,7 @@ public class AlarmController {
   /** The  distance of an alarm while inactive */
   private final int INACTIVE_DIST = 8;
   /** The  distance of an alarm while active */
-  private final int ACTIVE_DIST = 8;
+  private final int ACTIVE_DIST = 9;
 
 
   private float counter;
@@ -64,7 +62,7 @@ public class AlarmController {
     this.offTexture = new TextureRegion(directory.getEntry("alarm_off", Texture.class));
     for(int i = 0; i<locations.size; i++) {
       lights[i] = new PointLight(rays, rayCount, inactive, INACTIVE_DIST, locations.get(i).x+.5f, locations.get(i).y+.5f);
-      lights[i].setSoft(true);
+      lights[i].setStaticLight(true);
     }
     counter = 0;
   }
@@ -83,6 +81,7 @@ public class AlarmController {
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
         camera.position.y / scale.y, camera.viewportWidth * camera.zoom / scale.x,
         camera.viewportHeight * camera.zoom / scale.y);
+    camera.combined.scl(1/scale.x);
 
     rays.render();
 

@@ -21,6 +21,4 @@ public interface Gummable {
     public void setStuck(boolean value);
 
     public boolean getStuck();
-
-    public void updateTexture();
 }

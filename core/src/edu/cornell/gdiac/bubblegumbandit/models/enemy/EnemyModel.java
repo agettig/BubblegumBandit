@@ -373,14 +373,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     }
 
-    public void updateTexture() {
-        if (gummed) {
-            setTexture(gummedTexture);
-        } else {
-            setTexture(ungummedTexture);
-        }
-    }
-
     public CircleShape getSensorShape() {
         return sensorShape;
     }
@@ -400,15 +392,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         }
         updateRayCasts();
         updateMovement(nextAction);
-
-
     }
 
     public boolean fired(){
         return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
     }
-
-
 
     public RayCastCone getAttacking() {
         return attacking;
@@ -469,13 +457,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
             TextureRegion drawn = texture;
-            float x = getX() * drawScale.x;
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                x-=getWidth()/2*drawScale.x*effect;
+//                setX(getX() - getWidth()/2*effect);
             }
-            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                getY() * drawScale.y, getAngle(), effect, yScale);
+            if (gummed) {
+                canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect, yScale);
+            } else {
+                canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect, yScale);
+
+            }
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);

@@ -705,7 +705,6 @@ public class LevelModel {
                 backgroundRegion.setRegionY(0);
                 backgroundRegion.setRegionHeight(backgroundText.getHeight());
                 backgroundRegion.setRegionWidth(backgroundText.getWidth());
-
             }
         }
     }
