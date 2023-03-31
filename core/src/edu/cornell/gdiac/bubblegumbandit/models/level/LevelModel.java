@@ -30,6 +30,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
@@ -374,6 +375,7 @@ public class LevelModel {
 
         bandit = null;
         goalDoor = null;
+        boolean orbPlaced = false;
 
         // Create objects
         Array<Vector2> alarmPos = new Array<>();
@@ -409,8 +411,9 @@ public class LevelModel {
                         enemyCount++;
                     }
                     break;
-                case "floatinggum":
                 case "orb":
+                    orbPlaced = true;
+                case "floatinggum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
@@ -438,8 +441,12 @@ public class LevelModel {
         if (bandit == null) {
             throw new RuntimeException("Level missing bandit");
         }
+        if (!orbPlaced) {
+            throw new RuntimeException("Level missing orb");
+        }
 
         activate(goalDoor);
+        goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
         // Add bandit at the end because this affects draw order
         activate(bandit);
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);

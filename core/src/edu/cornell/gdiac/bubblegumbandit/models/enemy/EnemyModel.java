@@ -385,10 +385,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     public void update(float delta) {
-        if (yScale < 1f && !isFlipped && !stuck) {
-            yScale += 0.1f;
-        } else if (yScale > -1f && isFlipped &&!stuck) {
-            yScale -= 0.1f;
+        if (!isFlipped && yScale < 1) {
+            if (yScale != -1 || !stuck) {
+                yScale += 0.1f;
+            }
+        } else if (isFlipped && yScale > -1) {
+            if (yScale != 1 || !stuck) {
+                yScale -= 0.1f;
+            }
         }
         updateRayCasts();
         updateMovement(nextAction);
