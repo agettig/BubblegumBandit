@@ -308,11 +308,11 @@ public class CollisionController implements ContactListener {
             if (gummable != null) {
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
-                    gummable.setGummedTexture();
                     gummable.setGummed(true);
+                    gummable.updateTexture();
                     gummable.endCollision(gum);
                     for (Obstacle ob : gummable.getCollisions()) {
-                        createJoint(ob, (Obstacle) gummable);
+                        bubblegumController.createGummableJoint(gummable, ob);
                     }
                 }
                 else {
@@ -366,6 +366,7 @@ public class CollisionController implements ContactListener {
             Gummable gummable = (Gummable) notUnstick;
             if (gummable.getGummed()) {
                 // Ungum it
+                bubblegumController.removeGummable(gummable);
             }
         }
         // Destroy projectile and call it a day
@@ -406,48 +407,16 @@ public class CollisionController implements ContactListener {
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
             if ((ob2.getName().equals("tile") || ob2.getName().equals("wall")) && gummable.getGummed()) {
-                createJoint(ob2, ob1);
+                bubblegumController.createGummableJoint(gummable, ob2);
             }
         }
         if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
             if ((ob1.getName().equals("tile") || ob1.getName().equals("wall")) && gummable.getGummed()) {
-                createJoint(ob1, ob2);
+                bubblegumController.createGummableJoint(gummable, ob1);
             }
         }
     }
-
-    /**
-     * Helper for creating joints between two obstacles
-     * @param ob1
-     * @param ob2
-     */
-    public void createJoint(Obstacle ob1, Obstacle ob2) {
-        WeldJointDef jointDef = new WeldJointDef();
-        jointDef.bodyA = ob2.getBody();
-        jointDef.bodyB = ob1.getBody();
-        Vector2 anchor = new Vector2();
-        jointDef.localAnchorB.set(anchor);
-        anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
-        jointDef.localAnchorA.set(anchor);
-        stickRobots.addLast(jointDef);
-    }
-
-    /**
-     * adds robot joints to robot joint queue, to be updated in GameController
-     * @param level
-     */
-    public void addRobotJoints(LevelModel level) {
-        if (stickRobots.size == 0) return;
-        for (WeldJointDef joint : stickRobots) {
-            level.getWorld().createJoint(joint);
-        }
-    }
-
-    public void resetRobotJoints() {
-        stickRobots.clear();
-    }
-
     /**
      * Checks if there was an enemy projectile collision in the Box2D world.
      * <p>

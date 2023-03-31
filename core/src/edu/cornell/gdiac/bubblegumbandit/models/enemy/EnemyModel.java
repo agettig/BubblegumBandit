@@ -74,16 +74,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     private Vector2 forceCache = new Vector2();
 
     /**
-     * Whether this enemy is flipped
-     */
-    protected boolean isFlipped;
-
-    /**
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
 
-    private TextureRegion gummed_robot;
+    private TextureRegion gummedTexture;
+
+    private TextureRegion ungummedTexture;
 
     // endRegion
 
@@ -154,10 +151,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
      *@param isRight whether or not the dude is facing right*/
     public void setFaceRight(boolean isRight) {
         faceRight = isRight;
-    }
-
-    public boolean isFlipped() {
-        return isFlipped;
     }
 
     /**
@@ -277,10 +270,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        ungummedTexture = texture;
         setTexture(texture);
 
         String gummedKey = constantsJson.get("gummedTexture").asString();
-        gummed_robot = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+        gummedTexture = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
 
         // initialize sensors
         int numSensors = constantsJson.get("numsensors").asInt();
@@ -300,8 +294,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     }
 
-    public void setGummedTexture() {
-        setTexture(gummed_robot);
+    public void updateTexture() {
+        if (gummed) {
+            setTexture(gummedTexture);
+        } else {
+            setTexture(ungummedTexture);
+        }
     }
 
     public void initializeSensors(JsonValue json, int numSensors) {
@@ -416,13 +414,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
      * */
     public void shoot(Vector2 targetPosition){
         return;
-    }
-
-    /**
-     * Flips the player's angle and direction when the world gravity is flipped
-     */
-    public void flippedGravity() {
-        isFlipped = !isFlipped;
     }
 
 }

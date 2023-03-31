@@ -62,7 +62,6 @@ public class TileModel extends BoxObstacle {
         int opacity = constants.get("debugopacity").asInt();
         debugColor.mul(opacity/255.0f);
         setDebugColor(debugColor);
-
         setTexture(texture);
     }
 

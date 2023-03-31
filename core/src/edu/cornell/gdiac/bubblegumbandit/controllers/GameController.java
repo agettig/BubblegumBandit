@@ -376,7 +376,6 @@ public class GameController implements Screen {
         orbCountdown = -1;
         orbCollected = false;
         bubblegumController.resetAmmo();
-        collisionController.resetRobotJoints();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
@@ -521,7 +520,7 @@ public class GameController implements Screen {
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick()) {
+        if (inputResults.didUnstick() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("unstickProjectile");
             BanditModel avatar = level.getBandit();
@@ -577,9 +576,7 @@ public class GameController implements Screen {
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
-
         bubblegumController.updateJoints(level);
-        collisionController.addRobotJoints(level);
     }
 
 
