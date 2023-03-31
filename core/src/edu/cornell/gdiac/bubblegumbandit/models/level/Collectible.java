@@ -1,17 +1,18 @@
-package edu.cornell.gdiac.bubblegumbandit.models.level.gum;
+package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
 import java.lang.reflect.Field;
 
-public class FloatingGum extends BoxObstacle {
+public class Collectible extends WheelObstacle {
 
     /** Whether the gum has been collected */
     private boolean collected;
@@ -29,8 +30,8 @@ public class FloatingGum extends BoxObstacle {
     /** The speed the gum bobs */
     private float bobSpeed;
 
-    public FloatingGum() {
-        super(0, 0, 0.5f, 0.5f);
+    public Collectible() {
+        super(0, 0, 1f);
         setSensor(true);
         collected = false;
         // Start at random time so gum doesn't always bob together
@@ -43,7 +44,19 @@ public class FloatingGum extends BoxObstacle {
     public boolean getCollected() {
         return collected;
     }
-    public void initialize(AssetDirectory directory, JsonValue json) {
+
+    /** Initializes a new piece of floating gum.
+     *
+     * @param directory the asset directory for the game
+     * @param x  the x position of the gum
+     * @param y  the y position of the gum
+     * @param scale the scale of the world
+     * @param json  the constants json of a floating gum
+     */
+    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, JsonValue json) {
+        setX(x);
+        initialY = y;
+        setY(y);
         setName(json.name());
         setDensity(json.get("density").asFloat());
         setBodyType(BodyDef.BodyType.KinematicBody);
@@ -68,6 +81,8 @@ public class FloatingGum extends BoxObstacle {
         String key = json.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
+        setRadius(texture.getRegionWidth() / (2.0f * scale.x));
+        setDrawScale(scale);
     }
 
     public void setPosition(JsonValue pos) {
@@ -88,7 +103,7 @@ public class FloatingGum extends BoxObstacle {
 
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+            canvas.drawWithShadow(texture,Color.WHITE,texture.getRegionWidth() / 2f,texture.getRegionHeight() /2f ,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
         }
     }
 
