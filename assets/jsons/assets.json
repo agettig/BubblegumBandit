@@ -11,7 +11,7 @@
             "wrapV": "repeated"
         },
         "dude": "textures/bandit.png",
-        "small_robot": "textures/small_enemy_o.png",
+        "small_robot": "textures/small_enemy.png",
         "big_robot": "textures/big_enemy.png",
         "med_robot": "textures/medium_enemy.png",
         "goal": "textures/shipdoor.png",
@@ -24,7 +24,7 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
-        "box": "textures/boxb.png",
+        "box": "textures/box.png",
         "powercell": "textures/powercellb.png",
         "chair": "textures/chairb.png",
         "frame": "textures/frameb.png"
