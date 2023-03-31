@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.Sensor;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -20,7 +22,7 @@ import java.lang.reflect.Field;
  * Initialization is done by reading the json
  * Note, enemies can only be initiated as stationary or moving enemies
  */
-public abstract class EnemyModel extends CapsuleObstacle {
+public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     // Physics constants
     private int id;
@@ -82,13 +84,9 @@ public abstract class EnemyModel extends CapsuleObstacle {
      */
     private float yScale;
 
-    private TextureRegion gummed_robot;
+    private TextureRegion gummedTexture;
 
-    /**Represents whether the robot has been hit with gum and should turn pink */
-    private boolean gummed;
-
-    /**Determines if the robot has been stuck to gum already on a tile */
-    private boolean stuck;
+    private TextureRegion ungummedTexture;
 
     /**tile that the robot is currently standing on, or last stood on if in the air */
     private TileModel tile;
@@ -164,10 +162,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
         faceRight = isRight;
     }
 
-    public boolean isFlipped() {
-        return isFlipped;
-    }
-
     /**
      * Returns how hard the brakes are applied to get a dude to stop moving
      *
@@ -226,14 +220,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
-    public void setGummed(boolean value) {gummed = value;}
-
-    public boolean getGummed() {return gummed; }
-
-    public void setStuck(boolean value) {stuck = value; }
-
-    public boolean getStuck() {return stuck; }
-
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -246,6 +232,7 @@ public abstract class EnemyModel extends CapsuleObstacle {
         vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
         gummed = false;
         stuck = false;
+        collidedObs = new ObjectSet<>();
         tile = null;
     }
 
@@ -256,7 +243,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * this JSON value is limited to the dude subtree
      *
      * @param directory the asset manager
-     * @param id the id of this enemy
      * @param x the x position of this enemy
      * @param y the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
@@ -294,10 +280,11 @@ public abstract class EnemyModel extends CapsuleObstacle {
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        ungummedTexture = texture;
         setTexture(texture);
 
         String gummedKey = constantsJson.get("gummedTexture").asString();
-        gummed_robot = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+        gummedTexture = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
 
         // initialize sensors
         int numSensors = constantsJson.get("numsensors").asInt();
@@ -317,8 +304,12 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     }
 
-    public void setGummedTexture() {
-        setTexture(gummed_robot);
+    public void updateTexture() {
+        if (gummed) {
+            setTexture(gummedTexture);
+        } else {
+            setTexture(ungummedTexture);
+        }
     }
 
     public TileModel getTile() {
@@ -440,13 +431,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * */
     public void shoot(Vector2 targetPosition){
         return;
-    }
-
-    /**
-     * Flips the player's angle and direction when the world gravity is flipped
-     */
-    public void flippedGravity() {
-        isFlipped = !isFlipped;
     }
 
 }

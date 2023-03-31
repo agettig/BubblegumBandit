@@ -101,6 +101,9 @@ public class PlayerController{
     private boolean gravityUp;
     private boolean gravityUpPrevious;
 
+    private boolean unstickPressed;
+    private boolean unstickPrevious;
+
     /** If gum was collected */
     private boolean collect;
 
@@ -192,6 +195,8 @@ public class PlayerController{
         return shootPressed && !shootPrevious;
     }
 
+    public boolean didUnstick() { return unstickPressed && !unstickPrevious; }
+
     /** Returns x coordinate of mouse click*/
     public int getX() {
         return Gdx.input.getX();
@@ -248,9 +253,9 @@ public class PlayerController{
     }
 
     /**
-     * Returns true if the player wants to go toggle the controls mode.
+     * Returns true if the player wants to go toggle the full camera view.
      *
-     * @return true if the player wants to go toggle the controls mode.
+     * @return true if the player wants to go toggle the full camera view.
      */
     public boolean didControlsSwap() {
         return controlTogglePressed && !controlTogglePrevious;
@@ -297,6 +302,7 @@ public class PlayerController{
         primePrevious  = primePressed;
         secondPrevious = secondPressed;
         shootPrevious = shootPressed;
+        unstickPrevious = unstickPressed;
         resetPrevious  = resetPressed;
         debugPrevious  = debugPressed;
         exitPrevious = exitPressed;
@@ -396,13 +402,9 @@ public class PlayerController{
             vertical -= 1.0f;
         }
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            secondPressed = true;
-            secondPrevious = false;
-        }
-
         // Mouse results
         shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
+        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(Input.Buttons.RIGHT));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }
