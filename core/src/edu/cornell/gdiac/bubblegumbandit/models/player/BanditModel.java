@@ -80,13 +80,6 @@ public class BanditModel extends CapsuleObstacle {
 	/** Number of ticks since game started*/
 	private long ticks;
 
-	public boolean isFlipped() {
-		return isFlipped;
-	}
-
-	/** Whether this player is flipped */
-	private boolean isFlipped;
-
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
 
