@@ -2,14 +2,12 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import jdk.javadoc.internal.doclets.toolkit.taglets.UserTaglet;
 
 import java.util.ArrayList;
 
@@ -23,7 +21,7 @@ public class Minimap {
     private int height;
 
     /**Width of the map */
-    private final int MAP_WIDTH = 26;
+    private final int MAP_WIDTH = 18;
 
     /**Height of the map */
     private final int MAP_HEIGHT = 16;
@@ -47,7 +45,7 @@ public class Minimap {
     private final float HORZ_SCALE = .25f;
 
     /**Ratio of the Minimap's height to the screen height  */
-    private final float VERT_SCALE = .3f;
+    private final float VERT_SCALE = .30f;
 
 
     /**
@@ -81,7 +79,7 @@ public class Minimap {
                 directory.getEntry("minimap_background", Texture.class));
         minimapTable.add(minimapBackground);
         minimapBackground.setSize(0, 0);
-        minimapBackground.setColor(Color.BLACK);
+        minimapBackground.setColor(new Color(0,0,0,.3f));
         makeMinimapTiles(directory);
     }
 
@@ -101,7 +99,7 @@ public class Minimap {
         float mapLength = HORZ_SCALE * canvasWidth;
         float mapHeight = VERT_SCALE * canvasHeight;
         minimapBackground.setSize(mapLength, mapHeight);
-        minimapBackground.setPosition(30, 30);
+        minimapBackground.setPosition(800, 500);
 
         //Find all positions of floors/platforms.
         ArrayList<Vector2> floorPositions = new ArrayList<Vector2>();
@@ -159,7 +157,7 @@ public class Minimap {
                         int minimapX = x - topLeftX;
                         int minimapY = y - topLeftY;
                         setMinimapTilePosition(tile, minimapX, minimapY);
-                        tile.setColor(Color.WHITE);
+                        tile.setColor(new Color(1,1,1,.3f));
                         if (x == Math.round(banditPosition.x) && y == Math.round(banditPosition.y)) {
                             drawAsBanditTile(tile);
                         }
