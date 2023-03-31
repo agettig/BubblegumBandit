@@ -795,21 +795,13 @@
   },
   "backgroundObj": {
     "name": "bgo",
-    "numObj": 14,
+    "numObj":8,
     "density": 1.0,
     "friction": 0.4,
     "restitution": 0.0,
     "debugcolor": "yellow",
     "debugopacity": 200,
     "objects": [
-      {
-        "pos": [
-          10,
-          2
-        ] ,
-        "texture": "frame",
-        "faceRight": "true"
-      },
       {
         "pos": [
           10,
@@ -820,43 +812,11 @@
       },
       {
         "pos": [
-          25.5,
-          18
-        ] ,
-        "texture": "chair",
-        "faceRight": "true"
-      },
-      {
-        "pos": [
-          28.5,
-          18
-        ] ,
-        "texture": "chair",
-        "faceRight": "false"
-      },
-      {
-        "pos": [
           27,
           18
         ] ,
         "texture": "box",
         "faceRight": "false"
-      },
-      {
-        "pos": [
-          27,
-          19
-        ] ,
-        "texture": "frame",
-        "faceRight": "true"
-      },
-      {
-        "pos": [
-          2,
-          21
-        ],
-        "texture": "powercell",
-        "faceRight": "true"
       },
       {
         "pos": [
@@ -888,14 +848,6 @@
           2
         ],
         "texture": "box",
-        "faceRight": "true"
-      },
-      {
-        "pos": [
-          27,
-          2
-        ],
-        "texture": "powercell",
         "faceRight": "true"
       },
       {
