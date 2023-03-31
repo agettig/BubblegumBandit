@@ -666,11 +666,7 @@ public class GameController implements Screen {
      */
     public void pause() {
         // We need this method to stop all sounds when we pause.
-        for (int i = 0; i < soundEffects.length; i++) {
-            if (soundEffects[i].isPlaying(-1*i)) {
-                soundEffects[i].stop(-1*i);
-            }
-        }
+        SoundController.pause();
     }
 
     /**

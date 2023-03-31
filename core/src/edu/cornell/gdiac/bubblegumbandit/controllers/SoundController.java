@@ -115,7 +115,7 @@ public class SoundController {
      * This is usually when it's not active or visible on screen. An Application is
      * also paused before it is destroyed.
      */
-    public void pause() {
+    public static void pause() {
         // We need this method to stop all sounds when we pause.
         for (SoundEffect key : soundIds.keySet()) {
             if (key.isPlaying(soundIds.get(key))) {

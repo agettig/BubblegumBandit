@@ -1,0 +1,22 @@
+{
+  "bandit" : {
+    "run": {
+      "strip": "bandit_run.run",
+      "fps": 6
+    },
+    "idle": {
+      "strip": "bandit_idle.idle",
+      "fps": 2
+    },
+    "fall": {
+      "strip": "bandit_fall.fall",
+      "fps": 2
+    }
+  },
+  "small_robot" : {
+    "patrol": {
+      "strip": "small_robot_patrol.patrol",
+      "fps": 6
+    }
+  }
+}
