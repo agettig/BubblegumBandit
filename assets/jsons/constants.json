@@ -50,11 +50,24 @@
     "starting_gum": 5,
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 15.0,
+    "speed": 25.0,
+    "gravity": 0,
     "density": 10.0,
     "texture": "gumProjectile",
     "stuckTexture": "gum",
-    "rotatedStuckTexture": "rotatedGum"
+    "rotatedStuckTexture": "rotatedGum",
+    "topRightStuckTexture": "topRightGum",
+    "bottomRightStuckTexture": "bottomRightGum",
+    "bottomLeftStuckTexture": "bottomLeftGum",
+    "topLeftStuckTexture": "topLeftGum"
+  },
+  "unstickProjectile": {
+    "offsetX": 0.6,
+    "offsetY": 0.5,
+    "speed": 25.0,
+    "gravity": 0,
+    "density": 10.0,
+    "texture": "unstickprojectile"
   },
   "floatinggum": {
     "density": 0.0,
