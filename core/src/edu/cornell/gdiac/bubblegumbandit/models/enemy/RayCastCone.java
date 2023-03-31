@@ -3,9 +3,8 @@ package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
 import com.badlogic.gdx.utils.Array;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
@@ -94,8 +93,8 @@ public class RayCastCone {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
-                    // TODO: If we add dynamic cover, will need to change this
-                    if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
+                    // TODO: Should enemies obscure enemy vision? Add additional categories here if so.
+                    if (fixture.getFilterData().categoryBits == CollisionController.CATEGORY_TERRAIN) {
                         rays.get(finalI).set(point);
                         minFraction[0] = fraction;
                         return fraction;

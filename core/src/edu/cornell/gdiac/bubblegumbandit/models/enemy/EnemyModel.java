@@ -526,14 +526,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         // To determine whether or not the dude is on the ground,
         // we create a thin sensor under his feet, which reports
         // collisions with the world but has no collision response.
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.density = getDensity();
-        sensorDef.isSensor = true;
-        sensorDef.shape = sensorShape;
-        sensorFixture = body.createFixture(sensorDef);
-        sensorFixture.getFilterData().categoryBits = CATEGORY_ENEMY_LISTENING;
-        sensorFixture.getFilterData().maskBits = MASK_ENEMY_LISTENING;
-        sensorFixture.setUserData(sensorName);
+//        FixtureDef sensorDef = new FixtureDef();
+//        sensorDef.density = getDensity();
+//        sensorDef.isSensor = true;
+//        sensorDef.shape = sensorShape;
+//        sensorFixture = body.createFixture(sensorDef);
+//        sensorFixture.getFilterData().categoryBits = CATEGORY_ENEMY_LISTENING;
+//        sensorFixture.getFilterData().maskBits = MASK_ENEMY_LISTENING;
+//        sensorFixture.setUserData(sensorName);
         return true;
     }
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -223,6 +224,7 @@ public class BubblegumController {
             WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             addToStuckBubblegum(activePair);
+            SoundController.playSound("gumSplat", 0.5f);
         }
     }
 
