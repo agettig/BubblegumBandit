@@ -17,6 +17,7 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
@@ -224,6 +225,11 @@ public class LevelModel {
         debug = value;
     }
 
+    /** Start the alarms in the level. */
+    public void startAlarms() {
+        alarms.setAlarms(true);
+    }
+
     /**
      * Creates a new LevelModel
      * <p>
@@ -265,11 +271,9 @@ public class LevelModel {
                     boardGravityUpLayer = layer;
                     break;
                 case "Terrain":
-                case "terrain":
                     tileLayer = layer;
                     break;
                 case "Objects":
-                case "objects":
                     objects = layer.get("Objects");
                     break;
                 default:
@@ -330,11 +334,8 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
-
-                // TODO fix tile Val
-                newTile.initialize(textures.get(5), x, y, constants.get("tiles"));
-                tiles.put(new Vector2(x, y), newTile);
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
+                tiles.put(new Vector2(x, y), newTile);
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
@@ -373,6 +374,7 @@ public class LevelModel {
         goalDoor = null;
 
         // Create objects
+        Array<Vector2> alarmPos = new Array<>();
         JsonValue object = objects.child();
         int enemyCount = 0;
         while (object != null) {
@@ -419,6 +421,9 @@ public class LevelModel {
                     activate(cam);
                     cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
+                case "alarm":
+                    alarmPos.add(new Vector2(x, y));
+                    break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
 
@@ -437,6 +442,7 @@ public class LevelModel {
         activate(bandit);
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
+        alarms = new AlarmController(alarmPos, directory, world);
     }
 
     public void dispose() {
@@ -498,8 +504,7 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
-       //alarms.update();
-
+       alarms.update(dt);
 
     }
 
@@ -637,15 +642,12 @@ public class LevelModel {
      */
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
             gumProjectile) {
-        canvas.clear();
-
         canvas.begin();
-
         if (backgroundRegion != null) {
             drawBackground(canvas);
         }
 
-       // alarms.drawAlarms(canvas, scale);
+        alarms.drawAlarms(canvas, scale);
 
         for (Obstacle obj : objects) {
             obj.draw(canvas);
@@ -653,9 +655,7 @@ public class LevelModel {
         drawProjectileRay(levelFormat, gumProjectile, canvas);
 
         canvas.end();
-
-       // alarms.drawLights(canvas.getCamera(), canvas, scale);
-
+        drawLights(canvas.getCamera(), canvas);
 
         if (debug) {
             canvas.beginDebug();
@@ -668,9 +668,19 @@ public class LevelModel {
                 tiledGraphGravityUp.drawGraph(canvas);
             }
             canvas.endDebug();
-
         }
     }
+
+    /** Draws the lights.
+     *
+     *  @param cam the camera
+     * @param canvas the game canvas
+     */
+    public void drawLights(OrthographicCamera cam, GameCanvas canvas) {
+        alarms.drawLights(canvas.getCamera(), canvas, scale);
+
+    }
+
 
     /**
      * Draws a repeating background, and crops off any overhangs outside the level

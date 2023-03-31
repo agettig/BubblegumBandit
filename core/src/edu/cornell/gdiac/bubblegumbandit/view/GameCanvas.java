@@ -144,8 +144,6 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
-
-
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -158,7 +156,6 @@ public class GameCanvas {
         spriteBatch = new PolygonSpriteBatch();
         debugRender = new ShapeRenderer();
         fovRender = new ShapeRenderer();
-
 
         // Set the projection matrix (for proper scaling)
         camera = new GameCamera(getWidth(), getHeight());
@@ -457,7 +454,7 @@ public class GameCanvas {
 
     public void end() {
         spriteBatch.end();
-        fovRender.end();
+//        fovRender.end();
         active = DrawPass.INACTIVE;
     }
 
