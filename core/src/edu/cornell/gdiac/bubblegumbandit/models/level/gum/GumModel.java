@@ -3,9 +3,6 @@ package edu.cornell.gdiac.bubblegumbandit.models.level.gum;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
-
-import java.util.ArrayList;
-
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_GUM;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_GUM_LIMIT;
 
@@ -26,6 +23,8 @@ public class GumModel extends WheelObstacle {
      * */
     private final int MAX_OBSTACLES = 3;
 
+    private boolean onTile;
+
 
     /**
      * Creates a Bubblegum projectile.
@@ -33,6 +32,7 @@ public class GumModel extends WheelObstacle {
     public GumModel(float x, float y, float radius){
         super(x, y, radius);
         obstacles = new ObjectSet<>();
+        onTile = false;
     }
 
     /**
@@ -52,6 +52,10 @@ public class GumModel extends WheelObstacle {
     public void addObstacle(Obstacle o){
         obstacles.add(o);
     }
+
+    public boolean onTile() {return onTile;}
+
+    public void onTile(boolean value) {onTile = value;}
 
     /**
      * Checks if gum is at obstacle capacity and sets collision filter

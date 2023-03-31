@@ -1,14 +1,13 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
-public class MovingEnemyModel extends EnemyModel {
+public class ProjectileEnemyModel extends EnemyModel {
 
     /**Maximum speed/velocity of a moving enemy. */
     private static float MAX_SPEED = 1f;
@@ -32,13 +31,18 @@ public class MovingEnemyModel extends EnemyModel {
         this.visionRadius = visionRadius;
     }
 
+//    private DefaultStateMachine<MovingEnemyModel, EnemyState> enemyStateMachine;
+//
+//    public DefaultStateMachine<MovingEnemyModel, EnemyState> getEnemyStateMachine() {
+//        return enemyStateMachine;
+//    }
 
     /**Creates a MovingEnemy.
      *
      * @param world The box2d world
      * @param id the id of this Enemy
      * */
-    public MovingEnemyModel(World world, int id){
+    public ProjectileEnemyModel(World world, int id){
         super(world, id);
     }
 
@@ -62,7 +66,7 @@ public class MovingEnemyModel extends EnemyModel {
      *
      * @returns true if this method clamped the enemy's velocity.
      * */
-    private boolean ClampVelocity(){
+    private boolean clampVelocity(){
         Body enemyBody = getBody();
 
         //If over the max velocity, adjust.
@@ -80,86 +84,6 @@ public class MovingEnemyModel extends EnemyModel {
         }
 
         return false;
-    }
-
-    /**
-     * Primary update method for a MovingEnemy.
-     *
-     * Takes a control code and performs the corresponding action. Updates
-     * the tick count.
-     */
-
-    @Override
-    public void update(int controlCode) {
-        super.update(controlCode);
-
-        ticks++;
-        // Determine how we are moving.
-        boolean movingLeft  = (controlCode & CONTROL_MOVE_LEFT) != 0;
-        boolean movingRight = (controlCode & CONTROL_MOVE_RIGHT) != 0;
-        boolean movingUp    = (controlCode & CONTROL_MOVE_UP) != 0;
-        boolean movingDown  = (controlCode & CONTROL_MOVE_DOWN) != 0;
-
-        // Process movement command.
-        if (movingLeft) {
-            setVX(-4f);
-            setVY(0);
-            setFaceRight(false);
-        } else if (movingRight) {
-            setVX(4f);
-            setVY(0);
-            setFaceRight(true);
-        } else if (movingUp) {
-            if (!isFlipped){
-                setVY(4f);
-                body.applyForceToCenter(0, 5,true);
-            }
-            else{
-                setVY(0);
-            }
-            setVX(0);
-        } else if (movingDown) {
-            if (isFlipped){
-                setVY(-4f);
-                body.applyForceToCenter(0, -5,true);
-
-            }
-            else{
-                setVY(0);
-            }
-            setVX(0);
-        } else {
-//            // NOT MOVING, SO SLOW DOWN
-//            velocity.x *= SPEED_DAMPNING;
-//            velocity.y *= SPEED_DAMPNING;
-//            if (Math.abs(velocity.x) < EPSILON_CLAMP) {
-//                velocity.x = 0.0f;
-//            }
-//            if (Math.abs(velocity.y) < EPSILON_CLAMP) {
-//                velocity.y = 0.0f;
-//            }
-            setVX(0);
-
-        }
-//        switch(controlCode){
-//            case InputController.CONTROL_MOVE_LEFT: //chase left
-////                moveLeft();
-//                //moveRight();
-//                //jump();
-//                setVX(-1);
-//                break;
-//            case InputController.CONTROL_MOVE_RIGHT: //chase right
-//                setVX(1.2f);
-//                break;
-//            case InputController.CONTROL_FIRE: //shoot
-//                break;
-//            case InputController.CONTROL_MOVE_UP: //jump
-//                setVY(2);
-//                setVX(0);
-//                break;
-//            default: break;
-//        }
-
     }
 
     /**
@@ -183,7 +107,7 @@ public class MovingEnemyModel extends EnemyModel {
         this.vision.setDirection(0);
 
         //if we didn't need to clamp velocity, increase it.
-        if(!ClampVelocity()) getBody().applyForceToCenter(-MOVEMENT_FORCE, 0, true);
+        if(!clampVelocity()) getBody().applyForceToCenter(-MOVEMENT_FORCE, 0, true);
     }
 
     /**
@@ -195,6 +119,11 @@ public class MovingEnemyModel extends EnemyModel {
         this.vision.setDirection((float) Math.PI);
 
         //if we didn't need to clamp velocity, increase it.
-        if(!ClampVelocity()) getBody().applyForceToCenter(MOVEMENT_FORCE, 0, true);
+        if(!clampVelocity()) getBody().applyForceToCenter(MOVEMENT_FORCE, 0, true);
+    }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        return false;
     }
 }

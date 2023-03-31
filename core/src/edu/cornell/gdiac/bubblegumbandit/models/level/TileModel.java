@@ -17,6 +17,16 @@ import java.lang.reflect.Field;
 public class TileModel extends BoxObstacle {
     /** The texture of this tile */
     private TextureRegion tileTexture;
+    /** Whether the tile has an open corner */
+    private boolean hasCorner;
+    /** Whether the tile has a corner in the top right */
+    private boolean topRight;
+    /** Whether the tile has a corner in the top left */
+    private boolean topLeft;
+    /** Whether the tile has a corner in the bottom right */
+    private boolean bottomRight;
+    /** Whether the tile has a corner in the bottom left */
+    private boolean bottomLeft;
 
     /**
      * Create a new TileModel with degenerate settings
@@ -24,8 +34,27 @@ public class TileModel extends BoxObstacle {
     public TileModel() {
         super(0,0,1,1);
         tileTexture = null;
+        hasCorner = false;
+        topRight = false;
+        topLeft = false;
+        bottomRight = false;
+        bottomLeft = false;
     }
 
+    /**
+     * Getters and setters for tile corners
+     * @return
+     */
+    public boolean hasCorner() {return hasCorner;}
+    public void hasCorner(boolean value) {hasCorner = value;}
+    public boolean topRight() {return topRight;}
+    public void topRight(boolean value) {topRight = value;}
+    public boolean topLeft() {return topLeft;}
+    public void topLeft(boolean value) {topLeft = value;}
+    public boolean bottomLeft() {return bottomLeft;}
+    public void bottomLeft(boolean value) {bottomLeft = value;}
+    public boolean bottomRight() {return bottomRight;}
+    public void bottomRight(boolean value) {bottomRight = value;}
 
     /**
      * Initializes the platform via the given JSON value
@@ -62,7 +91,6 @@ public class TileModel extends BoxObstacle {
         int opacity = constants.get("debugopacity").asInt();
         debugColor.mul(opacity/255.0f);
         setDebugColor(debugColor);
-
         setTexture(texture);
     }
 
@@ -73,8 +101,7 @@ public class TileModel extends BoxObstacle {
      */
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
-                    getY()*drawScale.y,getAngle(),1,1);
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
         }
     }
 }

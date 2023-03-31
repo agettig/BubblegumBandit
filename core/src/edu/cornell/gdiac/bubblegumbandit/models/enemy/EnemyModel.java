@@ -1,17 +1,23 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.Sensor;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
+
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
 /**
  * Abstract enemy class.
@@ -19,7 +25,7 @@ import java.lang.reflect.Field;
  * Initialization is done by reading the json
  * Note, enemies can only be initiated as stationary or moving enemies
  */
-public abstract class EnemyModel extends CapsuleObstacle {
+public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
 
     // Physics constants
     private int id;
@@ -54,22 +60,41 @@ public abstract class EnemyModel extends CapsuleObstacle {
     private boolean isGrounded;
 
     // SENSOR FIELDS
-    /**
-     * Ground sensor to represent our feet
-     */
-    private Sensor[] sensors;
+
     private Color sensorColor;
 
     //endRegion
 
-    public Vision vision;
+    public RayCastCone vision;
+
+
+    public RayCastCone getSensing() {
+        return sensing;
+    }
+
+    private RayCastCone sensing;
+
+    private RayCastCone attacking;
 
     private World world;
+
+    public int getNextAction() {
+        return nextAction;
+    }
+
+    private int nextAction;
+
+    private int previousAction;
 
     /**
      * Cache for internal force calculations
      */
     private Vector2 forceCache = new Vector2();
+
+    public void setNextAction(int nextAction) {
+        this.previousAction = this.nextAction;
+        this.nextAction = nextAction;
+    }
 
     /**
      * Whether this enemy is flipped
@@ -80,6 +105,32 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
+
+    private TextureRegion gummedTexture;
+    // SENSOR FIELDS
+    /** Ground sensor to represent our feet */
+    private Fixture sensorFixture;
+    private CircleShape sensorShape;
+    /** The name of the sensor for detection purposes */
+    private String sensorName;
+    /** The color to paint the sensor in debug mode */
+    private TextureRegion gummed_robot;
+
+    private TextureRegion ungummedTexture;
+
+    private float speed;
+
+    public static float WANDER_SPEED;
+
+    public static float CHASE_SPEED;
+
+    public static float PURSUE_SPEED;
+
+    /**tile that the robot is currently standing on, or last stood on if in the air */
+    private TileModel tile;
+
+    /** Position of enemy in need of help */
+    private Vector2 helpingTarget;
 
     // endRegion
 
@@ -152,10 +203,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
         faceRight = isRight;
     }
 
-    public boolean isFlipped() {
-        return isFlipped;
-    }
-
     /**
      * Returns how hard the brakes are applied to get a dude to stop moving
      *
@@ -221,9 +268,25 @@ public abstract class EnemyModel extends CapsuleObstacle {
         faceRight = true;
         isFlipped = false;
         yScale = 1f;
+        nextAction = CONTROL_NO_ACTION;
         this.world = world;
         this.id = id;
-        vision = new Vision(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        vision = new RayCastCone(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        sensing = new RayCastCone(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
+        attacking = new RayCastCone(6f, 0, (float) Math.PI/2, Color.BLUE);
+        gummed = false;
+        stuck = false;
+        collidedObs = new ObjectSet<>();
+        tile = null;
+        helpingTarget = null;
+    }
+
+    public Vector2 getHelpingTarget() {
+        return helpingTarget;
+    }
+
+    public void setHelpingTarget(Vector2 helpingTarget) {
+        this.helpingTarget = helpingTarget;
     }
 
     /**
@@ -233,7 +296,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
      * this JSON value is limited to the dude subtree
      *
      * @param directory the asset manager
-     * @param id the id of this enemy
      * @param x the x position of this enemy
      * @param y the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
@@ -253,6 +315,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
         setForce(constantsJson.get("force").asFloat());
         setDamping(constantsJson.get("damping").asFloat());
         setMaxSpeed(constantsJson.get("maxspeed").asFloat());
+        WANDER_SPEED = constantsJson.get("wanderspeed").asFloat();
+        CHASE_SPEED = constantsJson.get("chasespeed").asFloat();
+        PURSUE_SPEED = constantsJson.get("pursuespeed").asFloat();
+        speed = WANDER_SPEED;
 
         // Reflection is best way to convert name to color
         Color debugColor;
@@ -271,54 +337,121 @@ public abstract class EnemyModel extends CapsuleObstacle {
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        ungummedTexture = texture;
         setTexture(texture);
 
+        // Get the sensor information
+        int listeningRadius = constantsJson.get("listeningradius").asInt();
+
+        sensorShape = new CircleShape();
+        sensorShape.setRadius(listeningRadius);
+        String gummedKey = constantsJson.get("gummedTexture").asString();
+        gummedTexture = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+
         // initialize sensors
-        int numSensors = constantsJson.get("numsensors").asInt();
-        initializeSensors(constantsJson, numSensors);
 
         // Reflection is best way to convert name to color
         try {
             String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-            sensorColor = new Color((Color) field.get(null));
+            sensorColor = new Color((Color)field.get(null));
         } catch (Exception e) {
             sensorColor = null; // Not defined
         }
         opacity = constantsJson.get("sensoropacity").asInt();
+        sensorColor.mul(opacity/255.0f);
+        sensorName = constantsJson.get("sensorname").asString();
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
 
     }
 
-    public void initializeSensors(JsonValue json, int numSensors) {
-        // Get the sensor information
-        sensors = new Sensor[numSensors];
-        String sensorName;
-        JsonValue sensor = json.get("sensors").child();
-        for (int i = 0; i < numSensors; i++) {
-            float[] sSize = sensor.get("sensorsize").asFloatArray();
-            float[] sCenter = sensor.get("sensorcenter").asFloatArray();
-            float[] printLoc = sensor.get("printOffset").asFloatArray();
-            sensorName = sensor.name();
-            sensors[i] = new Sensor(new Vector2(sCenter[0], sCenter[1]), sSize[0],
-                sSize[1], sensorName, printLoc[0], printLoc[1]);
-            sensor = sensor.next();
+    public void updateTexture() {
+        if (gummed) {
+            setTexture(gummedTexture);
+        } else {
+            setTexture(ungummedTexture);
         }
     }
 
+    public CircleShape getSensorShape() {
+        return sensorShape;
+    }
+    public TileModel getTile() {
+        return tile;
+    }
+    public void setTile(TileModel tile) {
+        this.tile = tile;
 
-    public void update(int controlCode) {
+    }
+
+    public void update(float delta) {
         if (yScale < 1f && !isFlipped) {
             yScale += 0.1f;
         } else if (yScale > -1f && isFlipped) {
             yScale -= 0.1f;
         }
-        updateVision();
+        updateRayCasts();
+        updateMovement(nextAction);
+
 
     }
 
+    public boolean fired(){
+        return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
+    }
 
+
+
+    public RayCastCone getAttacking() {
+        return attacking;
+    }
+
+    public void updateMovement(int nextAction){
+        // Determine how we are moving.
+//        System.out.println(nextAction);
+        boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
+        boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
+        boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
+        boolean movingDown  = (nextAction & CONTROL_MOVE_DOWN) != 0;
+
+        // Process movement command.
+        if (movingLeft) {
+            if (previousAction != CONTROL_MOVE_LEFT){
+                setY((int) getY() + .5f);
+            }
+            setVX(-speed);
+            setFaceRight(false);
+        } else if (movingRight) {
+            if (previousAction != CONTROL_MOVE_RIGHT){
+                setY((int) getY() + .5f);
+            }
+            setVX(speed);
+            setFaceRight(true);
+        } else if (movingUp) {
+
+            if (!isFlipped){
+               setX((int) getPosition().x + .5f);
+                setVY(speed);
+            }
+            else{
+                setX((int) getPosition().x + .5f);
+            }
+            setVX(0);
+        } else if (movingDown) {
+            if (isFlipped){
+                setX((int) getPosition().x + .5f);
+                setVY(-speed);
+            }
+            else{
+                setX((int) getPosition().x + .5f);
+            }
+            setVX(0);
+        } else {
+            setVX(0);
+            setVX(0);
+        }
+    }
 
     /**
      * Draws the physics object.
@@ -328,37 +461,30 @@ public abstract class EnemyModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
         }
     }
 
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-//        for (Sensor s : sensors) {
-//            float y = getY();
-//            float x = getX();
-//            if (angle == 3.14f) {
-//                y += s.printY();
-//                x -= s.printX();
-//            }
-//
-//            else {
-//                y -= s.printY();
-//                x += s.printX();
-//            }
-//            canvas.drawPhysics(s.getSensorShape(), sensorColor,
-//                x, y, getAngle(), drawScale.x, drawScale.y);
-//        }
+        canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        attacking.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
-    public void updateVision() {
+    public void updateRayCasts() {
         vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
+        sensing.setDirection(!faceRight? (float) 0 : (float) Math.PI);
+        attacking.setDirection(faceRight? (float) 0 : (float) Math.PI);
         vision.update(world, getPosition());
+        sensing.update(world, getPosition());
+        attacking.update(world, getPosition());
     }
 
     /**
@@ -384,15 +510,14 @@ public abstract class EnemyModel extends CapsuleObstacle {
         // To determine whether or not the dude is on the ground,
         // we create a thin sensor under his feet, which reports
         // collisions with the world but has no collision response.
-        FixtureDef sensorDef;
-        for (Sensor sensor : sensors) {
-            sensorDef = new FixtureDef();
-            sensorDef.density = getDensity();
-            sensorDef.isSensor = true;
-            sensorDef.shape = sensor.getSensorShape();
-            sensor.setFixture(body.createFixture(sensorDef));
-            sensor.getFixture().setUserData(sensor.getSensorName());
-        }
+//        FixtureDef sensorDef = new FixtureDef();
+//        sensorDef.density = getDensity();
+//        sensorDef.isSensor = true;
+//        sensorDef.shape = sensorShape;
+//        sensorFixture = body.createFixture(sensorDef);
+//        sensorFixture.getFilterData().categoryBits = CATEGORY_ENEMY_LISTENING;
+//        sensorFixture.getFilterData().maskBits = MASK_ENEMY_LISTENING;
+//        sensorFixture.setUserData(sensorName);
         return true;
     }
 
@@ -410,6 +535,10 @@ public abstract class EnemyModel extends CapsuleObstacle {
      */
     public void flippedGravity() {
         isFlipped = !isFlipped;
+    }
+
+    public void changeSpeed(float speed){
+        this.speed = speed;
     }
 
 }
