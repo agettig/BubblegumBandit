@@ -5,8 +5,10 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
+
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.MessageType;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
@@ -28,15 +30,17 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_TERRAIN = 0x0004;
     public static final short CATEGORY_GUM = 0x0008;
     public static final short CATEGORY_PROJECTILE = 0x0010;
-    public static final short CATEGORY_ENEMY_LISTENING = 0x0040;
+    public static final short CATEGORY_EVENTTILE = 0x0040;
+
 
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
     public static final short MASK_TERRAIN = -1; // Collides with everything
-    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY_LISTENING);
+    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
     public static final short MASK_ENEMY_LISTENING = CATEGORY_PLAYER;
+    public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -289,10 +293,9 @@ public class CollisionController implements ContactListener {
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
             gum.setName("stickyGum");
-//            gum.setRadius(gum.getRadius() * 1.5f);
-//            // Changing radius resets filter for some reason
-//            gum.getFilterData().maskBits = MASK_GUM;
-//            gum.getFilterData().categoryBits = CATEGORY_GUM;
+            // TODO possibly remove
+            gum.getFilterData().maskBits = MASK_GUM;
+            gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
         Boolean vertical = false;
         if (gum != null && gum.canAddObstacle(body)){
@@ -367,7 +370,7 @@ public class CollisionController implements ContactListener {
      * @param ob1
      * @param ob2
      */
-    public void createEnemyTileJoint(Obstacle ob1, Obstacle ob2) {
+    public long createEnemyTileJoint(Obstacle ob1, Obstacle ob2, SoundEffect robotSplat, long robotSplatId) {
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = ob2.getBody();
         jointDef.bodyB = ob1.getBody();
@@ -376,6 +379,7 @@ public class CollisionController implements ContactListener {
         anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
         jointDef.localAnchorA.set(anchor);
         stickRobots.addLast(jointDef);
+        return SoundController.playSound("robotSplat", 1f);
     }
 
     /**
@@ -484,9 +488,11 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("floatinggum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("floatinggum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 
@@ -498,10 +504,12 @@ public class CollisionController implements ContactListener {
             ((Collectible) bd1).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd1.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("orb") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             ((Collectible) bd2).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd2.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 

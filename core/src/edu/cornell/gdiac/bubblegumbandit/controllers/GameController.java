@@ -43,6 +43,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Gameplay controller for the game.
@@ -89,6 +90,34 @@ public class GameController implements Screen {
 
     /**Id for jump. */
     private long jumpId = -1;
+
+    /**
+     * The small enemy shooting sound.  We only want to play once.
+     */
+    private SoundEffect smallEnemyShootingSound;
+    /** Id for small enemy shooting */
+    private long smallEnemyShootingId = -2;
+    /**
+     * The gum splat sound.  We only want to play once.
+     */
+    private SoundEffect gumSplatSound;
+    /** Id for gum splat sound */
+    private long gumSplatId = -3;
+    /**
+     * The sound when robot is hit with gume.  We only want to play once.
+     */
+    private SoundEffect robotSplatSound;
+    /** Id for robot splat sound */
+    private long robotSplatId = -4;
+    /**
+     * The sound when an item is collected.  We only want to play once.
+     */
+    private SoundEffect collectItemSound;
+    /** Id for collectible item sound */
+    private long collectItemId = -4;
+
+    /**Array holding all sounds */
+    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound, collectItemSound};
 
     /**
      * Exit code for quitting the game
@@ -327,7 +356,8 @@ public class GameController implements Screen {
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
-        jumpSound = directory.getEntry("jump", SoundEffect.class);
+
+        SoundController.initialize(directory);
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -462,7 +492,7 @@ public class GameController implements Screen {
         ) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
-            jumpId = playSound(jumpSound, jumpId);
+            jumpId = SoundController.playSound("jump", 0.25f);
             level.getWorld().setGravity(currentGravity);
             bandit.flippedGravity();
             bandit.setGrounded(false);
@@ -508,6 +538,7 @@ public class GameController implements Screen {
         for (AIController controller: level.aiControllers()){
             if (controller.getEnemy().fired()){
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                 level.activate(newProj);
                 newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
             }
@@ -534,7 +565,7 @@ public class GameController implements Screen {
 
         for (EnemyModel enemy : collisionController.getGummedRobots()) {
             TileModel tile = enemy.getTile();
-            collisionController.createEnemyTileJoint(tile, enemy);
+            robotSplatId = collisionController.createEnemyTileJoint(tile, enemy, robotSplatSound, robotSplatId);
         }
         collisionController.clearGummedRobots();
 
@@ -612,8 +643,10 @@ public class GameController implements Screen {
      */
     public void pause() {
         // We need this method to stop all sounds when we pause.
-        if (jumpSound.isPlaying(jumpId)) {
-            jumpSound.stop(jumpId);
+        for (int i = 0; i < soundEffects.length; i++) {
+            if (soundEffects[i].isPlaying(-1*i)) {
+                soundEffects[i].stop(-1*i);
+            }
         }
     }
 
@@ -664,7 +697,7 @@ public class GameController implements Screen {
      * @param soundId The previously playing sound instance
      * @return the new sound instance for this asset.
      */
-    public long playSound(SoundEffect sound, long soundId) {
+    public static long playSound(SoundEffect sound, long soundId) {
         return playSound(sound, soundId, 1.0f);
     }
 
@@ -682,7 +715,7 @@ public class GameController implements Screen {
      * @param volume  The sound volume
      * @return the new sound instance for this asset.
      */
-    public long playSound(SoundEffect sound, long soundId, float volume) {
+    public static long playSound(SoundEffect sound, long soundId, float volume) {
         if (soundId != -1 && sound.isPlaying(soundId)) {
             sound.stop(soundId);
         }

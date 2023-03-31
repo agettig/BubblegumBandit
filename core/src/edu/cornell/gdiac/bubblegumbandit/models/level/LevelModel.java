@@ -252,9 +252,11 @@ public class LevelModel {
                     boardGravityUpLayer = layer;
                     break;
                 case "Terrain":
+                case "terrain":
                     tileLayer = layer;
                     break;
                 case "Objects":
+                case "objects":
                     objects = layer.get("Objects");
                     break;
                 default:
@@ -366,6 +368,7 @@ public class LevelModel {
                     CameraTileModel cam = new CameraTileModel();
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
+                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
