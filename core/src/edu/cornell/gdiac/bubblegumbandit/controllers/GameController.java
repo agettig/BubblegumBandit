@@ -170,16 +170,6 @@ public class GameController implements Screen {
     private ProjectileController projectileController;
 
     /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
-
-    /**
      * The texture of the trajectory projectile
      */
     private TextureRegion trajectoryProjectile;
@@ -194,6 +184,12 @@ public class GameController implements Screen {
 
     /** The number of levels in the game. */
     private final int NUM_LEVELS = 2;
+
+    /** Whether the orb has been collected. */
+    private boolean orbCollected;
+
+    /** Countdown timer after collecting the orb. */
+    private float orbCountdown;
 
     /**
      * Returns true if the level is completed.
@@ -297,6 +293,7 @@ public class GameController implements Screen {
         failed = false;
         active = false;
         countdown = -1;
+        orbCountdown = -1;
         levelNum = 1;
         setComplete(false);
         setFailure(false);
@@ -372,15 +369,16 @@ public class GameController implements Screen {
 
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
-        collisionController.resetWinCondition();
+        collisionController.reset();
 
         level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
         bubblegumController.resetAmmo();
-        collisionController.resetRobots();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
@@ -391,6 +389,7 @@ public class GameController implements Screen {
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
+        canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
     }
 
     /**
@@ -412,6 +411,9 @@ public class GameController implements Screen {
         // Toggle debug and handle resets.
         if (input.didDebug()) {level.setDebug(!level.getDebug());}
         if (input.didReset()) {reset();}
+        if (input.didCameraSwap()) {
+            canvas.getCamera().toggleDebug();
+        }
         if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
         if (input.didAdvance()) {
             levelNum++;
@@ -436,6 +438,12 @@ public class GameController implements Screen {
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
             reset();
+        }
+
+        if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
+
+        else if (orbCollected && orbCountdown <= 0) {
+            level.getBandit().hitPlayer(level.getBandit().getHealth());
         }
 
         //Check for failure.
@@ -463,6 +471,11 @@ public class GameController implements Screen {
                 levelNum = 1;
             }
             setComplete(true);
+        }
+
+        if (!orbCollected && level.getBandit().isOrbCollected()) {
+            orbCollected = true;
+            orbCountdown = level.getOrbCountdown();
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -503,11 +516,26 @@ public class GameController implements Screen {
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumSpeed, gumGravity, gumTexture);
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
             if (gum != null) {
                 bubblegumController.fireGum();
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
+            }
+        }
+        if (inputResults.didUnstick() && bubblegumController.getAmmo() > 0) {
+            Vector2 cross = level.getProjTarget(canvas);
+            JsonValue gumJV = constantsJson.get("unstickProjectile");
+            BanditModel avatar = level.getBandit();
+            Vector2 origin = level.getProjOrigin(gumJV, canvas);
+            String key = gumJV.get("texture").asString();
+            Vector2 scale = level.getScale();
+            TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
+            if (gum != null) {
+                bubblegumController.fireGum();
+                level.activate(gum);
+                gum.setFilter(CollisionController.CATEGORY_UNSTICK, CollisionController.MASK_UNSTICK);
             }
         }
 
@@ -551,16 +579,7 @@ public class GameController implements Screen {
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
-
-        for (EnemyModel enemy : collisionController.getGummedRobots()) {
-            TileModel tile = enemy.getTile();
-            collisionController.createEnemyTileJoint(tile, enemy);
-        }
-        collisionController.clearGummedRobots();
-
-        // Add all of the pending joints to the world.
-        bubblegumController.addJointsToWorld(level);
-        collisionController.addRobotJoints(level);
+        bubblegumController.updateJoints(level);
     }
 
 
@@ -577,8 +596,8 @@ public class GameController implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
-        level.draw(canvas, constantsJson, gumSpeed, gumGravity, trajectoryProjectile);
-        hud.draw(level, bubblegumController);
+        level.draw(canvas, constantsJson, trajectoryProjectile);
+        hud.draw(level, bubblegumController, (int) orbCountdown);
 
         // Final message
         if (complete && !failed) {

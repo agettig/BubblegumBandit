@@ -5,6 +5,9 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "terrain": {
+            "file": "textures/tileset.png"
+        },
         "background": {
             "file": "textures/background.png",
             "wrapU": "repeated",
@@ -31,7 +34,8 @@
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
-        "orb": "textures/orb.png"
+        "orb": "textures/orb.png",
+        "unstickprojectile": "textures/unstick.png"
     },
     "fonts": {
         "display": {
@@ -53,7 +57,6 @@
 	"jsons" : {
 		"level1" : "jsons/camera_demo.json",
         "level2":"jsons/level1.json",
-        "constants": "jsons/constants.json",
-        "tileset": "jsons/objects.json"
+        "constants": "jsons/constants.json"
     }
 }
