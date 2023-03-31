@@ -52,6 +52,9 @@ public class HUDController {
   private Image bubbleIcon;
   private Label gumCount;
 
+  private Image starIcon1;
+  private Image starIcon2;
+  private Image starIcon3;
   private Label starCount;
 
 
@@ -59,7 +62,6 @@ public class HUDController {
 
     font = directory.getEntry("display", BitmapFont.class);
     stage = new Stage();
-
 
     table = new Table();
     table.align(Align.topLeft);
@@ -71,6 +73,12 @@ public class HUDController {
     healthFillText = directory.getEntry( "health_fill", Texture.class );
     healthIcon = new Image(directory.getEntry( "health_icon", Texture.class ));
     bubbleIcon = new Image(directory.getEntry( "bubblegum_icon", Texture.class ));
+    starIcon1 = new Image(directory.getEntry("star", Texture.class));
+    starIcon2 = new Image(directory.getEntry("star", Texture.class));
+    starIcon3 = new Image(directory.getEntry("star", Texture.class));
+    starIcon1.setVisible(false);
+    starIcon2.setVisible(false);
+    starIcon3.setVisible(false);
 
     healthFillRegion = new TextureRegion(healthFillText, 0, 0,
             healthFillText.getWidth(), healthFillText.getHeight());
@@ -90,17 +98,12 @@ public class HUDController {
     gumCount = new Label("x0", new Label.LabelStyle(font, Color.WHITE));
     gumCount.setFontScale(0.5f);
 
-    starCount = new Label("x0", new Label.LabelStyle(font, Color.WHITE));
-    starCount.setFontScale(0.5f);
-
     table.add(gumCount).padLeft(10);
-
-    table.padLeft(30).padTop(60);
-
-    table.add(starCount).padLeft(10);
-
-    table.padLeft(30).padTop(60);
-
+    table.row();
+    table.add(starIcon1);
+    table.add(starIcon2);
+    table.add(starIcon3);
+    table.padLeft(10).padTop(60);
   }
 
   public void draw(LevelModel level, BubblegumController bubblegumController) {
@@ -118,12 +121,20 @@ public class HUDController {
       }
       lastFrac = healthFraction;
     }
+    int numStars = level.getBandit().getNumStars();
+    if (numStars == 1) {
+      starIcon1.setVisible(true);
+    }
+    else if (numStars == 2) {
+      starIcon2.setVisible(true);
+    }
+    else if (numStars == 3) {
+      starIcon3.setVisible(true);
+    }
 
     healthFill.setWidth(healthFillRegion.getRegionWidth());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
     gumCount.setText("x" + bubblegumController.getAmmo() );
-    System.out.println(level.getBandit().getNumStars());
-    starCount.setText("Stars: " + level.getBandit().getNumStars() );
 
     stage.draw();
 

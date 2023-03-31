@@ -510,6 +510,8 @@ public class BanditModel extends CapsuleObstacle {
 	 */
 	public void update(float dt) {
 
+		System.out.println("Bandit Postion: " + getBody().getPosition());
+
 		if (isShooting()) {
 			shootCooldown = shotLimit;
 		} else {
