@@ -13,6 +13,55 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "dude": "textures/bandit.png",
+        "bandit_run":  {
+            "file": "textures/bandit_run.png",
+            "wrap": false,
+            "sprites": {
+                "run": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "bandit_idle":  {
+            "file": "textures/bandit_idle.png",
+            "wrap": false,
+            "sprites": {
+                "idle": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "bandit_fall":  {
+            "file": "textures/bandit_fall.png",
+            "wrap": false,
+            "sprites": {
+                "fall": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "small_robot_patrol":  {
+            "file": "textures/small_robot_patrol.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "small_robot": "textures/small_enemy.png",
+        "big_robot": "textures/big_enemy.png",
+        "med_robot": "textures/medium_enemy.png",
+        "goal": "textures/goaldoor.png",
         "bandit": "textures/bandit.png",
         "smallrobot": "textures/small_enemy.png",
         "bigrobot": "textures/big_enemy.png",
@@ -63,5 +112,6 @@
         "level2":"jsons/level1.json",
         "level3": "jsons/jumping.json",
         "constants": "jsons/constants.json",
+        "animations" : "jsons/animations.json"
     }
 }
