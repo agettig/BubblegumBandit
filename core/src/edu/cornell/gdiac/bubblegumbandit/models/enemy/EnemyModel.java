@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
@@ -23,7 +25,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  * Initialization is done by reading the json
  * Note, enemies can only be initiated as stationary or moving enemies
  */
-public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
+public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
 
     // Physics constants
     private int id;
@@ -61,8 +63,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     private Color sensorColor;
 
-    private boolean isJumping;
-
     //endRegion
 
     public RayCastCone vision;
@@ -70,14 +70,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     public RayCastCone getSensing() {
         return sensing;
-    }
-
-    public boolean isJumping(){
-        return isJumping;
-    }
-
-    public void setIsJumping(boolean b){
-        isJumping = b;
     }
 
     private RayCastCone sensing;
@@ -114,6 +106,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
      */
     private float yScale;
 
+    private TextureRegion gummedTexture;
     // SENSOR FIELDS
     /** Ground sensor to represent our feet */
     private Fixture sensorFixture;
@@ -123,9 +116,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     /** The color to paint the sensor in debug mode */
     private TextureRegion gummed_robot;
 
-    private boolean gummed;
-
-    private boolean stuck;
+    private TextureRegion ungummedTexture;
 
     private float speed;
 
@@ -212,10 +203,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         faceRight = isRight;
     }
 
-    public boolean isFlipped() {
-        return isFlipped;
-    }
-
     /**
      * Returns how hard the brakes are applied to get a dude to stop moving
      *
@@ -274,14 +261,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         isGrounded = value;
     }
 
-    public void setGummed(boolean value) {gummed = value;}
-
-    public boolean getGummed() {return gummed; }
-
-    public void setStuck(boolean value) {stuck = value; }
-
-    public boolean getStuck() {return stuck; }
-
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -297,6 +276,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         attacking = new RayCastCone(6f, 0, (float) Math.PI/2, Color.BLUE);
         gummed = false;
         stuck = false;
+        collidedObs = new ObjectSet<>();
         tile = null;
         helpingTarget = null;
     }
@@ -357,6 +337,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        ungummedTexture = texture;
         setTexture(texture);
 
         // Get the sensor information
@@ -365,7 +346,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
         sensorShape = new CircleShape();
         sensorShape.setRadius(listeningRadius);
         String gummedKey = constantsJson.get("gummedTexture").asString();
-        gummed_robot = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+        gummedTexture = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
 
         // initialize sensors
 
@@ -385,8 +366,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
 
     }
 
-    public void setGummedTexture() {
-        setTexture(gummed_robot);
+    public void updateTexture() {
+        if (gummed) {
+            setTexture(gummedTexture);
+        } else {
+            setTexture(ungummedTexture);
+        }
     }
 
     public CircleShape getSensorShape() {
@@ -476,7 +461,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);

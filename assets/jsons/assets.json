@@ -5,6 +5,9 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "terrain": {
+            "file": "textures/tileset.png"
+        },
         "background": {
             "file": "textures/background.png",
             "wrapU": "repeated",
@@ -18,7 +21,11 @@
         "gumProjectile": "textures/gum.png",
         "floatinggum": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
-        "gum": "textures/stuck_gum2.png",
+        "gum": "textures/stuck_gum.png",
+        "topRightGum": "textures/topRightGum.png",
+        "bottomRightGum": "textures/bottomRightGum.png",
+        "bottomLeftGum": "textures/bottomLeftGum.png",
+        "topLeftGum": "textures/topLeftGum.png",
         "rotatedGum": "textures/rotated_gum.png",
         "health_bar": "textures/health_bar.png",
         "health_fill": "textures/health_fill.png",
@@ -27,7 +34,8 @@
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
-        "orb": "textures/orb.png"
+        "orb": "textures/orb.png",
+        "unstickprojectile": "textures/unstick.png"
     },
     "fonts": {
         "display": {
@@ -51,10 +59,9 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/2BoardLayerTest3.json",
+		"level1" : "jsons/2BoardLayerTest5.json",
         "level2":"jsons/level1.json",
         "level3": "jsons/jumping.json",
         "constants": "jsons/constants.json",
-        "tileset": "jsons/objects.json"
     }
 }

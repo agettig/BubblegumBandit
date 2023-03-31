@@ -3,9 +3,6 @@ package edu.cornell.gdiac.bubblegumbandit.models.level.gum;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
-
-import java.util.ArrayList;
-
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_GUM;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_GUM_LIMIT;
 
