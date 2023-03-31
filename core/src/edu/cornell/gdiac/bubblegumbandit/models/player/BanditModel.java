@@ -84,12 +84,6 @@ public class BanditModel extends CapsuleObstacle {
 	/** Animation controller for controlling animations?? */
 	private AnimationController animationController;
 
-	public boolean isFlipped() {
-		return isFlipped;
-	}
-
-	/** Whether this player is flipped */
-	private boolean isFlipped;
 	/** Number of ticks since game started*/
 	private long ticks;
 
