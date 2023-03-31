@@ -73,9 +73,9 @@ public class Board {
 
     private static final int GRAVITY_DOWN_TILE = 1;
 
-    private static final int GRAVITY_UP_TILE = 2;
+    private static final int GRAVITY_UP_TILE = 3;
 
-    private static final int BOTH_GRAVITY_TILE = 3;
+    private static final int BOTH_GRAVITY_TILE = 2;
 
     private Queue<Vector3> queue = new Queue<>();
 
@@ -99,21 +99,30 @@ public class Board {
      * Creates a new board of the given size
      *
      * @param boardJson json representation of board
+     * @param boardIdOffset the id offset of the first tile in the board
+     * @param scale the scale of the level
      */
-    public Board(JsonValue boardJson, Vector2 scale) {
+    public Board(JsonValue boardJson, int boardIdOffset, Vector2 scale) {
         this.scale = scale;
         this.height = boardJson.getInt("height");
         this.width = boardJson.getInt("width");
-        JsonValue row = boardJson.get("values").child;
+        int[] jsonTiles = boardJson.get("data").asIntArray();
         tiles = new TileState[width][height];
-        for (int i = 0; i < width; i++) {
-            int[] rowVals = row.asIntArray();
-            for (int j = 0; j < height; j++) {
-                TileState tile = new TileState();
-                tile.value = rowVals[j];
-                tiles[i][j] = tile;
+        int x = 0;
+        int y = height - 1;
+        for (int i = 0; i < jsonTiles.length; i++) {
+            TileState tile = new TileState();
+            if (jsonTiles[i] == 0) {
+                tile.value = 0;
+            } else {
+                tile.value = jsonTiles[i] - boardIdOffset + 1;
             }
-            row = row.next;
+            tiles[x][y] = tile;
+            x++;
+            if (x == width) {
+                y--;
+                x = 0;
+            }
         }
     }
 
@@ -354,8 +363,8 @@ public class Board {
                 int val = tiles[i][j].value;
                 if (val != 0) {
                     Color color;
-                    if (val == 1) color = Color.BLUE;
-                    else if (val == 2) {
+                    if (val == GRAVITY_UP_TILE) color = Color.BLUE;
+                    else if (val == GRAVITY_DOWN_TILE) {
                         color = Color.RED;
                     } else {
                         color = Color.GREEN;

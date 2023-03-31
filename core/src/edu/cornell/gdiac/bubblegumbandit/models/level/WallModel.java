@@ -44,36 +44,37 @@ public class WallModel extends PolygonObstacle {
 	 * this JSON value is limited to the wall subtree
 	 *
 	 * @param directory the asset manager
-	 * @param json		the JSON subtree defining the wall
+	 * @param levelJson		the JSON subtree defining the wall in the level
+	 * @param constants 	the JSON subtree defining the wall constants
 	 */
-	public void initialize(AssetDirectory directory, JsonValue json) {
-		setName(json.name());
+	public void initialize(AssetDirectory directory, JsonValue levelJson, JsonValue constants) {
+		setName(levelJson.name());
 		
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
-		float[] verts = json.get("boundary").asFloatArray();
+		float[] verts = levelJson.get("boundary").asFloatArray();
 		initShapes(verts);
 		
-		setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
-		setDensity(json.get("density").asFloat());
-		setFriction(json.get("friction").asFloat());
-		setRestitution(json.get("restitution").asFloat());
+		setBodyType(constants.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+		setDensity(constants.get("density").asFloat());
+		setFriction(constants.get("friction").asFloat());
+		setRestitution(constants.get("restitution").asFloat());
 		
 		// Reflection is best way to convert name to color
 		Color debugColor;
 		try {
-			String cname = json.get("debugcolor").asString().toUpperCase();
+			String cname = constants.get("debugcolor").asString().toUpperCase();
 		    Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
 		    debugColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			debugColor = null; // Not defined
 		}
-		int opacity = json.get("debugopacity").asInt();
+		int opacity = constants.get("debugopacity").asInt();
 		debugColor.mul(opacity/255.0f);
 		setDebugColor(debugColor);
 		
 		// Now get the texture from the AssetManager singleton
-		String key = json.get("texture").asString();
+		String key = constants.get("texture").asString();
 		TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 		setTexture(texture);
 	}
