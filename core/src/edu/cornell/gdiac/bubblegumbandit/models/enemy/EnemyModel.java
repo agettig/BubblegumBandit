@@ -318,8 +318,6 @@ public abstract class EnemyModel extends CapsuleObstacle {
 
     }
 
-
-
     /**
      * Draws the physics object.
      *
