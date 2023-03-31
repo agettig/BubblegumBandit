@@ -26,8 +26,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -121,11 +120,9 @@ public class LevelModel {
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
-    private Array<AIController> aiControllers;
+    private Array<AIController> enemyControllers;
 
-    private Array<EnemyController> enemyControllers;
-
-    public Array<EnemyController> getenemies() {
+    public Array<AIController> aiControllers() {
         return enemyControllers;
     }
 
@@ -354,7 +351,7 @@ public class LevelModel {
                         activate(enemy);
                         enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
 
-                        enemyControllers.add(new EnemyController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                        enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                         enemyCount++;
                     }
                     break;
@@ -433,7 +430,7 @@ public class LevelModel {
      */
     public void update(float dt) {
         // Garbage collect the deleted objects.
-        for (EnemyController controller : enemyControllers) {
+        for (AIController controller : enemyControllers) {
 //            adjustForDrift(controller.getEnemy());
             controller.getEnemyStateMachine().update();
         }

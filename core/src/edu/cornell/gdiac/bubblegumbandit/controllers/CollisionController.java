@@ -301,13 +301,13 @@ public class CollisionController implements ContactListener {
                     gum.markRemoved(true);
                     enemy.setGummedTexture();
                     enemy.setGummed(true);
-                    levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().sendMessage(levelModel.getenemies().get(0), MessageType.HIT_BY_GUM, null);
-                    levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
+                    levelModel.aiControllers().get(enemy.getId()).getEnemyStateMachine().sendMessage(levelModel.aiControllers().get(0), MessageType.HIT_BY_GUM, null);
+                    levelModel.aiControllers().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
                     gummedRobots.addLast(enemy);
                 }
                 else {
                     enemy.setStuck(true);
-                    levelModel.getenemies().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
+                    levelModel.aiControllers().get(enemy.getId()).getEnemyStateMachine().changeState(EnemyState.STUCK);
                 }
             }
             else if (body instanceof TileModel) {

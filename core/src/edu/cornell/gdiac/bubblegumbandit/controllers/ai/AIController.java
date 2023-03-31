@@ -11,7 +11,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
 
-public class EnemyController implements Telegraph {
+public class AIController implements Telegraph {
     /**
      * ticks in update loop
      */
@@ -50,7 +50,7 @@ public class EnemyController implements Telegraph {
 
     private TiledGraph tiledGraphGravityDown;
 
-    private EnemyStateMachine<EnemyController, EnemyState> enemyfsm;
+    private EnemyStateMachine<AIController, EnemyState> enemyfsm;
 
     private Vector2 target;
     // Shooting Attributes & Constants
@@ -70,7 +70,7 @@ public class EnemyController implements Telegraph {
      */
     private boolean firing = true;
 
-    public EnemyStateMachine<EnemyController, EnemyState> getEnemyStateMachine() {
+    public EnemyStateMachine<AIController, EnemyState> getEnemyStateMachine() {
         return enemyfsm;
     }
 
@@ -82,7 +82,7 @@ public class EnemyController implements Telegraph {
         return bandit;
     }
 
-    public EnemyController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraphGravityUp, TiledGraph tiledGraphGravityDown) {
+    public AIController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraphGravityUp, TiledGraph tiledGraphGravityDown) {
         this.tiledGraphGravityUp = tiledGraphGravityUp;
         this.enemy = enemy;
         this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraphGravityUp, tiledGraphGravityDown);
