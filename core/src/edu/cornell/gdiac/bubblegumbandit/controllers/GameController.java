@@ -24,12 +24,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.JointDef;
-import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -41,7 +39,6 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -62,13 +59,7 @@ import java.util.ArrayList;
 public class GameController implements Screen {
     // ASSETS
 
-    // TODO remove
-    private boolean enableGUI = false;
 
-    /** How close to the center of the tile we need to be to stop drifting */
-    private static final float DRIFT_TOLER = .2f;
-    /** How fast we drift to the tile center when paused */
-    private static final float DRIFT_SPEED = 0.325f;
 
     /**
      * Need an ongoing reference to the asset directory
@@ -212,7 +203,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 2;
+    private final int NUM_LEVELS = 3;
 
     /** Whether the orb has been collected. */
     private boolean orbCollected;
@@ -337,18 +328,6 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
-
-        if (enableGUI){
-            //TODO remove gui
-//            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-//                public void run() {
-//                    createAndShowGUI(new SliderListener());
-//                }
-//            });
-        }
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
-
     }
 
     /**
@@ -532,8 +511,8 @@ public class GameController implements Screen {
             bandit.setGrounded(false);
             collisionController.clearSensorFixtures();
 
-            if (level.getEnemyControllers() != null) {
-                for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            if (level.aiControllers() != null) {
+                for (AIController ai : level.aiControllers()) ai.flipEnemy();
             }
         }
 
@@ -569,31 +548,32 @@ public class GameController implements Screen {
             }
         }
 
-       for (AIController controller: level.getEnemyControllers()){
+//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+//                level.activate(newProj);
+//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+//            } else {
+//                controller.coolDown(true);
+//            }
+//
+//            //pass to enemy, update the enemy with that action
+//           // TODO this probably means enemies are updated twice per frame, once with this update method
+//           // TODO and once with their parent. Switching to sense-think-act should fix this
+//           controller.getEnemy().update(action);
+//       }
 
-           //TODO fix adjust for drift
-
-//            adjustForDrift(controller.getEnemy());
-
-            //get action from controller
-            int action = controller.getAction();
-
-            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+        level.update(dt);
+        for (AIController controller: level.aiControllers()){
+            if (controller.getEnemy().fired()){
                 ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
                 smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                 level.activate(newProj);
                 newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-            } else {
+            }
+            else{
                 controller.coolDown(true);
             }
-
-            //pass to enemy, update the enemy with that action
-           // TODO this probably means enemies are updated twice per frame, once with this update method
-           // TODO and once with their parent. Switching to sense-think-act should fix this
-           controller.getEnemy().update(action);
-       }
-
-        level.update(dt);
+        }
         projectileController.update();
 
         // Update the camera
@@ -634,7 +614,6 @@ public class GameController implements Screen {
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            //TODO fix drawing text to center
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
@@ -770,33 +749,4 @@ public class GameController implements Screen {
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    /**
-     * Nudges the ship back to the center of a tile if it is not moving.
-     *
-     * @param enemy The Enemy to adjust
-     */
-    private void adjustForDrift(EnemyModel enemy) {
-        // Drift to line up vertically with the grid.
-
-        if (enemy.getVX() == 0.0f) {
-            float offset = level.getBoard().centerOffset(enemy.getX());
-            if (offset < -DRIFT_TOLER) {
-                enemy.setX(enemy.getX()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setX(enemy.getX()-DRIFT_SPEED);
-            }
-        }
-
-        // Drift to line up horizontally with the grid.
-        if (enemy.getVY() == 0.0f) {
-            float y = enemy.getY();
-            if (enemy.getId()==0){y -= 1;}
-            float offset = level.getBoard().centerOffset(y);
-            if (offset < -DRIFT_TOLER) {
-                enemy.setY(enemy.getY()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setY(enemy.getY()-DRIFT_SPEED);
-            }
-        }
-    }
 }

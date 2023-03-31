@@ -59,8 +59,9 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/camera_demo.json",
+		"level1" : "jsons/2BoardLayerTest5.json",
         "level2":"jsons/level1.json",
-        "constants": "jsons/constants.json"
+        "level3": "jsons/jumping.json",
+        "constants": "jsons/constants.json",
     }
 }
