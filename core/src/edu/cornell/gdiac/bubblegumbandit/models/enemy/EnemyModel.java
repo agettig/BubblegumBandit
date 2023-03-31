@@ -75,11 +75,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     private Vector2 forceCache = new Vector2();
 
     /**
-     * Whether this enemy is flipped
-     */
-    protected boolean isFlipped;
-
-    /**
      * The y scale of this enemy (for flipping when gravity swaps)
      */
     private float yScale;
@@ -356,7 +351,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            float yFlip = isFlipped ? -1 : 1;
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
