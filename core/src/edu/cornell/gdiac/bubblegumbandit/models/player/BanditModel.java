@@ -11,17 +11,17 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.models.player;
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
-import java.lang.reflect.*;
-
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
+
+import java.lang.reflect.Field;
 
 /**
  * Player avatar for the plaform game.
@@ -77,6 +77,9 @@ public class BanditModel extends CapsuleObstacle {
 	/** Cache for flipping player orientation */
 	private float angle;
 
+	/** Number of ticks since game started*/
+	private long ticks;
+
 	public boolean isFlipped() {
 		return isFlipped;
 	}
@@ -89,6 +92,9 @@ public class BanditModel extends CapsuleObstacle {
 
 	/** Camera target for player */
 	private final Vector2 cameraTarget;
+
+	/** Whether the player has collected the orb. */
+	private boolean orbCollected;
 
 	/**
 	 * Returns the camera target for the player.
@@ -124,6 +130,11 @@ public class BanditModel extends CapsuleObstacle {
 		health = Math.min(MAX_HEALTH,health+heal);
 	}
 
+	/** Collects the orb. */
+	public void collectOrb() { orbCollected = true; }
+
+	/** Gets whether the orb has been collected. */
+	public boolean isOrbCollected() { return orbCollected; }
 
 
 	/**
@@ -327,9 +338,9 @@ public class BanditModel extends CapsuleObstacle {
 		yScale = 1.0f;
 
 		health = MAX_HEALTH;
-
-
+		ticks = 0;
 		cameraTarget = new Vector2();
+		orbCollected = false;
 	}
 
 	/**
@@ -339,61 +350,62 @@ public class BanditModel extends CapsuleObstacle {
 	 * this JSON value is limited to the dude subtree
 	 *
 	 * @param directory the asset manager
-	 * @param json		the JSON subtree defining the dude
+	 * @param x		the x position of the bandit
+	 * @param y 	the y position of the bandit
+	 * @oaram constantsJson the JSON subtree defining the constant player information
 	 */
-	public void initialize(AssetDirectory directory, JsonValue json) {
-		setName(json.name());
-		float[] pos  = json.get("pos").asFloatArray();
-		float[] size = json.get("size").asFloatArray();
-		setPosition(pos[0],pos[1]);
-		cameraTarget.set(pos[0]*drawScale.x, pos[1]*drawScale.y);
+	public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
+		setName(constantsJson.name());
+		float[] size = constantsJson.get("size").asFloatArray();
+		setPosition(x,y);
+		cameraTarget.set(x*drawScale.x, y*drawScale.y);
 		setDimension(size[0],size[1]);
 
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
-		setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
-		setDensity(json.get("density").asFloat());
-		setFriction(json.get("friction").asFloat());
-		setRestitution(json.get("restitution").asFloat());
-		setForce(json.get("force").asFloat());
-		setDamping(json.get("damping").asFloat());
-		setMaxSpeed(json.get("maxspeed").asFloat());
+		setBodyType(constantsJson.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+		setDensity(constantsJson.get("density").asFloat());
+		setFriction(constantsJson.get("friction").asFloat());
+		setRestitution(constantsJson.get("restitution").asFloat());
+		setForce(constantsJson.get("force").asFloat());
+		setDamping(constantsJson.get("damping").asFloat());
+		setMaxSpeed(constantsJson.get("maxspeed").asFloat());
 
 		// Reflection is best way to convert name to color
 		Color debugColor;
 		try {
-			String cname = json.get("debugcolor").asString().toUpperCase();
+			String cname = constantsJson.get("debugcolor").asString().toUpperCase();
 			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
 			debugColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			debugColor = null; // Not defined
 		}
-		int opacity = json.get("debugopacity").asInt();
+		int opacity = constantsJson.get("debugopacity").asInt();
 		debugColor.mul(opacity/255.0f);
 		setDebugColor(debugColor);
 
 		// Now get the texture from the AssetManager singleton
-		String key = json.get("texture").asString();
+		String key = constantsJson.get("texture").asString();
 		TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 		setTexture(texture);
 
 		// Get the sensor information
 		Vector2 sensorCenter = new Vector2(0, -getHeight()/2);
-		float[] sSize = json.get("sensorsize").asFloatArray();
+		float[] sSize = constantsJson.get("sensorsize").asFloatArray();
 		bottomSensorShape = new PolygonShape();
 		bottomSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
 
 		// Reflection is best way to convert name to color
 		try {
-			String cname = json.get("sensorcolor").asString().toUpperCase();
+			String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
 			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
 			bottomSensorColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			bottomSensorColor = null; // Not defined
 		}
-		opacity = json.get("sensoropacity").asInt();
+		opacity = constantsJson.get("sensoropacity").asInt();
 		bottomSensorColor.mul(opacity/255.0f);
-		bottomSensorName = json.get("bottomsensorname").asString();
+		bottomSensorName = constantsJson.get("bottomsensorname").asString();
 
 		sensorCenter = new Vector2(0, getHeight()/2);
 		topSensorShape = new PolygonShape();
@@ -401,15 +413,15 @@ public class BanditModel extends CapsuleObstacle {
 
 		// Reflection is best way to convert name to color
 		try {
-			String cname = json.get("sensorcolor").asString().toUpperCase();
+			String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
 			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
 			topSensorColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			topSensorColor = null; // Not defined
 		}
-		opacity = json.get("sensoropacity").asInt();
+		opacity = constantsJson.get("sensoropacity").asInt();
 		topSensorColor.mul(opacity/255.0f);
-		topSensorName = json.get("topsensorname").asString();
+		topSensorName = constantsJson.get("topsensorname").asString();
 	}
 
 	/**
@@ -493,6 +505,11 @@ public class BanditModel extends CapsuleObstacle {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		ticks++;
+
+		if (ticks % 1000 == 0) {
+			healPlayer(1);
+		}
 
 		if (isShooting()) {
 			shootCooldown = shotLimit;
@@ -540,13 +557,5 @@ public class BanditModel extends CapsuleObstacle {
 	 */
 	public void drawDebug(GameCanvas canvas) {
 		super.drawDebug(canvas);
-	}
-
-	/**
-	 * Flips the player's angle and direction when the world gravity is flipped
-	 *
-	 * */
-	public void flippedGravity(){
-		isFlipped = !isFlipped;
 	}
 }

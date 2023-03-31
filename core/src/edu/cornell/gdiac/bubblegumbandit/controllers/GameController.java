@@ -24,16 +24,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -42,6 +43,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Gameplay controller for the game.
@@ -57,13 +59,7 @@ import javax.swing.*;
 public class GameController implements Screen {
     // ASSETS
 
-    // TODO remove
-    private boolean enableGUI = false;
 
-    /** How close to the center of the tile we need to be to stop drifting */
-    private static final float DRIFT_TOLER = .2f;
-    /** How fast we drift to the tile center when paused */
-    private static final float DRIFT_SPEED = 0.325f;
 
     /**
      * Need an ongoing reference to the asset directory
@@ -78,6 +74,14 @@ public class GameController implements Screen {
      */
     private JsonValue levelFormat;
 
+    /**
+     * The JSON defining game constants
+     */
+    private JsonValue constantsJson;
+
+    /** The JSON defining the tileset */
+    private JsonValue tilesetJson;
+
     private HUDController hud;
     /**
      * The jump sound.  We only want to play once.
@@ -86,6 +90,34 @@ public class GameController implements Screen {
 
     /**Id for jump. */
     private long jumpId = -1;
+
+    /**
+     * The small enemy shooting sound.  We only want to play once.
+     */
+    private SoundEffect smallEnemyShootingSound;
+    /** Id for small enemy shooting */
+    private long smallEnemyShootingId = -2;
+    /**
+     * The gum splat sound.  We only want to play once.
+     */
+    private SoundEffect gumSplatSound;
+    /** Id for gum splat sound */
+    private long gumSplatId = -3;
+    /**
+     * The sound when robot is hit with gume.  We only want to play once.
+     */
+    private SoundEffect robotSplatSound;
+    /** Id for robot splat sound */
+    private long robotSplatId = -4;
+    /**
+     * The sound when an item is collected.  We only want to play once.
+     */
+    private SoundEffect collectItemSound;
+    /** Id for collectible item sound */
+    private long collectItemId = -4;
+
+    /**Array holding all sounds */
+    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound, collectItemSound};
 
     /**
      * Exit code for quitting the game
@@ -158,16 +190,6 @@ public class GameController implements Screen {
     private ProjectileController projectileController;
 
     /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
-
-    /**
      * The texture of the trajectory projectile
      */
     private TextureRegion trajectoryProjectile;
@@ -175,7 +197,19 @@ public class GameController implements Screen {
     private TextureRegion stuckGum;
 
     /** The gravity control mode for the player controller */
-    private boolean gravityToggle = true;
+    private boolean gravityToggle = false;
+
+    /** The number of the current level. */
+    private int levelNum;
+
+    /** The number of levels in the game. */
+    private final int NUM_LEVELS = 3;
+
+    /** Whether the orb has been collected. */
+    private boolean orbCollected;
+
+    /** Countdown timer after collecting the orb. */
+    private float orbCountdown;
 
     /**
      * Returns true if the level is completed.
@@ -266,7 +300,7 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("crosshair2.png"));
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/crosshair2.png"));
 // Set hotspot to the middle of it (0,0 would be the top-left corner)
         int xHotspot = 16, yHotspot = 16;
         Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
@@ -279,6 +313,8 @@ public class GameController implements Screen {
         failed = false;
         active = false;
         countdown = -1;
+        orbCountdown = -1;
+        levelNum = 1;
         setComplete(false);
         setFailure(false);
 
@@ -292,18 +328,6 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
-
-        if (enableGUI){
-            //TODO remove gui
-//            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-//                public void run() {
-//                    createAndShowGUI(new SliderListener());
-//                }
-//            });
-        }
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
-
     }
 
     /**
@@ -329,12 +353,15 @@ public class GameController implements Screen {
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
-        jumpSound = directory.getEntry("jump", SoundEffect.class);
+
+        SoundController.initialize(directory);
 
         // This represents the level but does not BUILD it
-        levelFormat = directory.getEntry("level1", JsonValue.class);
+        levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
+        constantsJson = directory.getEntry("constants", JsonValue.class);
+        tilesetJson = directory.getEntry("tileset", JsonValue.class);
 
-        bubblegumController.initialize(directory, levelFormat.get("gumProjectile"));
+        bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
@@ -351,18 +378,27 @@ public class GameController implements Screen {
 
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
+        collisionController.reset();
 
         level.dispose();
 
         setComplete(false);
         setFailure(false);
         countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
         bubblegumController.resetAmmo();
+        levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
+        canvas.getCamera().setFixedX(false);
+        canvas.getCamera().setFixedY(false);
+        canvas.getCamera().setZoom(1);
 
         // Reload the json each time
-        level.populate(directory, levelFormat);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
-        projectileController.initialize(levelFormat.get("projectile"), directory, level.getScale().x, level.getScale().y);
+        projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
+        collisionController.initialize(canvas.getCamera());
+        canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
     }
 
     /**
@@ -384,8 +420,24 @@ public class GameController implements Screen {
         // Toggle debug and handle resets.
         if (input.didDebug()) {level.setDebug(!level.getDebug());}
         if (input.didReset()) {reset();}
-        if (input.didCameraSwap()) { canvas.getCamera().toggleMode(); }
+        if (input.didCameraSwap()) {
+            canvas.getCamera().toggleDebug();
+        }
         if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
+        if (input.didAdvance()) {
+            levelNum++;
+            if (levelNum > NUM_LEVELS) {
+                levelNum = 1;
+            }
+            reset();
+        }
+        if (input.didRetreat()) {
+            levelNum--;
+            if (levelNum < 1) {
+                levelNum = NUM_LEVELS;
+            }
+            reset();
+        }
 
         // Switch screens if necessary.
         if (input.didExit()) {
@@ -395,6 +447,12 @@ public class GameController implements Screen {
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
             reset();
+        }
+
+        if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
+
+        else if (orbCollected && orbCountdown <= 0) {
+            level.getBandit().hitPlayer(level.getBandit().getHealth());
         }
 
         //Check for failure.
@@ -416,10 +474,17 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-
-        if(collisionController.isWinConditionMet()) {
+        if(collisionController.isWinConditionMet() && !isComplete()) {
+            levelNum++;
+            if (levelNum > NUM_LEVELS) {
+                levelNum = 1;
+            }
             setComplete(true);
-            collisionController.resetWinCondition();
+        }
+
+        if (!orbCollected && level.getBandit().isOrbCollected()) {
+            orbCollected = true;
+            orbCountdown = level.getOrbCountdown();
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -440,69 +505,92 @@ public class GameController implements Screen {
         ) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
-            jumpId = playSound(jumpSound, jumpId);
+            jumpId = SoundController.playSound("jump", 0.25f);
             level.getWorld().setGravity(currentGravity);
             bandit.flippedGravity();
             bandit.setGrounded(false);
             collisionController.clearSensorFixtures();
 
-            for (AIController ai : level.getEnemyControllers()) ai.flipEnemy();
+            if (level.aiControllers() != null) {
+                for (AIController ai : level.aiControllers()) ai.flipEnemy();
+            }
         }
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getProjTarget(canvas);
-            JsonValue gumJV = levelFormat.get("gumProjectile");
+            JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
             Vector2 origin = level.getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumSpeed, gumGravity, gumTexture);
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
             if (gum != null) {
                 bubblegumController.fireGum();
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-
-       for (AIController controller: level.getEnemyControllers()){
-
-           //TODO fix adjust for drift
-
-//            adjustForDrift(controller.getEnemy());
-
-            //get action from controller
-            int action = controller.getAction();
-
-            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                level.activate(newProj);
-                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-            } else {
-                controller.coolDown(true);
+        if (inputResults.didUnstick() && bubblegumController.getAmmo() > 0) {
+            Vector2 cross = level.getProjTarget(canvas);
+            JsonValue gumJV = constantsJson.get("unstickProjectile");
+            BanditModel avatar = level.getBandit();
+            Vector2 origin = level.getProjOrigin(gumJV, canvas);
+            String key = gumJV.get("texture").asString();
+            Vector2 scale = level.getScale();
+            TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
+            if (gum != null) {
+                bubblegumController.fireGum();
+                level.activate(gum);
+                gum.setFilter(CollisionController.CATEGORY_UNSTICK, CollisionController.MASK_UNSTICK);
             }
+        }
 
-            //pass to enemy, update the enemy with that action
-           // TODO this probably means enemies are updated twice per frame, once with this update method
-           // TODO and once with their parent. Switching to sense-think-act should fix this
-           controller.getEnemy().update(action);
-       }
+//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
+//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+//                level.activate(newProj);
+//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+//            } else {
+//                controller.coolDown(true);
+//            }
+//
+//            //pass to enemy, update the enemy with that action
+//           // TODO this probably means enemies are updated twice per frame, once with this update method
+//           // TODO and once with their parent. Switching to sense-think-act should fix this
+//           controller.getEnemy().update(action);
+//       }
 
         level.update(dt);
+        for (AIController controller: level.aiControllers()){
+            if (controller.getEnemy().fired()){
+                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
+                level.activate(newProj);
+                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+            }
+            else{
+                controller.coolDown(true);
+            }
+        }
         projectileController.update();
 
         // Update the camera
+        GameCamera cam = canvas.getCamera();
         Vector2 target = canvas.unproject(PlayerController.getInstance().getCrossHair());
-        canvas.getCamera().setTarget(bandit.getCameraTarget());
-        canvas.getCamera().setSecondaryTarget(target);
+        if (!cam.isFixedX()) {
+            cam.setTargetX(bandit.getCameraTarget().x);
+            cam.setSecondaryTargetX(target.x);
+        } if (!cam.isFixedY()) {
+            cam.setTargetY(bandit.getCameraTarget().y);
+            cam.setSecondaryTargetY(target.y);
+        }
         canvas.getCamera().update(dt);
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
-
-        // Add all of the pending joints to the world.
-        bubblegumController.addJointsToWorld(level);
+        bubblegumController.updateJoints(level);
     }
 
 
@@ -519,17 +607,19 @@ public class GameController implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
+        level.draw(canvas, constantsJson, trajectoryProjectile);
 
-        level.draw(canvas, levelFormat, gumSpeed, gumGravity, trajectoryProjectile);
+
+
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController);
+        hud.draw(level, bubblegumController, (int) orbCountdown);
+
 
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            //TODO fix drawing text to center
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
@@ -578,8 +668,10 @@ public class GameController implements Screen {
      */
     public void pause() {
         // We need this method to stop all sounds when we pause.
-        if (jumpSound.isPlaying(jumpId)) {
-            jumpSound.stop(jumpId);
+        for (int i = 0; i < soundEffects.length; i++) {
+            if (soundEffects[i].isPlaying(-1*i)) {
+                soundEffects[i].stop(-1*i);
+            }
         }
     }
 
@@ -630,7 +722,7 @@ public class GameController implements Screen {
      * @param soundId The previously playing sound instance
      * @return the new sound instance for this asset.
      */
-    public long playSound(SoundEffect sound, long soundId) {
+    public static long playSound(SoundEffect sound, long soundId) {
         return playSound(sound, soundId, 1.0f);
     }
 
@@ -648,7 +740,7 @@ public class GameController implements Screen {
      * @param volume  The sound volume
      * @return the new sound instance for this asset.
      */
-    public long playSound(SoundEffect sound, long soundId, float volume) {
+    public static long playSound(SoundEffect sound, long soundId, float volume) {
         if (soundId != -1 && sound.isPlaying(soundId)) {
             sound.stop(soundId);
         }
@@ -663,71 +755,4 @@ public class GameController implements Screen {
         level.getWorld().setGravity(new Vector2(0, g));
     }
 
-    /**
-     * Nudges the ship back to the center of a tile if it is not moving.
-     *
-     * @param enemy The Enemy to adjust
-     */
-    private void adjustForDrift(EnemyModel enemy) {
-        // Drift to line up vertically with the grid.
-
-        if (enemy.getVX() == 0.0f) {
-            float offset = level.getBoard().centerOffset(enemy.getX());
-            if (offset < -DRIFT_TOLER) {
-                enemy.setX(enemy.getX()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setX(enemy.getX()-DRIFT_SPEED);
-            }
-        }
-
-        // Drift to line up horizontally with the grid.
-        if (enemy.getVY() == 0.0f) {
-            float y = enemy.getY();
-            if (enemy.getId()==0){y -= 1;}
-            float offset = level.getBoard().centerOffset(y);
-            if (offset < -DRIFT_TOLER) {
-                enemy.setY(enemy.getY()+DRIFT_SPEED);
-            } else if (offset > DRIFT_TOLER) {
-                enemy.setY(enemy.getY()-DRIFT_SPEED);
-            }
-        }
-    }
-
-
-//    class SliderListener implements ChangeListener {
-//        public void stateChanged(ChangeEvent e) {
-//            JSlider source = (JSlider) e.getSource();
-//            if (!source.getValueIsAdjusting()) {
-//                int val = source.getValue();
-//                if (source.getName().equals("gravity")) {
-//                    setGravity(val);
-//                } else if (source.getName().equals("radius")) {
-//                    for (AIController ai : level.getEnemyControllers()) {
-//                        ai.getEnemy().setVisionRadius(val);
-//                    }
-//                } else if (source.getName().equals("range")) {
-//                    for (AIController ai : level.getEnemies()) {
-//                        ai.setVisionRange((float) (val * (Math.PI / 180f)));
-//                    }
-//                } else if (source.getName().equals("gum gravity scale")) {
-//                    gumGravity = val;
-//                } else if (source.getName().equals("gum speed")) {
-//                    gumSpeed = val;
-//                } else if (source.getName().equals("move speed")) {
-//<<<<<<< HEAD:core/src/edu/cornell/gdiac/bubblegumbandit/controllers/GameController.java
-//                    for (AIController ai : level.getEnemies()) {
-//                        ai.setMovementSpeed((float) val /100);
-//=======
-//                    for (Enemy enemy : level.getEnemies()) {
-//                        if (enemy instanceof MovingEnemy) {
-//                            //((MovingEnemy) enemy).setMoveSpeed((float) val / 100);
-//                        }
-//>>>>>>> main:core/src/edu/cornell/gdiac/json/GameController.java
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//    }
 }
