@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
@@ -330,10 +331,12 @@ public class BubblegumController {
             WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             addToStuckBubblegum(activePair);
+            SoundController.playSound("gumSplat", 0.5f);
         }
         for (int i = 0; i < gummableAssemblyQueue.size; i++) {
             Joint joint = level.getWorld().createJoint(gummableAssemblyQueue.removeFirst());
             addToGummableMap(joint);
+            SoundController.playSound("robotSplat", 1f);
         }
         for (int i = 0; i < gumJointsToRemove.size; i++) {
             GumJointPair gumJoint = gumJointsToRemove.removeFirst();

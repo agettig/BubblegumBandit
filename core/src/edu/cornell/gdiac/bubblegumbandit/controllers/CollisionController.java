@@ -1,10 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -432,6 +434,7 @@ public class CollisionController implements ContactListener {
             gummable = (Gummable) ob1;
             if ((ob2.getName().equals("tile") || ob2.getName().equals("wall")) && gummable.getGummed()) {
                 bubblegumController.createGummableJoint(gummable, ob2);
+                SoundController.playSound("robotSplat", 1f);
             }
         }
         if (ob2 instanceof Gummable) {
@@ -525,9 +528,11 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("floatinggum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("floatinggum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 
@@ -537,10 +542,12 @@ public class CollisionController implements ContactListener {
             ((Collectible) bd1).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd1.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("orb") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             ((Collectible) bd2).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd2.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 
