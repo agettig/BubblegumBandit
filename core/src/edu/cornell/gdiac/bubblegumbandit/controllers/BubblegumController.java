@@ -205,11 +205,10 @@ public class BubblegumController {
      */
     public void removeGummable(Gummable gummable) {
         gummable.setGummed(false);
-
         for (Joint j : stuckToGummable.get(gummable)) {
             gummableJointsToRemove.addLast(j);
         }
-        stuckToGummable.remove(gummable);
+        stuckToGummable.get(gummable).clear();
     }
 
     /**
@@ -281,7 +280,9 @@ public class BubblegumController {
 
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = gum.getBody();
+        jointDef.bodyA.setUserData(gum);
         jointDef.bodyB = ob.getBody();
+        jointDef.bodyB.setUserData(ob);
         jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
         Vector2 anchor = new Vector2();
         jointDef.localAnchorA.set(anchor);
@@ -340,30 +341,41 @@ public class BubblegumController {
             gumJoint.getGum().markRemoved(true);
             try {
                 Obstacle ob1 = (Obstacle) gumJoint.getJoint().getBodyA().getUserData();
-                Obstacle ob2 = (Obstacle) gumJoint.getJoint().getBodyB().getUserData();
                 ob1.setStuck(false);
-                ob2.setStuck(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob1.flippedGravity();
                 }
+            }
+            catch (Exception ignored) {
+            }
+            try {
+                Obstacle ob2 = (Obstacle) gumJoint.getJoint().getBodyB().getUserData();
+                ob2.setStuck(false);
+
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob2.flippedGravity();
                 }
-            } catch (Exception ignored) {
+            }
+            catch (Exception ignored) {
 
             }
 
         }
         for (int i = 0; i < gummableJointsToRemove.size; i++) {
             Joint j = gummableJointsToRemove.removeFirst();
+            System.out.println(j);
             try {
                 Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
-                Obstacle ob2 = (Obstacle) j.getBodyB().getUserData();
                 ob1.setStuck(false);
-                ob2.setStuck(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob1.flippedGravity();
                 }
+            } catch (Exception ignored) {
+
+            }
+            try {
+                Obstacle ob2 = (Obstacle) j.getBodyB().getUserData();
+                ob2.setStuck(false);
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob2.flippedGravity();
                 }
@@ -377,7 +389,7 @@ public class BubblegumController {
     /**
      * Add a new gum projectile to the world and send it in the right direction.
      */
-    public GumModel createGumProjectile(Vector2 target, JsonValue gumJV, BanditModel avatar, Vector2 origin, Vector2 scale, TextureRegion texture) {
+    public GumModel createGumProjectile(Vector2 target, JsonValue gumJV, BanditModel avatar, Vector2 origin, Vector2 scale, TextureRegion texture, boolean isUnstick) {
 
 
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
@@ -385,10 +397,12 @@ public class BubblegumController {
 
         // Prevent player from shooting themselves by clicking on player
         // 1TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
-        if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
-            return null;
-        } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
-            return null;
+        if (!isUnstick) {
+            if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
+                return null;
+            } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {
+                return null;
+            }
         }
 
         float radius = texture.getRegionWidth() / (2.0f * scale.x);
