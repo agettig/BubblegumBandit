@@ -101,8 +101,10 @@ public class PlayerController{
     private boolean gravityUp;
     private boolean gravityUpPrevious;
 
-    /** If gum was collected */
+    private boolean unstickPressed;
+    private boolean unstickPrevious;
 
+    /** If gum was collected */
     private boolean collect;
 
     /** An X-Box controller (if it is connected) */
@@ -193,6 +195,8 @@ public class PlayerController{
         return shootPressed && !shootPrevious;
     }
 
+    public boolean didUnstick() { return unstickPressed && !unstickPrevious; }
+
     /** Returns x coordinate of mouse click*/
     public int getX() {
         return Gdx.input.getX();
@@ -249,9 +253,9 @@ public class PlayerController{
     }
 
     /**
-     * Returns true if the player wants to go toggle the controls mode.
+     * Returns true if the player wants to go toggle the full camera view.
      *
-     * @return true if the player wants to go toggle the controls mode.
+     * @return true if the player wants to go toggle the full camera view.
      */
     public boolean didControlsSwap() {
         return controlTogglePressed && !controlTogglePrevious;
@@ -298,6 +302,7 @@ public class PlayerController{
         primePrevious  = primePressed;
         secondPrevious = secondPressed;
         shootPrevious = shootPressed;
+        unstickPrevious = unstickPressed;
         resetPrevious  = resetPressed;
         debugPrevious  = debugPressed;
         exitPrevious = exitPressed;
@@ -372,10 +377,12 @@ public class PlayerController{
         nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
         exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         gravityUp = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W));
-        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyJustPressed(Input.Keys.S));
+        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.S));
         collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
         cameraPressed = (secondary && cameraPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_2));
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
+        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
+        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
@@ -395,13 +402,9 @@ public class PlayerController{
             vertical -= 1.0f;
         }
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            secondPressed = true;
-            secondPrevious = false;
-        }
-
         // Mouse results
         shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
+        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(Input.Buttons.RIGHT));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }

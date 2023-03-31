@@ -5,6 +5,9 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "terrain": {
+            "file": "textures/tileset.png"
+        },
         "background": {
             "file": "textures/background.png",
             "wrapU": "repeated",
@@ -59,15 +62,29 @@
         "big_robot": "textures/big_enemy.png",
         "med_robot": "textures/medium_enemy.png",
         "goal": "textures/goaldoor.png",
+        "bandit": "textures/bandit.png",
+        "smallrobot": "textures/small_enemy.png",
+        "bigrobot": "textures/big_enemy.png",
+        "mediumrobot": "textures/medium_enemy.png",
+        "exit": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
+        "floatinggum": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
         "gum": "textures/stuck_gum.png",
+        "topRightGum": "textures/topRightGum.png",
+        "bottomRightGum": "textures/bottomRightGum.png",
+        "bottomLeftGum": "textures/bottomLeftGum.png",
+        "topLeftGum": "textures/topLeftGum.png",
+        "rotatedGum": "textures/rotated_gum.png",
         "health_bar": "textures/health_bar.png",
         "health_fill": "textures/health_fill.png",
         "health_icon": "textures/UI_heart.png",
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
-        "bullet": "textures/bullet.png"
+        "bullet": "textures/bullet.png",
+        "gummed_robot": "textures/tinted_small_enemy.png",
+        "orb": "textures/orb.png",
+        "unstickprojectile": "textures/unstick.png"
     },
     "fonts": {
         "display": {
@@ -84,10 +101,17 @@
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3"
+  		"jump" : "sounds/jump.mp3",
+        "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
+        "gumSplat": "sounds/gumSplat.wav",
+        "robotSplat": "sounds/splatRobot.wav",
+        "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/level.json",
+		"level1" : "jsons/2BoardLayerTest5.json",
+        "level2":"jsons/level1.json",
+        "level3": "jsons/jumping.json",
+        "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }
 }

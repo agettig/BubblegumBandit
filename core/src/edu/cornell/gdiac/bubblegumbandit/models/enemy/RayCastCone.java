@@ -3,20 +3,20 @@ package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 
 /** Fields of vision for enemies */
-public class Vision {
+public class RayCastCone {
 
     /** The color of the FOV graphic. */
     private Color color;
 
     /** The color of the rays of the FOV during debug mode. */
-    private Color DEBUGCOLOR = Color.RED;
+    private Color DEBUGCOLOR;
 
     /** The direction of the FOV. In LibGdx, 0 is up. */
     private float direction;
@@ -25,8 +25,7 @@ public class Vision {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast per radius unit */
-    private int numRays = 20;
-
+    private int numRays = 10;
     boolean resetRadius = false;
 
     /**
@@ -46,11 +45,12 @@ public class Vision {
      * @param range the range in radians of the FOV
      * @param color the color of the FOV for drawing, will always be drawn translucent
      */
-    public Vision(float radius, float direction, float range, Color color) {
+    public RayCastCone(float radius, float direction, float range, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
         this.direction = direction;
         this.range = range;
+        this.DEBUGCOLOR = color;
         for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
     }
 
@@ -59,7 +59,7 @@ public class Vision {
      * @param radius the radius of the FOV
      * @param color the color of the FOV for drawing, will always be translucent
      */
-    public Vision(float radius, Color color) {
+    public RayCastCone(float radius, Color color) {
         this.color = new Color(color.r, color.g, color.b, .5f);
         this.radius = radius;
         this.direction = (float) Math.PI/2;
@@ -93,8 +93,8 @@ public class Vision {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
-                    // TODO: If we add dynamic cover, will need to change this
-                    if (fixture.getBody().getType() == BodyDef.BodyType.StaticBody) {
+                    // TODO: Should enemies obscure enemy vision? Add additional categories here if so.
+                    if (fixture.getFilterData().categoryBits == CollisionController.CATEGORY_TERRAIN) {
                         rays.get(finalI).set(point);
                         minFraction[0] = fraction;
                         return fraction;
@@ -130,6 +130,10 @@ public class Vision {
      */
     public boolean canSee(Obstacle obstacle) {
         return bodies.contains(obstacle.getBody(), true);
+    }
+
+    public Array<Body> getBodies(){
+        return bodies;
     }
 
 

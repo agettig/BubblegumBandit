@@ -51,6 +51,7 @@ public class HUDController {
   private Image healthIcon;
   private Image bubbleIcon;
   private Label gumCount;
+  private Label orbCountdown;
 
 
   public HUDController(AssetDirectory directory) {
@@ -92,10 +93,15 @@ public class HUDController {
 
     table.padLeft(30).padTop(60);
 
+    orbCountdown = new Label("00", new Label.LabelStyle(font, Color.WHITE));
+    orbCountdown.setFontScale(1f);
+    orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
+    stage.addActor(orbCountdown);
+
 
   }
 
-  public void draw(LevelModel level, BubblegumController bubblegumController) {
+  public void draw(LevelModel level, BubblegumController bubblegumController, int timer) {
 
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
@@ -114,6 +120,14 @@ public class HUDController {
     healthFill.setWidth(healthFillRegion.getRegionWidth());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
     gumCount.setText("x" + bubblegumController.getAmmo() );
+
+    if (timer >= 9) {
+      orbCountdown.setText(timer);
+    } else if (timer >= 0) {
+      orbCountdown.setText("0" + timer);
+    }else {
+      orbCountdown.setText("");
+    }
 
     stage.draw();
 
