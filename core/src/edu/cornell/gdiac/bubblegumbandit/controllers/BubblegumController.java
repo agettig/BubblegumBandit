@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -40,6 +41,9 @@ public class BubblegumController {
     /** Stores the stuck gum texture */
     private TextureRegion stuckGumTexture;
 
+    /**Stores rotated gum */
+    private TextureRegion rotatedStuckGumTexture;
+
     /**
      * Instantiates the Bubblegum controller and its queues.
      * */
@@ -55,6 +59,8 @@ public class BubblegumController {
         startingGum = gumAmmo;
         String key = json.get("stuckTexture").asString();
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+        String key2 = json.get("rotatedStuckTexture").asString();
+        rotatedStuckGumTexture = new TextureRegion(directory.getEntry(key2, Texture.class));
     }
 
     public void resetAmmo() {
@@ -78,6 +84,7 @@ public class BubblegumController {
     /** Returns the stuck gum texture. */
     public TextureRegion getStuckGumTexture() { return stuckGumTexture; }
 
+    public TextureRegion getRotatedGumTexture() {return rotatedStuckGumTexture; }
 
     /**
      * Adds a GumJointPair to the assembly queue if possible.
@@ -188,14 +195,22 @@ public class BubblegumController {
     /**
      * Returns a WeldJointDef connecting gum and another obstacle.
      */
-    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob) {
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob, boolean vertical) {
+        Vector2 gumPos = gum.getPosition();
+        Vector2 obPos = ob.getPosition();
+        Float yDiff = gumPos.y - obPos.y;
+        Float xDiff = gumPos.x - obPos.x;
+
         WeldJointDef jointDef = new WeldJointDef();
         jointDef.bodyA = gum.getBody();
         jointDef.bodyB = ob.getBody();
         jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
         Vector2 anchor = new Vector2();
         jointDef.localAnchorA.set(anchor);
-        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY());
+        anchor.set(gum.getX() - ob.getX(), gum.getY() - ob.getY() - yDiff*0.25f);
+        if (vertical) {
+            anchor.set(gum.getX() - ob.getX() - xDiff*0.25f, gum.getY() - ob.getY());
+        }
         jointDef.localAnchorB.set(anchor);
         return jointDef;
     }
@@ -211,6 +226,7 @@ public class BubblegumController {
             WeldJoint createdWeldJoint = (WeldJoint) level.getWorld().createJoint(weldJointDef);
             GumJointPair activePair = new GumJointPair(pairToAssemble.getGum(), createdWeldJoint);
             addToStuckBubblegum(activePair);
+            SoundController.playSound("gumSplat", 0.5f);
         }
     }
 
@@ -233,7 +249,6 @@ public class BubblegumController {
         }
 
         float radius = texture.getRegionWidth() / (2.0f * scale.x);
-
         //Create a new GumModel and assign it to the BubblegumController.
         GumModel gum = new GumModel(origin.x, origin.y, radius);
         gum.setName(gumJV.name());

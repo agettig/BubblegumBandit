@@ -1,12 +1,18 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
-import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -50,6 +56,12 @@ public class CollisionController implements ContactListener {
 
     /** true if the win condition has been met */
     private boolean winConditionMet;
+
+    /**Temp queue for now for sticking robot joints */
+    private Queue<WeldJointDef> stickRobots = new Queue<>();
+
+    /**Queue for storing gummed robots */
+    private Queue<EnemyModel> gummedRobots = new Queue<>();
 
     public void resetWinCondition(){
         winConditionMet = false;
@@ -106,6 +118,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
+            resolveEnemyTileCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
@@ -247,13 +260,20 @@ public class CollisionController implements ContactListener {
 
         GumModel gum = null;
         Obstacle body = null;
+        EnemyModel enemy = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
+            if (bodyB instanceof EnemyModel) {
+                enemy = (EnemyModel) bodyB;
+            }
         };
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
+            if (bodyA instanceof EnemyModel) {
+                enemy = (EnemyModel) bodyA;
+            }
         };
         if (gum != null && gum.getName().equals("gumProjectile")) {
             // Do this once gum is turning from a projectile to sticky
@@ -261,20 +281,113 @@ public class CollisionController implements ContactListener {
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
             gum.setName("stickyGum");
-            gum.setRadius(gum.getRadius() * 1.5f);
+            //gum.setRadius(gum.getRadius());
             // Changing radius resets filter for some reason
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
-
+        Boolean vertical = false;
         if (gum != null && gum.canAddObstacle(body)){
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body);
+            if (enemy != null) {
+                if (!gum.onTile()) {
+                    gum.markRemoved(true);
+                    enemy.setGummedTexture();
+                    enemy.setGummed(true);
+                    gummedRobots.addLast(enemy);
+                }
+                else {
+                    enemy.setStuck(true);
+                }
+            }
+            else if (body instanceof TileModel) {
+                vertical = checkGumPosition(gum, body);
+                gum.onTile(true);
+            }
+            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, vertical);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
             gum.setCollisionFilters();
         }
     }
+
+    /**
+     * Check if gum hit a vertical side of the tile.
+     * @param gum
+     * @param tile
+     * @return
+     */
+    public boolean checkGumPosition(GumModel gum, Obstacle tile) {
+        Vector2 gumPos = gum.getPosition();
+        Vector2 tilePos = tile.getPosition();
+        Boolean x = gumPos.x > (tilePos.x + 0.5f) || gumPos.x < (tilePos.x - 0.5f);
+        Boolean y = gumPos.y < (tilePos.y + 0.5f) && gumPos.y > (tilePos.y - 0.5f);
+
+        if (x && y) {
+            gum.setTexture(bubblegumController.getRotatedGumTexture());
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Adds the tile that the enemy is currently standing on
+     * @param ob1
+     * @param ob2
+     */
+    public void resolveEnemyTileCollision(Obstacle ob1, Obstacle ob2) {
+        EnemyModel enemy;
+
+        if (ob1 instanceof EnemyModel) {
+            enemy = (EnemyModel) ob1;
+            if ((ob2.getName().contains("tile") || ob2.getName().contains("wall"))) {
+                enemy.setTile((TileModel) ob2);
+            }
+        }
+        if (ob2 instanceof EnemyModel) {
+            enemy = (EnemyModel) ob2;
+            if ((ob1.getName().contains("tile") || ob1.getName().contains("wall"))) {
+                enemy.setTile((TileModel) ob1);
+            }
+        }
+    }
+
+    /**
+     * Helper for creating joints between enemy and tiles
+     * @param ob1
+     * @param ob2
+     */
+    public long createEnemyTileJoint(Obstacle ob1, Obstacle ob2, SoundEffect robotSplat, long robotSplatId) {
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = ob2.getBody();
+        jointDef.bodyB = ob1.getBody();
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorB.set(anchor);
+        anchor.set(ob1.getX() - ob2.getX(), ob1.getY() - ob2.getY());
+        jointDef.localAnchorA.set(anchor);
+        stickRobots.addLast(jointDef);
+        return SoundController.playSound("robotSplat", 1f);
+    }
+
+    /**
+     * adds robot joints to robot joint queue, to be updated in GameController
+     * @param level
+     */
+    public void addRobotJoints(LevelModel level) {
+        if (stickRobots.size == 0) return;
+        for (WeldJointDef joint : stickRobots) {
+            level.getWorld().createJoint(joint);
+        }
+    }
+
+    public void resetRobots() {
+        stickRobots.clear(); gummedRobots.clear();
+    }
+
+    public void clearGummedRobots() {
+        gummedRobots.clear();
+    }
+
+    public Queue<EnemyModel> getGummedRobots() {return gummedRobots; }
 
     /**
      * Checks if there was an enemy projectile collision in the Box2D world.
@@ -360,9 +473,11 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("floatinggum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("floatinggum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 
@@ -372,10 +487,12 @@ public class CollisionController implements ContactListener {
             ((Collectible) bd1).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd1.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         } else if (bd2.getName().equals("orb") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             ((Collectible) bd2).setCollected(true);
             levelModel.getBandit().collectOrb();
             bd2.markRemoved(true);
+            SoundController.playSound("collectItem", 0.75f);
         }
     }
 
