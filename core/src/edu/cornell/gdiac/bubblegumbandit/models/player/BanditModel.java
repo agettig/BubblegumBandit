@@ -11,17 +11,17 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.models.player;
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
-import java.lang.reflect.*;
-
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
+
+import java.lang.reflect.Field;
 
 /**
  * Player avatar for the plaform game.
@@ -76,6 +76,16 @@ public class BanditModel extends CapsuleObstacle {
 
 	/** Cache for flipping player orientation */
 	private float angle;
+
+	/** Number of ticks since game started*/
+	private long ticks;
+
+	public boolean isFlipped() {
+		return isFlipped;
+	}
+
+	/** Whether this player is flipped */
+	private boolean isFlipped;
 
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
@@ -328,6 +338,7 @@ public class BanditModel extends CapsuleObstacle {
 		yScale = 1.0f;
 
 		health = MAX_HEALTH;
+		ticks = 0;
 		cameraTarget = new Vector2();
 		orbCollected = false;
 	}
@@ -494,6 +505,11 @@ public class BanditModel extends CapsuleObstacle {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		ticks++;
+
+		if (ticks % 1000 == 0) {
+			healPlayer(1);
+		}
 
 		if (isShooting()) {
 			shootCooldown = shotLimit;
