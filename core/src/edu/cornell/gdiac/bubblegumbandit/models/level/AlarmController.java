@@ -46,7 +46,7 @@ public class AlarmController {
    */
   public AlarmController(int[][] locations, AssetDirectory directory, World world) {
     this.rays = new RayHandler(world);
-    rays.setAmbientLight(.7f);
+    rays.setAmbientLight(.9f);
     rays.setShadows(true);
     this.lights = new PointLight[locations.length];
     this.onTexture = new TextureRegion(directory.getEntry("alarm_on", Texture.class));
@@ -68,10 +68,9 @@ public class AlarmController {
   public void drawLights(GameCamera camera, GameCanvas canvas, Vector2 scale) {
     //this is a whole mess of scaling confusion
 
-
-    //rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
-    //    view.getScreenWidth(), view.getScreenHeight());
-
+    FitViewport view = canvas.getUIViewport();
+    rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
+        view.getScreenWidth()*2, view.getScreenHeight()*2);
 
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
         camera.position.y / scale.y, camera.viewportWidth* camera.zoom / scale.x,
@@ -127,11 +126,13 @@ public class AlarmController {
     if(set&&!alarming) {
       for(PointLight light : lights) {
         light.setColor(active);
+        rays.setAmbientLight(.6f);
       }
     } else if (!set&&alarming) {
       for(PointLight light : lights) {
         light.setColor(inactive);
         light.setDistance(MAX_DST);
+        rays.setAmbientLight(.9f);
       }
     }
     alarming = set;

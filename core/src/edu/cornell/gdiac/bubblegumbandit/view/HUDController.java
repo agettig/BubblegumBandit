@@ -101,7 +101,7 @@ public class HUDController {
   }
 
   public void setViewport(Viewport view) { //not working..
-   // stage.setViewport(view);
+    stage.setViewport(view);
     view.apply(true);
   }
 
