@@ -38,6 +38,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -103,6 +104,11 @@ public class LevelModel {
      * The background of the level, cropped if necessary
      */
     private TextureRegion backgroundRegion;
+
+    /**
+     * The amount of time counted down after the orb is collected.
+     */
+    private float timer = 60;
 
 
     /**
@@ -213,6 +219,10 @@ public class LevelModel {
         return board;
     }
 
+    public int getIndex(Float y) {
+        return (int) ((int) levelWidth*(levelHeight-y-0.5f));
+    }
+
     /**
      * Lays out the game geography from the given JSON file
      *
@@ -261,6 +271,9 @@ public class LevelModel {
             if (propName.equals("gravity")) {
                 gravity = property.getFloat("value");
             }
+            if (propName.equals("timer")) {
+                timer = property.getFloat("value");
+            }
             property = property.next();
         }
 
@@ -276,12 +289,6 @@ public class LevelModel {
         int boardIdOffset = 0;
         JsonValue tileset = levelFormat.get("tilesets").child();
         boardIdOffset = tileset.next().getInt("firstgid");
-//        while (tileset != null) {
-//            if (tileset.get("source").asString().equals("..\\/..\\/Tiled\\/board.tsx")) {
-//                boardIdOffset = tileset.getInt("firstgid");
-//            }
-//            tileset = tileset.next();
-//        }
 
         board = new Board(boardLayer, boardIdOffset, scale);
 
@@ -289,7 +296,8 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, tilesetJson);
+        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
+        HashMap<Vector2, TileModel> tiles = new HashMap<>();
         aiControllers = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
@@ -299,12 +307,41 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
+                tiles.put(new Vector2(x, y), newTile);
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
             }
         }
+
+        // Iterate over each tile in the world, find and mark open corners of tiles that have them
+        for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
+            Vector2 c = entry.getKey();
+            TileModel tile = entry.getValue();
+            Vector2 top = new Vector2(c.x, c.y + 1);
+            Vector2 right = new Vector2(c.x + 1, c.y);
+            Vector2 left = new Vector2(c.x - 1, c.y);
+            Vector2 bottom = new Vector2(c.x, c.y - 1);
+
+            if (!tiles.containsKey(top) && !tiles.containsKey(right)) {
+                tile.hasCorner(true);
+                tile.topRight(true);
+            }
+            if (!tiles.containsKey(top) && !tiles.containsKey(left)) {
+                tile.hasCorner(true);
+                tile.topLeft(true);
+            }
+            if (!tiles.containsKey(bottom) && !tiles.containsKey(left)) {
+                tile.hasCorner(true);
+                tile.bottomLeft(true);
+            }
+            if (!tiles.containsKey(bottom) && !tiles.containsKey(right)) {
+                tile.hasCorner(true);
+                tile.bottomRight(true);
+            }
+        }
+        tiles.clear();
 
         bandit = null;
         goalDoor = null;
@@ -342,9 +379,10 @@ public class LevelModel {
                     break;
                 case "floatinggum":
                 case "orb":
-                    Collectible gum = new Collectible();
-                    gum.initialize(directory, x, y, scale, constants.get(objType));
-                    activate(gum);
+                    Collectible coll = new Collectible();
+                    coll.initialize(directory, x, y, scale, constants.get(objType));
+                    activate(coll);
+                    coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     break;
                 case "camera_v":
                 case "camera_h":
@@ -487,28 +525,25 @@ public class LevelModel {
         return oy + vy * t + .5f * g * t * t;
     }
 
-    public void drawProjectile(JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion
-            gumProjectile, GameCanvas canvas) {
-        Vector2 target = PlayerController.getInstance().getCrossHair();
-        JsonValue gumJV = levelFormat.get("gumProjectile");
-
-        Vector2 origin = getProjOrigin(gumJV, canvas);
-
-        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
-        gumVel.nor();
-        if (gumSpeed == 0) { // Use default gum speed
-            gumVel.scl(gumJV.getFloat("speed", 0));
-        } else { // Use slider gum speed
-            gumVel.scl(gumSpeed);
-        }
-        float x, y;
-        for (int i = 1; i < 10; i++) {
-            x = getXTrajectory(origin.x, gumVel.x, i / 10f);
-            y = getYTrajectory(origin.y, gumVel.y, i / 10f, gumGravity * world.getGravity().y);
-            canvas.draw(gumProjectile, Color.PINK, gumProjectile.getRegionWidth() / 2f, gumProjectile.getRegionHeight() / 2f,
-                    x * 50, y * 50, gumProjectile.getRegionWidth() * trajectoryScale, gumProjectile.getRegionHeight() * trajectoryScale);
-        }
-    }
+//    public void drawProjectile(JsonValue levelFormat, float gumGravity, TextureRegion
+//            gumProjectile, GameCanvas canvas) {
+//        Vector2 target = PlayerController.getInstance().getCrossHair();
+//        JsonValue gumJV = levelFormat.get("gumProjectile");
+//
+//        Vector2 origin = getProjOrigin(gumJV, canvas);
+//
+//        Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
+//        gumVel.nor();
+//        gumVel.scl(gumJV.getFloat("speed", 0));
+//
+//        float x, y;
+//        for (int i = 1; i < 10; i++) {
+//            x = getXTrajectory(origin.x, gumVel.x, i / 10f);
+//            y = getYTrajectory(origin.y, gumVel.y, i / 10f, gumGravity * world.getGravity().y);
+//            canvas.draw(gumProjectile, Color.PINK, gumProjectile.getRegionWidth() / 2f, gumProjectile.getRegionHeight() / 2f,
+//                    x * 50, y * 50, gumProjectile.getRegionWidth() * trajectoryScale, gumProjectile.getRegionHeight() * trajectoryScale);
+//        }
+//    }
 
     /**
      * Draws the path of the projectile using a raycast. Only works for shooting in a straight line (gravity scale of 0).
@@ -564,17 +599,17 @@ public class LevelModel {
     }
 
 
-    public void drawGrid(GameCanvas canvas) {
-        PolygonShape s = new PolygonShape();
-        int halfWidth = (int) (scale.x / 2);
-        int halfHeight = (int) (scale.y / 2);
-        s.setAsBox(.5f * scale.x, .5f * scale.y);
-        for (int i = 0; i < levelWidth; i++) {
-            for (int j = 0; j < levelHeight; j++) {
-                canvas.drawPhysics(s, Color.RED, i * scale.x + halfWidth, j * scale.y + halfHeight);
-            }
-        }
-    }
+//    public void drawGrid(GameCanvas canvas) {
+//        PolygonShape s = new PolygonShape();
+//        int halfWidth = (int) (scale.x / 2);
+//        int halfHeight = (int) (scale.y / 2);
+//        s.setAsBox(.5f * scale.x, .5f * scale.y);
+//        for (int i = 0; i < levelWidth; i++) {
+//            for (int j = 0; j < levelHeight; j++) {
+//                canvas.drawPhysics(s, Color.RED, i * scale.x + halfWidth, j * scale.y + halfHeight);
+//            }
+//        }
+//    }
 
     /**
      * Draws the level to the given game canvas
@@ -584,7 +619,7 @@ public class LevelModel {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas, JsonValue levelFormat, float gumSpeed, float gumGravity, TextureRegion
+    public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
             gumProjectile) {
         canvas.clear();
 
@@ -596,11 +631,7 @@ public class LevelModel {
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
-        if (gumGravity != 0) {
-            drawProjectile(levelFormat, gumSpeed, gumGravity, gumProjectile, canvas);
-        } else {
-            drawProjectileRay(levelFormat, gumProjectile, canvas);
-        }
+        drawProjectileRay(levelFormat, gumProjectile, canvas);
 
         canvas.end();
 
@@ -642,5 +673,10 @@ public class LevelModel {
 
             }
         }
+    }
+
+    /** Returns the amount of time the player has to escape. */
+    public float getOrbCountdown() {
+        return timer;
     }
 }
