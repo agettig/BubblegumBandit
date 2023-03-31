@@ -153,9 +153,7 @@ public class BubblegumController {
     /**
      * Adds a GumJointPair to the queue of active Bubblegum.
      * */
-    public void addToStuckBubblegum(GumJointPair pair){
-
-        //TODO: Fix this architecture so the method can be private.
+    private void addToStuckBubblegum(GumJointPair pair){
 
         if(pair == null) return;
         if(pair.getGum() == null || pair.getJoint() == null) return;
@@ -387,7 +385,7 @@ public class BubblegumController {
         gumVel.nor();
 
         // Prevent player from shooting themselves by clicking on player
-        // TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
+        // 1TODO: Should be tied in with raycast in LevelModel, check if raycast hits player
         if (origin.x > avatar.getX() && gumVel.x < 0) { //  && gumVel.angleDeg() > 110 && gumVel.angleDeg() < 250)) {
             return null;
         } else if (origin.x < avatar.getX() && gumVel.x > 0) { //&& (gumVel.angleDeg() < 70 || gumVel.angleDeg() > 290)) {

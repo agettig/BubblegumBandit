@@ -1,11 +1,13 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
-import com.badlogic.gdx.audio.Sound;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
+
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
+import edu.cornell.gdiac.bubblegumbandit.controllers.ai.MessageType;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
@@ -24,14 +26,16 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
 public class CollisionController implements ContactListener {
 
+
     public static final short CATEGORY_ENEMY = 0x0002;
     public static final short CATEGORY_TERRAIN = 0x0004;
     public static final short CATEGORY_GUM = 0x0008;
-    public static final short CATEGORY_PROJECTILE = 0x0010;
     public static final short CATEGORY_PLAYER = 0x0020;
+    public static final short CATEGORY_PROJECTILE = 0x0010;
     public static final short CATEGORY_EVENTTILE = 0x0040;
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
     public static final short CATEGORY_UNSTICK = 0x0100;
+
 
     public static final short MASK_PLAYER = ~CATEGORY_GUM;
     public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
@@ -43,7 +47,9 @@ public class CollisionController implements ContactListener {
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_UNSTICK = ~CATEGORY_PLAYER;
 
-    /** The amount of gum collected when collecting floating gum */
+    /**
+     * The amount of gum collected when collecting floating gum
+     */
     private static final int AMMO_AMOUNT = 5;
     /**
      * Mark set to handle more sophisticated collision callbacks
@@ -112,7 +118,7 @@ public class CollisionController implements ContactListener {
         Body bodyA = fixA.getBody();
         Body bodyB = fixB.getBody();
 
-        try{
+        try {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
@@ -303,6 +309,7 @@ public class CollisionController implements ContactListener {
             gum.setTexture(bubblegumController.getStuckGumTexture());
             gum.setName("stickyGum");
             // Changing radius resets filter for some reason
+            // TODO possibly remove
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
@@ -470,10 +477,10 @@ public class CollisionController implements ContactListener {
      * @param p
      * @param o
      */
-    private void resolveProjectileCollision(ProjectileModel p, Obstacle o){
+    private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
-        if (o.equals(levelModel.getBandit())){
-           levelModel.getBandit().hitPlayer(p.getDamage());
+        if (o.equals(levelModel.getBandit())) {
+            levelModel.getBandit().hitPlayer(p.getDamage());
         }
         p.destroy();
     }
@@ -481,8 +488,8 @@ public class CollisionController implements ContactListener {
     /**
      * Resolves collisions for ground contact, adding the necessary
      * sensor fixtures.
-     * */
-    private void resolveGroundContact(Obstacle bodyA, Fixture fixA, Obstacle bodyB, Fixture fixB){
+     */
+    private void resolveGroundContact(Obstacle bodyA, Fixture fixA, Obstacle bodyB, Fixture fixB) {
 
         BanditModel bandit = levelModel.getBandit();
 
@@ -536,8 +543,10 @@ public class CollisionController implements ContactListener {
         }
     }
 
-    /** Check if there was a collision between the player and the orb, if so have the player collect the orb */
-    public void resolveOrbCollision(Obstacle bd1, Obstacle bd2){
+    /**
+     * Check if there was a collision between the player and the orb, if so have the player collect the orb
+     */
+    public void resolveOrbCollision(Obstacle bd1, Obstacle bd2) {
         if (bd1.getName().equals("orb") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
             ((Collectible) bd1).setCollected(true);
             levelModel.getBandit().collectOrb();
