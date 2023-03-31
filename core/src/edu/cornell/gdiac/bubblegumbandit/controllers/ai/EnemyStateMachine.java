@@ -2,13 +2,11 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.ai;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.Heuristic;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledManhattanDistance;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledNode;
@@ -216,13 +214,13 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
     }
 
     public int getNextMove(int targetX, int targetY) {
-        EnemyController controller = (EnemyController) owner;
+        AIController controller = (AIController) owner;
         graphPath.clear();
         int startX = (int) controller.getEnemy().getX();
         int startY = (int) controller.getEnemy().getY();
         if (startX == targetX && startY == targetY) return CONTROL_NO_ACTION;
         boolean found = false;
-        if (((EnemyController) owner).getEnemy().isFlipped()){
+        if (((AIController) owner).getEnemy().isFlipped()){
             found = pathFinderGravityUp.searchNodePath(tiledGravityUpGraph.getNode(startX,
                             startY),
                     tiledGravityUpGraph.getNode(targetX, targetY),
@@ -248,10 +246,10 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
      * Returns true if enemy is on a valid path tile, not free-falling
      * */
     public boolean canMove(){
-        int x = (int) ((EnemyController) owner).getEnemy().getX();
-        int y = (int) ((EnemyController) owner).getEnemy().getY();
+        int x = (int) ((AIController) owner).getEnemy().getX();
+        int y = (int) ((AIController) owner).getEnemy().getY();
         // TODO fix tile types
-        if (((EnemyController) owner).getEnemy().isFlipped()){
+        if (((AIController) owner).getEnemy().isFlipped()){
             return tiledGravityUpGraph.getNode(x, y).getType() != 0;
         }
         else{
@@ -263,7 +261,7 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         return ticks;
     }
 
-    public void sendMessage(EnemyController recipient, int messageType, Object extraInfo ){
+    public void sendMessage(AIController recipient, int messageType, Object extraInfo ){
         MessageManager.getInstance().dispatchMessage(
                 0.0f,
                 this,
