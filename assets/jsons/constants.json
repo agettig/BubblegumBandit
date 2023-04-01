@@ -193,7 +193,7 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 10.0,
+    "speed": 7.0,
     "density": 10.0,
     "texture": "bullet"
   }

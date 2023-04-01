@@ -774,11 +774,14 @@ public class LevelModel {
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
                     Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                    if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile")) {
-                        intersect.set(point);
-                        lastCollision[0] = ob;
-                        return fraction;
-                    }
+                        if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile") && !ob.equals(bandit)) {
+                            intersect.set(point);
+                            System.out.println(ob.getName());
+                            if (!ob.getBodyType().equals(BodyDef.BodyType.StaticBody)) {
+                                lastCollision[0] = ob;
+                            }
+                            return fraction;
+                        }
                     return -1;
                 }
             };
