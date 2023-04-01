@@ -72,6 +72,9 @@ public class BanditModel extends CapsuleObstacle {
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
+	/** Whether the player has flipped in the air */
+	private boolean hasFlipped;
+
 	/** How long until we can shoot again */
 	private int shootCooldown;
 
@@ -111,6 +114,11 @@ public class BanditModel extends CapsuleObstacle {
 
 	/** The current amount of health the player has */
 	private float health;
+
+	/** Whether the player has flipped in the air. */
+	public boolean hasFlipped() {
+		return hasFlipped;
+	}
 
 	/** Returns the player's current health for the HUD */
 	public float getHealth() {return health;}
@@ -209,6 +217,9 @@ public class BanditModel extends CapsuleObstacle {
 	 */
 	public void setGrounded(boolean value) {
 		isGrounded = value;
+		if (isGrounded) {
+			hasFlipped = false;
+		}
 	}
 
 	/**
@@ -341,6 +352,7 @@ public class BanditModel extends CapsuleObstacle {
 		ticks = 0;
 		cameraTarget = new Vector2();
 		orbCollected = false;
+		hasFlipped = false;
 	}
 
 	/**
@@ -566,6 +578,16 @@ public class BanditModel extends CapsuleObstacle {
 
 		}
 
+	}
+
+	/**
+	 * Flips the player's angle and direction when the world gravity is flipped
+	 */
+	public void flippedGravity() {
+		isFlipped = !isFlipped;
+		if (!isGrounded) {
+			hasFlipped = true;
+		}
 	}
 
 
