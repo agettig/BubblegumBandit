@@ -184,6 +184,9 @@ public class GameController implements Screen {
     /** A collection of the active projectiles on screen */
     private ProjectileController projectileController;
 
+    /** Processes the player's aim */
+    private AimController aim;
+
     /**
      * The texture of the trajectory projectile
      */
@@ -322,6 +325,7 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
+        aim = new AimController();
     }
 
     /**
@@ -392,6 +396,7 @@ public class GameController implements Screen {
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
+        aim.initialize(level, directory);
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
     }
 
@@ -511,10 +516,10 @@ public class GameController implements Screen {
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
-            Vector2 cross = level.getAim().getProjTarget(canvas);
+            Vector2 cross = aim.getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
-            Vector2 origin = level.getAim().getProjOrigin(gumJV, canvas);
+            Vector2 origin = aim.getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -526,10 +531,10 @@ public class GameController implements Screen {
             }
         }
         if (inputResults.didUnstick() && bubblegumController.getAmmo() > 0) {
-            Vector2 cross = level.getAim().getProjTarget(canvas);
+            Vector2 cross = aim.getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("unstickProjectile");
             BanditModel avatar = level.getBandit();
-            Vector2 origin = level.getAim().getProjOrigin(gumJV, canvas);
+            Vector2 origin = aim.getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -601,6 +606,9 @@ public class GameController implements Screen {
         canvas.clear();
 
         level.draw(canvas, constantsJson, trajectoryProjectile);
+        canvas.begin();
+        aim.drawProjectileRay(constantsJson, canvas);
+        canvas.end();
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();

@@ -69,17 +69,6 @@ public class LevelModel {
      * How fast we drift to the tile center when paused
      */
     private static final float DRIFT_SPEED = 0.325f;
-    /**
-     * The gap between each dot in the trajectory diagram (for raytraced trajectory.)
-     * TODO: Move to another class?
-     */
-    private final float trajectoryGap = 0.5f;
-
-    /**
-     * The scale of each dot in the trajectory diagram (for raytraced trajectory.)
-     * TODO: Move to another class?
-     */
-    private final float trajectoryScale = 0.5f;
 
     /**
      * The Box2D world
@@ -103,9 +92,6 @@ public class LevelModel {
      * Reference to the goalDoor (for collision detection)
      */
     private ExitModel goalDoor;
-
-    /** Reference to the aim controller that computes aim */
-    private AimController aim;
 
     /**
      * Whether or not the level is in debug more (showing off physics)
@@ -232,9 +218,6 @@ public class LevelModel {
         alarms.setAlarms(true);
     }
 
-    /** Gets the aim controller */
-    public AimController getAim() { return aim; }
-
     /**
      * Creates a new LevelModel
      * <p>
@@ -246,7 +229,6 @@ public class LevelModel {
         bounds = new Rectangle(0, 0, 1, 1);
         scale = new Vector2(1, 1);
         debug = false;
-        aim = new AimController();
     }
 
 
@@ -562,7 +544,6 @@ public class LevelModel {
         for (Obstacle obj : objects) {
             obj.draw(canvas);
         }
-        aim.drawProjectileRay(levelFormat, gumProjectile, canvas);
 
         canvas.end();
         drawLights(canvas.getCamera(), canvas);
@@ -662,114 +643,4 @@ public class LevelModel {
         return timer;
     }
 
-    public class AimController {
-
-        /** The colors used in the aim render */
-        private final Color[] colors = new Color[]{new Color(1, .619f, .62f, 1),
-                new Color(1, .73f, .73f, .9f),
-                new Color(1, .81f, .81f, .8f),
-                new Color(1, .86f, .86f, .7f),
-                new Color(1, .905f, .905f, .6f),
-                new Color(1, 1, 1, .5f)};
-
-        public AimController() {
-
-        }
-
-        /**
-         * Returns the origin of the gum when fired by the player.
-         *
-         * @param gumJV the JSON Value representing the gum projectile.
-         * @return The origin of the projectile of the gum when fired.
-         */
-        public Vector2 getProjOrigin(JsonValue gumJV, GameCanvas canvas) {
-            //  TODO: The logic for this should be in Gum Controller.
-
-            Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
-            cross.scl(1 / scale.x, 1 / scale.y);
-
-            cross.x = Math.max(bounds.x, Math.min(bounds.x + bounds.width, cross.x));
-            cross.y = Math.max(bounds.y, Math.min(bounds.y + bounds.height, cross.y));
-
-
-            Vector2 target = cross;
-
-            float offsetX = gumJV.getFloat("offsetX", 0);
-            float offsetY = gumJV.getFloat("offsetY", 0);
-            offsetY *= bandit.getYScale();
-
-            Vector2 origin = new Vector2(bandit.getX(), bandit.getY() + offsetY);
-            Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
-            dir.nor();
-            dir.scl(offsetX);
-
-            // Adjust origin of shot based on target pos
-            // Rotate around top half of player for gravity pulling down, bottom half for gravity pulling up
-            if (dir.y * world.getGravity().y < 0) {
-                origin.x += dir.x;
-            } else {
-                origin.x += (target.x > bandit.getX() ? offsetX : -offsetX);
-            }
-            origin.y += dir.y;
-            return origin;
-        }
-
-        public Vector2 getProjTarget(GameCanvas canvas) {
-            Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
-            cross.scl(1 / scale.x, 1 / scale.y);
-
-            cross.x = Math.max(bounds.x, Math.min(bounds.x + bounds.width, cross.x));
-            cross.y = Math.max(bounds.y, Math.min(bounds.y + bounds.height, cross.y));
-            Vector2 target = cross;
-            return cross;
-
-        }
-
-        /**
-         * Draws the path of the projectile using a raycast. Only works for shooting in a straight line (gravity scale of 0).
-         *
-         * @param levelFormat The JSON value defining the level
-         * @param asset       The asset used to draw the trajectory. Must be round for good results.
-         * @param canvas      The GameCanvas to draw the trajectory on.
-         */
-        public void drawProjectileRay(JsonValue levelFormat, TextureRegion asset, GameCanvas canvas) {
-            Vector2 target = PlayerController.getInstance().getCrossHair();
-            JsonValue gumJV = levelFormat.get("gumProjectile");
-            Vector2 origin = getProjOrigin(gumJV, canvas);
-            Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
-            dir.nor();
-            dir.scl(bounds.width * 2); // Make sure ray will cover the whole screen
-            Vector2 end = new Vector2(origin.x + dir.x, origin.y + dir.y); // Find end point of the ray cast
-
-            final Vector2 intersect = new Vector2();
-
-            RayCastCallback ray = new RayCastCallback() {
-                @Override
-                public float reportRayFixture(Fixture fixture, Vector2 point,
-                                              Vector2 normal, float fraction) {
-                    Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                    if (!ob.getName().equals("gumProjectile")) {
-                        intersect.set(point);
-                        return fraction;
-                    }
-                    return -1;
-                }
-            };
-            world.rayCast(ray, origin, end);
-
-            float x;
-            float y;
-            dir = new Vector2(intersect.x - origin.x, intersect.y - origin.y);
-            int numSegments = (int) (dir.len() / trajectoryGap); // Truncate to find number before colliding
-            dir.nor();
-            int range = numSegments + 1;
-            if (range > 6) range = 6;
-            for (int i = 0; i < range; i++) {
-                x = origin.x + (dir.x * i * trajectoryGap);
-                y = origin.y + (dir.y * i * trajectoryGap);
-                canvas.draw(asset, colors[i], asset.getRegionWidth() / 2f, asset.getRegionHeight() / 2f, x * scale.x,
-                        y * scale.y, asset.getRegionWidth() * trajectoryScale, asset.getRegionHeight() * trajectoryScale);
-            }
-        }
-    }
 }
