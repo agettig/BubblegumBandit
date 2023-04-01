@@ -489,10 +489,8 @@ public class GameController implements Screen {
 
         //move bandit
         float movement = inputResults.getHorizontal() * bandit.getForce();
-        if (!bandit.getStuck()) {
-            bandit.setMovement(movement);
-            bandit.applyForce();
-        }
+        bandit.setMovement(movement);
+        bandit.applyForce();
 
         float grav =  level.getWorld().getGravity().y;
         if ((bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
@@ -513,10 +511,10 @@ public class GameController implements Screen {
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
-            Vector2 cross = level.getProjTarget(canvas);
+            Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
-            Vector2 origin = level.getProjOrigin(gumJV, canvas);
+            Vector2 origin = level.getAim().getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -528,10 +526,10 @@ public class GameController implements Screen {
             }
         }
         if (inputResults.didUnstick() && bubblegumController.getAmmo() > 0) {
-            Vector2 cross = level.getProjTarget(canvas);
+            Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("unstickProjectile");
             BanditModel avatar = level.getBandit();
-            Vector2 origin = level.getProjOrigin(gumJV, canvas);
+            Vector2 origin = level.getAim().getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
