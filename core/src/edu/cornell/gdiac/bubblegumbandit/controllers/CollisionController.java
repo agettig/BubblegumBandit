@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
-import edu.cornell.gdiac.bubblegumbandit.models.LaserModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -15,7 +14,6 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.util.HashSet;
 
 
@@ -53,8 +51,6 @@ public class CollisionController implements ContactListener {
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
-    /** Collection of all LaserModels that have hit the player. */
-    private HashSet<LaserModel> hitLasers;
 
 
 
@@ -74,7 +70,6 @@ public class CollisionController implements ContactListener {
     public CollisionController(LevelModel levelModel, BubblegumController controller){
         sensorFixtures = new ObjectSet<Fixture>();
         bubblegumController = controller;
-        hitLasers = new HashSet<LaserModel>();
         this.levelModel = levelModel;
     }
 
@@ -109,7 +104,6 @@ public class CollisionController implements ContactListener {
         try{
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
-
 
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
@@ -345,27 +339,11 @@ public class CollisionController implements ContactListener {
      * */
     private void resolveLaserBanditCollision(Obstacle bodyA, Obstacle bodyB){
 
-        if(bodyA == null || bodyB == null) return;
 
-        if(!bodyA.getName().equals("Attack Laser") && !bodyB.getName().equals("Attack Laser")) return;
-
-
-
-
-        if(bodyA.getName().equals("Attack Laser") && bodyB.equals(levelModel.getBandit())){
-            LaserModel laser = (LaserModel) bodyA;
-            if(laser.didHitTarget()) return;
-            laser.setHitTarget();
-            levelModel.getBandit().hitPlayer(LaserController.LASER_DAMAGE);
-        }
-        else if(bodyB.getName().equals("Attack Laser") && bodyA.equals(levelModel.getBandit())){
-            LaserModel laser = (LaserModel) bodyB;
-            if(laser.didHitTarget()) return;
-            laser.setHitTarget();
-            levelModel.getBandit().hitPlayer(LaserController.LASER_DAMAGE);
-        }
 
     }
+
+
 
     /**
      * Returns true if an Obstacle is a gum projectile.

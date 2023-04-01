@@ -27,7 +27,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
-import edu.cornell.gdiac.bubblegumbandit.models.LaserModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -396,12 +395,7 @@ public class GameController implements Screen {
                 level.getScale().x,
                 level.getScale().y);
 
-        laserController.initialize(
-                constantsJson.get("laser"),
-                directory,
-                level.getScale().x,
-                level.getScale().y);
-
+        laserController.initialize(constantsJson.get("laser"));
         collisionController.initialize(canvas.getCamera());
     }
 
@@ -535,12 +529,8 @@ public class GameController implements Screen {
 
                 if(controller.getEnemyClass().equals(LaserEnemyModel.class)){
 
-                    LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
+                    laserController.fireLaser(controller);
 
-                    if(laserController.canFireLaser(laserEnemy)){
-                        LaserModel newLaser = laserController.fireLaser(controller, level.getBandit().getX());
-                        level.activate(newLaser);
-                    }
                 }
                 else{
                     ProjectileModel newProj = projectileController.fireWeapon(controller,
@@ -549,7 +539,8 @@ public class GameController implements Screen {
                     newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
                 }
 
-            } else {
+            }
+            else {
                 controller.coolDown(true);
             }
 
@@ -561,7 +552,7 @@ public class GameController implements Screen {
 
         level.update(dt);
         projectileController.update();
-        laserController.updateLasers(dt);
+        laserController.updateLasers(dt,level.getWorld(), level.getBandit().getPosition());
 
         // Update the camera
         GameCamera cam = canvas.getCamera();

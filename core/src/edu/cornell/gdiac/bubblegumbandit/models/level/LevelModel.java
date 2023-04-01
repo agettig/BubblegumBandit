@@ -15,6 +15,7 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.LaserController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
@@ -482,6 +484,7 @@ public class LevelModel {
         Vector2 target = PlayerController.getInstance().getCrossHair();
         JsonValue gumJV = levelFormat.get("gumProjectile");
 
+
         Vector2 origin = getProjOrigin(gumJV, canvas);
 
         Vector2 gumVel = new Vector2(target.x - origin.x, target.y - origin.y);
@@ -499,6 +502,76 @@ public class LevelModel {
                     x * 50, y * 50, gumProjectile.getRegionWidth() * trajectoryScale, gumProjectile.getRegionHeight() * trajectoryScale);
         }
     }
+
+    public void drawChargeLasers(TextureRegion asset, GameCanvas canvas){
+        final float chargeLaserScale = 1f;
+        final float firingLaserScale = 8f;
+        for(AIController ai : getEnemyControllers()){
+            if(ai.getEnemyClass().equals(LaserEnemyModel.class)){
+                LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
+                Vector2 intersect = enemy.getRaycastLine();
+                Vector2 enemyPos = enemy.getPosition();
+                if(intersect == null) continue;
+                Vector2 dir = new Vector2(
+                        intersect.x - enemyPos.x,
+                        intersect.y - enemyPos.y
+                );
+                float gap = 0.01f;
+                int numSegments = (int)(dir.len()/gap);
+                dir.nor();
+                Color transparentYellow = Color.YELLOW;
+                transparentYellow.a = .075f;
+                if(enemy.isChargingLaser() && !enemy.isFiringLaser()){
+                    for(int i = 0; i < numSegments; i++) {
+                        float x = enemyPos.x + (dir.x * i * gap);
+                        float y = enemyPos.y + (dir.y * i * gap);
+                        canvas.draw(
+                                asset,
+                                transparentYellow,
+                                asset.getRegionWidth(),
+                                asset.getRegionHeight(),
+                                x * scale.x,
+                                y * scale.y,
+                                asset.getRegionWidth() * chargeLaserScale,
+                                asset.getRegionHeight() * chargeLaserScale);
+                    }
+                }
+                else if (enemy.isFiringLaser() && !enemy.isChargingLaser()){
+                    System.out.println("Here");
+                    for(int i = 0; i < numSegments; i++) {
+                        float x = enemyPos.x + (dir.x * i * gap);
+                        float y = enemyPos.y + (dir.y * i * gap);
+                        canvas.draw(
+                                asset,
+                                Color.RED,
+                                asset.getRegionWidth(),
+                                asset.getRegionHeight(),
+                                x * scale.x,
+                                y * scale.y,
+                                asset.getRegionWidth() * firingLaserScale,
+                                asset.getRegionHeight() * firingLaserScale);
+                    }
+
+                    Vector2 intersectLength = new Vector2(
+                            intersect.x - enemyPos.x,
+                            intersect.y - enemyPos.y
+                    );
+                    Vector2 banditDir = new Vector2(
+                            bandit.getX() - enemyPos.x,
+                            bandit.getY() - enemyPos.y
+                    );
+
+                    if(!enemy.hasDamagedBandit() && banditDir.len()
+                            < intersectLength.len()){
+                        enemy.setDamagedBandit(true);
+                        bandit.hitPlayer(LaserController.LASER_DAMAGE);
+                    }
+                }
+            }
+        }
+    }
+
+
 
     /**
      * Draws the path of the projectile using a raycast. Only works for shooting in a straight line (gravity scale of 0).
@@ -591,6 +664,10 @@ public class LevelModel {
         } else {
             drawProjectileRay(levelFormat, gumProjectile, canvas);
         }
+
+        drawChargeLasers(gumProjectile, canvas);
+
+
 
         canvas.end();
 

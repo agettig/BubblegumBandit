@@ -1327,10 +1327,4 @@ public class GameCanvas {
         fovRender.end();
 
     }
-
-
-    public void drawGutters(TextureRegion texture) { //yeahh we cant do this
-        //draw
-
-    }
 }

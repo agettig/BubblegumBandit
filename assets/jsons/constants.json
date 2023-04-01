@@ -224,7 +224,7 @@
     "debugopacity": 192,
     "sensorcolor": "red",
     "sensoropacity": 192,
-    "visionradius": 3.0,
+    "visionradius": 7.0,
     "numsensors": 3,
     "sensors": {
       "enemyGroundSensor": {
@@ -297,8 +297,8 @@
     "range": 10.0,
     "girth": 2.0,
     "density" : 1.0,
-    "charge_time" : 1.0,
-    "attack_time" : 1.0,
+    "charge_time" : 2.0,
+    "attack_time" : 2.0,
     "charge_texture": "charge_laser",
     "attack_texture": "attack_laser"
   }
