@@ -152,7 +152,8 @@ public class LaserEnemyModel extends EnemyModel{
      *
      * @param firing if this LaserEnemyModel is in its firing phase
      * */
-    public void setFiringLaser(boolean firing){this.firing = firing;}
+    public void setFiringLaser(boolean firing){
+        this.firing = firing;}
 
     /**
      * Informs this LaserEnemyModel if in its charging phase.

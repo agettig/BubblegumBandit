@@ -537,7 +537,6 @@ public class LevelModel {
                     }
                 }
                 else if (enemy.isFiringLaser() && !enemy.isChargingLaser()){
-                    System.out.println("Here");
                     for(int i = 0; i < numSegments; i++) {
                         float x = enemyPos.x + (dir.x * i * gap);
                         float y = enemyPos.y + (dir.y * i * gap);

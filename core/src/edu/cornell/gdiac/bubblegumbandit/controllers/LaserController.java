@@ -87,14 +87,24 @@ public class LaserController {
                 canSeeTarget = chargeTarget.x >= enemy.getX();
             }
             else canSeeTarget = chargeTarget.x <= enemy.getX();
-            if(!canSeeTarget) {
+
+            if(enemy.isChargingLaser())System.out.println("charging");
+            if(enemy.isFiringLaser())System.out.println("firing");
+
+            //Expired phase.
+            if(enemy.getAge() >= chargeTime + firingTime){
+                enemy.setFiringLaser(false);
                 enemy.setChargingLaser(false);
-                enemy.resetAge();
-                continue;
             }
 
+
             //Charging phase.
-            if(enemy.getAge() < chargeTime){
+            else if(enemy.getAge() < chargeTime){
+                if(!canSeeTarget){
+                    enemy.setChargingLaser(false);
+                    enemy.resetAge();
+                    continue;
+                }
                 enemy.setFiringLaser(false);
                 enemy.setChargingLaser(true);
                 final Vector2 intersect = new Vector2();
@@ -164,12 +174,6 @@ public class LaserController {
                 world.rayCast(chargeRaycast, chargeOrigin, chargeEndpoint);
                 enemy.setRaycastLine(intersect);
                 enemy.setFired(true);
-            }
-
-            //Expired phase.
-            if(enemy.getAge() >= chargeTime + firingTime){
-                enemy.setChargingLaser(false);
-                enemy.setFiringLaser(false);
             }
         }
     }
