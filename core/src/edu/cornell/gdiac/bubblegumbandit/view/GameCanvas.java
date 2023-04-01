@@ -736,6 +736,11 @@ public class GameCanvas {
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
     }
 
+    public void drawShadow(TextureRegion region, float ox, float oy,
+                           float x, float y, float angle, float sx, float sy) {
+        draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);
+    }
+
     public void drawWithShadow(TextureRegion region, Color tint, float ox, float oy,
                                float x, float y, float angle, float sx, float sy) {
         draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);

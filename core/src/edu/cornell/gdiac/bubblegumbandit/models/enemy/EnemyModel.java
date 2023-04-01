@@ -28,6 +28,8 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  */
 public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
 
+    private TextureRegion outline;
+
     // Physics constants
     private int id;
 
@@ -339,6 +341,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         ungummedTexture = texture;
+        key = constantsJson.get("outline").asString();
+        outline = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
         String animationKey;
         if((animationKey = constantsJson.get("animations").asString())!=null) {
@@ -480,6 +484,19 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        }
+    }
+
+    public void drawWithOutline(GameCanvas canvas) {
+        if (outline != null && gummedTexture != null) {
+            float effect = faceRight ? 1.0f : -1.0f;
+            canvas.drawShadow(gummedTexture, origin.x, origin.y, getX() * drawScale.x,
+                    getY() * drawScale.y, getAngle(), effect, yScale);
+            canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect*OUTLINE_SIZE, yScale*OUTLINE_SIZE);
+            canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                    getY() * drawScale.y, getAngle(), effect, yScale);
+
         }
     }
 
