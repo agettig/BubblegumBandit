@@ -62,7 +62,7 @@ public class AlarmController {
     this.offTexture = new TextureRegion(directory.getEntry("alarm_off", Texture.class));
     for(int i = 0; i<locations.size; i++) {
       lights[i] = new PointLight(rays, rayCount, inactive, INACTIVE_DIST, locations.get(i).x+.5f, locations.get(i).y+.5f);
-      lights[i].setStaticLight(true);
+//      lights[i].setStaticLight(true);
     }
     counter = 0;
   }

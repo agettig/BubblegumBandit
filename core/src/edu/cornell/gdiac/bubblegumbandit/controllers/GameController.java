@@ -154,11 +154,6 @@ public class GameController implements Screen {
     private CollisionController collisionController;
 
     /**
-     * Mark set to handle more sophisticated collision callbacks
-     */
-    protected ObjectSet<Fixture> sensorFixtures;
-
-    /**
      * Reference to the game level
      */
     protected LevelModel level;
@@ -320,7 +315,6 @@ public class GameController implements Screen {
 
         //Data Structures && Classes
         level = new LevelModel();
-        sensorFixtures = new ObjectSet<Fixture>();
 
         setComplete(false);
         setFailure(false);
@@ -501,7 +495,7 @@ public class GameController implements Screen {
         }
 
         float grav =  level.getWorld().getGravity().y;
-        if (bandit.isGrounded() && !bandit.getStuck() && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
+        if (bandit.isGrounded() && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
         ) {
@@ -510,7 +504,7 @@ public class GameController implements Screen {
             jumpId = SoundController.playSound("jump", 0.25f);
             level.getWorld().setGravity(currentGravity);
             bandit.flippedGravity();
-            bandit.setGrounded(false);
+//            bandit.setGroundedBottom(false);
             collisionController.clearSensorFixtures();
 
             if (level.aiControllers() != null) {

@@ -519,10 +519,20 @@ public class BanditModel extends CapsuleObstacle {
 			shootCooldown = Math.max(0, shootCooldown - 1);
 		}
 
-		if (yScale < 1f && !isFlipped) {
-			yScale += 0.1f;
-		} else if (yScale > -1f && isFlipped) {
-			yScale -= 0.1f;
+		if (yScale > 1) {
+			yScale = 1;
+		} else if (yScale < -1) {
+			yScale = -1;
+		}
+
+		if (!isFlipped && yScale < 1) {
+			if (yScale != -1 || !stuck) {
+				yScale += 0.1f;
+			}
+		} else if (isFlipped && yScale > -1) {
+			if (yScale != 1 || !stuck) {
+				yScale -= 0.1f;
+			}
 		}
 
 		// Change camera target
