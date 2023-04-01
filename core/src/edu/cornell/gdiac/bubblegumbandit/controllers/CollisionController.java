@@ -38,7 +38,7 @@ public class CollisionController implements ContactListener {
 
 
     public static final short MASK_PLAYER = -1;
-    public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
+    public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
     public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
@@ -165,8 +165,8 @@ public class CollisionController implements ContactListener {
         Object bd2 = body2.getUserData();
 
         BanditModel avatar = levelModel.getBandit();
-        if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
+        if (((avatar.getSensorName2().equals(fd2) || avatar.getSensorName().equals(fd2)) && avatar != bd1) ||
+                ((avatar.getSensorName2().equals(fd1) || avatar.getSensorName().equals(fd1)) && avatar != bd2)) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
             if (sensorFixtures.size == 0) {
                 avatar.setGrounded(false);
