@@ -201,7 +201,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 1;
+    private final int NUM_LEVELS = 2;
 
     /** Whether the orb has been collected. */
     private boolean orbCollected;
