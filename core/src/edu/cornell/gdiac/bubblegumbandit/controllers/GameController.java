@@ -396,7 +396,7 @@ public class GameController implements Screen {
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
-        aim.initialize(level, directory);
+        aim.initialize(level, directory, constantsJson);
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
     }
 
@@ -573,6 +573,7 @@ public class GameController implements Screen {
             }
         }
         projectileController.update();
+        aim.update(canvas, dt);
 
         // Update the camera
         GameCamera cam = canvas.getCamera();
@@ -607,7 +608,7 @@ public class GameController implements Screen {
 
         level.draw(canvas, constantsJson, trajectoryProjectile);
         canvas.begin();
-        aim.drawProjectileRay(constantsJson, canvas);
+        aim.drawProjectileRay(canvas);
         canvas.end();
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
