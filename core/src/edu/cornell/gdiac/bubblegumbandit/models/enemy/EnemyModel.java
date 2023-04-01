@@ -467,7 +467,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
             TextureRegion drawn = texture;
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-//                setX(getX() - getWidth()/2*effect);
+//                setX(getX() - getWidth()/2*effect); // TODO: Make this impact the physics body. Messes up collisions o/w
             }
             if (gummed) {
                 canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,

@@ -38,7 +38,7 @@ public class AlarmController {
   /** The inactive ambient light amount */
   private final float NORMAL_AMBIENT = 0.8f;
   /** The active ambient light amount */
-  private final float ALARM_AMBIENT = 0.3f;
+  private final float ALARM_AMBIENT = 0.4f;
   /** The  distance of an alarm while inactive */
   private final int INACTIVE_DIST = 8;
   /** The  distance of an alarm while active */
