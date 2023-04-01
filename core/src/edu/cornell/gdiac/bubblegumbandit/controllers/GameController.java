@@ -495,7 +495,7 @@ public class GameController implements Screen {
         }
 
         float grav =  level.getWorld().getGravity().y;
-        if (bandit.isGrounded() && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
+        if ((bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
         ) {
@@ -504,7 +504,6 @@ public class GameController implements Screen {
             jumpId = SoundController.playSound("jump", 0.25f);
             level.getWorld().setGravity(currentGravity);
             bandit.flippedGravity();
-//            bandit.setGroundedBottom(false);
             collisionController.clearSensorFixtures();
 
             if (level.aiControllers() != null) {
