@@ -28,6 +28,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
@@ -39,6 +41,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -184,9 +187,6 @@ public class GameController implements Screen {
     /** A collection of the active projectiles on screen */
     private ProjectileController projectileController;
 
-    /** Processes the player's aim */
-    private AimController aim;
-
     /**
      * The texture of the trajectory projectile
      */
@@ -325,7 +325,6 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
-        aim = new AimController();
     }
 
     /**
@@ -396,7 +395,6 @@ public class GameController implements Screen {
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
-        aim.initialize(level, directory, constantsJson);
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
     }
 
@@ -516,33 +514,37 @@ public class GameController implements Screen {
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
-            Vector2 cross = aim.getProjTarget(canvas);
+            Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
-            Vector2 origin = aim.getProjOrigin(gumJV, canvas);
+            Vector2 origin = level.getAim().getProjOrigin(gumJV, canvas);
             String key = gumJV.get("texture").asString();
             Vector2 scale = level.getScale();
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture, false);
+            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
             if (gum != null) {
                 bubblegumController.fireGum();
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick() && bubblegumController.getAmmo() > 0) {
-            Vector2 cross = aim.getProjTarget(canvas);
-            JsonValue gumJV = constantsJson.get("unstickProjectile");
-            BanditModel avatar = level.getBandit();
-            Vector2 origin = aim.getProjOrigin(gumJV, canvas);
-            String key = gumJV.get("texture").asString();
-            Vector2 scale = level.getScale();
-            TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-            GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture, true);
-            if (gum != null) {
-                bubblegumController.fireGum();
-                level.activate(gum);
-                gum.setFilter(CollisionController.CATEGORY_UNSTICK, CollisionController.MASK_UNSTICK);
+        if (inputResults.didUnstick()) {
+            Unstickable unstickable = level.getAim().getSelected();
+            if (unstickable != null) {
+                Obstacle unstickableOb = (Obstacle) unstickable;
+                if (unstickableOb.getName().equals("stickyGum")) {
+                    // Unstick it
+                    bubblegumController.removeGum((GumModel) unstickable);
+                    SoundController.playSound("robotSplat", 1f); // Temp sound
+                } else if (unstickableOb instanceof Gummable) {
+                    Gummable gummable = (Gummable) unstickableOb;
+                    if (gummable.getGummed()) {
+                        // Ungum it
+                        bubblegumController.removeGummable(gummable);
+                        SoundController.playSound("robotSplat", 1f); // Temp sound
+
+                    }
+                }
             }
         }
 
@@ -573,7 +575,7 @@ public class GameController implements Screen {
             }
         }
         projectileController.update();
-        aim.update(canvas, dt);
+        level.getAim().update(canvas, dt);
 
         // Update the camera
         GameCamera cam = canvas.getCamera();
@@ -605,11 +607,7 @@ public class GameController implements Screen {
      */
     public void draw(float delta) {
         canvas.clear();
-
         level.draw(canvas, constantsJson, trajectoryProjectile);
-        canvas.begin();
-        aim.drawProjectileRay(canvas);
-        canvas.end();
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();

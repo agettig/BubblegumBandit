@@ -136,8 +136,6 @@ public class CollisionController implements ContactListener {
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
-            resolveUnstickCollision(obstacleA, obstacleB);
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -309,6 +307,7 @@ public class CollisionController implements ContactListener {
             gum.setVX(0);
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
+            gum.setOutline(bubblegumController.getStuckOutline());
             gum.setName("stickyGum");
             // Changing radius resets filter for some reason
             gum.getFilterData().maskBits = MASK_GUM;
@@ -340,57 +339,11 @@ public class CollisionController implements ContactListener {
                 levelModel.getBandit().setStuck(true);
             }
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
-            System.out.println(gum.getName());
-            System.out.println(body.getName());
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
             gum.setCollisionFilters();
         }
-    }
-
-    /**
-     *  Removes joint pairs and unsticks object if unsticking projectile collides with object.
-     *
-     *  @param bodyA The first body in the collision
-     *  @param bodyB The second body in the collision
-     */
-    public void resolveUnstickCollision(Obstacle bodyA, Obstacle bodyB){
-        //Safety check.
-        if (bodyA == null || bodyB == null) return;
-        // Gum should destroy projectiles, but not become sticky gum.
-        if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
-        if (bodyA.isRemoved() || bodyB.isRemoved()) return;
-
-        // Figure out what's what.
-        GumModel unstick;
-        Obstacle notUnstick;
-        if (bodyA.getName().equals("unstickProjectile") && bodyB.getName().equals("unstickProjectile") ) {
-            return;
-        } else if (bodyA.getName().equals("unstickProjectile")) {
-            unstick = (GumModel) bodyA;
-            notUnstick = bodyB;
-        } else if (bodyB.getName().equals("unstickProjectile")) {
-            unstick = (GumModel) bodyB;
-            notUnstick = bodyA;
-        } else {
-            return;
-        }
-
-        if (notUnstick.getName().equals("stickyGum")) {
-            // Unstick it
-            bubblegumController.removeGum((GumModel) notUnstick);
-        } else if (notUnstick instanceof Gummable) {
-            Gummable gummable = (Gummable) notUnstick;
-            if (gummable.getGummed()) {
-                // Ungum it
-                bubblegumController.removeGummable(gummable);
-            }
-        }
-        // Destroy projectile and call it a day
-        unstick.setVX(0);
-        unstick.setVY(0);
-        unstick.markRemoved(true);
     }
 
     /**
@@ -407,26 +360,31 @@ public class CollisionController implements ContactListener {
 
         if (x && y) {
             gum.setTexture(bubblegumController.getRotatedGumTexture());
+            gum.setOutline(bubblegumController.getRotatedOutline());
             return 1;
         }
         if (tile.hasCorner()) {
             if (gumPos.x > tilePos.x + 0.35f) {
                 if (tile.topRight() && gumPos.y > tilePos.y + 0.5f) {
                     gum.setTexture(bubblegumController.getTopRightGumTexture());
+                    gum.setOutline(bubblegumController.getTopRightOutline());
                     return 2;
                 }
                 if (tile.bottomRight() && gumPos.y < tilePos.y - 0.5f) {
                     gum.setTexture(bubblegumController.getBottomRightGumTexture());
+                    gum.setOutline(bubblegumController.getBottomRightOutline());
                     return 2;
                 }
             }
             if (gumPos.x < tilePos.x - 0.35f) {
                 if (tile.bottomLeft() && gumPos.y < tilePos.y - 0.5f) {
                     gum.setTexture(bubblegumController.getBottomLeftGumTexture());
+                    gum.setOutline(bubblegumController.getBottomLeftOutline());
                      return 3;
                 }
                 if (tile.topLeft() && gumPos.y > tilePos.y + 0.5f) {
                     gum.setTexture(bubblegumController.getTopLeftGumTexture());
+                    gum.setOutline(bubblegumController.getTopLeftOutline());
                     return 3;
                 }
             }

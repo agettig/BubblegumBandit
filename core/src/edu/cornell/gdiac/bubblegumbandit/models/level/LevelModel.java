@@ -28,12 +28,15 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -93,6 +96,9 @@ public class LevelModel {
      */
     private ExitModel goalDoor;
 
+    /** Reference to the aim model */
+    private AimModel aim;
+
     /**
      * Whether or not the level is in debug more (showing off physics)
      */
@@ -140,6 +146,10 @@ public class LevelModel {
      */
     private AlarmController alarms;
 
+    /** Returns the aim in this level. */
+    public AimModel getAim() {
+        return aim;
+    };
 
 
     /**
@@ -229,6 +239,7 @@ public class LevelModel {
         bounds = new Rectangle(0, 0, 1, 1);
         scale = new Vector2(1, 1);
         debug = false;
+        aim = new AimModel();
     }
 
 
@@ -241,6 +252,8 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
+        aim.initialize(directory, constants);
+
         JsonValue boardGravityDownLayer = null;
         JsonValue boardGravityUpLayer = null;
 
@@ -500,7 +513,6 @@ public class LevelModel {
             }
         }
        alarms.update(dt);
-
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
@@ -542,8 +554,14 @@ public class LevelModel {
         alarms.drawAlarms(canvas, scale);
 
         for (Obstacle obj : objects) {
-            obj.draw(canvas);
+            if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
+                aim.highlighted.drawWithOutline(canvas);
+            } else {
+                obj.draw(canvas);
+            }
         }
+
+        aim.drawProjectileRay(canvas);
 
         canvas.end();
         drawLights(canvas.getCamera(), canvas);
@@ -642,5 +660,163 @@ public class LevelModel {
     public float getOrbCountdown() {
         return timer;
     }
+
+    public class AimModel {
+
+        /** The colors used in the aim render */
+        private final Color[] COLORS = new Color[]{new Color(1, .619f, .62f, 1),
+                new Color(1, .73f, .73f, .9f),
+                new Color(1, .81f, .81f, .8f),
+                new Color(1, .86f, .86f, .7f),
+                new Color(1, .905f, .905f, .6f),
+                new Color(1, 1, 1, .5f)};
+
+        /** The max number of dots in the trajectory */
+        private final int MAX_DOTS = 6;
+
+        /**
+         * The gap between each dot in the trajectory diagram (for raytraced trajectory.)
+         */
+        private final float trajectoryGap = 0.5f;
+
+        /**
+         * The scale of each dot in the trajectory diagram (for raytraced trajectory.)
+         */
+        private final float trajectoryScale = 0.5f;
+
+        private TextureRegion trajectoryTexture;
+
+        private JsonValue gumJV;
+
+        /** The current number of dots */
+        private int range;
+
+        /** Array of dot positions */
+        private float[] dotPos;
+
+        /** The highlighted obstacle, if it exists */
+        protected Unstickable highlighted;
+
+        /** Get the highlighted unstickable. */
+        public Unstickable getSelected() {
+            return highlighted;
+        }
+
+        public AimModel() {
+            dotPos = new float[MAX_DOTS * 2];
+
+        }
+
+        /** Initialize the Aim Model. */
+        public void initialize(AssetDirectory directory, JsonValue constants) {
+            trajectoryTexture = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+            gumJV = constants.get("gumProjectile");
+        }
+
+        /**
+         * Returns the origin of the gum when fired by the player.
+         *
+         * @param gumJV the JSON Value representing the gum projectile.
+         * @return The origin of the projectile of the gum when fired.
+         */
+        public Vector2 getProjOrigin(JsonValue gumJV, GameCanvas canvas) {
+            Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
+            cross.scl(1 / scale.x, 1 / scale.y);
+
+            cross.x = Math.max(bounds.x, Math.min(bounds.x + bounds.width, cross.x));
+            cross.y = Math.max(bounds.y, Math.min(bounds.y + bounds.height, cross.y));
+
+            Vector2 target = cross;
+
+            float offsetX = gumJV.getFloat("offsetX", 0);
+            float offsetY = gumJV.getFloat("offsetY", 0);
+            offsetY *= bandit.getYScale();
+
+            Vector2 origin = new Vector2(bandit.getX(), bandit.getY() + offsetY);
+            Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
+            dir.nor();
+            dir.scl(offsetX);
+
+            // Adjust origin of shot based on target pos
+            // Rotate around top half of player for gravity pulling down, bottom half for gravity pulling up
+            if (dir.y * world.getGravity().y < 0) {
+                origin.x += dir.x;
+            } else {
+                origin.x += (target.x > bandit.getX() ? offsetX : -offsetX);
+            }
+            origin.y += dir.y;
+            return origin;
+        }
+
+        public Vector2 getProjTarget(GameCanvas canvas) {
+            Vector2 cross = canvas.unproject(PlayerController.getInstance().getCrossHair());
+            cross.scl(1 / scale.x, 1 / scale.y);
+
+            cross.x = Math.max(bounds.x, Math.min(bounds.x + bounds.width, cross.x));
+            cross.y = Math.max(bounds.y, Math.min(bounds.y + bounds.height, cross.y));
+            return cross;
+        }
+
+        /** Update the trajectory */
+        public void update(GameCanvas canvas, float dt) {
+            Vector2 target = PlayerController.getInstance().getCrossHair();
+            Vector2 origin = getProjOrigin(gumJV, canvas);
+            Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
+            dir.nor();
+            dir.scl(bounds.width * 2); // Make sure ray will cover the whole screen
+            Vector2 end = new Vector2(origin.x + dir.x, origin.y + dir.y); // Find end point of the ray cast
+
+            final Vector2 intersect = new Vector2();
+            final Obstacle[] lastCollision = new Obstacle[1];
+
+            RayCastCallback ray = new RayCastCallback() {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point,
+                                              Vector2 normal, float fraction) {
+                    Obstacle ob = (Obstacle) fixture.getBody().getUserData();
+                    if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile")) {
+                        intersect.set(point);
+                        lastCollision[0] = ob;
+                        return fraction;
+                    }
+                    return -1;
+                }
+            };
+            world.rayCast(ray, origin, end);
+
+            highlighted = null;
+            if (lastCollision[0] instanceof Unstickable) {
+                if (!(lastCollision[0] instanceof Gummable) || lastCollision[0].getGummed()) {
+                    highlighted = (Unstickable) lastCollision[0]; // Only highlight stuck gum or gummables
+                }
+            }
+
+            dir = new Vector2(intersect.x - origin.x, intersect.y - origin.y);
+            int numSegments = (int) (dir.len() / trajectoryGap); // Truncate to find number before colliding
+            dir.nor();
+            range = numSegments + 1;
+            if (range > MAX_DOTS) range = MAX_DOTS;
+            for (int i = 0; i < range; i++) {
+                dotPos[2*i] = origin.x + (dir.x * i * trajectoryGap);
+                dotPos[2*i+1] = origin.y + (dir.y * i * trajectoryGap);
+            }
+        }
+
+        /**
+         * Draws the path of the projectile using the result of a raycast. Only works for shooting in a straight line (gravity scale of 0).
+         *
+         * @param canvas      The GameCanvas to draw the trajectory on.
+         */
+        public void drawProjectileRay(GameCanvas canvas) {
+//        if () {
+//            draw(region, Color.WHITE, ox, oy, x+shadowOffset, y, angle, sx, sy);
+//        }
+            for (int i = 0; i < range; i++) {
+                canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2*i] * scale.x,
+                        dotPos[2*i+1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
+            }
+        }
+    }
+
 
 }

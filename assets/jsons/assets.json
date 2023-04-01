@@ -83,11 +83,17 @@
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
         "alarm_on": "textures/alarm_on.png",
-        "alarm_off": "textures/alarm_off.png"
+        "alarm_off": "textures/alarm_off.png",
         "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
         "orb": "textures/orb.png",
-        "unstickprojectile": "textures/unstick.png"
+        "stuckOutline": "textures/stuck_gumWhite.png",
+        "topRightOutline": "textures/topRightGumWhite.png",
+        "bottomRightOutline": "textures/bottomRightGumWhite.png",
+        "bottomLeftOutline": "textures/bottomLeftGumWhite.png",
+        "topLeftOutline": "textures/topLeftGumWhite.png",
+        "rotatedOutline": "textures/rotated_gumWhite.png",
+        "smallrobotoutline": "textures/small_enemyWhite.png"
     },
     "fonts": {
         "display": {

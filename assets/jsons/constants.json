@@ -61,14 +61,6 @@
     "bottomLeftStuckTexture": "bottomLeftGum",
     "topLeftStuckTexture": "topLeftGum"
   },
-  "unstickProjectile": {
-    "offsetX": 0.6,
-    "offsetY": 0.5,
-    "speed": 25.0,
-    "gravity": 0,
-    "density": 10.0,
-    "texture": "unstickprojectile"
-  },
   "floatinggum": {
     "density": 0.0,
     "friction": 0.0,
@@ -172,6 +164,7 @@
     "maxspeed": 5.0,
     "animations": "small_robot",
     "texture": "smallrobot",
+    "outline": "smallrobotoutline",
     "gummedTexture": "gummed_robot",
     "debugcolor": "white",
     "debugopacity": 192,
