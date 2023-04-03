@@ -101,7 +101,7 @@ public class Minimap {
         float mapLength = HORZ_SCALE * canvasWidth;
         float mapHeight = VERT_SCALE * canvasHeight;
         minimapBackground.setSize(mapLength, mapHeight);
-        minimapBackground.setPosition(30, 30);
+        minimapBackground.setPosition(canvasWidth - mapLength - 30, 30);
 
         //Find all positions of floors/platforms.
         ArrayList<Vector2> floorPositions = new ArrayList<Vector2>();
