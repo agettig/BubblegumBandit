@@ -10,16 +10,23 @@ public class GameCamera  extends OrthographicCamera {
     private final float xSpeed = 4f;
 
     /** The vertical speed at which the camera converges on the target. */
-    private final float ySpeed = 4f;
+    private final float ySpeed = 6f;
+
+    /** The speed at which the camera converges on a new zoom. */
+    private final float zoomSpeed = 3f;
 
     /** The weight of the secondary target */
     private final float secondaryWeight = 0.25f;
 
-    /** Whether the secondary target is enabled */
-    private boolean useSecondaryTarget = false;
+    /** Defines how far the target y can be from the camera position y, as a proportion of the screen height.
+     * Temporarily disabled when in fixed camera position. */
+    private final float targetYClamp = 0.15f;
 
-    /** Defines how far the target y can be from the camera position y, as a proportion of the screen height. */
-    private final float yClampFactor = 0.25f;
+    /** The speed to converge on the target y clamp when transitioning from a fixed camera. */
+    private final float clampSpeed = 6f;
+
+    /** The speed to carry out the smoothstep. */
+    private final float smoothstepSpeed = 400f;
 
     // CAMERA FIELDS
     /** The target the camera is focused on. */
@@ -27,6 +34,27 @@ public class GameCamera  extends OrthographicCamera {
 
     /** The secondary target the camera tries to include. */
     private Vector2 secondaryTarget;
+
+    /** Whether the camera is fixed on the X axis */
+    private boolean isFixedX;
+
+    /** Whether the camera is fixed on the Y axis */
+    private boolean isFixedY;
+
+    /** The target zoom of the camera (does not instantly change) */
+    private float targetZoom;
+
+    /** Whether the camera is in debug mode. */
+    private boolean isCameraDebug;
+
+    /** The width of the level in pixels */
+    private float levelWidth;
+
+    /** The height of the level in pixels */
+    private float levelHeight;
+
+    /** The current yClamp of the camera */
+    private float curYClamp;
 
     public GameCamera() {
         super();
@@ -41,12 +69,72 @@ public class GameCamera  extends OrthographicCamera {
         super(viewportWidth, viewportHeight);
         secondaryTarget = new Vector2();
         target = new Vector2();
+        isFixedX = false;
+        isFixedY = false;
+        targetZoom = 1f;
+        isCameraDebug = false;
+        curYClamp = targetYClamp;
+    }
+
+    /** Toggles the debug mode of the camera. */
+    public void toggleDebug() {
+        isCameraDebug = !isCameraDebug;
     }
 
     /** Toggles the camera mode between using a secondary target or not.
      *
+     * @param zoom the amount to zoom on the camera
      */
-    public void toggleMode() { useSecondaryTarget = !useSecondaryTarget; }
+    public void setZoom(float zoom) { targetZoom = zoom; }
+
+    /** Zooms the camera to a given width or height. Uses whichever one causes a bigger camera size
+     * since the aspect ratio doesn't change.
+     *
+     * @param width the new width of the viewport in pixel coords (0 if unchanged)
+     * @param height the new height of the viewport in pixel coords (0 if unchanged)
+     */
+    public void setZoom(float width, float height) {
+        float aspectRatio = viewportWidth / viewportHeight;
+        if ((width / height) > aspectRatio) {
+            // width is the limiting factor
+            targetZoom = width / viewportWidth;
+        } else {
+            // height is the limiting factor
+            targetZoom = height / viewportHeight;
+        }
+    }
+
+
+    /** Gets whether the camera is fixed on the x axis.
+     *
+     */
+    public boolean isFixedX() { return isFixedX; }
+
+    /** Gets whether the camera is fixed on the y axis.
+     *
+     */
+    public boolean isFixedY() { return isFixedY; }
+
+
+    /** Sets whether the camera is fixed on the x axis.
+     *
+     * @param isFixedX whether the camera should be fixed on the x axis
+     */
+    public void setFixedX(boolean isFixedX) {
+        this.isFixedX = isFixedX;
+        // if (isFixedX) { curYClamp = 1; }
+    }
+
+
+    /** Sets whether the camera is fixed on the y axis.
+     *
+     * @param isFixedY whether the camera should be fixed on the y axis
+     */
+    public void setFixedY(boolean isFixedY) {
+        this.isFixedY = isFixedY;
+        if (isFixedY) { curYClamp = 1; }
+    }
+
 
     /**
      * Returns the current target of the game camera.
@@ -133,6 +221,16 @@ public class GameCamera  extends OrthographicCamera {
     }
 
     /**
+     * Sets the width and height of the level for the debug view.
+     * @param width the width of the level
+     * @param height the height of the level
+     */
+    public void setLevelSize(float width, float height) {
+        levelWidth = width;
+        levelHeight = height;
+    }
+
+    /**
      * Updates this camera.
      */
     public void update(float dt) {
@@ -143,26 +241,49 @@ public class GameCamera  extends OrthographicCamera {
      * Updates this camera based on its target.
      */
     public void update(boolean updateFrustum, float dt) {
+        if (isCameraDebug) {
+            position.x = levelWidth / 2;
+            position.y = levelHeight / 2;
+            float aspectRatio = viewportWidth / viewportHeight;
+            if ((levelWidth / levelHeight) > aspectRatio) {
+                // width is the limiting factor
+                zoom = levelWidth / viewportWidth;
+            } else {
+                // height is the limiting factor
+                zoom = levelHeight / viewportHeight;
+            }
+            super.update(updateFrustum);
+            return;
+        }
+
         float newTargetX = target.x;
-        if (useSecondaryTarget) {
+        if (!isFixedX) {
             newTargetX = target.x * (1 - secondaryWeight) + secondaryTarget.x * secondaryWeight;
         }
-        position.x += (newTargetX - position.x) * xSpeed * dt;
 
         float newTargetY = target.y;
-        if (useSecondaryTarget) {
+        if (!isFixedY) {
             newTargetY = target.y * (1 - secondaryWeight) + secondaryTarget.y * secondaryWeight;
         }
+
+        position.x += (newTargetX - position.x) * xSpeed * dt;
         position.y += (newTargetY - position.y) * ySpeed * dt;
 
+        // Adjust y clamp
+        if (!isFixedY) {
+            curYClamp += (targetYClamp - curYClamp) * clampSpeed * dt;
+        }
+
         // Cap how far offscreen
-        float maxDistY = viewportHeight * yClampFactor;
+        float maxDistY = viewportHeight * curYClamp;
         if (position.y - target.y > maxDistY) {
             position.y = target.y + maxDistY;
         } else if (target.y - position.y > maxDistY) {
             position.y = target.y - maxDistY;
         }
 
+        // Adjust zoom
+        zoom += (targetZoom - zoom) * zoomSpeed * dt;
         super.update(updateFrustum);
     }
 

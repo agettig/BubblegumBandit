@@ -50,7 +50,6 @@ public class BackObjModel extends BoxObstacle {
      */
     public void initialize(AssetDirectory directory, JsonValue json, JsonValue info) {
 
-
         //physics information
         setBodyType(BodyDef.BodyType.DynamicBody);
         setDensity(json.get("density").asFloat());
