@@ -172,7 +172,7 @@
     "maxspeed": 5.0,
     "animations": "small_robot",
     "texture": "smallrobot",
-    "gummedTexture": "gummed_robot",
+    "gummedTexture": "small_gum",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "yellow",

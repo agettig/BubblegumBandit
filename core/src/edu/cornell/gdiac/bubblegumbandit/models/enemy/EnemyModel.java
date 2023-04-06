@@ -140,6 +140,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     // endRegion
 
+    // Stuck in Gum Fields
+
+    /** where the gum is drawn relative to the center of the robot*/
+    private static final float GUM_OFFSET = 0;
+
+    // endRegion
+
     /**
      * Returns left/right movement of this character.
      * <p>
@@ -380,7 +387,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     public void updateTexture() {
         if (gummed) {
-            setTexture(gummedTexture);
+            setTexture(ungummedTexture);
         } else {
             setTexture(ungummedTexture);
         }
@@ -481,6 +488,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
             }
             canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
+
+            //if gummed, overlay with gummedTexture
+            if (gummed) {
+                canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, x,
+                        getY() * drawScale.y + GUM_OFFSET, getAngle(), effect, yScale);
+            }
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);

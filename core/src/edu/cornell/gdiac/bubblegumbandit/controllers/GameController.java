@@ -58,9 +58,6 @@ import java.util.ArrayList;
  */
 public class GameController implements Screen {
     // ASSETS
-
-
-
     /**
      * Need an ongoing reference to the asset directory
      */
