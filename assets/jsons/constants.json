@@ -170,6 +170,7 @@
     "force": 10.0,
     "damping": 10.0,
     "maxspeed": 5.0,
+    "animations": "small_robot",
     "texture": "smallrobot",
     "gummedTexture": "gummed_robot",
     "debugcolor": "white",

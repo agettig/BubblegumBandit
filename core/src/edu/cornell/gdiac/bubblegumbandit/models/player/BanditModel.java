@@ -16,6 +16,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
+import java.lang.reflect.*;
+
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
@@ -77,6 +81,9 @@ public class BanditModel extends CapsuleObstacle{
 
 	/** Cache for flipping player orientation */
 	private float angle;
+
+	/** Animation controller for controlling animations?? */
+	private AnimationController animationController;
 
 	/** Number of ticks since game started*/
 	private long ticks;
@@ -359,6 +366,8 @@ public class BanditModel extends CapsuleObstacle{
 		cameraTarget.set(x*drawScale.x, y*drawScale.y);
 		setDimension(size[0],size[1]);
 
+		animationController = new AnimationController(directory,"bandit");
+
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
 		setBodyType(constantsJson.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
@@ -526,6 +535,10 @@ public class BanditModel extends CapsuleObstacle{
 		cameraTarget.x = getX()*drawScale.x;
 		cameraTarget.y = getY()*drawScale.y;
 
+		if(!isGrounded) animationController.setAnimation("fall");
+		else if (getMovement()==0) animationController.setAnimation("idle");
+		else animationController.setAnimation("run");
+
 		super.update(dt);
 	}
 
@@ -537,9 +550,9 @@ public class BanditModel extends CapsuleObstacle{
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-
 			canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
 					getY()*drawScale.y,getAngle(),effect,fo.getScale());//yScale);
+
 
 		}
 
