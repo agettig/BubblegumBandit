@@ -320,13 +320,16 @@ public class CollisionController implements ContactListener {
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
+
 //                    gummable.updateTexture();
                     gummable.endCollision(gum);
                     for (Obstacle ob : gummable.getCollisions()) {
                         bubblegumController.createGummableJoint(gummable, ob);
+                        gummable.setStuck(true);
                     }
                 }
                 else {
+                    System.out.println("is this accessed");
                     gummable.setStuck(true);
                 }
             }
