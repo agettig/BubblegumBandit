@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
@@ -106,6 +107,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 //     * The y scale of this enemy (for flipping when gravity swaps)
 //     */
 //    private float yScale;
+
+    /**
+     * Animation controller, controls animations
+     */
+    private AnimationController animationController;
 
     private TextureRegion gummedTexture;
     // SENSOR FIELDS
@@ -348,6 +354,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         ungummedTexture = texture;
         setTexture(texture);
+        String animationKey;
+        if((animationKey = constantsJson.get("animations").asString())!=null) {
+            animationController = new AnimationController(directory, animationKey);
+        }
+
+
 
         // Get the sensor information
         int listeningRadius = constantsJson.get("listeningradius").asInt();
@@ -471,8 +483,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                getY() * drawScale.y, getAngle(), effect, fo.getScale());//yScale);
+            TextureRegion drawn = texture;
+            float x = getX() * drawScale.x;
+            if(animationController!=null) {
+                drawn = animationController.getFrame();
+                x-=getWidth()/2*drawScale.x*effect;
+            }
+            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
+                    getY() * drawScale.y, getAngle(), effect, fo.getScale());//yScale);
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
