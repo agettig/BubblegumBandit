@@ -112,17 +112,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
      */
     private AnimationController animationController;
 
-    private TextureRegion gummedTexture;
     // SENSOR FIELDS
     /** Ground sensor to represent our feet */
     private Fixture sensorFixture;
     private CircleShape sensorShape;
     /** The name of the sensor for detection purposes */
     private String sensorName;
-    /** The color to paint the sensor in debug mode */
-    private TextureRegion gummed_robot;
 
-    private TextureRegion ungummedTexture;
 
     private float speed;
 
@@ -143,7 +139,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     // Stuck in Gum Fields
 
     /** where the gum is drawn relative to the center of the robot*/
-    private static final float GUM_OFFSET = 0;
+    private static final float GUM_OFFSET = -5;
+
+    /** the texture to use for the robot when stuck, not animated */
+    private TextureRegion gummedTexture;
+
+    /** Texture of the gum overlay when gummed */
+    private TextureRegion gumTexture;
 
     // endRegion
 
@@ -350,22 +352,19 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
-        ungummedTexture = texture;
+        gummedTexture = texture;
         setTexture(texture);
         String animationKey;
         if((animationKey = constantsJson.get("animations").asString())!=null) {
             animationController = new AnimationController(directory, animationKey);
         }
-
-
-
         // Get the sensor information
         int listeningRadius = constantsJson.get("listeningradius").asInt();
 
         sensorShape = new CircleShape();
         sensorShape.setRadius(listeningRadius);
-        String gummedKey = constantsJson.get("gummedTexture").asString();
-        gummedTexture = new TextureRegion(directory.getEntry(gummedKey, Texture.class));
+        String gumKey = constantsJson.get("gumTexture").asString();
+        gumTexture = new TextureRegion(directory.getEntry(gumKey, Texture.class));
 
         // initialize sensors
 
@@ -385,13 +384,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     }
 
-    public void updateTexture() {
-        if (gummed) {
-            setTexture(ungummedTexture);
-        } else {
-            setTexture(ungummedTexture);
-        }
-    }
+//    public void updateTexture() {
+//        if (gum) {
+//            setTexture(gumTexture);
+//        } else {
+//            setTexture(gumTexture);
+//        }
+//    }
 
     public CircleShape getSensorShape() {
         return sensorShape;
@@ -486,13 +485,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
                 drawn = animationController.getFrame();
                 x-=getWidth()/2*drawScale.x*effect;
             }
+            if (stuck || gummed){
+                drawn = gummedTexture;
+
+            }
             canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
                 getY() * drawScale.y, getAngle(), effect, yScale);
 
-            //if gummed, overlay with gummedTexture
+            //if gum, overlay with gumTexture
             if (gummed) {
-                canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, x,
-                        getY() * drawScale.y + GUM_OFFSET, getAngle(), effect, yScale);
+                canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, x,
+                        getY() * drawScale.y + (effect * yScale), getAngle(), 1, yScale);
             }
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);

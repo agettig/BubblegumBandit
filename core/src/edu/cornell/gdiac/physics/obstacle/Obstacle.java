@@ -93,7 +93,7 @@ public abstract class Obstacle {
 	}
 
 	// Gum methods
-	public void setGummed(boolean value) {gummed = value; stuck = value;}
+	public void setGummed(boolean value) {gummed = value; /*stuck = value;*/}
 
 	public boolean getGummed() {return gummed; }
 

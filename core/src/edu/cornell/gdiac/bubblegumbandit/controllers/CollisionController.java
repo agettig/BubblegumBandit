@@ -320,7 +320,7 @@ public class CollisionController implements ContactListener {
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
-                    gummable.updateTexture();
+//                    gummable.updateTexture();
                     gummable.endCollision(gum);
                     for (Obstacle ob : gummable.getCollisions()) {
                         bubblegumController.createGummableJoint(gummable, ob);
@@ -441,6 +441,7 @@ public class CollisionController implements ContactListener {
             gummable = (Gummable) ob1;
             if ((ob2.getName().equals("tile") || ob2.getName().equals("wall")) && gummable.getGummed()) {
                 bubblegumController.createGummableJoint(gummable, ob2);
+                gummable.setStuck(true);
                 SoundController.playSound("robotSplat", 1f);
             }
         }
@@ -448,6 +449,8 @@ public class CollisionController implements ContactListener {
             gummable = (Gummable) ob2;
             if ((ob1.getName().equals("tile") || ob1.getName().equals("wall")) && gummable.getGummed()) {
                 bubblegumController.createGummableJoint(gummable, ob1);
+                gummable.setStuck(true);
+                SoundController.playSound("robotSplat", 1f);
             }
         }
     }
