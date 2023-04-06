@@ -205,7 +205,7 @@ public class BubblegumController {
      */
     public void removeGummable(Gummable gummable) {
         gummable.setGummed(false);
-        gummable.updateTexture();
+//        gummable.updateTexture();
 
         for (Joint j : stuckToGummable.get(gummable)) {
             gummableJointsToRemove.addLast(j);
