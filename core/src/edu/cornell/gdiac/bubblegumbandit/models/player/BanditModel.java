@@ -542,6 +542,7 @@ public class BanditModel extends CapsuleObstacle{
 		super.update(dt);
 	}
 
+
 	/**
 	 * Draws the physics object.
 	 *
@@ -550,13 +551,15 @@ public class BanditModel extends CapsuleObstacle{
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-			canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,
+			canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,
+					getX()*drawScale.x-getWidth()/2*drawScale.x*effect, //adjust for animation origin
 					getY()*drawScale.y,getAngle(),effect,fo.getScale());//yScale);
 
 
 		}
 
 	}
+
 
 
 	/**
