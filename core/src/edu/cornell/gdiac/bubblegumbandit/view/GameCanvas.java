@@ -743,6 +743,7 @@ public class GameCanvas {
     /** Draws a shadow to the right of the drawn object in the color black */
     public void drawWithShadow(TextureRegion region, Color tint, float ox, float oy,
                                float x, float y, float angle, float sx, float sy) {
+//        draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);
         drawWithColoredShadow(region, tint, ox, oy, x, y, angle, sx, sy, Color.BLACK);
     }
 
@@ -1008,9 +1009,10 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
+        font.getData().setScale(camera.zoom);
         GlyphLayout layout = new GlyphLayout(font, text);
         float x = (getWidth() - layout.width) / 2.0f;
-        float y = (getHeight() + layout.height) / 2.0f;
+        float y = (getHeight() + layout.height)/ 2.0f;
         Vector3 coords = camera.unproject(new Vector3(x, y, 0));
         font.draw(spriteBatch, layout, coords.x, coords.y + offset);
     }
