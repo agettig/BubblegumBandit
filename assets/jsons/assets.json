@@ -58,6 +58,17 @@
                 }
             }
         },
+        "large_walk":  {
+            "file": "textures/large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
         "small_robot": "textures/small_enemy.png",
         "big_robot": "textures/big_enemy.png",
         "med_robot": "textures/medium_enemy.png",

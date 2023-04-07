@@ -18,5 +18,11 @@
       "strip": "small_robot_patrol.patrol",
       "fps": 6
     }
+  },
+  "large_robot" : {
+  "patrol" : {
+    "strip" : "large_walk.patrol",
+    "fps": 4
+  }
   }
 }
