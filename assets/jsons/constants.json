@@ -187,8 +187,8 @@
   "large_robot": {
     "type": "moving",
     "size": [
-      1,
-      1
+      2,
+      2.8
     ],
     "density": 1.0,
     "friction": 2.0,
@@ -197,7 +197,7 @@
     "damping": 10.0,
     "maxspeed": 5.0,
     "animations": "large_robot",
-    "texture": "smallrobot",
+    "texture": "large_robot",
     "gummedTexture": "gummed_robot",
     "debugcolor": "white",
     "debugopacity": 192,
