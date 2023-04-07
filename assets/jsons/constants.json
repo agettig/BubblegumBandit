@@ -76,7 +76,7 @@
     "texture": "floatinggum",
     "debugcolor": "yellow",
     "debugopacity": 200,
-    "bobAmount":  0.1,
+    "bobAmount": 0.1,
     "bobSpeed": 3
   },
   "orb": {
@@ -86,7 +86,7 @@
     "texture": "orb",
     "debugcolor": "yellow",
     "debugopacity": 200,
-    "bobAmount":  0.1,
+    "bobAmount": 0.1,
     "bobSpeed": 3
   },
   "cameratile": {
@@ -203,5 +203,14 @@
     "speed": 10.0,
     "density": 10.0,
     "texture": "bullet"
+  },
+  "box": {
+    "name": "bgo",
+    "density": 1.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "texture": "box"
   }
 }

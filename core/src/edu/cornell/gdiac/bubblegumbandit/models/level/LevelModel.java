@@ -104,7 +104,7 @@ public class LevelModel {
     /**
      * Reference to background elements in the game
      */
-    private BackObjModel[] backgroundObjects;
+    private Array<BackObjModel> backgroundObjects;
 
     /**
      * Whether or not the level is in debug more (showing off physics)
@@ -336,11 +336,11 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        enemyControllers = new Array<>();
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
         enemyControllers = new Array<>();
+        backgroundObjects = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -399,6 +399,16 @@ public class LevelModel {
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
             switch (objType) {
+                case "box":
+
+                    JsonValue bgoConstants = constants.get(objType);
+                    BackObjModel o = new BackObjModel();
+                    o.initialize(directory, x, y, bgoConstants);
+                    o.setDrawScale(scale);
+                    activate(o);
+                    o.setFilter(CATEGORY_BACK, MASK_BACK);
+                    backgroundObjects.add(o);
+
                 case "bandit":
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
@@ -755,7 +765,7 @@ public class LevelModel {
     }
 
     /** Return a reference to all the background objects */
-    public BackObjModel[] getBackgroundObjects(){
+    public Array<BackObjModel>  getBackgroundObjects(){
         return backgroundObjects;
     }
 }

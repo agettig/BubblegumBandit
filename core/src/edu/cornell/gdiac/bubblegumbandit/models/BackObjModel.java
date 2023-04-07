@@ -46,31 +46,33 @@ public class BackObjModel extends BoxObstacle {
      * this JSON value is limited to the dude subtree
      *
      * @param directory the asset manager
-     * @param json      the JSON subtree defining the dude
      */
-    public void initialize(AssetDirectory directory, JsonValue json, JsonValue info) {
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constants) {
 
         //physics information
         setBodyType(BodyDef.BodyType.DynamicBody);
-        setDensity(json.get("density").asFloat());
-        setFriction(json.get("friction").asFloat());
-        setRestitution(json.get("restitution").asFloat());
+        setName(constants.name());
+//        float[] size = constants.get("size").asFloatArray();
+//        setDimension(size[0],size[1]);
+        setPosition(x,y);
 
-        setDebug(json);
+        setDensity(constants.get("density").asFloat());
+        setFriction(constants.get("friction").asFloat());
+        setRestitution(constants.get("restitution").asFloat());
+
+        setDebug(constants);
 
         //unique information
-        String key = info.get("texture").asString();
+        String key = constants.get("texture").asString();
         setName(key);
-        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 
-        float[] p = info.get("pos").asFloatArray();
-        setPosition(p[0] ,p[1]);
+        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
-        setWidth(texture.getRegionWidth()/64f);
-        setHeight(texture.getRegionHeight()/64f);
+//        setWidth(texture.getRegionWidth()/64f);
+//        setHeight(texture.getRegionHeight()/64f);
 
-        faceRight = info.get("faceRight").asBoolean();
+//        faceRight = info.get("faceRight").asBoolean();
     }
 
     private void setDebug(JsonValue json){
