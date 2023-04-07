@@ -187,7 +187,7 @@
   "large_robot": {
     "type": "moving",
     "size": [
-      2,
+      1.5,
       2.8
     ],
     "density": 1.0,
