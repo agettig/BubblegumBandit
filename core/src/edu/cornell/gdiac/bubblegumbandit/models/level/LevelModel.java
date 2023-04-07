@@ -382,6 +382,7 @@ public class LevelModel {
                     break;
                 case "smallrobot":
                 case "mediumrobot":
+                case "large_robot":
                     JsonValue enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     if (enemyConstants.get("type").asString().equals("moving")) {

@@ -58,13 +58,24 @@
                 }
             }
         },
+        "large_walk":  {
+            "file": "textures/large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
         "small_robot": "textures/small_enemy.png",
-        "large_robot": "textures/large_enemy.png",
+        "large_robot": "textures/large_robot.png",
         "med_robot": "textures/medium_enemy.png",
         "goal": "textures/goaldoor.png",
         "bandit": "textures/bandit.png",
         "smallrobot": "textures/small_enemy.png",
-        "largerobot": "textures/large_enemy.png",
+        "largerobot": "textures/large_robot.png",
         "mediumrobot": "textures/medium_enemy.png",
         "exit": "textures/goaldoor.png",
         "gumProjectile": "textures/gum.png",
