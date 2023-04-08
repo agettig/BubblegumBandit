@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -57,6 +58,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     /** The bandit's ship, The Sunfish, that follows the players cursor */
     private SunfishModel sunfish;
+
+    /**
+     * The Box2D world
+     */
+    protected World world;
+
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 800;
@@ -133,8 +140,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         Gdx.input.setInputProcessor( this );
 
-        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)));
+        world = new World(new Vector2(0, 0), false);
 
+        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 100, 100);
+        sunfish.activatePhysics(world);
     }
 
     /**
