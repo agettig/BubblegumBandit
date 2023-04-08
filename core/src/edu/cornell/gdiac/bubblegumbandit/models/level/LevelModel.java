@@ -400,7 +400,6 @@ public class LevelModel {
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
             switch (objType) {
                 case "box":
-
                     JsonValue bgoConstants = constants.get(objType);
                     BackObjModel o = new BackObjModel();
                     o.initialize(directory, x, y, bgoConstants);
@@ -408,8 +407,10 @@ public class LevelModel {
                     activate(o);
                     o.setFilter(CATEGORY_BACK, MASK_BACK);
                     backgroundObjects.add(o);
+                    break;
 
                 case "bandit":
+
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);
