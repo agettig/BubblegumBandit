@@ -37,6 +37,7 @@ public class BackObjModel extends BoxObstacle {
     public BackObjModel(){
         super (0, 0, 1, 1);
         isFlipped = false;
+        faceRight = true;
     }
 
     /**
@@ -47,7 +48,7 @@ public class BackObjModel extends BoxObstacle {
      *
      * @param directory the asset manager
      */
-    public void initialize(AssetDirectory directory, float x, float y, JsonValue constants) {
+    public void initialize(AssetDirectory directory, float x, float y, boolean direction, JsonValue constants) {
 
         //physics information
         setBodyType(BodyDef.BodyType.DynamicBody);
@@ -69,10 +70,15 @@ public class BackObjModel extends BoxObstacle {
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
-//        setWidth(texture.getRegionWidth()/64f);
-//        setHeight(texture.getRegionHeight()/64f);
+        setWidth(texture.getRegionWidth()/64f);
+        setHeight(texture.getRegionHeight()/64f);
+
+        //the gid is a huge integer when flipped horizontally
+//        faceRight = constants.get("gid").asInt() < 1000;
 
 //        faceRight = info.get("faceRight").asBoolean();
+
+        faceRight = direction;
     }
 
     private void setDebug(JsonValue json){

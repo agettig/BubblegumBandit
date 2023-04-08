@@ -398,11 +398,19 @@ public class LevelModel {
             String objType = object.get("type").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
+
+
             switch (objType) {
                 case "box":
+                case "chair":
+
+                    //the gid is a huge negative integer when flipped horizontally.
+                    // add a specific attribute for this from Tiled?
+                    boolean facingRight = (object.getInt("gid") > 0);
+
                     JsonValue bgoConstants = constants.get(objType);
                     BackObjModel o = new BackObjModel();
-                    o.initialize(directory, x, y, bgoConstants);
+                    o.initialize(directory, x, y, facingRight, bgoConstants);
                     o.setDrawScale(scale);
                     activate(o);
                     o.setFilter(CATEGORY_BACK, MASK_BACK);
