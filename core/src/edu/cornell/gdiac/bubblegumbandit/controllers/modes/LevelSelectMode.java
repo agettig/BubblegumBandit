@@ -11,9 +11,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.models.SunfishModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.util.Controllers;
@@ -50,29 +52,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     private JsonValue constantsJson;
 
-    /** Background texture for start-up */
+    /** Background Space texture */
     private Texture background;
-    /** Play button to display when done */
-    private Texture playButton;
-    /** Texture atlas to support a progress bar */
-//    private final Texture statusBar;
 
-    // statusBar is a "texture atlas." Break it up into parts.
-    /** Left cap to the status background (grey region) */
-    private TextureRegion statusBkgLeft;
-    /** Middle portion of the status background (grey region) */
-    private TextureRegion statusBkgMiddle;
-    /** Right cap to the status background (grey region) */
-    private TextureRegion statusBkgRight;
-    /** Left cap to the status forground (colored region) */
-    private TextureRegion statusFrgLeft;
-    /** Middle portion of the status forground (colored region) */
-    private TextureRegion statusFrgMiddle;
-    /** Right cap to the status forground (colored region) */
-    private TextureRegion statusFrgRight;
+    /** The bandit's ship, The Sunfish, that follows the players cursor */
+    private SunfishModel sunfish;
 
-    /** Default budget for asset loader (do nothing but load 60 fps) */
-    private static int DEFAULT_BUDGET = 15;
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 800;
     /** Standard window height (for scaling) */
@@ -81,8 +66,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private static float BAR_WIDTH_RATIO  = 0.66f;
     /** Ration of the bar height to the screen */
     private static float BAR_HEIGHT_RATIO = 0.25f;
-    /** Height of the progress bar */
-    private static float BUTTON_SCALE  = 0.75f;
 
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
@@ -100,43 +83,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Scaling factor for when the student changes the resolution. */
     private float scale;
 
-    /** Current progress (0 to 1) of the asset manager */
-    private float progress;
     /** The current state of the play button */
-    private int   pressState;
-    /** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
-    private int   budget;
+    private int pressState;
 
     /** Whether this player mode is still active */
     private boolean active;
-
-    /**
-     * Returns the budget for the asset loader.
-     *
-     * The budget is the number of milliseconds to spend loading assets each animation
-     * frame.  This allows you to do something other than load assets.  An animation
-     * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
-     * do something else.  This is how game companies animate their loading screens.
-     *
-     * @return the budget in milliseconds
-     */
-    public int getBudget() {
-        return budget;
-    }
-
-    /**
-     * Sets the budget for the asset loader.
-     *
-     * The budget is the number of milliseconds to spend loading assets each animation
-     * frame.  This allows you to do something other than load assets.  An animation
-     * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
-     * do something else.  This is how game companies animate their loading screens.
-     *
-     * @param millis the budget in milliseconds
-     */
-    public void setBudget(int millis) {
-        budget = millis;
-    }
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -182,6 +133,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         Gdx.input.setInputProcessor( this );
 
+        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)));
+
     }
 
     /**
@@ -225,6 +178,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void draw() {
         canvas.clear();
         canvas.begin();
+//        canvas.draw(sunfish,100, 100);
+        sunfish.draw(canvas);
         canvas.end();
     }
 
