@@ -87,7 +87,7 @@
         "unstickprojectile": "textures/unstick.png",
         "box": "textures/box.png",
         "powercell": "textures/powercellb.png",
-        "chair": "textures/chairb.png",
+        "chair": "textures/chair.png",
         "frame": "textures/frameb.png"
     },
     "fonts": {
