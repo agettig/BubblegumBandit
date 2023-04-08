@@ -175,6 +175,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
+        sunfish.applyForce();
     }
 
     /**
@@ -386,6 +387,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean mouseMoved(int screenX, int screenY) {
+        sunfish.setMovement(screenX, screenY);
+        System.out.println("mouse");
         return true;
     }
 

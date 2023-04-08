@@ -43,7 +43,7 @@ public class BanditModel extends CapsuleObstacle {
 	private float maxspeed;
 
 	/** The current horizontal movement of the character */
-	private float   movement;
+	private float movement;
 	/** Which direction is the character facing */
 	private boolean faceRight;
 	/** Whether our feet are on the ground */
