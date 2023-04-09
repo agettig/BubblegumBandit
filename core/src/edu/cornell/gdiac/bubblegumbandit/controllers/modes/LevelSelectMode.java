@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.models.LevelIconModel;
 import edu.cornell.gdiac.bubblegumbandit.models.SunfishModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
@@ -60,8 +61,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** The bandit's ship, The Sunfish, that follows the players cursor */
     private SunfishModel sunfish;
 
-    /** texture of the ship of level1 */
-    private TextureRegion level1;
+    /** level icon for level 1 */
+    private LevelIconModel level1;
 
     /**
      * The Box2D world
@@ -94,11 +95,16 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Scaling factor for when the student changes the resolution. */
     private float scale;
 
-    /** The current state of the play button */
-    private int pressState;
 
     /** Whether this player mode is still active */
     private boolean active;
+
+
+    /** whether the player has chosen a level to play */
+    private boolean ready;
+
+    /** the level chosen by the player */
+    private int selectedLevel;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -106,7 +112,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return true if the player is ready to go
      */
     public boolean isReady() {
-        return pressState == 2;
+        return ready;
     }
 
     /**
@@ -146,10 +152,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         world = new World(new Vector2(0, 0), false);
 
-        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 100, 100);
+        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 500, 500);
         sunfish.activatePhysics(world);
 
-        level1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
+        TextureRegion ship1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
+        level1 = new LevelIconModel(ship1, 1, 100, 500);
 
 
     }
@@ -188,6 +195,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     private void update(float delta) {
         sunfish.update();
+        level1.update();
+    }
+
+    /** returns the level chosen by the player */
+    public int getSelectedLevel() {
+        return selectedLevel;
     }
 
     /**
@@ -200,10 +213,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void draw() {
         canvas.clear();
         canvas.begin();
-        canvas.draw(level1, 100, 100);
 
+        level1.draw(canvas, displayFont);
         sunfish.draw(canvas);
-
         canvas.end();
     }
 
@@ -310,6 +322,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
+        if (active){
+
+            Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
+            Vector2 sp2 = new Vector2(sp3.x, sp3.y);
+
+            if (level1.onIcon(sp2.x, sp2.y)){
+                level1.setPressState(2);
+            }
+        }
 
         return false;
     }
@@ -331,8 +352,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
             Vector2 sp2 = new Vector2(sp3.x, sp3.y);
 
-            if (sp2.x < 300 && sp2.y < 300) {
-                pressState = 2;
+//            if (sp2.x < 300 && sp2.y < 300) {
+//                pressState = 2;
+//            }
+            if (level1.onIcon(sp2.x, sp2.y)){
+                ready = true;
+                selectedLevel = level1.getLevel();
             }
         }
         return true;
@@ -376,10 +401,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyDown(int keycode) {
-
-        if (keycode == Input.Keys.SPACE){
-            pressState = 2;
-        }
         return true;
     }
 
@@ -417,6 +438,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             Vector2 sp2 = new Vector2(sp3.x, sp3.y);
 
             sunfish.setMovement(sp2);
+
+            if (level1.onIcon(sp2.x, sp2.y)){
+                level1.setPressState(1);
+            }
+
         }
         return true;
     }
