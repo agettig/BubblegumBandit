@@ -2,6 +2,9 @@
 	"textures": {
         "background": "textures/loading.png",
 		"play": "textures/play.png",
+        "startButton": "textures/start.png",
+        "settingsButton": "textures/settings.png",
+        "exitButton": "textures/quit.png",
         "progress": {
             "file":      "textures/progressbar.png",
             "atlas":     {

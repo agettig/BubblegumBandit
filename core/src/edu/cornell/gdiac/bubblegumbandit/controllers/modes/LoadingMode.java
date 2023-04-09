@@ -31,6 +31,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 
 import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
 
@@ -58,6 +59,19 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture background;
 	/** Play button to display when done */
 	private Texture playButton;
+
+	/** Button to start the game */
+	private Texture startButton;
+
+	/** Button to open settings */
+	private Texture settingsButton;
+
+	/** Button to quit */
+	private Texture exitButton;
+
+
+
+
 	/** Texture atlas to support a progress bar */
 	private final Texture statusBar;
 	
@@ -102,11 +116,40 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** The height of the canvas window (necessary since sprite origin != screen origin) */
 	private int heightY;
 	/** Scaling factor for when the student changes the resolution. */
+
+
+	/** The x-coordinate of the center of the start button.*/
+	private int startButtonPositionX;
+
+	/** The y-coordinate of the center of the start button.*/
+	private int startButtonPositionY;
+
+	/** The x-coordinate of the center of the settings button.*/
+	private int settingsButtonPositionX;
+
+	/** The y-coordinate of the center of the settings button.*/
+	private int settingsButtonPositionY;
+
+	/** The x-coordinate of the center of the exit button.*/
+	private int exitButtonPositionX;
+
+	/** The y-coordinate of the center of the exit button.*/
+	private int exitButtonPositionY;
+
 	private float scale;
 
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
-	/** The current state of the play button */
+	/** The current state of the play button
+	 *
+	 * 0 = nothing pressed
+	 * 1 = play down
+	 * 2 = settings down
+	 * 3 = exit down
+	 * 4 = play up, ready to go
+	 * 5 = settings up, should open settings
+	 * 6 = exit up, should quit.
+	 * */
 	private int   pressState;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
 	private int   budget;
@@ -148,8 +191,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == 2;
+		return pressState == 4;
 	}
+
+	/**
+	 * Returns true if the player clicked the quit button.
+	 *
+	 * @return true if the player wants to quit.
+	 */
+	public boolean shouldQuit() {
+		return pressState == 6;
+	}
+
 
 	/**
 	 * Returns the asset directory produced by this loading screen
@@ -200,6 +253,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		// Load the next two images immediately.
 		playButton = null;
+		startButton = null;
+		settingsButton = null;
+		exitButton = null;
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		statusBar = internal.getEntry( "progress", Texture.class );
@@ -248,12 +304,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if (playButton == null) {
+		if (startButton == null) {
 			assets.update(budget);
 			this.progress = assets.getProgress();
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
-				playButton = internal.getEntry("play",Texture.class);
+				startButton = internal.getEntry("startButton", Texture.class);
+				settingsButton = internal.getEntry("startButton", Texture.class);
+				exitButton = internal.getEntry("startButton", Texture.class);
 			}
 		}
 	}
@@ -268,12 +326,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
-		if (playButton == null) {
+		if (startButton == null || settingsButton == null || exitButton == null) {
 			drawProgress(canvas);
 		} else {
-			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, tint, playButton.getWidth()/2f, playButton.getHeight()/2f,
-					canvas.getCamera().viewportWidth / 2, canvas.getCamera().viewportHeight / 4, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			Color startTint = (pressState == 1 ? Color.GRAY: Color.WHITE);
+			Color settingsTint = (pressState == 2 ? Color.GRAY: Color.WHITE);
+			Color exitTint = (pressState == 3 ? Color.GRAY: Color.WHITE);
+
+			startButtonPositionX = (int) canvas.getCamera().viewportWidth / 6;
+			startButtonPositionY = (int) (canvas.getCamera().viewportHeight / 2);
+			canvas.draw(startButton, startTint, startButton.getWidth()/2f, startButton.getHeight()/2f,
+					startButtonPositionX, startButtonPositionY, 0, scale, scale);
+
+			settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 6;
+			settingsButtonPositionY = (int) ((canvas.getCamera().viewportHeight / 2) - startButton.getHeight());
+			canvas.draw(settingsButton, settingsTint, settingsButton.getWidth()/2f, settingsButton.getHeight()/2f,
+					settingsButtonPositionX, settingsButtonPositionY, 0, scale, scale);
+
+			exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 6;
+			exitButtonPositionY = (int) ((canvas.getCamera().viewportHeight / 2) -startButton.getHeight()*2);
+			canvas.draw(exitButton, exitTint, exitButton.getWidth()/2f, exitButton.getHeight()/2f,
+					exitButtonPositionX, exitButtonPositionY, 0, scale, scale);
 		}
 		canvas.end();
 	}
@@ -326,7 +399,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, 1);
+			}
+
+			if(shouldQuit()){
+				listener.exitScreen(this, GameController.EXIT_QUIT);
 			}
 		}
 	}
@@ -412,20 +489,52 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == 2) {
+
+		if (pressState == 2) {
 			return true;
 		}
 		
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-		
-		// TODO: Fix scaling
-		// Play button is a circle.
-		float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-		if (dist < radius*radius) {
+
+
+		float rectWidth = scale * startButton.getWidth();
+		float rectHeight = scale * startButton.getHeight();
+		float leftX = startButtonPositionX - rectWidth / 2.0f;
+		float rightX = startButtonPositionX + rectWidth / 2.0f;
+		float topY = startButtonPositionY - rectHeight / 2.0f;
+		float bottomY = startButtonPositionY + rectHeight / 2.0f;
+
+		//Click the start button
+		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
 			pressState = 1;
 		}
+
+
+		rectWidth = scale * settingsButton.getWidth();
+		rectHeight = scale * settingsButton.getHeight();
+		leftX = settingsButtonPositionX - rectWidth / 2.0f;
+		rightX = settingsButtonPositionX + rectWidth / 2.0f;
+		topY = settingsButtonPositionY - rectHeight / 2.0f;
+		bottomY = settingsButtonPositionY + rectHeight / 2.0f;
+
+		//Click the settings button
+		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+			pressState = 2;
+		}
+
+		rectWidth = scale * exitButton.getWidth();
+		rectHeight = scale * exitButton.getHeight();
+		leftX = exitButtonPositionX - rectWidth / 2.0f;
+		rightX = exitButtonPositionX + rectWidth / 2.0f;
+		topY = exitButtonPositionY - rectHeight / 2.0f;
+		bottomY = exitButtonPositionY + rectHeight / 2.0f;
+
+		//Click the exit button
+		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+			pressState = 3;
+		}
+
 		return false;
 	}
 	
@@ -441,10 +550,24 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */	
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) { 
+		//Start
 		if (pressState == 1) {
-			pressState = 2;
+			pressState = 4;
 			return false;
 		}
+
+		//Settings
+		if (pressState == 2) {
+			pressState = 5;
+			return false;
+		}
+
+		//Exit
+		if (pressState == 3) {
+			pressState = 6;
+			return false;
+		}
+
 		return true;
 	}
 	
