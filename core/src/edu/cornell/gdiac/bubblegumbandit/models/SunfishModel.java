@@ -29,17 +29,24 @@ public class SunfishModel extends WheelObstacle {
     /** last location of the cursor */
     private Vector2 lastPos;
 
+    /** The ship's speed */
+    private static final float SPEED = 5f;
 
-    /** current angle of rotation */
+
+    /** desired angle of rotation */
     private float angle;
+
+    /** the rate at which to update angle */
+    private static final float ANGLE_RATE = 0.1f;
 
     public SunfishModel (TextureRegion texture, float x, float y){
         super(x, y, RADIUS);
         this.texture = texture;
-        movement = new Vector2(2, 2);
+        movement = new Vector2(SPEED, SPEED);
         forceCache = new Vector2();
         lastPos = new Vector2();
     }
+
 
     /**
      * Sets movement of the ship.
@@ -65,7 +72,7 @@ public class SunfishModel extends WheelObstacle {
 
         angle = d.angleRad() - ANGLE_OFFSET;
 
-        movement = new Vector2(3, 3);
+        movement = new Vector2(SPEED, SPEED);
         movement.rotateRad(angle);
     }
 
