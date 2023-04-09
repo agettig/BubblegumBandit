@@ -60,6 +60,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** The bandit's ship, The Sunfish, that follows the players cursor */
     private SunfishModel sunfish;
 
+    /** texture of the ship of level1 */
+    private TextureRegion level1;
+
     /**
      * The Box2D world
      */
@@ -146,6 +149,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 100, 100);
         sunfish.activatePhysics(world);
 
+        level1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
+
 
     }
 
@@ -195,7 +200,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void draw() {
         canvas.clear();
         canvas.begin();
+        canvas.draw(level1, 100, 100);
+
         sunfish.draw(canvas);
+
         canvas.end();
     }
 
@@ -301,6 +309,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+
         return false;
     }
 
@@ -316,6 +326,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
+        if (active) {
+            Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
+            Vector2 sp2 = new Vector2(sp3.x, sp3.y);
+
+            if (sp2.x < 300 && sp2.y < 300) {
+                pressState = 2;
+            }
+        }
         return true;
     }
 

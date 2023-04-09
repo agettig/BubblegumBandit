@@ -84,7 +84,7 @@ public class SunfishModel extends WheelObstacle {
         float y_offset = (texture.getRegionHeight() / 2);
 
         canvas.draw(texture, Color.WHITE, origin.x + x_offset, origin.y + y_offset, getX(), getY(), getAngle(), 1, 1);
-        canvas.drawPhysicsLevel(shape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
+//        canvas.drawPhysicsLevel(shape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
     }
 
 }
