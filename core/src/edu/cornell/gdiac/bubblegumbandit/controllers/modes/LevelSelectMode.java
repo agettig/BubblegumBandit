@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -144,6 +145,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 100, 100);
         sunfish.activatePhysics(world);
+
+
     }
 
     /**
@@ -156,6 +159,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        canvas.getCamera().setFixedX(false);
+        canvas.getCamera().setFixedY(false);
+        canvas.getCamera().setZoom(1);
     }
 
     /**
@@ -163,6 +169,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public void dispose() {
         canvas = null;
+        sunfish = null;
     }
 
     /**
@@ -175,7 +182,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
-        sunfish.applyForce();
+        sunfish.update();
     }
 
     /**
@@ -188,7 +195,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void draw() {
         canvas.clear();
         canvas.begin();
-//        canvas.draw(sunfish,100, 100);
         sunfish.draw(canvas);
         canvas.end();
     }
@@ -343,10 +349,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return true;
     }
 
-    // UNSUPPORTED METHODS FROM InputProcessor
 
     /**
-     * Called when a key is pressed (UNSUPPORTED)
+     * Called when a key is pressed
      *
      * @param keycode the key pressed
      * @return whether to hand the event to other listeners.
@@ -360,7 +365,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     }
 
     /**
-     * Called when a key is typed (UNSUPPORTED)
+     * Called when a key is typed
      *
      * @param character the key typed
      * @return whether to hand the event to other listeners.
@@ -370,7 +375,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     }
 
     /**
-     * Called when a key is released (UNSUPPORTED)
+     * Called when a key is released
      *
      * @param keycode the key released
      * @return whether to hand the event to other listeners.
@@ -380,15 +385,20 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     }
 
     /**
-     * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)
+     * Called when the mouse was moved without any buttons being pressed.
      *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
      * @return whether to hand the event to other listeners.
      */
     public boolean mouseMoved(int screenX, int screenY) {
-        sunfish.setMovement(screenX, screenY);
-        System.out.println("mouse");
+
+        if (active) {
+            Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
+            Vector2 sp2 = new Vector2(sp3.x, sp3.y);
+
+            sunfish.setMovement(sp2);
+        }
         return true;
     }
 
