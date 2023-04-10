@@ -195,7 +195,7 @@ public enum EnemyState implements State<AIController> {
         @Override
         public void update(AIController aiController) {
             // if orb is collected and enemy is not stuck, change state to pursue
-            if (aiController.getBandit().isOrbCollected() && !aiController.getEnemyStateMachine().isInState(STUCK)) {
+            if (aiController.getBandit().isOrbCollected() && !aiController.getEnemyStateMachine().isInState(STUCK) && !aiController.getEnemyStateMachine().isInState(PURSUE)) {
                 aiController.getEnemyStateMachine().changeState(PURSUE);
             }
         }
