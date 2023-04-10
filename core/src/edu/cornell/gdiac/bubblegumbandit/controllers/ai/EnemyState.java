@@ -129,7 +129,7 @@ public enum EnemyState implements State<AIController> {
             int move = CONTROL_NO_ACTION;
 
             // get next move if enemy is on a board path
-            if (aiController.getEnemyStateMachine().canMove()) {
+            if (aiController.getEnemyStateMachine().canMove() && !aiController.enemyCloseToBandit()) {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
@@ -163,7 +163,7 @@ public enum EnemyState implements State<AIController> {
             }
 
             // if can move find next move
-            if (aiController.getEnemyStateMachine().canMove()) {
+            if (aiController.getEnemyStateMachine().canMove() && !aiController.enemyCloseToBandit()) {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
@@ -292,7 +292,7 @@ public enum EnemyState implements State<AIController> {
             int move = CONTROL_NO_ACTION;
 
             // get next move
-            if (aiController.getEnemyStateMachine().canMove()) {
+            if (aiController.getEnemyStateMachine().canMove() && !aiController.enemyCloseToBandit()) {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
