@@ -26,8 +26,7 @@
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
         "orb": "textures/orb.png",
-        "charge_laser": "textures/charging_laser.png",
-        "attack_laser": "textures/attacking_laser.png"
+        "laserBeam": "textures/laserBeam.png"
     },
     "fonts": {
         "display": {

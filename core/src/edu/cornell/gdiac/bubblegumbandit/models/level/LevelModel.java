@@ -505,7 +505,7 @@ public class LevelModel {
 
     public void drawChargeLasers(TextureRegion asset, GameCanvas canvas){
         final float chargeLaserScale = 1f;
-        final float firingLaserScale = 8f;
+        final float firingLaserScale = 7f;
         for(AIController ai : getEnemyControllers()){
             if(ai.getEnemyClass().equals(LaserEnemyModel.class)){
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();

@@ -182,6 +182,11 @@ public class GameController implements Screen {
      */
     private TextureRegion trajectoryProjectile;
 
+    /**
+     * The texture of the laserBeam
+     */
+    private TextureRegion laserBeam;
+
     private TextureRegion stuckGum;
 
     /** The gravity control mode for the player controller */
@@ -357,6 +362,7 @@ public class GameController implements Screen {
         bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
     }
