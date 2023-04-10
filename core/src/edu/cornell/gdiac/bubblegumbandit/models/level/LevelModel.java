@@ -560,7 +560,7 @@ public class LevelModel {
         aim.drawProjectileRay(canvas);
 
         canvas.end();
-        drawLights(canvas.getCamera(), canvas);
+        alarms.drawLights(canvas, scale);
 
         if (debug) {
             canvas.beginDebug();
@@ -574,16 +574,6 @@ public class LevelModel {
             }
             canvas.endDebug();
         }
-    }
-
-    /** Draws the lights.
-     *
-     *  @param cam the camera
-     * @param canvas the game canvas
-     */
-    public void drawLights(OrthographicCamera cam, GameCanvas canvas) {
-        alarms.drawLights(canvas.getCamera(), canvas, scale);
-
     }
 
 
@@ -702,6 +692,9 @@ public class LevelModel {
         /** Cache for the end position of the raycast */
         private Vector2 endCache;
 
+        /** The distance of the gum offset. */
+        private float offsetDist;
+
         /** The intersected point of the trajectory raycast. */
         private final Vector2 intersect = new Vector2();
 
@@ -756,6 +749,7 @@ public class LevelModel {
         public void initialize(AssetDirectory directory, JsonValue constants) {
             trajectoryTexture = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
             gumJV = constants.get("gumProjectile");
+            offsetDist = (float) Math.sqrt(Math.pow(gumJV.getFloat("offsetX"), 2) + Math.pow(gumJV.getFloat("offsetY"), 2));
         }
 
         /**
@@ -824,16 +818,10 @@ public class LevelModel {
             }
 
             // Unsticking raycast
-            float offsetY = gumJV.getFloat("offsetY", 0);
-            offsetY *= bandit.getYScale();
-            // Move the origin back inside the bandit.
-            originCache.set(bandit.getX(), bandit.getY() + offsetY);
-            directionCache.set((target.x - originCache.x), (target.y - originCache.y));
             directionCache.nor();
-            directionCache.scl(bounds.width * 2); // Make sure ray will cover the whole screen
+            // Scoot the origin back inside the bandit (in the direction of the aim).
+            originCache.sub(directionCache.x * offsetDist, directionCache.y * offsetDist);
 
-            // Recompute end based on starting at bandit and going to target
-            endCache.set(originCache.x + directionCache.x, originCache.y + directionCache.y); // Find end point of the ray cast
             world.rayCast(unstickRay, originCache, endCache);
 
             highlighted = null;
@@ -850,9 +838,6 @@ public class LevelModel {
          * @param canvas      The GameCanvas to draw the trajectory on.
          */
         public void drawProjectileRay(GameCanvas canvas) {
-//        if () {
-//            draw(region, Color.WHITE, ox, oy, x+shadowOffset, y, angle, sx, sy);
-//        }
             for (int i = 0; i < range; i++) {
                 canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2*i] * scale.x,
                         dotPos[2*i+1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
