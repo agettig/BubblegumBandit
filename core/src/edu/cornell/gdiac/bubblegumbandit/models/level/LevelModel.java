@@ -15,23 +15,19 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
-import box2dLight.PointLight;
+import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
@@ -697,6 +693,53 @@ public class LevelModel {
         /** The highlighted obstacle, if it exists */
         protected Unstickable highlighted;
 
+        /** Cache for the start position of the raycast */
+        private Vector2 originCache;
+
+        /** Cache for the direction vector of the raycast */
+        private Vector2 directionCache;
+
+        /** Cache for the end position of the raycast */
+        private Vector2 endCache;
+
+        /** The intersected point of the trajectory raycast. */
+        private final Vector2 intersect = new Vector2();
+
+        /** The raycast callback used for the trajectory raycast */
+        private final RayCastCallback trajectoryRay = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point,
+                                          Vector2 normal, float fraction) {
+                Obstacle ob = (Obstacle) fixture.getBody().getUserData();
+                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile") && !ob.equals(bandit)) {
+                    intersect.set(point);
+                    return fraction;
+                }
+                return -1;
+            }
+        };
+
+        /** The last intersected obstacle in the unsticking raycast. */
+        private final Obstacle[] lastCollision = new Obstacle[1];
+
+        /**
+         * The raycast callback used for the unsticking raycast.
+         * This has a different raycast so the origin can be within the player.
+         */
+        private final RayCastCallback unstickRay = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point,
+                                          Vector2 normal, float fraction) {
+                Obstacle ob = (Obstacle) fixture.getBody().getUserData();
+                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile") && !ob.equals(bandit)) {
+                    lastCollision[0] = ob;
+                    return fraction;
+                }
+                return -1;
+            }
+        };
+
+
         /** Get the highlighted unstickable. */
         public Unstickable getSelected() {
             return highlighted;
@@ -704,7 +747,9 @@ public class LevelModel {
 
         public AimModel() {
             dotPos = new float[MAX_DOTS * 2];
-
+            directionCache = new Vector2();
+            endCache = new Vector2();
+            originCache = new Vector2();
         }
 
         /** Initialize the Aim Model. */
@@ -732,20 +777,20 @@ public class LevelModel {
             float offsetY = gumJV.getFloat("offsetY", 0);
             offsetY *= bandit.getYScale();
 
-            Vector2 origin = new Vector2(bandit.getX(), bandit.getY() + offsetY);
-            Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
-            dir.nor();
-            dir.scl(offsetX);
+            originCache.set(bandit.getX(), bandit.getY() + offsetY);
+            directionCache.set((target.x - originCache.x), (target.y - originCache.y));
+            directionCache.nor();
+            directionCache.scl(offsetX);
 
             // Adjust origin of shot based on target pos
             // Rotate around top half of player for gravity pulling down, bottom half for gravity pulling up
-            if (dir.y * world.getGravity().y < 0) {
-                origin.x += dir.x;
+            if (directionCache.y * world.getGravity().y < 0) {
+                originCache.x += directionCache.x;
             } else {
-                origin.x += (target.x > bandit.getX() ? offsetX : -offsetX);
+                originCache.x += (target.x > bandit.getX() ? offsetX : -offsetX);
             }
-            origin.y += dir.y;
-            return origin;
+            originCache.y += directionCache.y;
+            return originCache;
         }
 
         public Vector2 getProjTarget(GameCanvas canvas) {
@@ -760,48 +805,42 @@ public class LevelModel {
         /** Update the trajectory */
         public void update(GameCanvas canvas, float dt) {
             Vector2 target = PlayerController.getInstance().getCrossHair();
-            Vector2 origin = getProjOrigin(gumJV, canvas);
-            Vector2 dir = new Vector2((target.x - origin.x), (target.y - origin.y));
-            dir.nor();
-            dir.scl(bounds.width * 2); // Make sure ray will cover the whole screen
-            Vector2 end = new Vector2(origin.x + dir.x, origin.y + dir.y); // Find end point of the ray cast
+            originCache.set(getProjOrigin(gumJV, canvas)); // Redundant, but just to keep the logic sorted
+            directionCache.set((target.x - originCache.x), (target.y - originCache.y));
+            directionCache.nor();
+            directionCache.scl(bounds.width * 2); // Make sure ray will cover the whole screen
+            endCache.set(originCache.x + directionCache.x, originCache.y + directionCache.y); // Find end point of the ray cast
 
-            final Vector2 intersect = new Vector2();
-            final Obstacle[] lastCollision = new Obstacle[1];
+            world.rayCast(trajectoryRay, originCache, endCache);
 
-            RayCastCallback ray = new RayCastCallback() {
-                @Override
-                public float reportRayFixture(Fixture fixture, Vector2 point,
-                                              Vector2 normal, float fraction) {
-                    Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                        if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile") && !ob.equals(bandit)) {
-                            intersect.set(point);
-                            System.out.println(ob.getName());
-                            if (!ob.getBodyType().equals(BodyDef.BodyType.StaticBody)) {
-                                lastCollision[0] = ob;
-                            }
-                            return fraction;
-                        }
-                    return -1;
-                }
-            };
-            world.rayCast(ray, origin, end);
+            directionCache.set(intersect.x - originCache.x, intersect.y - originCache.y);
+            int numSegments = (int) (directionCache.len() / trajectoryGap); // Truncate to find number before colliding
+            directionCache.nor();
+            range = numSegments + 1;
+            if (range > MAX_DOTS) range = MAX_DOTS;
+            for (int i = 0; i < range; i++) {
+                dotPos[2*i] = originCache.x + (directionCache.x * i * trajectoryGap);
+                dotPos[2*i+1] = originCache.y + (directionCache.y * i * trajectoryGap);
+            }
+
+            // Unsticking raycast
+            float offsetY = gumJV.getFloat("offsetY", 0);
+            offsetY *= bandit.getYScale();
+            // Move the origin back inside the bandit.
+            originCache.set(bandit.getX(), bandit.getY() + offsetY);
+            directionCache.set((target.x - originCache.x), (target.y - originCache.y));
+            directionCache.nor();
+            directionCache.scl(bounds.width * 2); // Make sure ray will cover the whole screen
+
+            // Recompute end based on starting at bandit and going to target
+            endCache.set(originCache.x + directionCache.x, originCache.y + directionCache.y); // Find end point of the ray cast
+            world.rayCast(unstickRay, originCache, endCache);
 
             highlighted = null;
             if (lastCollision[0] instanceof Unstickable) {
                 if (!(lastCollision[0] instanceof Gummable) || lastCollision[0].getGummed()) {
                     highlighted = (Unstickable) lastCollision[0]; // Only highlight stuck gum or gummables
                 }
-            }
-
-            dir = new Vector2(intersect.x - origin.x, intersect.y - origin.y);
-            int numSegments = (int) (dir.len() / trajectoryGap); // Truncate to find number before colliding
-            dir.nor();
-            range = numSegments + 1;
-            if (range > MAX_DOTS) range = MAX_DOTS;
-            for (int i = 0; i < range; i++) {
-                dotPos[2*i] = origin.x + (dir.x * i * trajectoryGap);
-                dotPos[2*i+1] = origin.y + (dir.y * i * trajectoryGap);
             }
         }
 

@@ -566,15 +566,15 @@ public class BanditModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-			if (stuck) {
-				canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,
-						getX()*drawScale.x,
-						getY()*drawScale.y,getAngle(),effect,yScale);
-			} else {
+//			if (stuck) {
+//				canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,
+//						getX()*drawScale.x,
+//						getY()*drawScale.y,getAngle(),effect,yScale);
+//			} else {
 				canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,
 						getX()*drawScale.x-getWidth()/2*drawScale.x*effect, //adjust for animation origin
 						getY()*drawScale.y,getAngle(),effect,yScale);
-			}
+//			}
 
 		}
 
