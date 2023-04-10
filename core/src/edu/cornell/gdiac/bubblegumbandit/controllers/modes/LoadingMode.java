@@ -57,8 +57,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	
 	/** Background texture for start-up */
 	private Texture background;
-	/** Play button to display when done */
-	private Texture playButton;
 
 	/** Button to start the game */
 	private Texture startButton;
@@ -68,9 +66,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	/** Button to quit */
 	private Texture exitButton;
-
-
-
 
 	/** Texture atlas to support a progress bar */
 	private final Texture statusBar;
@@ -115,8 +110,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private int centerX;
 	/** The height of the canvas window (necessary since sprite origin != screen origin) */
 	private int heightY;
-	/** Scaling factor for when the student changes the resolution. */
-
 
 	/** The x-coordinate of the center of the start button.*/
 	private int startButtonPositionX;
@@ -251,8 +244,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		internal.loadAssets();
 		internal.finishLoading();
 
-		// Load the next two images immediately.
-		playButton = null;
+		//We need these NOW!
 		startButton = null;
 		settingsButton = null;
 		exitButton = null;
@@ -397,11 +389,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			update(delta);
 			draw();
 
-			// We are are ready, notify our listener
+			// If the player hits the start/play button
 			if (isReady() && listener != null) {
 				listener.exitScreen(this, 1);
 			}
 
+			// If the player hits the quit button
 			if(shouldQuit()){
 				listener.exitScreen(this, GameController.EXIT_QUIT);
 			}
@@ -497,40 +490,35 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
 
-
+		//Detect clicks on the start button
 		float rectWidth = scale * startButton.getWidth();
 		float rectHeight = scale * startButton.getHeight();
 		float leftX = startButtonPositionX - rectWidth / 2.0f;
 		float rightX = startButtonPositionX + rectWidth / 2.0f;
 		float topY = startButtonPositionY - rectHeight / 2.0f;
 		float bottomY = startButtonPositionY + rectHeight / 2.0f;
-
-		//Click the start button
 		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
 			pressState = 1;
 		}
 
-
+		//Detect clicks on the settings button
 		rectWidth = scale * settingsButton.getWidth();
 		rectHeight = scale * settingsButton.getHeight();
 		leftX = settingsButtonPositionX - rectWidth / 2.0f;
 		rightX = settingsButtonPositionX + rectWidth / 2.0f;
 		topY = settingsButtonPositionY - rectHeight / 2.0f;
 		bottomY = settingsButtonPositionY + rectHeight / 2.0f;
-
-		//Click the settings button
 		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
 			pressState = 2;
 		}
 
+		//Detect clicks on the exit button
 		rectWidth = scale * exitButton.getWidth();
 		rectHeight = scale * exitButton.getHeight();
 		leftX = exitButtonPositionX - rectWidth / 2.0f;
 		rightX = exitButtonPositionX + rectWidth / 2.0f;
 		topY = exitButtonPositionY - rectHeight / 2.0f;
 		bottomY = exitButtonPositionY + rectHeight / 2.0f;
-
-		//Click the exit button
 		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
 			pressState = 3;
 		}
