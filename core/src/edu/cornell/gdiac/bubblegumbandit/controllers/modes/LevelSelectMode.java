@@ -209,6 +209,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @param dt Number of seconds since last animation frame
      */
     private void update(float dt) {
+        world.step(dt, 8, 3);
+
         sunfish.update(dt);
         for (LevelIconModel level : levels){
             level.update();
