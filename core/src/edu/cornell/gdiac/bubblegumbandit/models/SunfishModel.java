@@ -39,6 +39,8 @@ public class SunfishModel extends WheelObstacle {
     /** the rate at which to update angle */
     private static final float ANGLE_RATE = 0.1f;
 
+
+
     public SunfishModel (TextureRegion texture, float x, float y){
         super(x, y, RADIUS);
         this.texture = texture;
@@ -76,22 +78,27 @@ public class SunfishModel extends WheelObstacle {
         movement.rotateRad(angle);
     }
 
-    public void update(){
+    public void update(float dt){
 
         // if not at the cursor yet keep moving
         if (getPosition().dst(lastPos) > 50){
             setMovement(lastPos);
             body.setTransform(body.getPosition().add(movement), angle);
+//            body.applyForce(movement.scl(100), getPosition(), true);
         }
 
+        super.update(dt);
     }
+
+
+
     public void draw(GameCanvas canvas){
 
         float x_offset = (texture.getRegionWidth() / 2);
         float y_offset = (texture.getRegionHeight() / 2);
 
         canvas.draw(texture, Color.WHITE, origin.x + x_offset, origin.y + y_offset, getX(), getY(), getAngle(), 1, 1);
-//        canvas.drawPhysicsLevel(shape, Color.RED, getX(), getY(), drawScale.x, drawScale.y);
+        canvas.drawPhysicsLevel(shape, Color.WHITE, getX(), getY(), drawScale.x, drawScale.y);
     }
 
 }

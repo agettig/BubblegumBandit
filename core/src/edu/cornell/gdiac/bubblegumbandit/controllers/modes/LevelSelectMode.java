@@ -14,11 +14,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.LevelIconModel;
 import edu.cornell.gdiac.bubblegumbandit.models.SunfishModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.util.Controllers;
@@ -63,6 +66,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     /** level icon for level 1 */
     private LevelIconModel level1;
+
+    /** array of all level icons */
+    private Array<LevelIconModel> levels;
 
     /**
      * The Box2D world
@@ -155,10 +161,18 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 500, 500);
         sunfish.activatePhysics(world);
 
+        createIcons(directory);
+
+
+    }
+
+    private void createIcons(AssetDirectory directory){
+
         TextureRegion ship1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
         level1 = new LevelIconModel(ship1, 1, 100, 500);
 
-
+        levels = new Array<>();
+        levels.add(level1);
     }
 
     /**
@@ -182,6 +196,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public void dispose() {
         canvas = null;
         sunfish = null;
+        world = null;
     }
 
     /**
@@ -191,11 +206,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
      *
-     * @param delta Number of seconds since last animation frame
+     * @param dt Number of seconds since last animation frame
      */
-    private void update(float delta) {
-        sunfish.update();
-        level1.update();
+    private void update(float dt) {
+        sunfish.update(dt);
+        for (LevelIconModel level : levels){
+            level.update();
+        }
     }
 
     /** returns the level chosen by the player */
@@ -214,7 +231,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         canvas.clear();
         canvas.begin();
 
-        level1.draw(canvas, displayFont);
+        for (LevelIconModel level : levels){
+            level.draw(canvas, displayFont);
+        }
+
         sunfish.draw(canvas);
         canvas.end();
     }
@@ -324,12 +344,17 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         if (active){
 
-            Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
-            Vector2 sp2 = new Vector2(sp3.x, sp3.y);
+            Vector2 screenCords = new Vector2(screenX, screenY);
+            Vector2 target = canvas.unproject(screenCords);
 
-            if (level1.onIcon(sp2.x, sp2.y)){
-                level1.setPressState(2);
+
+
+            for (LevelIconModel level : levels){
+                if (level.onIcon(target.x, target.y)){
+                    level.setPressState(2);
+                }
             }
+
         }
 
         return false;
@@ -349,16 +374,41 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
         if (active) {
-            Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
-            Vector2 sp2 = new Vector2(sp3.x, sp3.y);
+            Vector2 screenCords = new Vector2(screenX, screenY);
+            Vector2 target = canvas.unproject(screenCords);
 
-//            if (sp2.x < 300 && sp2.y < 300) {
-//                pressState = 2;
-//            }
-            if (level1.onIcon(sp2.x, sp2.y)){
-                ready = true;
-                selectedLevel = level1.getLevel();
+            for (LevelIconModel level : levels){
+
+                if (level.onIcon(target.x, target.y)){
+                    ready = true;
+                    selectedLevel = level.getLevel();
+                }
+                else{
+                    level.setPressState(0);
+                }
+
             }
+
+
+        }
+        return true;
+    }
+
+
+    /**
+     * Called when the mouse was moved without any buttons being pressed.
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean mouseMoved(int screenX, int screenY) {
+
+        if (active) {
+            Vector2 screenCords = new Vector2(screenX, screenY);
+            Vector2 target = canvas.unproject(screenCords);
+
+            sunfish.setMovement(target);
         }
         return true;
     }
@@ -424,28 +474,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return true;
     }
 
-    /**
-     * Called when the mouse was moved without any buttons being pressed.
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean mouseMoved(int screenX, int screenY) {
 
-        if (active) {
-            Vector3 sp3 = canvas.getCamera().unproject(new Vector3(screenX, screenY, 0));
-            Vector2 sp2 = new Vector2(sp3.x, sp3.y);
-
-            sunfish.setMovement(sp2);
-
-            if (level1.onIcon(sp2.x, sp2.y)){
-                level1.setPressState(1);
-            }
-
-        }
-        return true;
-    }
 
     /**
      * Called when the mouse wheel was scrolled. (UNSUPPORTED)
