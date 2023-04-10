@@ -47,6 +47,8 @@ public class SunfishModel extends WheelObstacle {
         movement = new Vector2(SPEED, SPEED);
         forceCache = new Vector2();
         lastPos = new Vector2();
+
+        setMass(10);
     }
 
 
@@ -76,15 +78,21 @@ public class SunfishModel extends WheelObstacle {
 
         movement = new Vector2(SPEED, SPEED);
         movement.rotateRad(angle);
+
+//        System.out.println(movement);
     }
 
     public void update(float dt){
+//        System.out.println(getVX());
+
 
         // if not at the cursor yet keep moving
         if (getPosition().dst(lastPos) > 50){
             setMovement(lastPos);
-            body.setTransform(body.getPosition().add(movement), angle);
-//            body.applyForce(movement.scl(100), getPosition(), true);
+//            body.setTransform(body.getPosition().add(movement), angle);
+            body.applyForce(movement.scl(10), getPosition(), true);
+            body.setTransform(body.getPosition(), angle);
+
         }
 
         super.update(dt);
