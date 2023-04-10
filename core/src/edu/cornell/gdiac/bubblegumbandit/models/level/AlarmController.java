@@ -70,13 +70,14 @@ public class AlarmController {
   /**
    * Draws the box2dlight component of each alarm. Not to be called with a canvas's begin/end block,
    * but strictly after.
-   * @param camera The current game camera
+   * @param canvas The current game canvas
    * @param scale The physics to world scale (should be 64x64 in BGB)
    */
-  public void drawLights(GameCamera camera, GameCanvas canvas, Vector2 scale) {
+  public void drawLights(GameCanvas canvas, Vector2 scale) {
 
     FitViewport view = canvas.getUIViewport();
-    rays.useCustomViewport(view.getScreenX(), view.getScreenY(),
+    GameCamera camera = canvas.getCamera();
+    rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
         view.getScreenWidth()*2, view.getScreenHeight()*2);
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
         camera.position.y / scale.y, camera.viewportWidth * camera.zoom / scale.x,
@@ -95,7 +96,7 @@ public class AlarmController {
   public void drawAlarms(GameCanvas canvas, Vector2 scale) {
     for(PointLight light : lights) {
       TextureRegion draw = alarming ? onTexture : offTexture;
-      canvas.drawWithShadow(draw, Color.WHITE, draw.getRegionWidth()/2, draw.getRegionHeight()/2, (light.getX())*scale.x, (light.getY())*scale.y, 0, 1, 1);
+      canvas.drawWithShadow(draw, Color.WHITE, draw.getRegionWidth()/2f, draw.getRegionHeight()/2f, (light.getX())*scale.x, (light.getY())*scale.y, 0, 1, 1);
     }
   }
 
@@ -140,8 +141,5 @@ public class AlarmController {
       }
     }
     alarming = set;
-
   }
-
-
-  }
+}
