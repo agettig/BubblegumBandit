@@ -16,14 +16,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
-import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
-import java.lang.reflect.*;
-
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 
 import java.lang.reflect.Field;
 
@@ -98,6 +95,9 @@ public class BanditModel extends CapsuleObstacle {
 
 	/** Whether the player has collected the orb. */
 	private boolean orbCollected;
+	/** Returns the number of stars that have been collected*/
+	private int numStars;
+
 
 	/**
 	 * Returns the camera target for the player.
@@ -138,6 +138,10 @@ public class BanditModel extends CapsuleObstacle {
 		health = Math.min(MAX_HEALTH,health+heal);
 	}
 
+	/**Collects a star*/
+	public void collectStar() {numStars += 1; }
+	/**Returns whether or not a star has been collected*/
+	public int getNumStars() {return numStars; }
 	/** Collects the orb. */
 	public void collectOrb() { orbCollected = true; }
 
@@ -351,6 +355,7 @@ public class BanditModel extends CapsuleObstacle {
 		health = MAX_HEALTH;
 		ticks = 0;
 		cameraTarget = new Vector2();
+		numStars = 0;
 		orbCollected = false;
 		hasFlipped = false;
 	}

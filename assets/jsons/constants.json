@@ -81,6 +81,16 @@
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
+  "star": {
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": "star",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "bobAmount":  0.1,
+    "bobSpeed": 3
+  },
   "cameratile": {
     "debugcolor": "magenta",
     "debugopacity": 200

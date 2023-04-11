@@ -106,7 +106,8 @@
         "rotatedOutline": "textures/rotated_gumWhite.png",
         "smallrobotoutline": "textures/small_enemyWhite.png",
         "small_gum": "textures/small_gum.png",
-        "large_gum": "textures/large_gum.png"
+        "large_gum": "textures/large_gum.png",
+        "star": "textures/star.png"
     },
     "fonts": {
         "display": {
@@ -130,7 +131,7 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/NewLevel.json",
+		"level1" : "jsons/NewLevelStars.json",
         "level2":"jsons/2BoardLayerTest.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
