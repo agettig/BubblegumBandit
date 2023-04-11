@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
@@ -52,6 +54,7 @@ public class HUDController {
   private Image bubbleIcon;
   private Label gumCount;
   private Label orbCountdown;
+  private Label fpsLabel;
 
 
   public HUDController(AssetDirectory directory) {
@@ -59,12 +62,10 @@ public class HUDController {
     font = directory.getEntry("display", BitmapFont.class);
     stage = new Stage();
 
-
     table = new Table();
     table.align(Align.topLeft);
     stage.addActor(table);
     table.setFillParent(true);
-
 
     healthBar = new Image(directory.getEntry( "health_bar", Texture.class ));
     healthFillText = directory.getEntry( "health_fill", Texture.class );
@@ -91,18 +92,29 @@ public class HUDController {
 
     table.add(gumCount).padLeft(10);
 
-    table.padLeft(30).padTop(60);
-
     orbCountdown = new Label("00", new Label.LabelStyle(font, Color.WHITE));
     orbCountdown.setFontScale(1f);
     orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
     stage.addActor(orbCountdown);
 
+    fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
+    fpsLabel.setFontScale(0.5f);
+    table.add(fpsLabel).padLeft(10);
+
+    table.padLeft(30).padTop(60);
 
   }
 
-  public void draw(LevelModel level, BubblegumController bubblegumController, int timer) {
+  public boolean hasViewport() {
+    return stage.getViewport() != null;
+  }
 
+  public void setViewport(Viewport view) {
+    stage.setViewport(view);
+    view.apply(true);
+  }
+
+  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -117,7 +129,7 @@ public class HUDController {
       lastFrac = healthFraction;
     }
 
-    healthFill.setWidth(healthFillRegion.getRegionWidth());
+    healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
     gumCount.setText("x" + bubblegumController.getAmmo() );
 
@@ -127,6 +139,12 @@ public class HUDController {
       orbCountdown.setText("0" + timer);
     }else {
       orbCountdown.setText("");
+    }
+
+    if (showFPS) {
+      fpsLabel.setText("FPS: " + fps);
+    } else {
+      fpsLabel.setText("");
     }
 
     stage.draw();

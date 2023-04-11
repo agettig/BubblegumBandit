@@ -72,6 +72,9 @@ public class BanditModel extends CapsuleObstacle {
 	/** Whether we are actively shooting */
 	private boolean isShooting;
 
+	/** Whether the player has flipped in the air */
+	private boolean hasFlipped;
+
 	/** How long until we can shoot again */
 	private int shootCooldown;
 
@@ -111,6 +114,11 @@ public class BanditModel extends CapsuleObstacle {
 
 	/** The current amount of health the player has */
 	private float health;
+
+	/** Whether the player has flipped in the air. */
+	public boolean hasFlipped() {
+		return hasFlipped;
+	}
 
 	/** Returns the player's current health for the HUD */
 	public float getHealth() {return health;}
@@ -209,6 +217,9 @@ public class BanditModel extends CapsuleObstacle {
 	 */
 	public void setGrounded(boolean value) {
 		isGrounded = value;
+		if (isGrounded) {
+			hasFlipped = false;
+		}
 	}
 
 	/**
@@ -341,6 +352,7 @@ public class BanditModel extends CapsuleObstacle {
 		ticks = 0;
 		cameraTarget = new Vector2();
 		orbCollected = false;
+		hasFlipped = false;
 	}
 
 	/**
@@ -519,10 +531,20 @@ public class BanditModel extends CapsuleObstacle {
 			shootCooldown = Math.max(0, shootCooldown - 1);
 		}
 
-		if (yScale < 1f && !isFlipped) {
-			yScale += 0.1f;
-		} else if (yScale > -1f && isFlipped) {
-			yScale -= 0.1f;
+		if (yScale > 1) {
+			yScale = 1;
+		} else if (yScale < -1) {
+			yScale = -1;
+		}
+
+		if (!isFlipped && yScale < 1) {
+			if (yScale != -1 || !stuck) {
+				yScale += 0.1f;
+			}
+		} else if (isFlipped && yScale > -1) {
+			if (yScale != 1 || !stuck) {
+				yScale -= 0.1f;
+			}
 		}
 
 		// Change camera target
@@ -544,13 +566,28 @@ public class BanditModel extends CapsuleObstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			float effect = faceRight ? 1.0f : -1.0f;
-			canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,
-					getX()*drawScale.x-getWidth()/2*drawScale.x*effect, //adjust for animation origin
-			getY()*drawScale.y,getAngle(),effect,yScale);
-
+//			if (stuck) {
+//				canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,
+//						getX()*drawScale.x,
+//						getY()*drawScale.y,getAngle(),effect,yScale);
+//			} else {
+				canvas.drawWithShadow(animationController.getFrame(),Color.WHITE,origin.x,origin.y,
+						getX()*drawScale.x-getWidth()/2*drawScale.x*effect, //adjust for animation origin
+						getY()*drawScale.y,getAngle(),effect,yScale);
+//			}
 
 		}
 
+	}
+
+	/**
+	 * Flips the player's angle and direction when the world gravity is flipped
+	 */
+	public void flippedGravity() {
+		isFlipped = !isFlipped;
+		if (!isGrounded) {
+			hasFlipped = true;
+		}
 	}
 
 
