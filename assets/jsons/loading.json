@@ -1,6 +1,6 @@
 {
 	"textures": {
-        "background": "textures/loading.png",
+        "background": "textures/main_menu_background.png",
 		"play": "textures/play.png",
         "startButton": "textures/start.png",
         "settingsButton": "textures/settings.png",
