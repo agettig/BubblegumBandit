@@ -37,10 +37,10 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_UNSTICK = 0x0100;
 
 
-    public static final short MASK_PLAYER = ~CATEGORY_GUM;
-    public static final short MASK_ENEMY = ~CATEGORY_ENEMY;
+    public static final short MASK_PLAYER = -1;
+    public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
     public static final short MASK_TERRAIN = -1; // Collides with everything
-    public static final short MASK_GUM = ~(CATEGORY_PLAYER | CATEGORY_GUM);
+    public static final short MASK_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
     public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
@@ -136,8 +136,6 @@ public class CollisionController implements ContactListener {
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
-            resolveUnstickCollision(obstacleA, obstacleB);
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -165,8 +163,8 @@ public class CollisionController implements ContactListener {
         Object bd2 = body2.getUserData();
 
         BanditModel avatar = levelModel.getBandit();
-        if ((avatar.getSensorName2().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName2().equals(fd1) && avatar != bd2)) {
+        if (((avatar.getSensorName2().equals(fd2) || avatar.getSensorName().equals(fd2)) && avatar != bd1) ||
+                ((avatar.getSensorName2().equals(fd1) || avatar.getSensorName().equals(fd1)) && avatar != bd2)) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
             if (sensorFixtures.size == 0) {
                 avatar.setGrounded(false);
@@ -283,11 +281,13 @@ public class CollisionController implements ContactListener {
         if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
         if (bodyA.getName().equals("unstickProjectile") || bodyB.getName().equals("unstickProjectile")) return;
         if (bodyA.isRemoved() || bodyB.isRemoved()) return;
+        if (bodyA.getName().equals("gumProjectile") && bodyB.equals(levelModel.getBandit())) return;
+        if (bodyB.getName().equals("gumProjectile") && bodyA.equals(levelModel.getBandit())) return;
 
         GumModel gum = null;
         Obstacle body = null;
         Gummable gummable = null;
-        TileModel tile = null;
+        TileModel tile;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
@@ -307,9 +307,9 @@ public class CollisionController implements ContactListener {
             gum.setVX(0);
             gum.setVY(0);
             gum.setTexture(bubblegumController.getStuckGumTexture());
+            gum.setOutline(bubblegumController.getStuckOutline());
             gum.setName("stickyGum");
             // Changing radius resets filter for some reason
-            // TODO possibly remove
             gum.getFilterData().maskBits = MASK_GUM;
             gum.getFilterData().categoryBits = CATEGORY_GUM;
         }
@@ -320,16 +320,12 @@ public class CollisionController implements ContactListener {
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
-
-//                    gummable.updateTexture();
                     gummable.endCollision(gum);
                     for (Obstacle ob : gummable.getCollisions()) {
                         bubblegumController.createGummableJoint(gummable, ob);
-                        gummable.setStuck(true);
                     }
                 }
                 else {
-                    System.out.println("is this accessed");
                     gummable.setStuck(true);
                 }
             }
@@ -338,56 +334,16 @@ public class CollisionController implements ContactListener {
                 orientation = checkGumPosition(gum, tile);
                 gum.onTile(true);
             }
+            else if (body.equals(levelModel.getBandit())) {
+                // Make bandit stuck
+                levelModel.getBandit().setStuck(true);
+            }
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
             gum.setCollisionFilters();
         }
-    }
-
-    /**
-     *  Removes joint pairs and unsticks object if unsticking projectile collides with object.
-     *
-     *  @param bodyA The first body in the collision
-     *  @param bodyB The second body in the collision
-     */
-    public void resolveUnstickCollision(Obstacle bodyA, Obstacle bodyB){
-        //Safety check.
-        if (bodyA == null || bodyB == null) return;
-        // Gum should destroy projectiles, but not become sticky gum.
-        if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
-        if (bodyA.isRemoved() || bodyB.isRemoved()) return;
-
-        // Figure out what's what.
-        GumModel unstick;
-        Obstacle notUnstick;
-        if (bodyA.getName().equals("unstickProjectile") && bodyB.getName().equals("unstickProjectile") ) {
-            return;
-        } else if (bodyA.getName().equals("unstickProjectile")) {
-            unstick = (GumModel) bodyA;
-            notUnstick = bodyB;
-        } else if (bodyB.getName().equals("unstickProjectile")) {
-            unstick = (GumModel) bodyB;
-            notUnstick = bodyA;
-        } else {
-            return;
-        }
-
-        if (notUnstick.getName().equals("stickyGum")) {
-            // Unstick it
-            bubblegumController.removeGum((GumModel) notUnstick);
-        } else if (notUnstick instanceof Gummable) {
-            Gummable gummable = (Gummable) notUnstick;
-            if (gummable.getGummed()) {
-                // Ungum it
-                bubblegumController.removeGummable(gummable);
-            }
-        }
-        // Destroy projectile and call it a day
-        unstick.setVX(0);
-        unstick.setVY(0);
-        unstick.markRemoved(true);
     }
 
     /**
@@ -404,26 +360,31 @@ public class CollisionController implements ContactListener {
 
         if (x && y) {
             gum.setTexture(bubblegumController.getRotatedGumTexture());
+            gum.setOutline(bubblegumController.getRotatedOutline());
             return 1;
         }
         if (tile.hasCorner()) {
             if (gumPos.x > tilePos.x + 0.35f) {
                 if (tile.topRight() && gumPos.y > tilePos.y + 0.5f) {
                     gum.setTexture(bubblegumController.getTopRightGumTexture());
+                    gum.setOutline(bubblegumController.getTopRightOutline());
                     return 2;
                 }
                 if (tile.bottomRight() && gumPos.y < tilePos.y - 0.5f) {
                     gum.setTexture(bubblegumController.getBottomRightGumTexture());
+                    gum.setOutline(bubblegumController.getBottomRightOutline());
                     return 2;
                 }
             }
             if (gumPos.x < tilePos.x - 0.35f) {
                 if (tile.bottomLeft() && gumPos.y < tilePos.y - 0.5f) {
                     gum.setTexture(bubblegumController.getBottomLeftGumTexture());
+                    gum.setOutline(bubblegumController.getBottomLeftOutline());
                      return 3;
                 }
                 if (tile.topLeft() && gumPos.y > tilePos.y + 0.5f) {
                     gum.setTexture(bubblegumController.getTopLeftGumTexture());
+                    gum.setOutline(bubblegumController.getTopLeftOutline());
                     return 3;
                 }
             }
@@ -442,18 +403,18 @@ public class CollisionController implements ContactListener {
 
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
-            if ((ob2.getName().equals("tile") || ob2.getName().equals("wall")) && gummable.getGummed()) {
+            if (gummable.getGummed() && !ob2.getName().equals("unstickProjectile")) {
                 bubblegumController.createGummableJoint(gummable, ob2);
-                gummable.setStuck(true);
                 SoundController.playSound("robotSplat", 1f);
+                ob2.setStuck(true);
             }
         }
-        if (ob2 instanceof Gummable) {
+        else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
-            if ((ob1.getName().equals("tile") || ob1.getName().equals("wall")) && gummable.getGummed()) {
+            if (gummable.getGummed() && !ob1.getName().equals("unstickProjectile")) {
                 bubblegumController.createGummableJoint(gummable, ob1);
-                gummable.setStuck(true);
                 SoundController.playSound("robotSplat", 1f);
+                ob1.setStuck(true);
             }
         }
     }

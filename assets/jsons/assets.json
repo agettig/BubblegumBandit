@@ -93,9 +93,18 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
+        "alarm_on": "textures/alarm_on.png",
+        "alarm_off": "textures/alarm_off.png",
+        "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
         "orb": "textures/orb.png",
-        "unstickprojectile": "textures/unstick.png",
+        "stuckOutline": "textures/stuck_gumWhite.png",
+        "topRightOutline": "textures/topRightGumWhite.png",
+        "bottomRightOutline": "textures/bottomRightGumWhite.png",
+        "bottomLeftOutline": "textures/bottomLeftGumWhite.png",
+        "topLeftOutline": "textures/topLeftGumWhite.png",
+        "rotatedOutline": "textures/rotated_gumWhite.png",
+        "smallrobotoutline": "textures/small_enemyWhite.png",
         "small_gum": "textures/small_gum.png",
         "large_gum": "textures/large_gum.png"
     },
@@ -121,9 +130,8 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/2BoardLayerTest5.json",
-        "level2":"jsons/level1.json",
-        "level3": "jsons/jumping.json",
+		"level1" : "jsons/NewLevel.json",
+        "level2":"jsons/2BoardLayerTest.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }
