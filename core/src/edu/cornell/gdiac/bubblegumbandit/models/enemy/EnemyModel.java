@@ -117,6 +117,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     private Fixture sensorFixture;
     private CircleShape sensorShape;
     /** The name of the sensor for detection purposes */
+
+    private PolygonShape robotShape;
     private String sensorName;
 
 
@@ -363,6 +365,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
         sensorShape = new CircleShape();
         sensorShape.setRadius(listeningRadius);
+
+        robotShape = new PolygonShape();
+        robotShape.setAsBox(1.0f, 2.5f);
+
         String gumKey = constantsJson.get("gumTexture").asString();
         gumTexture = new TextureRegion(directory.getEntry(gumKey, Texture.class));
 
@@ -507,6 +513,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
+        canvas.drawPhysics(robotShape, sensorColor, getX(), getY(), 0, drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         attacking.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
