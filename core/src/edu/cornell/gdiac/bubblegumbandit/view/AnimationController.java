@@ -25,6 +25,7 @@ public class AnimationController {
     for(JsonValue value : controllerJSON) {
       String name = value.name();
       FilmStrip strip = directory.getEntry(value.get("strip").asString(), FilmStrip.class);
+      strip = strip.copy(); // Each needs own filmstrip to make this not dependent on # enemies
       animations.put(name,strip);
       fps.put(name, value.get("fps").asInt());
       if(current==null) {

@@ -144,8 +144,6 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
-    private FitViewport UIviewport;
-
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -159,13 +157,11 @@ public class GameCanvas {
         debugRender = new ShapeRenderer();
         fovRender = new ShapeRenderer();
 
-
         // Set the projection matrix (for proper scaling)
         camera = new GameCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
-        viewport = new FitViewport(getWidth(), getHeight(), camera);
-        viewport.apply();
-        UIviewport = new FitViewport(getWidth(), getHeight());
+        viewport = new FitViewport(getWidth(), getHeight(), camera); //why
+        viewport.apply(true);
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
         fovRender.setProjectionMatrix(camera.combined);
@@ -177,7 +173,7 @@ public class GameCanvas {
         vertex = new Vector2();
     }
 
-    public FitViewport getUIviewport() {return UIviewport;}
+    public FitViewport getUIViewport() {return viewport;}
     /**
      * Eliminate any resources that should be garbage collected manually.
      */
@@ -458,7 +454,7 @@ public class GameCanvas {
 
     public void end() {
         spriteBatch.end();
-        fovRender.end();
+//        fovRender.end();
         active = DrawPass.INACTIVE;
     }
 
@@ -738,6 +734,11 @@ public class GameCanvas {
         computeTransform(ox, oy, x, y, angle, sx, sy);
         spriteBatch.setColor(tint);
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+    }
+
+    public void drawShadow(TextureRegion region, float ox, float oy,
+                           float x, float y, float angle, float sx, float sy) {
+        draw(region, Color.BLACK, ox, oy, x+shadowOffset, y, angle, sx, sy);
     }
 
     public void drawWithShadow(TextureRegion region, Color tint, float ox, float oy,

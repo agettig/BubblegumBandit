@@ -28,6 +28,8 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  */
 public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
 
+    private TextureRegion outline;
+
     // Physics constants
     private int id;
 
@@ -96,11 +98,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         this.previousAction = this.nextAction;
         this.nextAction = nextAction;
     }
-
-    /**
-     * Whether this enemy is flipped
-     */
-    protected boolean isFlipped;
 
     /**
      * The y scale of this enemy (for flipping when gravity swaps)
@@ -344,6 +341,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         ungummedTexture = texture;
+        key = constantsJson.get("outline").asString();
+        outline = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
         String animationKey;
         if((animationKey = constantsJson.get("animations").asString())!=null) {
@@ -378,14 +377,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     }
 
-    public void updateTexture() {
-        if (gummed) {
-            setTexture(gummedTexture);
-        } else {
-            setTexture(ungummedTexture);
-        }
-    }
-
     public CircleShape getSensorShape() {
         return sensorShape;
     }
@@ -398,22 +389,22 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     public void update(float delta) {
-        if (yScale < 1f && !isFlipped) {
-            yScale += 0.1f;
-        } else if (yScale > -1f && isFlipped) {
-            yScale -= 0.1f;
+        if (!isFlipped && yScale < 1) {
+            if (yScale != -1 || !stuck) {
+                yScale += 0.1f;
+            }
+        } else if (isFlipped && yScale > -1) {
+            if (yScale != 1 || !stuck) {
+                yScale -= 0.1f;
+            }
         }
         updateRayCasts();
         updateMovement(nextAction);
-
-
     }
 
     public boolean fired(){
         return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
     }
-
-
 
     public RayCastCone getAttacking() {
         return attacking;
@@ -474,16 +465,37 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
             TextureRegion drawn = texture;
-            float x = getX() * drawScale.x;
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                x-=getWidth()/2*drawScale.x*effect;
+//                setX(getX() - getWidth()/2*effect); // TODO: Make this impact the physics body. Messes up collisions o/w
             }
-            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                getY() * drawScale.y, getAngle(), effect, yScale);
+            if (gummed) {
+                canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect, yScale);
+            } else if (stuck){
+                canvas.drawWithShadow(ungummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect, yScale);
+            } else {
+                canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect, yScale);
+
+            }
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        }
+    }
+
+    public void drawWithOutline(GameCanvas canvas) {
+        if (outline != null && gummedTexture != null) {
+            float effect = faceRight ? 1.0f : -1.0f;
+            canvas.drawShadow(gummedTexture, origin.x, origin.y, getX() * drawScale.x,
+                    getY() * drawScale.y, getAngle(), effect, yScale);
+            canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                        getY() * drawScale.y, getAngle(), effect*OUTLINE_SIZE, yScale*OUTLINE_SIZE);
+            canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                    getY() * drawScale.y, getAngle(), effect, yScale);
+
         }
     }
 
@@ -546,13 +558,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
      * */
     public void shoot(Vector2 targetPosition){
         return;
-    }
-
-    /**
-     * Flips the player's angle and direction when the world gravity is flipped
-     */
-    public void flippedGravity() {
-        isFlipped = !isFlipped;
     }
 
     public void changeSpeed(float speed){
