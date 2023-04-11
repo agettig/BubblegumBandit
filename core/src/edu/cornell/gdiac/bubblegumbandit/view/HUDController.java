@@ -76,9 +76,9 @@ public class HUDController {
     starIcon1 = new Image(directory.getEntry("star", Texture.class));
     starIcon2 = new Image(directory.getEntry("star", Texture.class));
     starIcon3 = new Image(directory.getEntry("star", Texture.class));
-    starIcon1.setVisible(false);
-    starIcon2.setVisible(false);
-    starIcon3.setVisible(false);
+//    starIcon1.setVisible(false);
+//    starIcon2.setVisible(false);
+//    starIcon3.setVisible(false);
 
     healthFillRegion = new TextureRegion(healthFillText, 0, 0,
             healthFillText.getWidth(), healthFillText.getHeight());
@@ -122,7 +122,12 @@ public class HUDController {
       lastFrac = healthFraction;
     }
     int numStars = level.getBandit().getNumStars();
-    if (numStars == 1) {
+    if (numStars == 0) {
+      starIcon1.setVisible(false);
+      starIcon2.setVisible(false);
+      starIcon3.setVisible(false);
+    }
+    else if (numStars == 1) {
       starIcon1.setVisible(true);
     }
     else if (numStars == 2) {

@@ -384,6 +384,7 @@ public class GameController implements Screen {
         // Reload the json each time
         level.populate(directory, levelFormat, constantsJson, tilesetJson);
         level.getWorld().setContactListener(collisionController);
+        level.getBandit().setNumStars(0);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
     }

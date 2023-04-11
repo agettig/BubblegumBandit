@@ -93,7 +93,7 @@ public class BanditModel extends CapsuleObstacle {
 	/** Whether the player has collected the orb. */
 	private boolean orbCollected;
 	/** Returns the number of stars that have been collected*/
-	private int numStars;
+	private int numStars = 0;
 
 
 	/**
@@ -131,9 +131,14 @@ public class BanditModel extends CapsuleObstacle {
 	}
 
 	/**Collects a star*/
-	public void collectStar() {numStars += 1; }
+	public void collectStar() {this.numStars += 1; }
+	/**Sets the number of collected stars
+	 *
+	 * @param s The new number of stars*/
+	public void setNumStars(int s) {this.numStars = s;}
+
 	/**Returns whether or not a star has been collected*/
-	public int getNumStars() {return numStars; }
+	public int getNumStars() {return this.numStars; }
 	/** Collects the orb. */
 	public void collectOrb() { orbCollected = true; }
 
