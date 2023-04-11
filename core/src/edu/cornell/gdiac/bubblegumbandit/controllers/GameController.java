@@ -516,7 +516,7 @@ public class GameController implements Screen {
             }
         }
 
-        minimap.draw(canvas.getWidth(), canvas.getHeight(), banditPosition, enemyPositions, levelFormat);
+        minimap.draw(canvas.getCamera().viewportWidth, canvas.getHeight(), banditPosition, enemyPositions, levelFormat);
 
 
 
