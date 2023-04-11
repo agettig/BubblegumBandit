@@ -369,6 +369,7 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
         collisionController.resetWinCondition();
+        hud.resetStars();
 
         level.dispose();
 
