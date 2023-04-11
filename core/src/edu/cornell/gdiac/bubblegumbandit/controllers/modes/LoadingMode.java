@@ -34,6 +34,7 @@ import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
+import org.w3c.dom.Text;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -61,11 +62,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Button to start the game */
 	private Texture startButton;
 
+	/** Button to enter level select */
+	private Texture levelSelectButton;
+
 	/** Button to open settings */
 	private Texture settingsButton;
 
 	/** Button to quit */
 	private Texture exitButton;
+
+	/** Pointer to what is being hovered. */
+	private Texture hoverPointer;
 
 	/** Texture atlas to support a progress bar */
 	private final Texture statusBar;
@@ -93,9 +100,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Ratio of the bar width to the screen */
 	private static float BAR_WIDTH_RATIO  = 0.66f;
 	/** Ration of the bar height to the screen */
-	private static float BAR_HEIGHT_RATIO = 0.25f;	
-	/** Height of the progress bar */
-	private static float BUTTON_SCALE  = 0.75f;
+	private static float BAR_HEIGHT_RATIO = 0.25f;
 	
 	/** Reference to GameCanvas created by the root */
 	private GameCanvas canvas;
@@ -117,6 +122,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** The y-coordinate of the center of the start button.*/
 	private int startButtonPositionY;
 
+	/** The x-coordinate of the center of the level select button.*/
+	private int levelSelectButtonPositionX;
+
+	/** The y-coordinate of the center of the level select button.*/
+	private int levelSelectButtonPositionY;
+
 	/** The x-coordinate of the center of the settings button.*/
 	private int settingsButtonPositionX;
 
@@ -129,7 +140,24 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** The y-coordinate of the center of the exit button.*/
 	private int exitButtonPositionY;
 
+	/** true if the player is hovering over the start button*/
+	private boolean hoveringStart;
+
+	/** true if the player is hovering over the level select button*/
+	private boolean hoveringLevelSelect;
+
+	/** true if the player is hovering over the settings button*/
+	private boolean hoveringSettings;
+
+	/** true if the player is hovering over the exit button*/
+	private boolean hoveringExit;
+
+
+
 	private float scale;
+
+	/** Scale of Start, Settings, and Exit buttons.  */
+	private final float BUTTON_SCALE = .3f;
 
 	/** Current progress (0 to 1) of the asset manager */
 	private float progress;
@@ -137,11 +165,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 * 0 = nothing pressed
 	 * 1 = play down
-	 * 2 = settings down
-	 * 3 = exit down
-	 * 4 = play up, ready to go
-	 * 5 = settings up, should open settings
-	 * 6 = exit up, should quit.
+	 * 2 = level select down
+	 * 3 = settings down
+	 * 4 = exit down
+	 * 5 = play up, ready to go
+	 * 6 = level select up, should open level select
+	 * 7 = settings up, should open settings
+	 * 8 = exit up, should quit.
 	 * */
 	private int   pressState;
 	/** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
@@ -184,7 +214,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player is ready to go
 	 */
 	public boolean isReady() {
-		return pressState == 4;
+		return pressState == 5;
 	}
 
 	/**
@@ -193,7 +223,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return true if the player wants to quit.
 	 */
 	public boolean shouldQuit() {
-		return pressState == 6;
+		return pressState == 8;
 	}
 
 
@@ -246,8 +276,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		//We need these NOW!
 		startButton = null;
+		levelSelectButton = null;
 		settingsButton = null;
 		exitButton = null;
+		hoverPointer = null;
+
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 		statusBar = internal.getEntry( "progress", Texture.class );
@@ -301,9 +334,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			this.progress = assets.getProgress();
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
+				hoverPointer = internal.getEntry("hoverPointer", Texture.class);
 				startButton = internal.getEntry("startButton", Texture.class);
-				settingsButton = internal.getEntry("startButton", Texture.class);
-				exitButton = internal.getEntry("startButton", Texture.class);
+				levelSelectButton = internal.getEntry("levelSelectButton", Texture.class);
+				settingsButton = internal.getEntry("settingsButton", Texture.class);
+				exitButton = internal.getEntry("exitButton", Texture.class);
 			}
 		}
 	}
@@ -318,29 +353,183 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
-		if (startButton == null || settingsButton == null || exitButton == null) {
+		if (startButton == null || settingsButton == null || exitButton == null || hoverPointer == null) {
 			drawProgress(canvas);
 		} else {
-			Color startTint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			Color settingsTint = (pressState == 2 ? Color.GRAY: Color.WHITE);
-			Color exitTint = (pressState == 3 ? Color.GRAY: Color.WHITE);
 
-			startButtonPositionX = (int) canvas.getCamera().viewportWidth / 6;
-			startButtonPositionY = (int) (canvas.getCamera().viewportHeight / 2);
-			canvas.draw(startButton, startTint, startButton.getWidth()/2f, startButton.getHeight()/2f,
-					startButtonPositionX, startButtonPositionY, 0, scale, scale);
+			float highestButtonY = canvas.getCamera().viewportHeight/2;
+			float lowestButtonY = canvas.getCamera().viewportHeight/6;
+			float buttonSpace = highestButtonY - lowestButtonY;
+			float gap = buttonSpace / 4;
 
-			settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 6;
-			settingsButtonPositionY = (int) ((canvas.getCamera().viewportHeight / 2) - startButton.getHeight());
-			canvas.draw(settingsButton, settingsTint, settingsButton.getWidth()/2f, settingsButton.getHeight()/2f,
-					settingsButtonPositionX, settingsButtonPositionY, 0, scale, scale);
+			startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+			startButtonPositionY = (int) highestButtonY;
 
-			exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 6;
-			exitButtonPositionY = (int) ((canvas.getCamera().viewportHeight / 2) -startButton.getHeight()*2);
-			canvas.draw(exitButton, exitTint, exitButton.getWidth()/2f, exitButton.getHeight()/2f,
-					exitButtonPositionX, exitButtonPositionY, 0, scale, scale);
+			levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+			levelSelectButtonPositionY = (int) (highestButtonY - gap);
+
+			settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+			settingsButtonPositionY = (int) (highestButtonY - gap*2);
+
+			exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+			exitButtonPositionY = (int) (highestButtonY - gap*3);
+
+			float pointerX = startButtonPositionX / 4f;
+
+
+			//Draw Continue Game
+			canvas.draw(
+					startButton,
+					getButtonTint("start"),
+					startButton.getWidth()/2f,
+					startButton.getHeight()/2f,
+					startButtonPositionX,
+					startButtonPositionY,
+					0,
+					scale * BUTTON_SCALE,
+					scale * BUTTON_SCALE
+			);
+			if(hoveringStart){
+				canvas.draw(
+						hoverPointer,
+						Color.WHITE,
+						hoverPointer.getWidth()/2f,
+						hoverPointer.getHeight()/2f,
+						pointerX,
+						startButtonPositionY,
+						0,
+						scale,
+						scale
+				);
+			}
+
+			//Draw Level Select
+			canvas.draw(
+					levelSelectButton,
+					getButtonTint("level"),
+					levelSelectButton.getWidth()/2f,
+					levelSelectButton.getHeight()/2f,
+					levelSelectButtonPositionX,
+					levelSelectButtonPositionY,
+					0,
+					scale * BUTTON_SCALE,
+					scale * BUTTON_SCALE
+			);
+			if(hoveringLevelSelect){
+				canvas.draw(
+						hoverPointer,
+						Color.WHITE,
+						hoverPointer.getWidth()/2f,
+						hoverPointer.getHeight()/2f,
+						pointerX,
+						levelSelectButtonPositionY,
+						0,
+						scale,
+						scale
+				);
+			}
+
+			//Draw Settings
+			canvas.draw(
+					settingsButton,
+					getButtonTint("settings"),
+					settingsButton.getWidth()/2f,
+					settingsButton.getHeight()/2f,
+					settingsButtonPositionX,
+					settingsButtonPositionY,
+					0,
+					scale * BUTTON_SCALE,
+					scale * BUTTON_SCALE
+			);
+			if(hoveringSettings){
+				canvas.draw(
+						hoverPointer,
+						Color.WHITE,
+						hoverPointer.getWidth()/2f,
+						hoverPointer.getHeight()/2f,
+						pointerX,
+						settingsButtonPositionY,
+						0,
+						scale,
+						scale
+				);
+			}
+
+			//Draw Exit
+			canvas.draw(
+					exitButton,
+					getButtonTint("exit"),
+					exitButton.getWidth()/2f,
+					exitButton.getHeight()/2f,
+					exitButtonPositionX,
+					exitButtonPositionY,
+					0,
+					scale * BUTTON_SCALE,
+					scale * BUTTON_SCALE
+			);
+			if(hoveringExit){
+				canvas.draw(
+						hoverPointer,
+						Color.WHITE,
+						hoverPointer.getWidth()/2f,
+						hoverPointer.getHeight()/2f,
+						pointerX,
+						exitButtonPositionY,
+						0,
+						scale,
+						scale
+				);
+			}
+
 		}
 		canvas.end();
+	}
+
+
+	private Color getButtonTint(String buttonName){
+		int hoverR = 241;
+		int hoverG = 154;
+		int hoverB = 142;
+		int hoverA = 255;
+		int hoverRgba8888 = (hoverR << 24) | (hoverG << 16) | (hoverB << 8) | hoverA;
+		Color hoverTint = new Color(hoverRgba8888);
+
+		int pressR = 70;
+		int pressG = 153;
+		int pressB = 167;
+		int pressA = 255;
+		int pressRgba8888 = (pressR << 24) | (pressG << 16) | (pressB << 8) | pressA;
+		Color pressTint = new Color(pressRgba8888);
+
+		Color defaultTint = Color.WHITE;
+
+		if(buttonName.equals("start")){
+			System.out.println(hoveringStart);
+			if(hoveringStart && pressState == 1) return pressTint;
+			else if(hoveringStart) return hoverTint;
+			else return defaultTint;
+		}
+
+		if(buttonName.equals("level")){
+			if(hoveringLevelSelect && pressState == 2) return pressTint;
+			else if(hoveringLevelSelect) return hoverTint;
+			else return defaultTint;
+		}
+
+		if(buttonName.equals("settings")){
+			if(hoveringSettings && pressState == 3) return pressTint;
+			else if(hoveringSettings) return hoverTint;
+			else return defaultTint;
+		}
+
+		if(buttonName.equals("exit")){
+			if(hoveringExit && pressState == 4) return pressTint;
+			else if(hoveringExit) return hoverTint;
+			else return defaultTint;
+		}
+
+		//Should never reach here, keeps Java happy
+		return null;
 	}
 	
 	/**
@@ -491,8 +680,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		screenY = heightY-screenY;
 
 		//Detect clicks on the start button
-		float rectWidth = scale * startButton.getWidth();
-		float rectHeight = scale * startButton.getHeight();
+		float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();
+		float rectHeight = scale * BUTTON_SCALE * startButton.getHeight();
 		float leftX = startButtonPositionX - rectWidth / 2.0f;
 		float rightX = startButtonPositionX + rectWidth / 2.0f;
 		float topY = startButtonPositionY - rectHeight / 2.0f;
@@ -501,26 +690,37 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = 1;
 		}
 
+		//Detect clicks on the level select button
+		rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
+		rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
+		leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
+		rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
+		topY = levelSelectButtonPositionY - rectHeight / 2.0f;
+		bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
+		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+			pressState = 2;
+		}
+
 		//Detect clicks on the settings button
-		rectWidth = scale * settingsButton.getWidth();
-		rectHeight = scale * settingsButton.getHeight();
+		rectWidth = scale * BUTTON_SCALE * settingsButton.getWidth();
+		rectHeight = scale * BUTTON_SCALE * settingsButton.getHeight();
 		leftX = settingsButtonPositionX - rectWidth / 2.0f;
 		rightX = settingsButtonPositionX + rectWidth / 2.0f;
 		topY = settingsButtonPositionY - rectHeight / 2.0f;
 		bottomY = settingsButtonPositionY + rectHeight / 2.0f;
 		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
-			pressState = 2;
+			pressState = 3;
 		}
 
 		//Detect clicks on the exit button
-		rectWidth = scale * exitButton.getWidth();
-		rectHeight = scale * exitButton.getHeight();
+		rectWidth = scale * BUTTON_SCALE * exitButton.getWidth();
+		rectHeight = scale * BUTTON_SCALE * exitButton.getHeight();
 		leftX = exitButtonPositionX - rectWidth / 2.0f;
 		rightX = exitButtonPositionX + rectWidth / 2.0f;
 		topY = exitButtonPositionY - rectHeight / 2.0f;
 		bottomY = exitButtonPositionY + rectHeight / 2.0f;
 		if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
-			pressState = 3;
+			pressState = 4;
 		}
 
 		return false;
@@ -540,19 +740,25 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) { 
 		//Start
 		if (pressState == 1) {
-			pressState = 4;
-			return false;
-		}
-
-		//Settings
-		if (pressState == 2) {
 			pressState = 5;
 			return false;
 		}
 
-		//Exit
-		if (pressState == 3) {
+		//Level Select
+		if (pressState == 2) {
 			pressState = 6;
+			return false;
+		}
+
+		//Settings
+		if (pressState == 3) {
+			pressState = 7;
+			return false;
+		}
+
+		//Exit
+		if (pressState == 4) {
+			pressState = 8;
 			return false;
 		}
 
@@ -642,7 +848,49 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean mouseMoved(int screenX, int screenY) { 
+	public boolean mouseMoved(int screenX, int screenY) {
+
+		if(startButton == null || levelSelectButton == null
+		|| settingsButton == null || exitButton == null) return false;
+// Flip to match graphics coordinates
+		screenY = heightY-screenY;
+
+		//Detect hovers on the start button
+		float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();
+		float rectHeight = scale * BUTTON_SCALE * startButton.getHeight();
+		float leftX = startButtonPositionX - rectWidth / 2.0f;
+		float rightX = startButtonPositionX + rectWidth / 2.0f;
+		float topY = startButtonPositionY - rectHeight / 2.0f;
+		float bottomY = startButtonPositionY + rectHeight / 2.0f;
+		hoveringStart = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+
+		//Detect hovers on the level select button
+		rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
+		rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
+		leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
+		rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
+		topY = levelSelectButtonPositionY - rectHeight / 2.0f;
+		bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
+		hoveringLevelSelect = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+
+		//Detect hovers on the settings button
+		rectWidth = scale * BUTTON_SCALE * settingsButton.getWidth();
+		rectHeight = scale * BUTTON_SCALE * settingsButton.getHeight();
+		leftX = settingsButtonPositionX - rectWidth / 2.0f;
+		rightX = settingsButtonPositionX + rectWidth / 2.0f;
+		topY = settingsButtonPositionY - rectHeight / 2.0f;
+		bottomY = settingsButtonPositionY + rectHeight / 2.0f;
+		hoveringSettings = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+
+		//Detect hovers on the exit button
+		rectWidth = scale * BUTTON_SCALE * exitButton.getWidth();
+		rectHeight = scale * BUTTON_SCALE * exitButton.getHeight();
+		leftX = exitButtonPositionX - rectWidth / 2.0f;
+		rightX = exitButtonPositionX + rectWidth / 2.0f;
+		topY = exitButtonPositionY - rectHeight / 2.0f;
+		bottomY = exitButtonPositionY + rectHeight / 2.0f;
+		hoveringExit = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+
 		return true; 
 	}
 
