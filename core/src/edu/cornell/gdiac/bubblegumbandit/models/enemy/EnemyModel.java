@@ -512,7 +512,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
                         getY() * drawScale.y, getAngle(), effect*OUTLINE_SIZE, yScale*OUTLINE_SIZE);
             canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                     getY() * drawScale.y, getAngle(), effect, yScale);
-
+            if (gummed) {
+                float x = getX() * drawScale.x;
+                canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, x,
+                        getY() * drawScale.y + (GUM_OFFSET * yScale), getAngle(), 1, yScale);
+            }
         }
     }
 
