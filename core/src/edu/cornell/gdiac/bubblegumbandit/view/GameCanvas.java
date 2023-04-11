@@ -1342,6 +1342,7 @@ public class GameCanvas {
         local.applyTo(vertex);
         fovRender.setColor(color);
         fovRender.ellipse(x0 - w, y0 - h, 2 * w, 2 * h, 12);
+        fovRender.end();
     }
 
 

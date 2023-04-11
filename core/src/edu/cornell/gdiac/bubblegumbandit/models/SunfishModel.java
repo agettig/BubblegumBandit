@@ -89,9 +89,9 @@ public class SunfishModel extends WheelObstacle {
         // if not at the cursor yet keep moving
         if (getPosition().dst(lastPos) > 50){
             setMovement(lastPos);
-//            body.setTransform(body.getPosition().add(movement), angle);
-            body.applyForce(movement.scl(10), getPosition(), true);
-            body.setTransform(body.getPosition(), angle);
+            body.setTransform(body.getPosition().add(movement), angle);
+           // body.applyForce(movement.scl(10), getPosition(), true);
+           // body.setTransform(body.getPosition(), angle);
 
         }
 
@@ -106,7 +106,7 @@ public class SunfishModel extends WheelObstacle {
         float y_offset = (texture.getRegionHeight() / 2);
 
         canvas.draw(texture, Color.WHITE, origin.x + x_offset, origin.y + y_offset, getX(), getY(), getAngle(), 1, 1);
-        canvas.drawPhysicsLevel(shape, Color.WHITE, getX(), getY(), drawScale.x, drawScale.y);
+        //canvas.drawPhysicsLevel(shape, Color.WHITE, getX(), getY(), drawScale.x, drawScale.y);
     }
 
 }
