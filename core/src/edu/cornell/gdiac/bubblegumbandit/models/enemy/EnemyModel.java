@@ -568,13 +568,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     /**
-     * Shoots at a target position.
-     *
-     * @param targetPosition the screen position to shoot at.
-     * */
-    public void shoot(Vector2 targetPosition){
-        return;
+     * Flips the player's angle and direction when the world gravity is flipped
+     */
+    public void flippedGravity() {
+        if (!(gummed || stuck)) isFlipped = !isFlipped;
     }
+
 
     public void changeSpeed(float speed){
         this.speed = speed;

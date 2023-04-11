@@ -516,10 +516,12 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("star") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
             ((Collectible) bd1).setCollected(true);
             levelModel.getBandit().collectStar();
+            SoundController.playSound("collectItem", .75f);
             bd1.markRemoved(true);
         } else if (bd2.getName().equals("star") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             ((Collectible) bd2).setCollected(true);
             levelModel.getBandit().collectStar();
+            SoundController.playSound("collectItem", .75f);
             bd2.markRemoved(true);
         }
     }
