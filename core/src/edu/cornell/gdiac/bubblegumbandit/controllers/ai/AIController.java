@@ -23,16 +23,6 @@ public class AIController implements Telegraph {
     private int move;
 
     /**
-     * attack range of enemy
-     */
-    private final int ATTACK_RANGE = 7;
-
-    /**
-     * chase range of enemy
-     */
-    private final int CHASE_RANGE = 10;
-
-    /**
      * reference to enemy
      */
     public EnemyModel enemy;
@@ -41,6 +31,12 @@ public class AIController implements Telegraph {
      * reference to player / target
      */
     private BanditModel bandit;
+
+    /**
+     * Horizontal distance that enemies will not move towards the player
+     * Enemies will move if the horizontal distance to player < ENEMY_PROXIMITY
+     * */
+    private final float ENEMY_PROXIMITY = 2.0f;
 
     /**
      * graph for pathfinding
@@ -120,6 +116,17 @@ public class AIController implements Telegraph {
             return true;
         }
         else return false;
+    }
+
+    /**
+     * Returns true if the horizontal distance between the player and enemy
+     * is less than ENEMY_PROXIMITY
+     * else returns false
+     * */
+    public boolean enemyCloseToBandit(){
+        float banditX = bandit.getX();
+        float enemyX = enemy.getX();
+        return Math.abs(banditX - enemyX) > ENEMY_PROXIMITY;
     }
 
     /**
