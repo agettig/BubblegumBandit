@@ -126,7 +126,7 @@ public class AIController implements Telegraph {
     public boolean enemyCloseToBandit(){
         float banditX = bandit.getX();
         float enemyX = enemy.getX();
-        return Math.abs(banditX - enemyX) > ENEMY_PROXIMITY;
+        return Math.abs(banditX - enemyX) < ENEMY_PROXIMITY;
     }
 
     /**
