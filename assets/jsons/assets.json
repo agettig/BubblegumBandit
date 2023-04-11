@@ -84,7 +84,10 @@
         "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
         "orb": "textures/orb.png",
-        "unstickprojectile": "textures/unstick.png"
+        "unstickprojectile": "textures/unstick.png",
+
+        "sunfish" : "textures/sunfish.png",
+        "ship1" : "textures/level1.png"
     },
     "fonts": {
         "display": {

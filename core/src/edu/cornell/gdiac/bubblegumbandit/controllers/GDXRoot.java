@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.*;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LevelSelectMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LoadingMode;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
@@ -37,6 +38,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	/** Player mode for the level select screen (CONTROLLER CLASS) */
+	private LevelSelectMode levels;
+
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameController controller;
 	
@@ -54,6 +58,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
+
+		levels = new LevelSelectMode();
+		
 
 		// Initialize the three game worlds
 		controller = new GameController();
@@ -108,12 +115,20 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		if (exitCode == GameController.EXIT_QUIT) {
-			// We quit the main application
-			Gdx.app.exit();
+
+
+		if (screen == levels) {
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.setLevelNum(levels.getSelectedLevel());
+			controller.reset();
+			setScreen(controller);
+
+			levels.dispose();
+			levels = null;
 		}
 
-		else if (screen == loading) {
+		else if (screen == loading && exitCode == 1) {
 			directory = loading.getAssets();
 			setScreen(controller);
 			directory = loading.getAssets();
@@ -123,6 +138,23 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.reset();
 			loading.dispose();
 			loading = null;
+		}
+		else if(screen == loading && exitCode == 6){
+			directory = loading.getAssets();
+			controller.gatherAssets(directory);
+			levels.gatherAssets(directory);
+
+			levels.setCanvas(canvas);
+			levels.setScreenListener(this);
+			setScreen(levels);
+
+			loading.dispose();
+			loading = null;
+		}
+
+		else if (exitCode == GameController.EXIT_QUIT) {
+			// We quit the main application
+			Gdx.app.exit();
 		}
 
 	}
