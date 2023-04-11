@@ -186,7 +186,43 @@
                  "width":25,
                  "x":1280,
                  "y":1600
-                }, 
+                },
+                {
+                  "gid":4,
+                  "height":25,
+                  "id":25,
+                  "name":"",
+                  "rotation":0,
+                  "type":"star",
+                  "visible":true,
+                  "width":25,
+                  "x":400,
+                  "y":500
+                },
+                {
+                  "gid":4,
+                  "height":25,
+                  "id":26,
+                  "name":"",
+                  "rotation":0,
+                  "type":"star",
+                  "visible":true,
+                  "width":25,
+                  "x":1600,
+                  "y":500
+                },
+                {
+                  "gid":4,
+                  "height":25,
+                  "id":27,
+                  "name":"",
+                  "rotation":0,
+                  "type":"star",
+                  "visible":true,
+                  "width":25,
+                  "x":400,
+                  "y":1280
+                },
                 {
                  "gid":10,
                  "height":40,

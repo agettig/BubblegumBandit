@@ -409,6 +409,7 @@ public class LevelModel {
                     break;
                 case "orb":
                     orbPlaced = true;
+                case "star":
                 case "floatinggum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));

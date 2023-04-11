@@ -135,6 +135,7 @@ public class CollisionController implements ContactListener {
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB);
+            resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
         }catch (Exception e){
             e.printStackTrace();
@@ -507,6 +508,19 @@ public class CollisionController implements ContactListener {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
             SoundController.playSound("collectItem", 0.75f);
+        }
+    }
+
+    /**Check if there was a collision between the player and a star, if so have the player collect the star*/
+    public void resolveStarCollision(Obstacle bd1, Obstacle bd2) {
+        if (bd1.getName().equals("star") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
+            ((Collectible) bd1).setCollected(true);
+            levelModel.getBandit().collectStar();
+            bd1.markRemoved(true);
+        } else if (bd2.getName().equals("star") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
+            ((Collectible) bd2).setCollected(true);
+            levelModel.getBandit().collectStar();
+            bd2.markRemoved(true);
         }
     }
 
