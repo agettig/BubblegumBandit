@@ -5,23 +5,14 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
-
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.MessageType;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
 
 public class CollisionController implements ContactListener {
@@ -483,6 +474,39 @@ public class CollisionController implements ContactListener {
             levelModel.getBandit().hitPlayer(p.getDamage());
         }
         p.destroy();
+    }
+
+    /**
+     * Checks if there was an rolling enemy collision in the Box2D world.
+     * <p>
+     * Examines two Obstacles in a collision.
+     * *
+     * @param bd1 The first Obstacle in the collision.
+     * @param bd2 The second Obstacle in the collision.
+     */
+    private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
+
+        // Check that obstacles are not null and not an enemy
+        if (bd1 == null || bd2 == null) return;
+        if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
+
+        if (bd1.getName().equals("rollingrobot")) {
+            resolveRollingEnemyCollision((MovingEnemyModel) bd1, bd2);
+        } else if (bd2.getName().equals("rollingrobot")) {
+            resolveRollingEnemyCollision((MovingEnemyModel) bd2, bd1);
+        }
+    }
+
+    /**
+     * Resolves the effects of a RollingEnemy collision
+     * @param e
+     * @param o
+     */
+    private void resolveRollingEnemyCollision(MovingEnemyModel e, Obstacle o) {
+        //if (e.isRemoved()) return;
+        if (o.equals(levelModel.getBandit())) {
+            levelModel.getBandit().hitPlayer(e.getDamage());
+        }
     }
 
     /**

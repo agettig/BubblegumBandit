@@ -206,9 +206,21 @@
                  "type":"smallrobot",
                  "visible":true,
                  "width":43,
-                 "x":1147.08754971788,
+                 "x":1160.08754971788,
                  "y":1210.67824438072
-                }],
+                },
+           {
+             "gid":3,
+             "height":65,
+             "id":11,
+             "name":"",
+             "rotation":0,
+             "type":"rollingrobot",
+             "visible":true,
+             "width":43,
+             "x":1147.08754971788,
+             "y":1210.67824438072
+           }],
          "opacity":1,
          "type":"objectgroup",
          "visible":false,
