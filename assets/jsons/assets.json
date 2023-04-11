@@ -107,7 +107,9 @@
         "smallrobotoutline": "textures/small_enemyWhite.png",
         "small_gum": "textures/small_gum.png",
         "large_gum": "textures/large_gum.png",
-        "star": "textures/star.png"
+        "star": "textures/star.png",
+        "sunfish" : "textures/sunfish.png",
+        "ship1" : "textures/level1.png"
     },
     "fonts": {
         "display": {

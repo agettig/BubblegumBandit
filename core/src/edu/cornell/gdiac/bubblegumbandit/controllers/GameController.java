@@ -358,6 +358,12 @@ public class GameController implements Screen {
         hud = new HUDController(directory);
     }
 
+
+    /** sets the level loaded by the game controller, set by level select */
+    public void setLevelNum (int num){
+        levelNum = num;
+    }
+
     /**
      * Resets the status of the game so that we can play again.
      * <p>
