@@ -76,13 +76,8 @@ public class HUDController {
     starIcon1 = new Image(directory.getEntry("star", Texture.class));
     starIcon2 = new Image(directory.getEntry("star", Texture.class));
     starIcon3 = new Image(directory.getEntry("star", Texture.class));
-<<<<<<< HEAD
-//    starIcon1.setVisible(false);
-//    starIcon2.setVisible(false);
-//    starIcon3.setVisible(false);
-=======
+
     resetStars();
->>>>>>> f91a8a8f71ad8a0f4c3237f72e4679cc016881f7
 
     healthFillRegion = new TextureRegion(healthFillText, 0, 0,
             healthFillText.getWidth(), healthFillText.getHeight());
