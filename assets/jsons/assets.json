@@ -66,7 +66,7 @@
         "smallrobot": "textures/small_enemy.png",
         "bigrobot": "textures/big_enemy.png",
         "mediumrobot": "textures/medium_enemy.png",
-        "exit": "textures/goaldoor.png",
+        "exit": "textures/shipdoor.png",
         "gumProjectile": "textures/gum.png",
         "floatinggum": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",

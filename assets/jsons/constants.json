@@ -186,8 +186,8 @@
   },
   "exit": {
     "size": [
-      1.92,
-      1.92
+      2,
+      3
     ],
     "bodytype": "static",
     "density": 0.0,
