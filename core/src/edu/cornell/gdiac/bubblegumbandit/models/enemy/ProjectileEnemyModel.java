@@ -7,7 +7,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
-public class ProjectileEnemyModel extends EnemyModel {
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_DOWN;
+
+public class ProjectileEnemyModel extends MovingEnemyModel {
 
     /**Maximum speed/velocity of a moving enemy. */
     private static float MAX_SPEED = 1f;
@@ -31,12 +34,6 @@ public class ProjectileEnemyModel extends EnemyModel {
         this.visionRadius = visionRadius;
     }
 
-//    private DefaultStateMachine<MovingEnemyModel, EnemyState> enemyStateMachine;
-//
-//    public DefaultStateMachine<MovingEnemyModel, EnemyState> getEnemyStateMachine() {
-//        return enemyStateMachine;
-//    }
-
     /**Creates a MovingEnemy.
      *
      * @param world The box2d world
@@ -56,6 +53,48 @@ public class ProjectileEnemyModel extends EnemyModel {
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson){
         super.initialize(directory, x, y, constantsJson);
         setVisionRadius(constantsJson.get("visionradius").asFloat());
+    }
+
+    /**
+     * Main update loop for a ProjectileEnemyModel. Takes a control code
+     * and performs the corresponding action.
+     *
+     * @param controlCode The code that tells this ProjectileEnemyModel
+     *                    what to do.
+     * @param dt          Time since last frame.
+     */
+    @Override
+    public void update(int controlCode, float dt) {
+        super.update(controlCode);
+
+        // Determine how we are moving.
+        boolean movingLeft = (controlCode & CONTROL_MOVE_LEFT) != 0;
+        boolean movingRight = (controlCode & CONTROL_MOVE_RIGHT) != 0;
+        boolean movingUp = (controlCode & CONTROL_MOVE_UP) != 0;
+        boolean movingDown = (controlCode & CONTROL_MOVE_DOWN) != 0;
+
+        // Process movement command.
+        if (movingLeft) {
+            setVX(-4f);
+            setVY(0);
+            setFaceRight(false);
+        } else if (movingRight) {
+            setVX(4f);
+            setVY(0);
+            setFaceRight(true);
+        } else if (movingUp) {
+            if (!isFlipped) {
+                setVY(4f);
+                body.applyForceToCenter(0, 5, true);
+            } else setVY(0);
+            setVX(0);
+        } else if (movingDown) {
+            if (isFlipped) {
+                setVY(-4f);
+                body.applyForceToCenter(0, -5, true);
+            } else setVY(0);
+            setVX(0);
+        } else setVX(0);
     }
 
 

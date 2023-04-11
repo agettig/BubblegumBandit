@@ -5,19 +5,21 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
 
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
 /**
@@ -350,8 +352,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
             animationController = new AnimationController(directory, animationKey);
         }
 
-
-
         // Get the sensor information
         int listeningRadius = constantsJson.get("listeningradius").asInt();
 
@@ -559,4 +559,5 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         this.speed = speed;
     }
 
+    public abstract void update(int controlCode, float dt);
 }

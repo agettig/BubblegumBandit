@@ -18,24 +18,26 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.*;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.MovingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -380,11 +382,24 @@ public class LevelModel {
                     goalDoor.initialize(directory, x, y, constants.get(objType));
                     goalDoor.setDrawScale(scale);
                     break;
-                case "smallrobot":
-                case "mediumrobot":
+                case "rollingrobot":
                     JsonValue enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     if (enemyConstants.get("type").asString().equals("moving")) {
+                        EnemyModel enemy = new MovingEnemyModel(world, enemyCount);
+                        enemy.initialize(directory, x, y, enemyConstants);
+                        enemy.setDrawScale(scale);
+                        activate(enemy);
+                        enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+
+                        enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                        enemyCount++;
+                    }
+                case "smallrobot":
+                case "mediumrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    if (enemyConstants.get("type").asString().equals("projectile")) {
                         EnemyModel enemy = new ProjectileEnemyModel(world, enemyCount);
                         enemy.initialize(directory, x, y, enemyConstants);
                         enemy.setDrawScale(scale);

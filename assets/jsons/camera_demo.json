@@ -204,7 +204,19 @@
                  "width":43,
                  "x":1536,
                  "y":2688
-                }, 
+                },
+           {
+             "gid":3,
+             "height":65,
+             "id":80,
+             "name":"",
+             "rotation":0,
+             "type":"rollingrobot",
+             "visible":true,
+             "width":43,
+             "x":1536,
+             "y":2688
+           },
                 {
                  "gid":4,
                  "height":25,
