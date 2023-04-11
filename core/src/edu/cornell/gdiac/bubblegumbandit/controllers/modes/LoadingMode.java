@@ -217,6 +217,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		return pressState == 5;
 	}
 
+	public boolean isLevelSelect(){
+		return pressState == 6;
+	}
+
 	/**
 	 * Returns true if the player clicked the quit button.
 	 *
@@ -504,7 +508,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		Color defaultTint = Color.WHITE;
 
 		if(buttonName.equals("start")){
-			System.out.println(hoveringStart);
+//			System.out.println(hoveringStart);
 			if(hoveringStart && pressState == 1) return pressTint;
 			else if(hoveringStart) return hoverTint;
 			else return defaultTint;
@@ -577,11 +581,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if (active) {
 			update(delta);
 			draw();
-
 			// If the player hits the start/play button
+			// We are ready, notify our listener
 			if (isReady() && listener != null) {
 				listener.exitScreen(this, 1);
 			}
+
+			if (isLevelSelect() && listener!=null){
+				listener.exitScreen(this, 6);
+			}
+
 
 			// If the player hits the quit button
 			if(shouldQuit()){
