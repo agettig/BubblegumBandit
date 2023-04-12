@@ -24,42 +24,21 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  * Abstract enemy class.
  * <p>
  * Initialization is done by reading the json
- * Note, enemies can only be initiated as stationary or moving enemies
  */
 public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
 
     private TextureRegion outline;
 
-    // Physics constants
+    /** EnemyModel's unique ID */
     private int id;
 
-    /**
-     * The factor to multiply by the input
-     */
-    private float force;
-    /**
-     * The amount to slow the character down
-     */
+    /** The amount to slow the character down  */
     private float damping;
-    /**
-     * The maximum character speed
-     */
-    private float maxspeed;
-    /**
-     * The current horizontal movement of the character
-     */
-    private float movement;
-    /**
-     * Which direction is the character facing
-     */
+
+    /** true if this EnemyModel is facing right; false if facing left */
     private boolean faceRight;
-    /**
-     * Cache for flipping player orientation
-     */
-    private float angle;
-    /**
-     * Whether our feet are on the ground
-     */
+
+    /** true if the EnemyModel's feet are on the ground */
     private boolean isGrounded;
 
     // SENSOR FIELDS
@@ -79,6 +58,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     private RayCastCone attacking;
 
+    /**Reference to the Box2D world */
     private World world;
 
     public int getNextAction() {
@@ -98,10 +78,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         this.previousAction = this.nextAction;
         this.nextAction = nextAction;
     }
+    /** true if this EnemyModel is upside-down.*/
+    protected boolean isFlipped;
 
-    /**
-     * The y scale of this enemy (for flipping when gravity swaps)
-     */
+    /** EnemyModel's y-scale: used for flipping gravity. */
     private float yScale;
 
     /**
@@ -149,71 +129,25 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     // endRegion
 
-    /**
-     * Returns left/right movement of this character.
-     * <p>
-     * This is the result of input times dude force.
+    /**Returns this EnemyModel's unique integer ID.
      *
-     * @return left/right movement of this character.
-     */
-    public float getMovement() {
-        return movement;
-    }
+     * @returns this EnemyModel's unique ID. */
+    public int getId() { return id; };
 
-    /**
-     * Sets left/right movement of this character.
-     * <p>
-     * This is the result of input times dude force.
-     *
-     * @param value left/right movement of this character.
-     */
-    public void setMovement(float value) {
-        movement = value;
-        // Change facing if appropriate
-        if (movement < 0) {
-            faceRight = false;
-        } else if (movement > 0) {
-            faceRight = true;
-        }
-    }
 
-    /**
-     * Returns how much force to apply to get the dude moving
-     * <p>
-     * Multiply this by the input to get the movement value.
+    /** Returns true if this EnemyModel is facing right;
+     * otherwise, returns false.
      *
-     * @return how much force to apply to get the dude moving
-     */
-    public float getForce() {
-        return force;
-    }
-
-    /**Returns this enemy's ID
-     *
-     * @returns the id of this enemy*/
-    public int getId(){ return id; };
-
-    /**
-     * Sets how much force to apply to get the dude moving
-     * <p>
-     * Multiply this by the input to get the movement value.
-     *
-     * @param value how much force to apply to get the dude moving
-     */
-    public void setForce(float value) {
-        force = value;
-    }
-
-    /** Returns whether or not the dude is facing right
-     *
-     * @return whether or not the enemy is facing right*/
+     * @return true if this EnemyModel is facing right;
+     *        otherwise, false.*/
     public boolean getFaceRight(){
         return faceRight;
     }
 
-    /** Changes the direction the dude is facing
+
+    /** Makes this EnemyModel face right.
      *
-     *@param isRight whether or not the dude is facing right*/
+     *@param isRight if this EnemyModel is facing right.*/
     public void setFaceRight(boolean isRight) {
         faceRight = isRight;
     }
@@ -227,6 +161,16 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         return damping;
     }
 
+
+    /**
+     * Returns true if this EnemyModel is upside-down.
+     *
+     * @returns true if this EnemyModel is upside-down.
+     * */
+    public boolean isFlipped() {
+        return isFlipped;
+    }
+
     /**
      * Sets how hard the brakes are applied to get a dude to stop moving
      *
@@ -236,46 +180,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         damping = value;
     }
 
-    /**
-     * Returns the upper limit on dude left-right movement.
-     * <p>
-     * This does NOT apply to vertical movement.
-     *
-     * @return the upper limit on dude left-right movement.
-     */
-    public float getMaxSpeed() {
-        return maxspeed;
-    }
 
     /**
-     * Sets the upper limit on dude left-right movement.
-     * <p>
-     * This does NOT apply to vertical movement.
+     * Creates an EnemyModel.
      *
-     * @param value the upper limit on dude left-right movement.
-     */
-    public void setMaxSpeed(float value) {
-        maxspeed = value;
-    }
-
-    /**
-     * Returns true if the dude is on the ground.
-     *
-     * @return true if the dude is on the ground.
-     */
-    public boolean isGrounded() {
-        return isGrounded;
-    }
-
-    /**
-     * Sets whether the dude is on the ground.
-     *
-     * @param value whether the dude is on the ground.
-     */
-    public void setGrounded(boolean value) {
-        isGrounded = value;
-    }
-
+     * @param world The Box2D world.
+     * @param id The unique ID to assign to this EnemyModel.
+     * */
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -304,16 +215,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         this.helpingTarget = helpingTarget;
     }
 
+
     /**
-     * Initializes the dude via the given JSON value
-     * <p>
-     * The JSON value has been parsed and is part of a bigger level file.  However,
-     * this JSON value is limited to the dude subtree
+     * Initializes this EnemyModel's physics values from JSON.
      *
      * @param directory the asset manager
      * @param x the x position of this enemy
      * @param y the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
+     * @param x the x position of this EnemyModel
+     * @param y the y position of this EnemyModel
+     * @param constantsJson the JSON subtree defining all EnemyModels
      */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
         setName("enemy" + id);
@@ -327,9 +239,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         setDensity(constantsJson.get("density").asFloat());
         setFriction(constantsJson.get("friction").asFloat());
         setRestitution(constantsJson.get("restitution").asFloat());
-        setForce(constantsJson.get("force").asFloat());
+//        setForce(constantsJson.get("force").asFloat());
         setDamping(constantsJson.get("damping").asFloat());
-        setMaxSpeed(constantsJson.get("maxspeed").asFloat());
+//        setMaxSpeed(constantsJson.get("maxspeed").asFloat());
         WANDER_SPEED = constantsJson.get("wanderspeed").asFloat();
         CHASE_SPEED = constantsJson.get("chasespeed").asFloat();
         PURSUE_SPEED = constantsJson.get("pursuespeed").asFloat();
@@ -473,7 +385,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     /**
-     * Draws the physics object.
+     * Draws this EnemyModel.
      *
      * @param canvas Drawing context
      */
@@ -523,6 +435,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         }
     }
 
+    /**
+     * Draws this EnemyModel in Debug Mode.
+     *
+     * @param canvas Drawing context
+     */
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
@@ -533,7 +450,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         attacking.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
+    /**
+     * Updates this EnemyModel's vision component.
+     */
     public void updateRayCasts() {
+
         vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
         sensing.setDirection(!faceRight? (float) 0 : (float) Math.PI);
         attacking.setDirection(faceRight? (float) 0 : (float) Math.PI);
@@ -543,41 +464,26 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     }
 
     /**
-     * Creates the physics Body(s) for this object, adding them to the world.
-     *
-     * This method overrides the base method to keep your ship from spinning.
+     * Creates the physics Body(s) for this EnemyModel and adds
+     * them to the Box2D world.
      *
      * @param world Box2D world to store body
      *
-     * @return true if object allocation succeeded
+     * @return true if object allocation succeeded; otherwise,
+     * false.
      */
     public boolean activatePhysics(World world) {
-        // create the box from our superclass
         if (!super.activatePhysics(world)) {
             return false;
         }
-
-        // Ground Sensor
-        // -------------
-        // We only allow the dude to jump when he's on the ground.
-        // Double jumping is not allowed.
-        //
-        // To determine whether or not the dude is on the ground,
-        // we create a thin sensor under his feet, which reports
-        // collisions with the world but has no collision response.
-//        FixtureDef sensorDef = new FixtureDef();
-//        sensorDef.density = getDensity();
-//        sensorDef.isSensor = true;
-//        sensorDef.shape = sensorShape;
-//        sensorFixture = body.createFixture(sensorDef);
-//        sensorFixture.getFilterData().categoryBits = CATEGORY_ENEMY_LISTENING;
-//        sensorFixture.getFilterData().maskBits = MASK_ENEMY_LISTENING;
-//        sensorFixture.setUserData(sensorName);
         return true;
     }
 
     /**
      * Flips the player's angle and direction when the world gravity is flipped
+    /**
+     * Negates this EnemyModel's current "flipped" state (if it is
+     * grounded).
      */
     public void flippedGravity() {
         if (!(gummed || stuck)) isFlipped = !isFlipped;

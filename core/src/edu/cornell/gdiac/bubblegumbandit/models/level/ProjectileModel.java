@@ -17,9 +17,6 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     /** Gravity scale of bullets */
     private float gravity = 0;
 
-    /** Speed that bullets move */
-    private float speed = 7;
-
     /** damage that the bullet deals upon impact with player */
     private float damage = 1;
 
