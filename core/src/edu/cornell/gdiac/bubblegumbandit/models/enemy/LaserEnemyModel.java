@@ -49,8 +49,6 @@ public class LaserEnemyModel extends EnemyModel{
      * */
     public LaserEnemyModel(World world, int id){
         super(world, id);
-        // TODO remove
-        setFaceRight(false);
         didHitBandit = false;
     }
 
