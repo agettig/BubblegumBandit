@@ -23,13 +23,13 @@ public class Minimap {
     private int height;
 
     /**Width of the map */
-    private final int MAP_WIDTH = 26;
+    private final int MAP_WIDTH = 50;
 
     /**Height of the map */
-    private final int MAP_HEIGHT = 16;
+    private final int MAP_HEIGHT = 25;
 
     /**Size of a Tile in the Minimap */
-    private final float MAP_TILE_SIZE = 10f;
+    private final float MAP_TILE_SIZE = 5f;
 
     /**Minimap's background image */
     private Image minimapBackground;
@@ -44,10 +44,10 @@ public class Minimap {
     private Table minimapTable;
 
     /**Ratio of the Minimap's length to the screen width  */
-    private final float HORZ_SCALE = .25f;
+    private final float HORZ_SCALE = .22f;
 
     /**Ratio of the Minimap's height to the screen height  */
-    private final float VERT_SCALE = .3f;
+    private final float VERT_SCALE = .25f;
 
 
     /**
@@ -81,7 +81,7 @@ public class Minimap {
                 directory.getEntry("minimap_background", Texture.class));
         minimapTable.add(minimapBackground);
         minimapBackground.setSize(0, 0);
-        minimapBackground.setColor(Color.BLACK);
+        minimapBackground.setColor(new Color(0,0,0,.3f));
         makeMinimapTiles(directory);
     }
 
@@ -98,8 +98,8 @@ public class Minimap {
                      ArrayList<Vector2> enemyPositions, JsonValue levelFormat){
 
         //Make the Minimap background.
-        float mapLength = HORZ_SCALE * canvasWidth;
-        float mapHeight = VERT_SCALE * canvasHeight;
+        float mapLength = HORZ_SCALE * minimapStage.getWidth();
+        float mapHeight = VERT_SCALE * minimapStage.getHeight();
         minimapBackground.setSize(mapLength, mapHeight);
         minimapBackground.setPosition(
                 minimapStage.getWidth() - mapLength - 30,
@@ -161,7 +161,7 @@ public class Minimap {
                         int minimapX = x - topLeftX;
                         int minimapY = y - topLeftY;
                         setMinimapTilePosition(tile, minimapX, minimapY);
-                        tile.setColor(Color.WHITE);
+                        tile.setColor(new Color(1,1,1,0));
                         if (x == Math.round(banditPosition.x) && y == Math.round(banditPosition.y)) {
                             drawAsBanditTile(tile);
                         }
@@ -215,7 +215,7 @@ public class Minimap {
      * @param platformImage The Image of the Tile to modify.
      * */
     private void drawAsPlatformTile(Image platformImage){
-        platformImage.setColor(Color.BLUE);
+        platformImage.setColor(Color.WHITE);
     }
 
 
@@ -274,6 +274,6 @@ public class Minimap {
 
         //Set the Tile's position and size.
         tileImage.setPosition(tileX, tileY);
-        tileImage.setSize(MAP_TILE_SIZE, MAP_TILE_SIZE);
+        tileImage.setSize(MAP_TILE_SIZE + 1, MAP_TILE_SIZE + 1);
     }
 }
