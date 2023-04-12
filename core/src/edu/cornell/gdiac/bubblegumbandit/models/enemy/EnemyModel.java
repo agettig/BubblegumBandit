@@ -414,7 +414,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
             // TODO: Fix rolling robots so don't have to do this
             float y = getY() * drawScale.y;
             if (getName().equals("rollingrobot")) {
-                y += 16;
+                y += yScale * 16;
                 x += effect * 40;
             }
 
