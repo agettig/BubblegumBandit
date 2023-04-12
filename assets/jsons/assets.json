@@ -152,8 +152,8 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/alpha.json",
-        "level2":"jsons/NewLevel4.json",
+		"level1" : "jsons/alpha_presentation.json",
+        "level2":"jsons/alpha.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }
