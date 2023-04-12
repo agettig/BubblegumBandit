@@ -15,19 +15,20 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
-import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.*;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.LaserController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
@@ -35,13 +36,17 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
+
+import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -92,9 +97,6 @@ public class LevelModel {
      */
     private ExitModel goalDoor;
 
-    /** Reference to the aim model */
-    private AimModel aim;
-
     /**
      * Whether or not the level is in debug more (showing off physics)
      */
@@ -130,7 +132,9 @@ public class LevelModel {
     private TiledGraph tiledGraphGravityDown;
     private TiledGraph tiledGraphGravityUp;
 
-    /** The width of the level. */
+    /**
+     * The width of the level.
+     */
     private int levelWidth;
     /**
      * The height of the level.
@@ -142,10 +146,24 @@ public class LevelModel {
      */
     private AlarmController alarms;
 
-    /** Returns the aim in this level. */
+    /**
+     * Reference to the aim model
+     */
+    private AimModel aim;
+
+    /**
+     * Reference to background elements in the game
+     */
+    private Array<BackObjModel> backgroundObjects;
+
+    /**
+     * Returns the aim in this level.
+     */
     public AimModel getAim() {
         return aim;
-    };
+    }
+
+    ;
 
 
     /**
@@ -219,7 +237,9 @@ public class LevelModel {
         debug = value;
     }
 
-    /** Start the alarms in the level. */
+    /**
+     * Start the alarms in the level.
+     */
     public void startAlarms() {
         alarms.setAlarms(true);
     }
@@ -297,6 +317,29 @@ public class LevelModel {
             property = property.next();
         }
 
+        //initialize dynamic background elements
+//        JsonValue backJV =levelFormat.get("backgroundObj");
+//
+//        int numObj = backJV.get("numObj").asInt();
+//        JsonValue info = backJV.get("objects").child();
+//
+//        backgroundObjects = new BackObjModel[numObj];
+//
+//        for (int i = 0; i < numObj; i ++){
+//            BackObjModel o = new BackObjModel();
+//            o.initialize(directory, backJV, info);
+//
+//            o.setDrawScale(scale);
+//            activate(o);
+//            o.setFilter(CATEGORY_BACK, MASK_BACK);
+//
+//            info = info.next();
+//
+//            backgroundObjects[i] = o;
+//        }
+
+        //------------------------------------------------
+
         float[] pSize = constants.get("physicsSize").asFloatArray();
 
         levelWidth = levelFormat.getInt("width");
@@ -312,18 +355,18 @@ public class LevelModel {
         }
         int boardIdOffset = tileset.getInt("firstgid");
 
-        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f/8);
-        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f/8);
+        tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f / 8);
+        tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f / 8);
 
         String key2 = constants.get("background").asString();
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        enemyControllers = new Array<>();
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
         enemyControllers = new Array<>();
+        backgroundObjects = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -375,13 +418,34 @@ public class LevelModel {
         // Create objects
         Array<Vector2> alarmPos = new Array<>();
         JsonValue object = objects.child();
+        JsonValue enemyConstants;
+        EnemyModel enemy;
         int enemyCount = 0;
         while (object != null) {
             String objType = object.get("type").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
+
+
             switch (objType) {
+                case "box":
+                case "chair":
+
+                    //the gid is a huge negative integer when flipped horizontally.
+                    // add a specific attribute for this from Tiled?
+                    boolean facingRight = (object.getInt("gid") > 0);
+
+                    JsonValue bgoConstants = constants.get(objType);
+                    BackObjModel o = new BackObjModel();
+                    o.initialize(directory, x, y, facingRight, bgoConstants);
+                    o.setDrawScale(scale);
+                    activate(o);
+                    o.setFilter(CATEGORY_BACK, MASK_BACK);
+                    backgroundObjects.add(o);
+                    break;
+
                 case "bandit":
+
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);
@@ -392,22 +456,42 @@ public class LevelModel {
                     goalDoor.setDrawScale(scale);
                     break;
                 case "smallrobot":
-                case "mediumrobot":
-                    JsonValue enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
-                    if (enemyConstants.get("type").asString().equals("moving")) {
-                        EnemyModel enemy = new ProjectileEnemyModel(world, enemyCount);
-                        enemy.initialize(directory, x, y, enemyConstants);
-                        enemy.setDrawScale(scale);
-                        activate(enemy);
-                        enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
+                    break;
+                case "mediumrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new RollingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
 
-                        enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                        enemyCount++;
-                    }
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
+
+                    break;
+                case "large_robot":
+                    enemyConstants = constants.get(objType);
+                    enemy = new LaserEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
                     break;
                 case "orb":
                     orbPlaced = true;
+                case "star":
                 case "floatinggum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
@@ -425,8 +509,8 @@ public class LevelModel {
                     alarmPos.add(new Vector2(x, y));
                     break;
                 default:
+                    enemyConstants = null;
                     throw new UnsupportedOperationException(objType + " is not a valid object");
-
             }
             object = object.next();
         }
@@ -508,7 +592,7 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
-       alarms.update(dt);
+        alarms.update(dt);
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
@@ -559,6 +643,9 @@ public class LevelModel {
 
         aim.drawProjectileRay(canvas);
 
+        drawChargeLasers(gumProjectile, canvas);
+
+
         canvas.end();
         alarms.drawLights(canvas, scale);
 
@@ -576,6 +663,61 @@ public class LevelModel {
         }
     }
 
+    public void drawChargeLasers(TextureRegion asset, GameCanvas canvas) {
+        final float chargeLaserScale = 1f;
+        final float firingLaserScale = 7f;
+        for (AIController ai : enemyControllers) {
+            if (ai.getEnemy() instanceof LaserEnemyModel) {
+                LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
+                Vector2 intersect = enemy.getRaycastLine();
+                Vector2 enemyPos = enemy.getPosition();
+                if (intersect == null) continue;
+                Vector2 dir = new Vector2(
+                        intersect.x - enemyPos.x,
+                        intersect.y - enemyPos.y
+                );
+                float gap = 0.01f;
+                int numSegments = (int) (dir.len() / gap);
+                dir.nor();
+                Color transparentYellow = Color.YELLOW;
+                transparentYellow.a = .075f;
+                if (enemy.isChargingLaser()) {
+                    for (int i = 0; i < numSegments; i++) {
+                        float x = enemyPos.x + (dir.x * i * gap);
+                        float y = enemyPos.y + (dir.y * i * gap);
+                        canvas.draw(
+                                asset,
+                                transparentYellow,
+                                asset.getRegionWidth(),
+                                asset.getRegionHeight(),
+                                x * scale.x,
+                                y * scale.y,
+                                asset.getRegionWidth() * chargeLaserScale,
+                                asset.getRegionHeight() * chargeLaserScale);
+                    }
+                } else if (enemy.isFiringLaser()) {
+                    for (int i = 0; i < numSegments; i++) {
+                        float x = enemyPos.x + (dir.x * i * gap);
+                        float y = enemyPos.y + (dir.y * i * gap);
+                        canvas.draw(
+                                asset,
+                                Color.RED,
+                                asset.getRegionWidth(),
+                                asset.getRegionHeight(),
+                                x * scale.x,
+                                y * scale.y,
+                                asset.getRegionWidth() * firingLaserScale,
+                                asset.getRegionHeight() * firingLaserScale);
+                    }
+
+                    if(!enemy.hasDamagedBandit() && enemy.didHitBandit()){
+                        enemy.setDamagedBandit(true);
+                        bandit.hitPlayer(LaserController.LASER_DAMAGE);
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Draws a repeating background, and crops off any overhangs outside the level
@@ -612,11 +754,10 @@ public class LevelModel {
 
         if (enemy.getVX() == 0.0f) {
             float offset = enemy.getX() - (int) enemy.getX();
-            if (offset > .5){
+            if (offset > .5) {
                 offset -= .5;
-            }
-            else{
-                offset = .5f -offset;
+            } else {
+                offset = .5f - offset;
             }
             if (offset < -DRIFT_TOLER) {
                 enemy.setX(enemy.getX() + DRIFT_SPEED);
@@ -628,11 +769,10 @@ public class LevelModel {
         // Drift to line up horizontally with the grid.
         if (enemy.getVY() == 0.0f) {
             float offset = enemy.getY() - (int) enemy.getY();
-            if (offset > .5){
+            if (offset > .5) {
                 offset -= .5;
-            }
-            else{
-                offset = .5f -offset;
+            } else {
+                offset = .5f - offset;
             }
             if (offset < -DRIFT_TOLER) {
                 enemy.setY(enemy.getY() + DRIFT_SPEED);
@@ -642,22 +782,28 @@ public class LevelModel {
         }
     }
 
-    /** Returns the amount of time the player has to escape. */
+    /**
+     * Returns the amount of time the player has to escape.
+     */
     public float getOrbCountdown() {
         return timer;
     }
 
     public class AimModel {
 
-        /** The colors used in the aim render */
+        /**
+         * The colors used in the aim render
+         */
         private final Color[] COLORS = new Color[]{new Color(1, .619f, .62f, 1),
-                new Color(1, .73f, .73f, .9f),
-                new Color(1, .81f, .81f, .8f),
-                new Color(1, .86f, .86f, .7f),
-                new Color(1, .905f, .905f, .6f),
-                new Color(1, 1, 1, .5f)};
+                                                   new Color(1, .73f, .73f, .9f),
+                                                   new Color(1, .81f, .81f, .8f),
+                                                   new Color(1, .86f, .86f, .7f),
+                                                   new Color(1, .905f, .905f, .6f),
+                                                   new Color(1, 1, 1, .5f)};
 
-        /** The max number of dots in the trajectory */
+        /**
+         * The max number of dots in the trajectory
+         */
         private final int MAX_DOTS = 6;
 
         /**
@@ -674,31 +820,49 @@ public class LevelModel {
 
         private JsonValue gumJV;
 
-        /** The current number of dots */
+        /**
+         * The current number of dots
+         */
         private int range;
 
-        /** Array of dot positions */
+        /**
+         * Array of dot positions
+         */
         private float[] dotPos;
 
-        /** The highlighted obstacle, if it exists */
+        /**
+         * The highlighted obstacle, if it exists
+         */
         protected Unstickable highlighted;
 
-        /** Cache for the start position of the raycast */
+        /**
+         * Cache for the start position of the raycast
+         */
         private Vector2 originCache;
 
-        /** Cache for the direction vector of the raycast */
+        /**
+         * Cache for the direction vector of the raycast
+         */
         private Vector2 directionCache;
 
-        /** Cache for the end position of the raycast */
+        /**
+         * Cache for the end position of the raycast
+         */
         private Vector2 endCache;
 
-        /** The distance of the gum offset. */
+        /**
+         * The distance of the gum offset.
+         */
         private float offsetDist;
 
-        /** The intersected point of the trajectory raycast. */
+        /**
+         * The intersected point of the trajectory raycast.
+         */
         private final Vector2 intersect = new Vector2();
 
-        /** The raycast callback used for the trajectory raycast */
+        /**
+         * The raycast callback used for the trajectory raycast
+         */
         private final RayCastCallback trajectoryRay = new RayCastCallback() {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point,
@@ -712,7 +876,9 @@ public class LevelModel {
             }
         };
 
-        /** The last intersected obstacle in the unsticking raycast. */
+        /**
+         * The last intersected obstacle in the unsticking raycast.
+         */
         private final Obstacle[] lastCollision = new Obstacle[1];
 
         /**
@@ -733,7 +899,9 @@ public class LevelModel {
         };
 
 
-        /** Get the highlighted unstickable. */
+        /**
+         * Get the highlighted unstickable.
+         */
         public Unstickable getSelected() {
             return highlighted;
         }
@@ -745,7 +913,9 @@ public class LevelModel {
             originCache = new Vector2();
         }
 
-        /** Initialize the Aim Model. */
+        /**
+         * Initialize the Aim Model.
+         */
         public void initialize(AssetDirectory directory, JsonValue constants) {
             trajectoryTexture = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
             gumJV = constants.get("gumProjectile");
@@ -796,7 +966,9 @@ public class LevelModel {
             return cross;
         }
 
-        /** Update the trajectory */
+        /**
+         * Update the trajectory
+         */
         public void update(GameCanvas canvas, float dt) {
             Vector2 target = PlayerController.getInstance().getCrossHair();
             originCache.set(getProjOrigin(gumJV, canvas)); // Redundant, but just to keep the logic sorted
@@ -813,8 +985,8 @@ public class LevelModel {
             range = numSegments + 1;
             if (range > MAX_DOTS) range = MAX_DOTS;
             for (int i = 0; i < range; i++) {
-                dotPos[2*i] = originCache.x + (directionCache.x * i * trajectoryGap);
-                dotPos[2*i+1] = originCache.y + (directionCache.y * i * trajectoryGap);
+                dotPos[2 * i] = originCache.x + (directionCache.x * i * trajectoryGap);
+                dotPos[2 * i + 1] = originCache.y + (directionCache.y * i * trajectoryGap);
             }
 
             // Unsticking raycast
@@ -835,15 +1007,21 @@ public class LevelModel {
         /**
          * Draws the path of the projectile using the result of a raycast. Only works for shooting in a straight line (gravity scale of 0).
          *
-         * @param canvas      The GameCanvas to draw the trajectory on.
+         * @param canvas The GameCanvas to draw the trajectory on.
          */
         public void drawProjectileRay(GameCanvas canvas) {
             for (int i = 0; i < range; i++) {
-                canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2*i] * scale.x,
-                        dotPos[2*i+1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
+                canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
+                        dotPos[2 * i + 1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
             }
         }
     }
 
 
+    /**
+     * Return a reference to all the background objects
+     */
+    public Array<BackObjModel> getBackgroundObjects() {
+        return backgroundObjects;
+    }
 }

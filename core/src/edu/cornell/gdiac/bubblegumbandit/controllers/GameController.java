@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.profiling.GLErrorListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -30,19 +31,20 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.bubblegumbandit.view.Minimap;
 import edu.cornell.gdiac.util.ScreenListener;
+
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
@@ -61,9 +63,6 @@ import java.util.ArrayList;
  */
 public class GameController implements Screen {
     // ASSETS
-
-
-
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -86,6 +85,9 @@ public class GameController implements Screen {
     private JsonValue tilesetJson;
 
     private HUDController hud;
+
+    private Minimap minimap;
+
     /**
      * The jump sound.  We only want to play once.
      */
@@ -187,10 +189,28 @@ public class GameController implements Screen {
     /** A collection of the active projectiles on screen */
     private ProjectileController projectileController;
 
+    /** Reference to LaserController instance */
+    private LaserController laserController;
+
+    /**
+     * Gum gravity scale when creating gum
+     */
+    private float gumGravity;
+
+    /**
+     * Gum speed when creating gum
+     */
+    private float gumSpeed;
+
     /**
      * The texture of the trajectory projectile
      */
     private TextureRegion trajectoryProjectile;
+
+    /**
+     * The texture of the laserBeam
+     */
+    private TextureRegion laserBeam;
 
     private TextureRegion stuckGum;
 
@@ -201,7 +221,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 2;
+    private final int NUM_LEVELS = 1;
 
     /** Whether the orb has been collected. */
     private boolean orbCollected;
@@ -321,8 +341,8 @@ public class GameController implements Screen {
 
         setComplete(false);
         setFailure(false);
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
+        laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
     }
@@ -361,8 +381,19 @@ public class GameController implements Screen {
         bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
+
+        int x = levelFormat.get("width").asInt();
+        int y = levelFormat.get("height").asInt();
+        minimap = new Minimap(directory,levelFormat, x, y);
+    }
+
+
+    /** sets the level loaded by the game controller, set by level select */
+    public void setLevelNum (int num){
+        levelNum = num;
     }
 
     /**
@@ -376,6 +407,8 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
         collisionController.reset();
+        hud.resetStars();
+
 
         level.dispose();
 
@@ -510,6 +543,9 @@ public class GameController implements Screen {
             if (level.aiControllers() != null) {
                 for (AIController ai : level.aiControllers()) ai.flipEnemy();
             }
+            if (level.getBackgroundObjects() != null) {
+                for (BackObjModel o : level.getBackgroundObjects()) o.flip();
+            }
         }
 
 
@@ -548,27 +584,19 @@ public class GameController implements Screen {
             }
         }
 
-//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-//                level.activate(newProj);
-//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-//            } else {
-//                controller.coolDown(true);
-//            }
-//
-//            //pass to enemy, update the enemy with that action
-//           // TODO this probably means enemies are updated twice per frame, once with this update method
-//           // TODO and once with their parent. Switching to sense-think-act should fix this
-//           controller.getEnemy().update(action);
-//       }
-
         level.update(dt);
         for (AIController controller: level.aiControllers()){
             if (controller.getEnemy().fired()){
-                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
-                level.activate(newProj);
-                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                if(controller.getEnemy() instanceof LaserEnemyModel) {
+                    laserController.fireLaser(controller);
+                }
+                else{
+                    ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                    smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
+                    level.activate(newProj);
+                    newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                }
+
             }
             else{
                 controller.coolDown(true);
@@ -576,6 +604,7 @@ public class GameController implements Screen {
         }
         projectileController.update();
         level.getAim().update(canvas, dt);
+        laserController.updateLasers(dt,level.getWorld(), level.getBandit().getPosition());
 
         // Update the camera
         GameCamera cam = canvas.getCamera();
@@ -592,6 +621,19 @@ public class GameController implements Screen {
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);
+
+        // TODO add to collision controller
+        // TODO have attack action for rolling robot
+//        if (collisionController.getRollingCollision()) {
+//            bandit.hitPlayer(0.5f);
+//            if (collisionController.getLeftRolling()) {
+//                bandit.getBody().applyForce(30f, 1f, bandit.getX(), bandit.getY(), true);
+//            }
+//            else {
+//                bandit.getBody().applyForce(-30f, 1f, bandit.getX(), bandit.getY(), true);
+//            }
+//            collisionController.resetRollingCollision();
+//        }
     }
 
 
@@ -612,6 +654,24 @@ public class GameController implements Screen {
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
         hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
+
+        Vector2 banditPosition = level.getBandit().getPosition();
+        ArrayList<Vector2> enemyPositions = new ArrayList<>();
+        for(AIController enemyController : level.aiControllers()) {
+            if(enemyController != null){
+                if(enemyController.getEnemy() != null){
+                    Vector2 enemyPos = enemyController.getEnemy().getPosition();
+                    float enemyX = Math.round(enemyPos.x);
+                    float enemyY = Math.round(enemyPos.y);
+                    Vector2 roundedEnemyPos = new Vector2(enemyX, enemyY);
+                    enemyPositions.add(roundedEnemyPos);
+                }
+            }
+        }
+
+         minimap.draw(canvas.getCamera().viewportWidth, canvas.getHeight(), banditPosition, enemyPositions, levelFormat);
+
+
 
         // Final message
         if (complete && !failed) {

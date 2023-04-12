@@ -68,7 +68,7 @@
     "texture": "floatinggum",
     "debugcolor": "yellow",
     "debugopacity": 200,
-    "bobAmount":  0.1,
+    "bobAmount": 0.1,
     "bobSpeed": 3
   },
   "orb": {
@@ -76,6 +76,16 @@
     "friction": 0.0,
     "restitution": 0.0,
     "texture": "orb",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "bobAmount": 0.1,
+    "bobSpeed": 3
+  },
+  "star": {
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": "star",
     "debugcolor": "yellow",
     "debugopacity": 200,
     "bobAmount":  0.1,
@@ -86,72 +96,34 @@
     "debugopacity": 200
   },
   "mediumrobot": {
-    "type": "moving",
+    "type": "projectile",
     "size": [
-      2,
-      2
+      1.5,
+      1.5
     ],
     "density": 1.0,
-    "friction": 0.0,
+    "friction": 2.0,
     "restitution": 0.0,
-    "force": 0.0,
-    "damping": 0.0,
-    "maxspeed": 50.0,
-    "texture": "mediumrobot",
-    "gummedTexture": "mediumrobot",
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 12.0,
+    "animations" : "medium_robot",
+    "gumTexture": "large_gum",
+    "outline": "med_outline",
+    "texture": "med_robot",
     "debugcolor": "white",
     "debugopacity": 192,
-    "sensorcolor": "red",
+    "sensorcolor": "yellow",
     "sensoropacity": 192,
     "visionradius": 3.0,
-    "numsensors": 3,
-    "sensors": {
-      "enemyGroundSensor": {
-        "sensorsize": [
-          0.183,
-          0.05
-        ],
-        "sensorcenter": [
-          0,
-          -0.305
-        ],
-        "printoffset": [
-          0,
-          0.305
-        ]
-      },
-      "enemyRightSensor": {
-        "sensorsize": [
-          0.183,
-          0.3
-        ],
-        "sensorcenter": [
-          0,
-          0
-        ],
-        "printoffset": [
-          0.45,
-          0
-        ]
-      },
-      "enemyLeftSensor": {
-        "sensorsize": [
-          0.183,
-          0.3
-        ],
-        "sensorcenter": [
-          0,
-          0
-        ],
-        "printoffset": [
-          -0.45,
-          0
-        ]
-      }
-    }
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 10,
+    "chasespeed": 10,
+    "pursuespeed": 10
   },
   "smallrobot": {
-    "type": "moving",
+    "type": "projectile",
     "size": [
       0.5,
       1.0
@@ -166,6 +138,7 @@
     "texture": "smallrobot",
     "outline": "smallrobotoutline",
     "gummedTexture": "gummed_robot",
+    "gumTexture": "small_gum",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "yellow",
@@ -177,10 +150,37 @@
     "chasespeed": 4,
     "pursuespeed": 5
   },
+  "large_robot": {
+    "type": "moving",
+    "size": [
+      1.5,
+      2.8
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 5.0,
+    "animations": "large_robot",
+    "texture": "large_robot",
+    "gumTexture": "large_gum",
+    "outline": "large_robotoutline",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 2,
+    "chasespeed": 3,
+    "pursuespeed": 4
+  },
   "exit": {
     "size": [
-      1.92,
-      1.92
+      2,
+      3
     ],
     "bodytype": "static",
     "density": 0.0,
@@ -196,5 +196,34 @@
     "speed": 7.0,
     "density": 10.0,
     "texture": "bullet"
+  },
+  "box": {
+    "name": "box",
+    "density": 1.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "texture": "box"
+  },
+  "chair": {
+    "name": "chair",
+    "density": 1.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "texture": "chair"
+  },
+  "laser": {
+    "offsetX": 0.0,
+    "offsetY": 0.0,
+    "range": 10.0,
+    "girth": 2.0,
+    "density" : 1.0,
+    "charge_time" : 2.0,
+    "attack_time" : 2.0,
+    "charge_texture": "charge_laser",
+    "attack_texture": "attack_laser"
   }
 }

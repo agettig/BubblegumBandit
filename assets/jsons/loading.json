@@ -1,7 +1,12 @@
 {
 	"textures": {
-        "background": "textures/loading.png",
+        "background": "textures/main_menu_background.png",
 		"play": "textures/play.png",
+        "startButton": "textures/continue_game.png",
+        "settingsButton": "textures/settings.png",
+        "exitButton": "textures/quit_game.png",
+        "levelSelectButton": "textures/level_select.png",
+        "hoverPointer": "textures/hover_pointer.png",
         "progress": {
             "file":      "textures/progressbar.png",
             "atlas":     {
