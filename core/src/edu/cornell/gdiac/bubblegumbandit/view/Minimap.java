@@ -181,51 +181,51 @@ public class Minimap {
             bottomRightY = height;
         }
 
-        for(Vector2 v : floorPositions){
-            int x = (int)v.x;
-            int y = (int)v.y;
-            if (x >= topLeftX && x < bottomRightX && y >= topLeftY && y < bottomRightY) {
+//        for(Vector2 v : floorPositions){
+//            int x = (int)v.x;
+//            int y = (int)v.y;
+//            if (x >= topLeftX && x < bottomRightX && y >= topLeftY && y < bottomRightY) {
+//                Image tile = minimapTiles[x][y];
+//                int minimapX = x - topLeftX;
+//                int minimapY = y - topLeftY;
+//                setMinimapTilePosition(tile, minimapX, minimapY);
+//                // tile.setColor(new Color(1,1,1,0));
+//                drawAsPlatformTile(tile);
+//            }
+//
+//        }
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 Image tile = minimapTiles[x][y];
-                int minimapX = x - topLeftX;
-                int minimapY = y - topLeftY;
-                setMinimapTilePosition(tile, minimapX, minimapY);
-                // tile.setColor(new Color(1,1,1,0));
-                drawAsPlatformTile(tile);
+                if (tile != null) {
+                    if (x >= topLeftX && x < bottomRightX && y >= topLeftY && y < bottomRightY) {
+                        int minimapX = x - topLeftX;
+                        int minimapY = y - topLeftY;
+                        setMinimapTilePosition(tile, minimapX, minimapY);
+                        tile.setColor(new Color(1,1,1,0));
+                        if (x == Math.round(banditPosition.x) && y == Math.round(banditPosition.y)) {
+                            drawAsBanditTile(tile);
+                        }
+                    }
+                    else tile.setSize(0, 0);
+
+                    //Draw platforms.
+                    for(Vector2 v : floorPositions){
+                        if((int)v.x == x && (int)v.y == y){
+                            drawAsPlatformTile(tile);
+                        }
+                    }
+
+                    //Draw enemies.
+                    for(Vector2 v : enemyPositions){
+                        if((int)v.x == x && (int)v.y == y){
+                            drawAsEnemyTile(tile);
+                        }
+                    }
+                }
             }
         }
-
-        //Draw the relevant Minimap tiles.
-//        for (int x = 0; x < width; x++) {
-//            for (int y = 0; y < height; y++) {
-//                Image tile = minimapTiles[x][y];
-//                if (tile != null) {
-//                    if (x >= topLeftX && x < bottomRightX && y >= topLeftY && y < bottomRightY) {
-//                        int minimapX = x - topLeftX;
-//                        int minimapY = y - topLeftY;
-//                        setMinimapTilePosition(tile, minimapX, minimapY);
-//                        tile.setColor(new Color(1,1,1,0));
-//                        if (x == Math.round(banditPosition.x) && y == Math.round(banditPosition.y)) {
-//                            drawAsBanditTile(tile);
-//                        }
-//                    }
-//                    else tile.setSize(0, 0);
-//
-//                    //Draw platforms.
-//                    for(Vector2 v : floorPositions){
-//                        if((int)v.x == x && (int)v.y == y){
-//                            drawAsPlatformTile(tile);
-//                        }
-//                    }
-//
-//                    //Draw enemies.
-//                    for(Vector2 v : enemyPositions){
-//                        if((int)v.x == x && (int)v.y == y){
-//                            drawAsEnemyTile(tile);
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
         //Draw the Minimap.
         minimapStage.draw();
@@ -245,6 +245,7 @@ public class Minimap {
                 minimapTiles[x][y] =
                         new Image(directory.getEntry("minimap_tile", Texture.class));
                 minimapTable.add(minimapTiles[x][y]);
+                minimapTiles[x][y].setSize(0,0);
             }
         }
     }
