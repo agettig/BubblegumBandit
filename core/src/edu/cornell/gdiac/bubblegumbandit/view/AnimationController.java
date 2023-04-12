@@ -16,6 +16,7 @@ public class AnimationController {
   String currentName;
 
 
+
   public AnimationController(AssetDirectory directory, String key) {
     animations = new HashMap<>();
     fps = new HashMap<>();

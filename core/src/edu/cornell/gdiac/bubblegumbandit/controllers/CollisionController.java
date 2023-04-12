@@ -5,23 +5,14 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
-
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.MessageType;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
 
 public class CollisionController implements ContactListener {
@@ -39,10 +30,14 @@ public class CollisionController implements ContactListener {
 
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
+    public static final short CATEGORY_BACK = 0x0012;
+
     public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
+
+    public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
     public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_UNSTICK = ~CATEGORY_PLAYER;
@@ -68,6 +63,13 @@ public class CollisionController implements ContactListener {
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
+    /**true if rolling enemy collision*
+     */
+    private boolean rollingCollision = false;
+    /**true if rolling enemy is left of bandit*
+     */
+    private boolean leftRolling = false;
+
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
 
@@ -75,7 +77,6 @@ public class CollisionController implements ContactListener {
     public void reset(){
         winConditionMet = false;
     }
-
 
     /**
      * Construct a new CollisionController.
@@ -135,7 +136,10 @@ public class CollisionController implements ContactListener {
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB);
+            resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
+            checkRollingEnemyCollision(obstacleA, obstacleB);
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -453,6 +457,62 @@ public class CollisionController implements ContactListener {
     }
 
     /**
+     * Checks if there was an rolling enemy collision in the Box2D world.
+     * <p>
+     * Examines two Obstacles in a collision.
+     * *
+     * @param bd1 The first Obstacle in the collision.
+     * @param bd2 The second Obstacle in the collision.
+     */
+    private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
+
+        // Check that obstacles are not null and not an enemy
+        if (bd1 == null || bd2 == null) rollingCollision = false;
+
+        // TODO: REFACTOR to more general knockback
+        if (bd1.getName().equals("rollingrobot") && bd2.equals(levelModel.getBandit())) {
+            leftRolling = (bd1.getX() < bd2.getX());
+            levelModel.getBandit().hitPlayer(0.5f);
+            levelModel.getBandit().setKnockback(true);
+            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 5f : -5f, 3f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
+//            rollingCollision = true;
+        } else if (bd2.getName().equals("rollingrobot") && bd1.equals(levelModel.getBandit())) {
+            leftRolling = (bd1.getX() > bd2.getX());
+            levelModel.getBandit().hitPlayer(0.5f);
+            levelModel.getBandit().setKnockback(true);
+            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 5f : -5f, 3f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
+//            resetRollingCollision();
+        }
+    }
+
+    public boolean getLeftRolling() {
+        return leftRolling;
+    }
+
+    public boolean getRollingCollision() {
+        return rollingCollision;
+    }
+    public void resetRollingCollision() {
+        rollingCollision = false;
+        leftRolling = false;
+    }
+
+    /**
+     * Resolves the effects of a RollingEnemy collision
+     * @param e
+     * @param o
+     */
+    private void resolveRollingEnemyCollision(RollingEnemyModel e, Obstacle o) {
+        //if (e.isRemoved()) return;
+        BanditModel bandit = levelModel.getBandit();
+        if (o.equals(bandit)) {
+            bandit.hitPlayer(e.getDamage());
+            Vector2 pos = bandit.getPosition();
+            bandit.setPosition(pos.x - 2f, pos.y);
+        }
+    }
+
+    /**
      * Resolves collisions for ground contact, adding the necessary
      * sensor fixtures.
      */
@@ -463,9 +523,10 @@ public class CollisionController implements ContactListener {
         Object dataA = fixA.getUserData();
         Object dataB = fixB.getUserData();
 
-        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA) ||
-                (bandit.getSensorName().equals(dataA) && bandit != bodyB)) {
+        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && bodyA.getFilterData().categoryBits != CATEGORY_EVENTTILE) ||
+                (bandit.getSensorName().equals(dataA) && bandit != bodyB && bodyB.getFilterData().categoryBits != CATEGORY_EVENTTILE)) {
             bandit.setGrounded(true);
+            bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }
@@ -507,6 +568,21 @@ public class CollisionController implements ContactListener {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
             SoundController.playSound("collectItem", 0.75f);
+        }
+    }
+
+    /**Check if there was a collision between the player and a star, if so have the player collect the star*/
+    public void resolveStarCollision(Obstacle bd1, Obstacle bd2) {
+        if (bd1.getName().equals("star") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
+            ((Collectible) bd1).setCollected(true);
+            levelModel.getBandit().collectStar();
+            SoundController.playSound("collectItem", .75f);
+            bd1.markRemoved(true);
+        } else if (bd2.getName().equals("star") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
+            ((Collectible) bd2).setCollected(true);
+            levelModel.getBandit().collectStar();
+            SoundController.playSound("collectItem", .75f);
+            bd2.markRemoved(true);
         }
     }
 

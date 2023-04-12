@@ -100,7 +100,7 @@ public class AIController implements Telegraph {
      * @return true if we can both fire and hit our target
      */
     public boolean canShootTarget() {
-        return canFire() && enemy.getAttacking().canSee(bandit);
+        return !enemy.getName().equals("rollingrobot") && canFire() && enemy.getAttacking().canSee(bandit);
     }
 
     /**Returns true if the bandit is within listening range of the enemy */
@@ -126,7 +126,7 @@ public class AIController implements Telegraph {
     public boolean enemyCloseToBandit(){
         float banditX = bandit.getX();
         float enemyX = enemy.getX();
-        return Math.abs(banditX - enemyX) > ENEMY_PROXIMITY;
+        return Math.abs(banditX - enemyX) < ENEMY_PROXIMITY;
     }
 
     /**
@@ -162,7 +162,7 @@ public class AIController implements Telegraph {
     }
 
     public void flipEnemy(){
-        if (!enemy.getStuck() && !enemy.getGummed()) {
+        if (!enemy.getStuck() /*&& !enemy.getGummed()*/) {
             enemy.flippedGravity();
         }
     }

@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -45,6 +45,7 @@ public class HUDController {
   /** The margin of the current health bar, depends on the current design */
   private float HEALTH_MARGIN = .125f;
 
+
   /** The last health the health bar filling was cropped to, saved as a reference so the
    * texture region healthFillRegion is not redefined on frames where the health has not changed.
    */
@@ -55,6 +56,11 @@ public class HUDController {
   private Label gumCount;
   private Label orbCountdown;
   private Label fpsLabel;
+
+  private Image starIcon1;
+  private Image starIcon2;
+  private Image starIcon3;
+  private Label starCount;
 
 
   public HUDController(AssetDirectory directory) {
@@ -67,10 +73,14 @@ public class HUDController {
     stage.addActor(table);
     table.setFillParent(true);
 
-    healthBar = new Image(directory.getEntry( "health_bar", Texture.class ));
-    healthFillText = directory.getEntry( "health_fill", Texture.class );
-    healthIcon = new Image(directory.getEntry( "health_icon", Texture.class ));
-    bubbleIcon = new Image(directory.getEntry( "bubblegum_icon", Texture.class ));
+    healthBar = new Image(directory.getEntry("health_bar", Texture.class));
+    healthFillText = directory.getEntry("health_fill", Texture.class);
+    healthIcon = new Image(directory.getEntry("health_icon", Texture.class));
+    bubbleIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+    starIcon1 = new Image(directory.getEntry("star", Texture.class));
+    starIcon2 = new Image(directory.getEntry("star", Texture.class));
+    starIcon3 = new Image(directory.getEntry("star", Texture.class));
+    resetStars();
 
     healthFillRegion = new TextureRegion(healthFillText, 0, 0,
             healthFillText.getWidth(), healthFillText.getHeight());
@@ -79,10 +89,10 @@ public class HUDController {
 
     health = new WidgetGroup(healthBar, healthFill, healthIcon);
     table.add(health).align(Align.left);
-    healthBar.setY(healthIcon.getHeight()/2-healthBar.getHeight()/2);
-    healthBar.setX(healthIcon.getWidth()/2);
-    healthFill.setX(healthBar.getX()+healthBar.getHeight()*HEALTH_MARGIN);
-    healthFill.setY(healthBar.getY()+healthBar.getHeight()*HEALTH_MARGIN);
+    healthBar.setY(healthIcon.getHeight() / 2 - healthBar.getHeight() / 2);
+    healthBar.setX(healthIcon.getWidth() / 2);
+    healthFill.setX(healthBar.getX() + healthBar.getHeight() * HEALTH_MARGIN);
+    healthFill.setY(healthBar.getY() + healthBar.getHeight() * HEALTH_MARGIN);
 
     table.row();
     table.add(bubbleIcon);
@@ -91,6 +101,12 @@ public class HUDController {
     gumCount.setFontScale(0.5f);
 
     table.add(gumCount).padLeft(10);
+    table.row();
+    table.add(starIcon1);
+    table.add(starIcon2);
+    table.add(starIcon3);
+    table.padLeft(10).padTop(60);
+
 
     orbCountdown = new Label("00", new Label.LabelStyle(font, Color.WHITE));
     orbCountdown.setFontScale(1f);
@@ -102,7 +118,12 @@ public class HUDController {
     table.add(fpsLabel).padLeft(10);
 
     table.padLeft(30).padTop(60);
+  }
 
+  public void resetStars(){
+    starIcon1.setVisible(false);
+    starIcon2.setVisible(false);
+    starIcon3.setVisible(false);
   }
 
   public boolean hasViewport() {
@@ -128,6 +149,16 @@ public class HUDController {
       }
       lastFrac = healthFraction;
     }
+    int numStars = level.getBandit().getNumStars();
+    if (numStars == 1) {
+      starIcon1.setVisible(true);
+    }
+    else if (numStars == 2) {
+      starIcon2.setVisible(true);
+    }
+    else if (numStars == 3) {
+      starIcon3.setVisible(true);
+    }
 
     healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
@@ -148,8 +179,5 @@ public class HUDController {
     }
 
     stage.draw();
-
   }
-
-
 }

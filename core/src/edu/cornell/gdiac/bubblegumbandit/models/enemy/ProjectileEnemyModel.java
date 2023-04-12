@@ -31,12 +31,6 @@ public class ProjectileEnemyModel extends EnemyModel {
         this.visionRadius = visionRadius;
     }
 
-//    private DefaultStateMachine<MovingEnemyModel, EnemyState> enemyStateMachine;
-//
-//    public DefaultStateMachine<MovingEnemyModel, EnemyState> getEnemyStateMachine() {
-//        return enemyStateMachine;
-//    }
-
     /**Creates a MovingEnemy.
      *
      * @param world The box2d world
