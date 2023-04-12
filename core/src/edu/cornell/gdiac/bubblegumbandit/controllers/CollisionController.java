@@ -469,16 +469,19 @@ public class CollisionController implements ContactListener {
         // Check that obstacles are not null and not an enemy
         if (bd1 == null || bd2 == null) rollingCollision = false;
 
+        // TODO: REFACTOR to more general knockback
         if (bd1.getName().equals("rollingrobot") && bd2.equals(levelModel.getBandit())) {
-            if (bd1.getX() < bd2.getX()) {
-                leftRolling = true;
-            }
-            rollingCollision = true;
+            leftRolling = (bd1.getX() < bd2.getX());
+            levelModel.getBandit().hitPlayer(0.5f);
+            levelModel.getBandit().setKnockback(true);
+            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 5f : -5f, 3f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
+//            rollingCollision = true;
         } else if (bd2.getName().equals("rollingrobot") && bd1.equals(levelModel.getBandit())) {
-            if (bd1.getX() > bd2.getX()) {
-                leftRolling = true;
-            }
-            rollingCollision = true;
+            leftRolling = (bd1.getX() > bd2.getX());
+            levelModel.getBandit().hitPlayer(0.5f);
+            levelModel.getBandit().setKnockback(true);
+            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 5f : -5f, 3f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
+//            resetRollingCollision();
         }
     }
 
@@ -520,9 +523,10 @@ public class CollisionController implements ContactListener {
         Object dataA = fixA.getUserData();
         Object dataB = fixB.getUserData();
 
-        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA) ||
-                (bandit.getSensorName().equals(dataA) && bandit != bodyB)) {
+        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && bodyA.getFilterData().categoryBits != CATEGORY_EVENTTILE) ||
+                (bandit.getSensorName().equals(dataA) && bandit != bodyB && bodyB.getFilterData().categoryBits != CATEGORY_EVENTTILE)) {
             bandit.setGrounded(true);
+            bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }

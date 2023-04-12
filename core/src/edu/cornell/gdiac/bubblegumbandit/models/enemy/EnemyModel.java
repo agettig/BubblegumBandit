@@ -404,7 +404,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
             float x = getX() * drawScale.x;
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                x-=getWidth()/2*drawScale.x*effect;
+                 x-=getWidth()/2*drawScale.x*effect;
             }
             if (stuck || gummed){
                 drawn = gummedTexture;
