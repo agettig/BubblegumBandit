@@ -150,6 +150,8 @@ public class BanditModel extends CapsuleObstacle {
      */
     private int numStars;
 
+    private boolean isKnockback;
+
 
     /**
      * Returns the camera target for the player.
@@ -192,6 +194,14 @@ public class BanditModel extends CapsuleObstacle {
      */
     public float getMaxHealth() {
         return MAX_HEALTH;
+    }
+
+    public boolean isKnockback() {
+        return isKnockback;
+    }
+
+    public void setKnockback(boolean knockback) {
+        isKnockback = knockback;
     }
 
     /**
@@ -589,6 +599,9 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         // Don't want to be moving. Damp out player motion
+        if (isKnockback) {
+            return;
+        }
         if (getMovement() == 0f) {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);
