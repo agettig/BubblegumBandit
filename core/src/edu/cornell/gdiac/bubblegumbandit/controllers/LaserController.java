@@ -123,7 +123,6 @@ public class LaserController {
                         }
                         if(ob.getName().equals("bandit")){
                             banditPos.set(ob.getPosition());
-                            enemy.setHitBandit(true);
                         }
                         return -1;
                     }
@@ -131,6 +130,10 @@ public class LaserController {
                 world.rayCast(chargeRaycast, chargeOrigin, chargeEndpoint);
                 enemy.setRaycastLine(intersect);
                 enemy.setFired(true);
+//                if (banditPos.x != 0 && banditPos.y != 0) {
+//                    // Found bandit
+//                    enemy.setHitBandit(true);
+//                }
             }
             else if (enemy.getAge() < chargeTime) {  // Charge phase
                 enemy.setFiringLaser(false);

@@ -1276,16 +1276,6 @@
                  "name":"",
                  "properties":[
                         {
-                         "name":"greenx1",
-                         "type":"int",
-                         "value":12
-                        }, 
-                        {
-                         "name":"greenx2",
-                         "type":"int",
-                         "value":25
-                        }, 
-                        {
                          "name":"pinkx1",
                          "type":"int",
                          "value":72
@@ -1294,6 +1284,16 @@
                          "name":"pinkx2",
                          "type":"int",
                          "value":89
+                        }, 
+                        {
+                         "name":"pinky1",
+                         "type":"int",
+                         "value":12
+                        }, 
+                        {
+                         "name":"pinky2",
+                         "type":"int",
+                         "value":25
                         }],
                  "rotation":0,
                  "type":"camera_h",

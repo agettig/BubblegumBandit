@@ -106,7 +106,7 @@
     "restitution": 0.0,
     "force": 10.0,
     "damping": 10.0,
-    "maxspeed": 5.0,
+    "maxspeed": 12.0,
     "animations" : "medium_robot",
     "gumTexture": "large_gum",
     "outline": "med_outline",
@@ -118,9 +118,9 @@
     "visionradius": 3.0,
     "sensorname": "listeningsensor",
     "listeningradius": 7,
-    "wanderspeed": 4,
-    "chasespeed": 6,
-    "pursuespeed": 7
+    "wanderspeed": 10,
+    "chasespeed": 10,
+    "pursuespeed": 10
   },
   "smallrobot": {
     "type": "projectile",
