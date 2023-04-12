@@ -95,6 +95,8 @@ public class LaserController {
                 enemy.setFiringLaser(false);
                 enemy.setChargingLaser(false);
                 enemy.resetAge();
+                enemy.setHitBandit(false);
+                enemy.setDamagedBandit(false);
             }
 
             //Firing phase.
@@ -119,7 +121,7 @@ public class LaserController {
                             intersect.set(point);
                             return fraction;
                         }
-                        else if(ob.getName().equals("bandit")){
+                        if(ob.getName().equals("bandit")){
                             banditPos.set(ob.getPosition());
                             enemy.setHitBandit(true);
                         }
@@ -175,7 +177,6 @@ public class LaserController {
                                                   Vector2 normal, float fraction) {
                         Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                         if (!ob.getName().contains("Laser Enemy")) {
-                            //System.out.println(ob.getName());
                             intersect.set(point);
                             return fraction;
                         }
