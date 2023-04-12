@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.profiling.GLErrorListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -38,11 +39,13 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.bubblegumbandit.view.Minimap;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Gameplay controller for the game.
@@ -79,6 +82,9 @@ public class GameController implements Screen {
     private JsonValue tilesetJson;
 
     private HUDController hud;
+
+    private Minimap minimap;
+
     /**
      * The jump sound.  We only want to play once.
      */
@@ -356,6 +362,10 @@ public class GameController implements Screen {
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
+
+        int x = levelFormat.get("width").asInt();
+        int y = levelFormat.get("height").asInt();
+        minimap = new Minimap(directory,levelFormat, x, y);
     }
 
 
@@ -612,6 +622,24 @@ public class GameController implements Screen {
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
         hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
+
+        Vector2 banditPosition = level.getBandit().getPosition();
+        ArrayList<Vector2> enemyPositions = new ArrayList<>();
+        for(AIController enemyController : level.aiControllers()) {
+            if(enemyController != null){
+                if(enemyController.getEnemy() != null){
+                    Vector2 enemyPos = enemyController.getEnemy().getPosition();
+                    float enemyX = Math.round(enemyPos.x);
+                    float enemyY = Math.round(enemyPos.y);
+                    Vector2 roundedEnemyPos = new Vector2(enemyX, enemyY);
+                    enemyPositions.add(roundedEnemyPos);
+                }
+            }
+        }
+
+         minimap.draw(canvas.getCamera().viewportWidth, canvas.getHeight(), banditPosition, enemyPositions, levelFormat);
+
+
 
         // Final message
         if (complete && !failed) {
