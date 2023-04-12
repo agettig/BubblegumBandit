@@ -63,7 +63,7 @@ public class LaserController {
      * */
     public void fireLaser(AIController controller){
         LaserEnemyModel enemy = (LaserEnemyModel) controller.getEnemy();
-        if(!canFireLaser(enemy)) return;
+        if (!canFireLaser(enemy)) return;
         enemy.setChargingLaser(true);
         enemy.setFiringLaser(false);
         enemy.setFired(false);
