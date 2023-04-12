@@ -52,6 +52,7 @@ public class ProjectileEnemyModel extends MovingEnemyModel {
      * */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson){
         super.initialize(directory, x, y, constantsJson);
+        setName("smallrobot");
         setVisionRadius(constantsJson.get("visionradius").asFloat());
     }
 

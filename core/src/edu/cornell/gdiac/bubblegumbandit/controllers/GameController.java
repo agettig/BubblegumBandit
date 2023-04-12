@@ -591,6 +591,17 @@ public class GameController implements Screen {
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);
+        if (collisionController.getRollingCollision()) {
+            bandit.hitPlayer(0.5f);
+            Vector2 pos = bandit.getPosition();
+            if (collisionController.getLeftRolling()) {
+                bandit.setX(pos.x + 1f);
+            }
+            else {
+                bandit.setX(pos.x - 1f);
+            }
+            collisionController.resetRollingCollision();
+        }
     }
 
 
