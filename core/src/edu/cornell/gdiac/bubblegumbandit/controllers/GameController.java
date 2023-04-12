@@ -333,7 +333,6 @@ public class GameController implements Screen {
 
         setComplete(false);
         setFailure(false);
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
         laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
