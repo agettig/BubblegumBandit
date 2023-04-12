@@ -166,10 +166,6 @@ public class RayCastCone {
         canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
     }
 
-    public void setRange(float range) {
-        this.range = range;
-    }
-
     public void setRadius(float radius) {
         this.radius = radius;
         resetRadius = true;

@@ -30,6 +30,7 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -180,10 +181,28 @@ public class GameController implements Screen {
     /** A collection of the active projectiles on screen */
     private ProjectileController projectileController;
 
+    /** Reference to LaserController instance */
+    private LaserController laserController;
+
+    /**
+     * Gum gravity scale when creating gum
+     */
+    private float gumGravity;
+
+    /**
+     * Gum speed when creating gum
+     */
+    private float gumSpeed;
+
     /**
      * The texture of the trajectory projectile
      */
     private TextureRegion trajectoryProjectile;
+
+    /**
+     * The texture of the laserBeam
+     */
+    private TextureRegion laserBeam;
 
     private TextureRegion stuckGum;
 
@@ -314,8 +333,8 @@ public class GameController implements Screen {
 
         setComplete(false);
         setFailure(false);
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
         bubblegumController = new BubblegumController();
+        laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ProjectileController();
     }
@@ -354,6 +373,7 @@ public class GameController implements Screen {
         bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
+        laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
     }
@@ -376,6 +396,7 @@ public class GameController implements Screen {
         projectileController.reset();
         collisionController.reset();
         hud.resetStars();
+
 
         level.dispose();
 
@@ -565,10 +586,16 @@ public class GameController implements Screen {
         level.update(dt);
         for (AIController controller: level.aiControllers()){
             if (controller.getEnemy().fired()){
-                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
-                level.activate(newProj);
-                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                if(controller.getEnemy() instanceof LaserEnemyModel) {
+                    laserController.fireLaser(controller);
+                }
+                else{
+                    ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                    smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
+                    level.activate(newProj);
+                    newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                }
+
             }
             else{
                 controller.coolDown(true);
@@ -576,6 +603,7 @@ public class GameController implements Screen {
         }
         projectileController.update();
         level.getAim().update(canvas, dt);
+        laserController.updateLasers(dt,level.getWorld(), level.getBandit().getPosition());
 
         // Update the camera
         GameCamera cam = canvas.getCamera();

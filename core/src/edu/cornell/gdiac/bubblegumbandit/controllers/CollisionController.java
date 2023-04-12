@@ -23,6 +23,8 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 
+import java.util.HashSet;
+
 
 public class CollisionController implements ContactListener {
 
@@ -75,7 +77,6 @@ public class CollisionController implements ContactListener {
     public void reset(){
         winConditionMet = false;
     }
-
 
     /**
      * Construct a new CollisionController.

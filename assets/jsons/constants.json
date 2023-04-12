@@ -110,6 +110,10 @@
     "animations": "small_robot",
     "texture": "mediumrobot",
     "gumTexture": "large_gum",
+    "force": 0.0,
+    "damping": 0.0,
+    "maxspeed": 50.0,
+    "texture": "rollingrobot",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "yellow",
@@ -208,6 +212,7 @@
     "animations": "large_robot",
     "texture": "large_robot",
     "gumTexture": "large_gum",
+    "outline": "smallrobotoutline",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "yellow",
@@ -238,5 +243,16 @@
     "speed": 7.0,
     "density": 10.0,
     "texture": "bullet"
+  },
+  "laser": {
+    "offsetX": 0.0,
+    "offsetY": 0.0,
+    "range": 10.0,
+    "girth": 2.0,
+    "density" : 1.0,
+    "charge_time" : 2.0,
+    "attack_time" : 2.0,
+    "charge_texture": "charge_laser",
+    "attack_texture": "attack_laser"
   }
 }
