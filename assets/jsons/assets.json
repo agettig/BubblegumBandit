@@ -134,7 +134,7 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/NewLevelStars.json",
+		"level1" : "jsons/alpha.json",
         "level2":"jsons/2BoardLayerTest.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
