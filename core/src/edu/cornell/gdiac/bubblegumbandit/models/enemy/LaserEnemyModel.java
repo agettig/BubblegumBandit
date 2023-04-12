@@ -47,6 +47,8 @@ public class LaserEnemyModel extends EnemyModel{
      * */
     public LaserEnemyModel(World world, int id){
         super(world, id);
+        // TODO remove
+        setFaceRight(false);
     }
 
     /**Initializes this LaserEnemyModel from JSON and sets its vision radius.
@@ -121,7 +123,10 @@ public class LaserEnemyModel extends EnemyModel{
     /**
      * Sets this LaserEnemyModel's age to 0.
      * */
-    public void resetAge(){age = 0;}
+    public void resetAge(){
+        System.out.println("Resetting age");
+        age = 0;
+    }
 
 
     /**

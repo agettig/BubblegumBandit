@@ -16,10 +16,10 @@ import java.util.HashSet;
 public class LaserController {
 
     /**How long a LaserModel needs to charge up before firing. */
-    private float chargeTime;
+    private float chargeTime = 1;
 
     /**How long a LaserModel beam lasts after charging. */
-    private float firingTime;
+    private float firingTime = 1;
 
     /**Damage done by a laser attack to the Bandit */
     public static final float LASER_DAMAGE = 5f;
@@ -39,14 +39,6 @@ public class LaserController {
      * */
     public LaserController() { lasers =  new HashSet<>();}
 
-    /**
-     * Initializes a LaserController based off JSON data.
-     * @param laserJSON JSON data containing information about lasers.
-     * */
-    public void initialize(JsonValue laserJSON){
-        chargeTime = laserJSON.getFloat("charge_time");
-        firingTime = laserJSON.getFloat("attack_time");
-    }
 
     /**
      * Returns true if a LaserEnemyModel can shoot a laser right now.
@@ -63,13 +55,14 @@ public class LaserController {
      * */
     public void fireLaser(AIController controller){
         LaserEnemyModel enemy = (LaserEnemyModel) controller.getEnemy();
-        if (!canFireLaser(enemy)) return;
-        enemy.setChargingLaser(true);
+        enemy.setChargingLaser(false);
         enemy.setFiringLaser(false);
         enemy.setFired(false);
         enemy.setDamagedBandit(false);
         enemy.resetAge();
         lasers.add(enemy);
+        controller.coolDown(false);
+
     }
 
     /**
@@ -89,23 +82,62 @@ public class LaserController {
             }
             else canSeeTarget = chargeTarget.x <= enemy.getX();
 
-            if(enemy.isChargingLaser())System.out.println("charging");
-            if(enemy.isFiringLaser())System.out.println("firing");
 
-            //Expired phase.
+
             if(enemy.getAge() >= chargeTime + firingTime){
                 enemy.setFiringLaser(false);
-                enemy.setChargingLaser(false);
-            }
+                enemy.setChargingLaser(false);}
 
+
+
+            //Firing phase.
+            if(enemy.getAge() > chargeTime && !enemy.didFire()){
+                enemy.setChargingLaser(false);
+                enemy.setFiringLaser(true);
+
+                final Vector2 intersect = new Vector2();
+                Vector2 chargeOrigin = enemy.getPosition();
+                chargeOrigin.x += enemy.getWidth()/2;
+                Vector2 chargeDirection =
+                        new Vector2((chargeTarget.x- chargeOrigin.x),
+                                (chargeTarget.y - chargeOrigin.y));
+                chargeDirection.nor();
+                chargeDirection.scl(Integer.MAX_VALUE);
+                Vector2 chargeEndpoint =
+                        new Vector2(chargeOrigin.x + chargeDirection.x,
+                                chargeOrigin.y + chargeDirection.y);
+
+                final Vector2 banditPos = new Vector2();
+
+                RayCastCallback chargeRaycast = new RayCastCallback() {
+                    @Override
+                    public float reportRayFixture(Fixture fixture, Vector2 point,
+                                                  Vector2 normal, float fraction) {
+                        Obstacle ob = (Obstacle) fixture.getBody().getUserData();
+                        if (!ob.getName().contains("Laser Enemy")
+                                && !ob.getName().contains("bandit")) {
+                            intersect.set(point);
+                            return fraction;
+                        }
+                        else if(ob.getName().equals("bandit")){
+                            banditPos.set(ob.getPosition());
+                        }
+                        return -1;
+                    }
+                };
+                world.rayCast(chargeRaycast, chargeOrigin, chargeEndpoint);
+                enemy.setRaycastLine(intersect);
+                enemy.setFired(true);
+            }
 
             //Charging phase.
             else if(enemy.getAge() < chargeTime){
                 if(!canSeeTarget){
                     enemy.setChargingLaser(false);
-                    enemy.resetAge();
+                    enemy.setFiringLaser(false);
                     continue;
                 }
+                System.out.println("charging");
                 enemy.setFiringLaser(false);
                 enemy.setChargingLaser(true);
                 final Vector2 intersect = new Vector2();
@@ -137,45 +169,6 @@ public class LaserController {
                 enemy.setRaycastLine(intersect);
             }
 
-            //Firing phase.
-            else if(enemy.getAge() > chargeTime && !enemy.didFire()){
-                enemy.setChargingLaser(false);
-                enemy.setFiringLaser(true);
-
-                final Vector2 intersect = new Vector2();
-                Vector2 chargeOrigin = enemy.getPosition();
-                chargeOrigin.x += enemy.getWidth()/2;
-                Vector2 chargeDirection =
-                        new Vector2((chargeTarget.x- chargeOrigin.x),
-                                (chargeTarget.y - chargeOrigin.y));
-                chargeDirection.nor();
-                chargeDirection.scl(Integer.MAX_VALUE);
-                Vector2 chargeEndpoint =
-                        new Vector2(chargeOrigin.x + chargeDirection.x,
-                                chargeOrigin.y + chargeDirection.y);
-
-                final Vector2 banditPos = new Vector2();
-
-                RayCastCallback chargeRaycast = new RayCastCallback() {
-                    @Override
-                    public float reportRayFixture(Fixture fixture, Vector2 point,
-                                                  Vector2 normal, float fraction) {
-                        Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                        if (!ob.getName().contains("Laser Enemy")
-                            && !ob.getName().contains("bandit")) {
-                            intersect.set(point);
-                            return fraction;
-                        }
-                        else if(ob.getName().equals("bandit")){
-                            banditPos.set(ob.getPosition());
-                        }
-                        return -1;
-                    }
-                };
-                world.rayCast(chargeRaycast, chargeOrigin, chargeEndpoint);
-                enemy.setRaycastLine(intersect);
-                enemy.setFired(true);
-            }
         }
     }
 }

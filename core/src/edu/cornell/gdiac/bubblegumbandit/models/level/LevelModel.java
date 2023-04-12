@@ -625,7 +625,7 @@ public class LevelModel {
                 dir.nor();
                 Color transparentYellow = Color.YELLOW;
                 transparentYellow.a = .075f;
-                if(enemy.isChargingLaser() && !enemy.isFiringLaser()){
+                if(enemy.isChargingLaser()){
                     for(int i = 0; i < numSegments; i++) {
                         float x = enemyPos.x + (dir.x * i * gap);
                         float y = enemyPos.y + (dir.y * i * gap);
@@ -640,7 +640,7 @@ public class LevelModel {
                                 asset.getRegionHeight() * chargeLaserScale);
                     }
                 }
-                else if (enemy.isFiringLaser() && !enemy.isChargingLaser()){
+                else if (enemy.isFiringLaser()){
                     for(int i = 0; i < numSegments; i++) {
                         float x = enemyPos.x + (dir.x * i * gap);
                         float y = enemyPos.y + (dir.y * i * gap);
