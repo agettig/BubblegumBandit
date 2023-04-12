@@ -24,5 +24,11 @@
     "strip" : "large_walk.patrol",
     "fps": 4
   }
+  },
+  "medium_robot" : {
+    "patrol" : {
+      "strip" : "med_roll.patrol",
+      "fps": 8
+  }
   }
 }

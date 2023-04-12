@@ -69,6 +69,17 @@
                 }
             }
         },
+        "med_roll":  {
+            "file": "textures/med_roll.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
         "small_robot": "textures/small_enemy.png",
         "large_robot": "textures/large_robot.png",
         "med_robot": "textures/medium_enemy.png",
@@ -100,7 +111,7 @@
         "box": "textures/box.png",
         "powercell": "textures/powercellb.png",
         "chair": "textures/chair.png",
-        "frame": "textures/frameb.png"
+        "frame": "textures/frameb.png",
         "stuckOutline": "textures/stuck_gumWhite.png",
         "topRightOutline": "textures/topRightGumWhite.png",
         "bottomRightOutline": "textures/bottomRightGumWhite.png",
@@ -114,7 +125,8 @@
         "sunfish" : "textures/sunfish.png",
         "ship1" : "textures/level1.png",
         "laserBeam": "textures/laserBeam.png",
-        "large_robotoutline": "textures/large_robotWhite.png"
+        "large_robotoutline": "textures/large_robotWhite.png",
+        "med_outline": "textures/med_white.png"
     },
     "fonts": {
         "display": {
