@@ -45,6 +45,7 @@ public class HUDController {
   /** The margin of the current health bar, depends on the current design */
   private float HEALTH_MARGIN = .125f;
 
+
   /** The last health the health bar filling was cropped to, saved as a reference so the
    * texture region healthFillRegion is not redefined on frames where the health has not changed.
    */
@@ -178,8 +179,5 @@ public class HUDController {
     }
 
     stage.draw();
-
   }
-
-
 }

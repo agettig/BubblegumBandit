@@ -104,6 +104,8 @@
         "bubblegum_icon": "textures/bubble_icon.png",
         "floatingGum": "textures/gum.png",
         "bullet": "textures/bullet.png",
+        "minimap_background" : "textures/square.png",
+        "minimap_tile" : "textures/Blank_Square.svg.png"
         "alarm_on": "textures/alarm_on.png",
         "alarm_off": "textures/alarm_off.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
