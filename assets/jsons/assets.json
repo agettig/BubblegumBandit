@@ -113,7 +113,8 @@
         "star": "textures/star.png",
         "sunfish" : "textures/sunfish.png",
         "ship1" : "textures/level1.png",
-        "laserBeam": "textures/laserBeam.png"
+        "laserBeam": "textures/laserBeam.png",
+        "large_robotoutline": "textures/large_robotWhite.png"
     },
     "fonts": {
         "display": {
@@ -137,9 +138,8 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/NewLevel4.json",
-        "level2":"jsons/NewLevelStars.json",
-        "level3": "jsons/backgroundobjects.json",
+		"level1" : "jsons/alpha.json",
+        "level2":"jsons/NewLevel4.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }

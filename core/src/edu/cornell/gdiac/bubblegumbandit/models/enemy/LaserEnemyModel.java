@@ -40,6 +40,8 @@ public class LaserEnemyModel extends EnemyModel{
     /**How many seconds this LaserEnemyModel has been charging and firing.*/
     private float age;
 
+    private boolean didHitBandit;
+
     /**Creates a LaserEnemy.
      *
      * @param world The Box2D world
@@ -49,6 +51,7 @@ public class LaserEnemyModel extends EnemyModel{
         super(world, id);
         // TODO remove
         setFaceRight(false);
+        didHitBandit = false;
     }
 
     /**Initializes this LaserEnemyModel from JSON and sets its vision radius.
@@ -184,6 +187,10 @@ public class LaserEnemyModel extends EnemyModel{
     public void setDamagedBandit(boolean damagedBandit) {
         this.damagedBandit = damagedBandit;
     }
+
+    public void setHitBandit(boolean didHitBandit) { this.didHitBandit = didHitBandit; }
+
+    public boolean didHitBandit() { return didHitBandit; }
 
     @Override
     public boolean handleMessage(Telegram msg) {

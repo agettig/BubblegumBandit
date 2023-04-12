@@ -164,7 +164,7 @@
     "animations": "large_robot",
     "texture": "large_robot",
     "gumTexture": "large_gum",
-    "outline": "smallrobotoutline",
+    "outline": "large_robotoutline",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "yellow",
