@@ -62,6 +62,7 @@ public class LaserController {
      * */
     public void fireLaser(AIController controller){
         LaserEnemyModel enemy = (LaserEnemyModel) controller.getEnemy();
+        if(enemy.isFiringLaser() || enemy.isChargingLaser()) return;
         enemy.setChargingLaser(false);
         enemy.setFiringLaser(false);
         enemy.setFired(false);
@@ -69,8 +70,6 @@ public class LaserController {
         enemy.setHitBandit(false);
         enemy.resetAge();
         lasers.add(enemy);
-        controller.coolDown(false);
-
     }
 
     /**
@@ -95,10 +94,11 @@ public class LaserController {
             if(enemy.getAge() >= chargeTime + firingTime + lockTime){
                 enemy.setFiringLaser(false);
                 enemy.setChargingLaser(false);
+                enemy.resetAge();
             }
 
             //Firing phase.
-            if(enemy.getAge() > chargeTime + lockTime && !enemy.didFire()){
+            if(enemy.getAge() > chargeTime + lockTime){
                 enemy.setChargingLaser(false);
                 enemy.setFiringLaser(true);
 
@@ -131,11 +131,6 @@ public class LaserController {
                 enemy.setFired(true);
             }
             else if (enemy.getAge() < chargeTime) {  // Charge phase
-                if(!canSeeTarget){
-                    enemy.setChargingLaser(false);
-                    enemy.setFiringLaser(false);
-                    continue;
-                }
                 enemy.setFiringLaser(false);
                 enemy.setChargingLaser(true);
                 final Vector2 intersect = new Vector2();
@@ -167,6 +162,8 @@ public class LaserController {
                 enemy.setRaycastLine(intersect);
             }
             else if(enemy.getAge() < chargeTime + lockTime){             //Locking phase.
+                enemy.setChargingLaser(true);
+                enemy.setFiringLaser(false);
                 final Vector2 intersect = new Vector2();
                 Vector2 chargeEndpoint =
                         new Vector2(chargeOrigin.x + chargeDirection.x,
