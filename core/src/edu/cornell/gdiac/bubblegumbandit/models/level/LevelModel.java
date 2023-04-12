@@ -157,6 +157,11 @@ public class LevelModel {
     private Array<BackObjModel> backgroundObjects;
 
     /**
+     * Reference to support tile objects
+     */
+    private Array<BackgroundTileModel> supportTiles;
+
+    /**
      * Returns the aim in this level.
      */
     public AimModel getAim() {
@@ -275,6 +280,7 @@ public class LevelModel {
 
         JsonValue tileLayer = null;
         JsonValue objects = null;
+        JsonValue supports = null;
 
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -291,6 +297,9 @@ public class LevelModel {
                     break;
                 case "Objects":
                     objects = layer.get("Objects");
+                    break;
+                case "Supports":
+                    supports = layer;
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name");
@@ -365,6 +374,7 @@ public class LevelModel {
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
+        supportTiles = new Array<BackgroundTileModel>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
 
@@ -380,6 +390,22 @@ public class LevelModel {
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+            }
+        }
+
+        if (supports != null) {
+            int[] supportData = supports.get("data").asIntArray();
+            // Iterate over each support in the world and create if it exists
+            for (int i = 0; i < supportData.length; i++) {
+                int tileVal = supportData[i];
+                if (tileVal != 0) {
+                    BackgroundTileModel newTile = new BackgroundTileModel();
+                    float x = (i % levelWidth) + 0.5f;
+                    float y = levelHeight - (i / levelWidth) - 0.5f;
+                    newTile.initialize(textures.get(tileVal), x, y, scale);
+                    supportTiles.add(newTile);
+
+                }
             }
         }
 
@@ -632,6 +658,10 @@ public class LevelModel {
         }
 
         alarms.drawAlarms(canvas, scale);
+
+        for(BackgroundTileModel tile: supportTiles) {
+            tile.draw(canvas);
+        }
 
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.

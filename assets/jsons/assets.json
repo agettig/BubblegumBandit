@@ -126,7 +126,8 @@
         "ship1" : "textures/level1.png",
         "laserBeam": "textures/laserBeam.png",
         "large_robotoutline": "textures/large_robotWhite.png",
-        "med_outline": "textures/med_white.png"
+        "med_outline": "textures/med_white.png",
+        "supports": "textures/supports.png"
     },
     "fonts": {
         "display": {
@@ -150,7 +151,7 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/alpha.json",
+		"level1" : "jsons/alpha_presentation.json",
         "level2":"jsons/NewLevel4.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
