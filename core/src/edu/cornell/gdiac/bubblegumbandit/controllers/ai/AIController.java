@@ -104,7 +104,7 @@ public class AIController implements Telegraph {
      * @return true if we can both fire and hit our target
      */
     public boolean canShootTarget() {
-        return canFire() && enemy.getAttacking().canSee(bandit);
+        return !enemy.getName().equals("rollingrobot") && canFire() && enemy.getAttacking().canSee(bandit);
     }
 
     /**Returns true if the bandit is within listening range of the enemy */
