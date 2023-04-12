@@ -96,10 +96,10 @@
     "debugopacity": 200
   },
   "mediumrobot": {
-    "type": "moving",
+    "type": "projectile",
     "size": [
-      2,
-      2
+      1.5,
+      1.5
     ],
     "density": 1.0,
     "friction": 2.0,
@@ -107,13 +107,9 @@
     "force": 10.0,
     "damping": 10.0,
     "maxspeed": 5.0,
-    "animations": "small_robot",
-    "texture": "mediumrobot",
     "gumTexture": "large_gum",
-    "force": 0.0,
-    "damping": 0.0,
-    "maxspeed": 50.0,
-    "texture": "rollingrobot",
+    "outline": "smallrobotoutline",
+    "texture": "med_robot",
     "debugcolor": "white",
     "debugopacity": 192,
     "sensorcolor": "yellow",
@@ -123,54 +119,10 @@
     "listeningradius": 7,
     "wanderspeed": 4,
     "chasespeed": 6,
-    "pursuespeed": 7,
-    "sensors": {
-      "enemyGroundSensor": {
-        "sensorsize": [
-          0.183,
-          0.05
-        ],
-        "sensorcenter": [
-          0,
-          -0.305
-        ],
-        "printoffset": [
-          0,
-          0.305
-        ]
-      },
-      "enemyRightSensor": {
-        "sensorsize": [
-          0.183,
-          0.3
-        ],
-        "sensorcenter": [
-          0,
-          0
-        ],
-        "printoffset": [
-          0.45,
-          0
-        ]
-      },
-      "enemyLeftSensor": {
-        "sensorsize": [
-          0.183,
-          0.3
-        ],
-        "sensorcenter": [
-          0,
-          0
-        ],
-        "printoffset": [
-          -0.45,
-          0
-        ]
-      }
-    }
+    "pursuespeed": 7
   },
   "smallrobot": {
-    "type": "moving",
+    "type": "projectile",
     "size": [
       0.5,
       1.0
@@ -223,6 +175,32 @@
     "wanderspeed": 2,
     "chasespeed": 3,
     "pursuespeed": 4
+  },
+  "rollingrobot": {
+    "type": "moving",
+    "size": [
+      0.5,
+      1.0
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 2.0,
+    "texture": "rollingrobot",
+    "animations": null,
+    "gummedTexture": "gummed_robot",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 2,
+    "chasespeed": 5,
+    "pursuespeed": 6
   },
   "exit": {
     "size": [

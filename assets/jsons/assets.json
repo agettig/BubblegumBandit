@@ -76,7 +76,7 @@
         "bandit": "textures/bandit.png",
         "smallrobot": "textures/small_enemy.png",
         "largerobot": "textures/large_robot.png",
-        "mediumrobot": "textures/medium_enemy.png",
+        "mediumrobot": "textures/rollingrobot.png",
         "exit": "textures/shipdoor.png",
         "gumProjectile": "textures/gum.png",
         "floatinggum": "textures/gum.png",
@@ -95,7 +95,6 @@
         "bullet": "textures/bullet.png",
         "alarm_on": "textures/alarm_on.png",
         "alarm_off": "textures/alarm_off.png",
-        "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
         "orb": "textures/orb.png",
         "box": "textures/box.png",
@@ -138,9 +137,9 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/NewLevel3.json",
+		"level1" : "jsons/NewLevel4.json",
         "level2":"jsons/NewLevelStars.json",
-        "level3": "jsons/2BoardLayerTest.json",
+        "level3": "jsons/backgroundobjects.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }

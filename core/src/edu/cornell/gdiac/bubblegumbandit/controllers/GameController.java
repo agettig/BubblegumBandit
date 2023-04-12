@@ -574,20 +574,6 @@ public class GameController implements Screen {
             }
         }
 
-//            if ((action & AIController.CONTROL_FIRE) == AIController.CONTROL_FIRE) {
-//                ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-//                level.activate(newProj);
-//                newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-//            } else {
-//                controller.coolDown(true);
-//            }
-//
-//            //pass to enemy, update the enemy with that action
-//           // TODO this probably means enemies are updated twice per frame, once with this update method
-//           // TODO and once with their parent. Switching to sense-think-act should fix this
-//           controller.getEnemy().update(action);
-//       }
-
         level.update(dt);
         for (AIController controller: level.aiControllers()){
             if (controller.getEnemy().fired()){
@@ -625,6 +611,20 @@ public class GameController implements Screen {
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);
+
+        // TODO add to collision controller
+        // TODO have attack action for rolling robot
+        if (collisionController.getRollingCollision()) {
+            bandit.hitPlayer(0.5f);
+            Vector2 pos = bandit.getPosition();
+            if (collisionController.getLeftRolling()) {
+                bandit.setX(pos.x + 1f);
+            }
+            else {
+                bandit.setX(pos.x - 1f);
+            }
+            collisionController.resetRollingCollision();
+        }
     }
 
 
