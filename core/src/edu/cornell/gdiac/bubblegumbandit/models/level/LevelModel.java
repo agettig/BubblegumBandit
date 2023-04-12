@@ -46,6 +46,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
+import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -97,11 +98,6 @@ public class LevelModel {
     private ExitModel goalDoor;
 
     /**
-     * Reference to the aim model
-     */
-    private AimModel aim;
-
-    /**
      * Whether or not the level is in debug more (showing off physics)
      */
     private boolean debug;
@@ -149,6 +145,16 @@ public class LevelModel {
      * Lighting system
      */
     private AlarmController alarms;
+
+    /**
+     * Reference to the aim model
+     */
+    private AimModel aim;
+
+    /**
+     * Reference to background elements in the game
+     */
+    private Array<BackObjModel> backgroundObjects;
 
     /**
      * Returns the aim in this level.
@@ -311,6 +317,29 @@ public class LevelModel {
             property = property.next();
         }
 
+        //initialize dynamic background elements
+//        JsonValue backJV =levelFormat.get("backgroundObj");
+//
+//        int numObj = backJV.get("numObj").asInt();
+//        JsonValue info = backJV.get("objects").child();
+//
+//        backgroundObjects = new BackObjModel[numObj];
+//
+//        for (int i = 0; i < numObj; i ++){
+//            BackObjModel o = new BackObjModel();
+//            o.initialize(directory, backJV, info);
+//
+//            o.setDrawScale(scale);
+//            activate(o);
+//            o.setFilter(CATEGORY_BACK, MASK_BACK);
+//
+//            info = info.next();
+//
+//            backgroundObjects[i] = o;
+//        }
+
+        //------------------------------------------------
+
         float[] pSize = constants.get("physicsSize").asFloatArray();
 
         levelWidth = levelFormat.getInt("width");
@@ -333,11 +362,11 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        enemyControllers = new Array<>();
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
         enemyControllers = new Array<>();
+        backgroundObjects = new Array<>();
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -396,8 +425,27 @@ public class LevelModel {
             String objType = object.get("type").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
+
+
             switch (objType) {
+                case "box":
+                case "chair":
+
+                    //the gid is a huge negative integer when flipped horizontally.
+                    // add a specific attribute for this from Tiled?
+                    boolean facingRight = (object.getInt("gid") > 0);
+
+                    JsonValue bgoConstants = constants.get(objType);
+                    BackObjModel o = new BackObjModel();
+                    o.initialize(directory, x, y, facingRight, bgoConstants);
+                    o.setDrawScale(scale);
+                    activate(o);
+                    o.setFilter(CATEGORY_BACK, MASK_BACK);
+                    backgroundObjects.add(o);
+                    break;
+
                 case "bandit":
+
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);
@@ -973,4 +1021,9 @@ public class LevelModel {
     }
 
 
+
+    /** Return a reference to all the background objects */
+    public Array<BackObjModel>  getBackgroundObjects(){
+        return backgroundObjects;
+    }
 }

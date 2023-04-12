@@ -12,6 +12,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
@@ -124,6 +125,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     // Stuck in Gum Fields
 
+    /** Manager for the scale for flipping during gravity swaps */
+    private FlippingObject fo = new FlippingObject();
+
     /** where the gum is drawn relative to the center of the robot*/
     private static final float GUM_OFFSET = -3;
 
@@ -193,8 +197,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         isGrounded = true;
         faceRight = true;
         isFlipped = false;
-        yScale = 1f;
         nextAction = CONTROL_NO_ACTION;
+        yScale = 1f;
         this.world = world;
         this.id = id;
         vision = new RayCastCone(7f, 0f, (float) Math.PI/2, Color.YELLOW);

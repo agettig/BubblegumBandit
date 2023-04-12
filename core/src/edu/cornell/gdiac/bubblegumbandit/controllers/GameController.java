@@ -31,6 +31,8 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -530,6 +532,9 @@ public class GameController implements Screen {
 
             if (level.aiControllers() != null) {
                 for (AIController ai : level.aiControllers()) ai.flipEnemy();
+            }
+            if (level.getBackgroundObjects() != null) {
+                for (BackObjModel o : level.getBackgroundObjects()) o.flip();
             }
         }
 
