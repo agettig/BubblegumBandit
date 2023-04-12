@@ -15,21 +15,20 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
-import com.badlogic.gdx.ai.utils.Ray;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.*;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.LaserController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
@@ -38,15 +37,16 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 
 import java.util.HashMap;
+
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -467,9 +467,17 @@ public class LevelModel {
                     enemyCount++;
                     break;
                 case "mediumrobot":
-                    // TODO add rolling robots
                     enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new RollingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                     enemyCount++;
+
                     break;
                 case "large_robot":
                     enemyConstants = constants.get(objType);
@@ -655,26 +663,26 @@ public class LevelModel {
         }
     }
 
-    public void drawChargeLasers(TextureRegion asset, GameCanvas canvas){
+    public void drawChargeLasers(TextureRegion asset, GameCanvas canvas) {
         final float chargeLaserScale = 1f;
         final float firingLaserScale = 7f;
-        for(AIController ai : enemyControllers){
-            if(ai.getEnemy() instanceof LaserEnemyModel){
+        for (AIController ai : enemyControllers) {
+            if (ai.getEnemy() instanceof LaserEnemyModel) {
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
                 Vector2 intersect = enemy.getRaycastLine();
                 Vector2 enemyPos = enemy.getPosition();
-                if(intersect == null) continue;
+                if (intersect == null) continue;
                 Vector2 dir = new Vector2(
                         intersect.x - enemyPos.x,
                         intersect.y - enemyPos.y
                 );
                 float gap = 0.01f;
-                int numSegments = (int)(dir.len()/gap);
+                int numSegments = (int) (dir.len() / gap);
                 dir.nor();
                 Color transparentYellow = Color.YELLOW;
                 transparentYellow.a = .075f;
-                if(enemy.isChargingLaser()){
-                    for(int i = 0; i < numSegments; i++) {
+                if (enemy.isChargingLaser()) {
+                    for (int i = 0; i < numSegments; i++) {
                         float x = enemyPos.x + (dir.x * i * gap);
                         float y = enemyPos.y + (dir.y * i * gap);
                         canvas.draw(
@@ -687,9 +695,8 @@ public class LevelModel {
                                 asset.getRegionWidth() * chargeLaserScale,
                                 asset.getRegionHeight() * chargeLaserScale);
                     }
-                }
-                else if (enemy.isFiringLaser()){
-                    for(int i = 0; i < numSegments; i++) {
+                } else if (enemy.isFiringLaser()) {
+                    for (int i = 0; i < numSegments; i++) {
                         float x = enemyPos.x + (dir.x * i * gap);
                         float y = enemyPos.y + (dir.y * i * gap);
                         canvas.draw(
@@ -712,8 +719,8 @@ public class LevelModel {
                             bandit.getY() - enemyPos.y
                     );
 
-                    if(!enemy.hasDamagedBandit() && banditDir.len()
-                            < intersectLength.len()){
+                    if (!enemy.hasDamagedBandit() && banditDir.len()
+                            < intersectLength.len()) {
                         enemy.setDamagedBandit(true);
                         bandit.hitPlayer(LaserController.LASER_DAMAGE);
                     }
@@ -1021,9 +1028,10 @@ public class LevelModel {
     }
 
 
-
-    /** Return a reference to all the background objects */
-    public Array<BackObjModel>  getBackgroundObjects(){
+    /**
+     * Return a reference to all the background objects
+     */
+    public Array<BackObjModel> getBackgroundObjects() {
         return backgroundObjects;
     }
 }

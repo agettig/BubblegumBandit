@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel.*;
@@ -129,7 +130,7 @@ public enum EnemyState implements State<AIController> {
             int move = CONTROL_NO_ACTION;
 
             // get next move if enemy is on a board path
-            if (aiController.getEnemyStateMachine().canMove() && !aiController.enemyCloseToBandit()) {
+            if (aiController.getEnemyStateMachine().canMove() && (aiController.getEnemy() instanceof RollingEnemyModel || !aiController.enemyCloseToBandit())) {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
@@ -163,7 +164,7 @@ public enum EnemyState implements State<AIController> {
             }
 
             // if can move find next move
-            if (aiController.getEnemyStateMachine().canMove() && !aiController.enemyCloseToBandit()) {
+            if (aiController.getEnemyStateMachine().canMove() && (aiController.getEnemy() instanceof RollingEnemyModel || !aiController.enemyCloseToBandit())) {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
@@ -292,7 +293,7 @@ public enum EnemyState implements State<AIController> {
             int move = CONTROL_NO_ACTION;
 
             // get next move
-            if (aiController.getEnemyStateMachine().canMove() && !aiController.enemyCloseToBandit()) {
+            if (aiController.getEnemyStateMachine().canMove() && (aiController.getEnemy() instanceof RollingEnemyModel || !aiController.enemyCloseToBandit())) {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
@@ -394,15 +395,15 @@ public enum EnemyState implements State<AIController> {
 
     },
 
-    GUARD(){
+    GUARD() {
         // guard enemies do not move, they will only shoot if bandit is nearby
         @Override
-        public void enter(AIController aiController){
+        public void enter(AIController aiController) {
             talk(aiController, "enter guard");
         }
 
         @Override
-        public void update(AIController aiController){
+        public void update(AIController aiController) {
             EnemyModel enemy = aiController.getEnemy();
             BanditModel bandit = aiController.getBandit();
             if (enemy.getSensing().canSee(bandit)) {
@@ -411,11 +412,11 @@ public enum EnemyState implements State<AIController> {
             }
 
             // shoot player
-            aiController.getEnemy().setNextAction(aiController.canShootTarget() ? CONTROL_FIRE: CONTROL_NO_ACTION);
+            aiController.getEnemy().setNextAction(aiController.canShootTarget() ? CONTROL_FIRE : CONTROL_NO_ACTION);
         }
 
         @Override
-        public void exit(AIController aiController){
+        public void exit(AIController aiController) {
             talk(aiController, "exit guard");
         }
     };

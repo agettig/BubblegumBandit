@@ -5,25 +5,14 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
-
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.EnemyState;
-import edu.cornell.gdiac.bubblegumbandit.controllers.ai.MessageType;
-import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ExitModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.CameraTileModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.Collectible;
-import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
-
-import java.util.HashSet;
 
 
 public class CollisionController implements ContactListener {
@@ -73,6 +62,13 @@ public class CollisionController implements ContactListener {
 
     /** true if the win condition has been met */
     private boolean winConditionMet;
+
+    /**true if rolling enemy collision*
+     */
+    private boolean rollingCollision = false;
+    /**true if rolling enemy is left of bandit*
+     */
+    private boolean leftRolling = false;
 
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
@@ -142,6 +138,8 @@ public class CollisionController implements ContactListener {
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
+            checkRollingEnemyCollision(obstacleA, obstacleB);
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -456,6 +454,59 @@ public class CollisionController implements ContactListener {
             levelModel.getBandit().hitPlayer(p.getDamage());
         }
         p.destroy();
+    }
+
+    /**
+     * Checks if there was an rolling enemy collision in the Box2D world.
+     * <p>
+     * Examines two Obstacles in a collision.
+     * *
+     * @param bd1 The first Obstacle in the collision.
+     * @param bd2 The second Obstacle in the collision.
+     */
+    private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
+
+        // Check that obstacles are not null and not an enemy
+        if (bd1 == null || bd2 == null) rollingCollision = false;
+
+        if (bd1.getName().equals("rollingrobot") && bd2.equals(levelModel.getBandit())) {
+            if (bd1.getX() < bd2.getX()) {
+                leftRolling = true;
+            }
+            rollingCollision = true;
+        } else if (bd2.getName().equals("rollingrobot") && bd1.equals(levelModel.getBandit())) {
+            if (bd1.getX() > bd2.getX()) {
+                leftRolling = true;
+            }
+            rollingCollision = true;
+        }
+    }
+
+    public boolean getLeftRolling() {
+        return leftRolling;
+    }
+
+    public boolean getRollingCollision() {
+        return rollingCollision;
+    }
+    public void resetRollingCollision() {
+        rollingCollision = false;
+        leftRolling = false;
+    }
+
+    /**
+     * Resolves the effects of a RollingEnemy collision
+     * @param e
+     * @param o
+     */
+    private void resolveRollingEnemyCollision(RollingEnemyModel e, Obstacle o) {
+        //if (e.isRemoved()) return;
+        BanditModel bandit = levelModel.getBandit();
+        if (o.equals(bandit)) {
+            bandit.hitPlayer(e.getDamage());
+            Vector2 pos = bandit.getPosition();
+            bandit.setPosition(pos.x - 2f, pos.y);
+        }
     }
 
     /**

@@ -30,6 +30,7 @@ public class ProjectileEnemyModel extends EnemyModel {
     public void setVisionRadius(float visionRadius) {
         this.visionRadius = visionRadius;
     }
+
     /**Creates a MovingEnemy.
      *
      * @param world The box2d world
