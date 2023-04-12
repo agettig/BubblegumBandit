@@ -407,7 +407,7 @@ public class CollisionController implements ContactListener {
 
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
-            if (gummable.getGummed() && !ob2.getName().equals("unstickProjectile")) {
+            if (gummable.getGummed() && !ob2.equals(levelModel.getBandit())) {
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("robotSplat", 1f);
                 ob2.setStuck(true);
@@ -415,7 +415,7 @@ public class CollisionController implements ContactListener {
         }
         else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
-            if (gummable.getGummed() && !ob1.getName().equals("unstickProjectile")) {
+            if (gummable.getGummed() && !ob1.equals(levelModel.getBandit())) {
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("robotSplat", 1f);
                 ob1.setStuck(true);
