@@ -277,5 +277,80 @@
       "row47":[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
       "row48":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
+  },
+  "backgroundObj": {
+    "name": "bgo",
+    "numObj":8,
+    "density": 1.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "objects": [
+      {
+        "pos": [
+          10,
+          1
+        ] ,
+        "texture": "box",
+        "faceRight": "false"
+      },
+      {
+        "pos": [
+          27,
+          18
+        ] ,
+        "texture": "box",
+        "faceRight": "false"
+      },
+      {
+        "pos": [
+          25.8,
+          1
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          26,
+          2
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25.6,
+          3
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          27,
+          2
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25,
+          1
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      },
+      {
+        "pos": [
+          25,
+          2
+        ],
+        "texture": "box",
+        "faceRight": "true"
+      }
+    ]
   }
 }

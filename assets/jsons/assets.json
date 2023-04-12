@@ -77,7 +77,7 @@
         "smallrobot": "textures/small_enemy.png",
         "largerobot": "textures/large_robot.png",
         "mediumrobot": "textures/medium_enemy.png",
-        "exit": "textures/goaldoor.png",
+        "exit": "textures/shipdoor.png",
         "gumProjectile": "textures/gum.png",
         "floatinggum": "textures/gum.png",
         "trajectoryProjectile": "textures/trajectory.png",
@@ -98,6 +98,10 @@
         "bullet": "textures/bullet.png",
         "gummed_robot": "textures/tinted_small_enemy.png",
         "orb": "textures/orb.png",
+        "box": "textures/box.png",
+        "powercell": "textures/powercellb.png",
+        "chair": "textures/chair.png",
+        "frame": "textures/frameb.png"
         "stuckOutline": "textures/stuck_gumWhite.png",
         "topRightOutline": "textures/topRightGumWhite.png",
         "bottomRightOutline": "textures/bottomRightGumWhite.png",
@@ -134,8 +138,9 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/NewLevelStars.json",
-        "level2":"jsons/2BoardLayerTest.json",
+		"level1" : "jsons/NewLevel3.json",
+        "level2":"jsons/NewLevelStars.json",
+        "level3": "jsons/2BoardLayerTest.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }
