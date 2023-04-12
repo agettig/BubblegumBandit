@@ -333,6 +333,30 @@
                  "width":65,
                  "x":1631.86533372537,
                  "y":1026.59012055278
+                }, 
+                {
+                 "gid":30,
+                 "height":65,
+                 "id":28,
+                 "name":"",
+                 "rotation":0,
+                 "type":"box",
+                 "visible":true,
+                 "width":65,
+                 "x":576,
+                 "y":1216
+                }, 
+                {
+                 "gid":43,
+                 "height":65,
+                 "id":29,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":65,
+                 "x":959.708321082035,
+                 "y":870.400764481035
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -372,7 +396,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":28,
+ "nextobjectid":30,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -461,8 +485,8 @@
                 {
                  "id":12,
                  "image":"..\/textures\/chair.png",
-                 "imageheight":89,
-                 "imagewidth":64,
+                 "imageheight":90,
+                 "imagewidth":65,
                  "type":"chair"
                 }],
          "tilewidth":117
@@ -520,6 +544,14 @@
                  "image":"..\/..\/..\/..\/..\/..\/..\/Downloads\/tile.jpeg"
                 }],
          "tilewidth":64
+        }, 
+        {
+         "firstgid":19,
+         "source":"..\/..\/Tiled\/objects.tsx"
+        }, 
+        {
+         "firstgid":32,
+         "source":"..\/..\/Tiled\/objects.tsx"
         }],
  "tilewidth":64,
  "type":"map",
