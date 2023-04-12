@@ -411,6 +411,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
             }
 
+            // TODO: Fix rolling robots so don't have to do this
+            float y = getY() * drawScale.y;
+            if (getName().equals("rollingrobot")) {
+                y += 16;
+                x += effect * 40;
+            }
+
             //if gum, overlay with gumTexture
             if (gummed) {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
@@ -419,7 +426,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
                         getY() * drawScale.y + (GUM_OFFSET * yScale), getAngle(), 1, yScale);
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                        getY() * drawScale.y, getAngle(), effect, yScale);
+                        y, getAngle(), effect, yScale);
             }
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
