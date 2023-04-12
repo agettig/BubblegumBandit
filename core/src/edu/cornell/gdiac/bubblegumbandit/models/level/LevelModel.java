@@ -664,8 +664,7 @@ public class LevelModel {
                             bandit.getY() - enemyPos.y
                     );
 
-                    if(!enemy.hasDamagedBandit() && banditDir.len()
-                            < intersectLength.len()){
+                    if(!enemy.hasDamagedBandit() && enemy.didHitBandit()){
                         enemy.setDamagedBandit(true);
                         bandit.hitPlayer(LaserController.LASER_DAMAGE);
                     }
