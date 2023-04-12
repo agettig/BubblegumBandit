@@ -200,8 +200,8 @@
   "large_robot": {
     "type": "moving",
     "size": [
-      1.0,
-      1.75
+      1.5,
+      2.8
     ],
     "density": 1.0,
     "friction": 2.0,

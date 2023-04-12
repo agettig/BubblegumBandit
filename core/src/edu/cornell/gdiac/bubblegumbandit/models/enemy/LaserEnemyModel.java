@@ -121,7 +121,10 @@ public class LaserEnemyModel extends EnemyModel{
     /**
      * Sets this LaserEnemyModel's age to 0.
      * */
-    public void resetAge(){age = 0;}
+    public void resetAge(){
+        System.out.println("Resetting age");
+        age = 0;
+    }
 
 
     /**
