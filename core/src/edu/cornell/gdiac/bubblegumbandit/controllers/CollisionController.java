@@ -59,6 +59,13 @@ public class CollisionController implements ContactListener {
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
+    /**true if rolling enemy collision*
+     */
+    private boolean rollingCollision = false;
+    /**true if rolling enemy is left of bandit*
+     */
+    private boolean leftRolling = false;
+
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
 
@@ -128,6 +135,7 @@ public class CollisionController implements ContactListener {
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
             resolveUnstickCollision(obstacleA, obstacleB);
+            checkRollingEnemyCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -487,14 +495,31 @@ public class CollisionController implements ContactListener {
     private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
 
         // Check that obstacles are not null and not an enemy
-        if (bd1 == null || bd2 == null) return;
-        if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
+        if (bd1 == null || bd2 == null) rollingCollision = false;
 
-        if (bd1.getName().equals("rollingrobot")) {
-            resolveRollingEnemyCollision((MovingEnemyModel) bd1, bd2);
-        } else if (bd2.getName().equals("rollingrobot")) {
-            resolveRollingEnemyCollision((MovingEnemyModel) bd2, bd1);
+        if (bd1.getName().equals("rollingrobot") && bd2.equals(levelModel.getBandit())) {
+            if (bd1.getX() < bd2.getX()) {
+                leftRolling = true;
+            }
+            rollingCollision = true;
+        } else if (bd2.getName().equals("rollingrobot") && bd1.equals(levelModel.getBandit())) {
+            if (bd1.getX() > bd2.getX()) {
+                leftRolling = true;
+            }
+            rollingCollision = true;
         }
+    }
+
+    public boolean getLeftRolling() {
+        return leftRolling;
+    }
+
+    public boolean getRollingCollision() {
+        return rollingCollision;
+    }
+    public void resetRollingCollision() {
+        rollingCollision = false;
+        leftRolling = false;
     }
 
     /**
@@ -504,8 +529,11 @@ public class CollisionController implements ContactListener {
      */
     private void resolveRollingEnemyCollision(MovingEnemyModel e, Obstacle o) {
         //if (e.isRemoved()) return;
-        if (o.equals(levelModel.getBandit())) {
-            levelModel.getBandit().hitPlayer(e.getDamage());
+        BanditModel bandit = levelModel.getBandit();
+        if (o.equals(bandit)) {
+            bandit.hitPlayer(e.getDamage());
+            Vector2 pos = bandit.getPosition();
+            bandit.setPosition(pos.x - 2f, pos.y);
         }
     }
 
