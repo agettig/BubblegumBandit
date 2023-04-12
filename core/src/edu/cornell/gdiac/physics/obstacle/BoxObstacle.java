@@ -226,6 +226,4 @@ public class BoxObstacle extends SimpleObstacle {
 			canvas.drawPhysics(shape,debugColor,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
 		}
 	}
-
-
 }

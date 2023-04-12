@@ -1325,12 +1325,6 @@ public class GameCanvas {
 
     }
 
-
-    public void drawGutters(TextureRegion texture) { //yeahh we cant do this
-        //draw
-
-    }
-
     public void drawPhysicsLevel(CircleShape shape, Color color, float x, float y, float sx, float sy) {
         float x0 = x * sx;
         float y0 = y * sy;

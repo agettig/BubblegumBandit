@@ -838,7 +838,18 @@
                  "width":48,
                  "x":454.744277305428,
                  "y":1465.46500981033
-                }],
+                }, {
+             "gid":65,
+             "height":186,
+             "id":60,
+             "name":"large_robot",
+             "rotation":0,
+             "type":"large_robot",
+             "visible":true,
+             "width":134,
+             "x":1023.48723897912,
+             "y":1717.12993039443
+           }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
