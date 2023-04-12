@@ -3,8 +3,9 @@ package edu.cornell.gdiac.bubblegumbandit.controllers.modes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerMapping;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.physics.box2d.World;
@@ -28,6 +29,9 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     /** Resume button*/
     private Texture resumeButton;
 
+    /** Reset Button*/
+    private Texture resetButton;
+
     /** Retry button*/
     private Texture levelSelectButton;
 
@@ -36,6 +40,9 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
     /**Save and Quit button*/
     private Texture saveAndQuitButton;
+
+    /** Pointer to what is being hovered. */
+    private Texture hoverPointer;
 
     /** Standard window width*/
     private static int STANDARD_WIDTH = 800;
@@ -73,6 +80,12 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     /** The y-coordinate of the center of the resume button*/
     private int resumeY;
 
+    /** The x-coordinate of the center of the reset button*/
+    private int resetX;
+
+    /** The y-coordinate of the center of the reset button*/
+    private int resetY;
+
     /** The x-coordinate of the center of the level select button*/
     private int levelSelectX;
 
@@ -93,6 +106,9 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
     /** True if the player is hovering over the resume button*/
     private boolean hoverResume;
+
+    /** True if the player is hovering over the reset button*/
+    private boolean hoverReset;
 
     /** True if the player is hovering over the level select button*/
     private boolean hoverLevelSelect;
@@ -115,13 +131,15 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     /**
      * 0 = nothing pressed
      * 1 = resume down
-     * 2 = level select down
-     * 3 = setting down
-     * 4 = save and quit down
-     * 5 = resume up
-     * 6 = level select up
-     * 7 = settings up
-     * 8 = save and quit up
+     * 2 = rest down
+     * 3 = level select down
+     * 4 = setting down
+     * 5 = save and quit down
+     * 6 = resume up
+     * 7 = reset up
+     * 8 = level select up
+     * 9 = settings up
+     * 10 = save and quit up
      * */
     private int pressState;
 
@@ -166,9 +184,11 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         resize(canvas.getWidth(), canvas.getHeight());
 
         resumeButton = null;
+        resetButton = null;
         levelSelectButton = null;
         settingsButton = null;
         saveAndQuitButton = null;
+        hoverPointer = null;
 
         progress = 0;
         pressState = 0;
@@ -194,7 +214,16 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
     /** Updates the status of this mode*/
     public void update(float dt) {
-        world.step(dt, 8, 3);
+        if (resumeButton == null) {
+            //assets.update(budget);
+            //this.progress = assets.getProgress()
+            hoverPointer = directory.getEntry("hoverPointer", Texture.class);
+            resumeButton = directory.getEntry("resumeButton", Texture.class);
+            resetButton = directory.getEntry("resetButton", Texture.class);
+            levelSelectButton = directory.getEntry("levelSelectButton", Texture.class);
+            settingsButton = directory.getEntry("settingsButton", Texture.class);
+            saveAndQuitButton = directory.getEntry("saveAndQuitButton", Texture.class);
+        }
     }
 
     /** Returns the menu option selected by the player*/
@@ -204,9 +233,140 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
     /** Draws the status of this mode*/
     private void draw() {
-        //canvas.clear();
         canvas.begin();
+        canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+//        if (resumeButton == null || resetButton == null || settingsButton == null || saveAndQuitButton == null || hoverPointer == null) {
+//            drawProgress(canvas);
+//        } else {
 
+            float highestButtonY = canvas.getCamera().viewportHeight/2;
+            float lowestButtonY = canvas.getCamera().viewportHeight/6;
+            float buttonSpace = highestButtonY - lowestButtonY;
+            float gap = buttonSpace / 4;
+
+            resumeX = (int) canvas.getCamera().viewportWidth / 5;
+            resumeY = (int) highestButtonY;
+
+            resetX = (int) canvas.getCamera().viewportWidth / 5;
+            resetY = (int) (highestButtonY - gap);
+
+            levelSelectX = (int) canvas.getCamera().viewportWidth / 5;
+            levelSelectY = (int) (highestButtonY - gap*2);
+
+            settingsX = (int) canvas.getCamera().viewportWidth / 5;
+            settingsY = (int) (highestButtonY - gap*3);
+
+            saveAndQuitX = (int) canvas.getCamera().viewportWidth / 5;
+            saveAndQuitY = (int) (highestButtonY - gap*4);
+
+
+            float pointerX = resumeX / 4f;
+
+
+            //Draw Continue Game
+            canvas.draw(
+                    startButton,
+                    getButtonTint("start"),
+                    startButton.getWidth()/2f,
+                    startButton.getHeight()/2f,
+                    startButtonPositionX,
+                    startButtonPositionY,
+                    0,
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
+            );
+            if(hoveringStart){
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth()/2f,
+                        hoverPointer.getHeight()/2f,
+                        pointerX,
+                        startButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+            }
+
+            //Draw Level Select
+            canvas.draw(
+                    levelSelectButton,
+                    getButtonTint("level"),
+                    levelSelectButton.getWidth()/2f,
+                    levelSelectButton.getHeight()/2f,
+                    levelSelectButtonPositionX,
+                    levelSelectButtonPositionY,
+                    0,
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
+            );
+            if(hoveringLevelSelect){
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth()/2f,
+                        hoverPointer.getHeight()/2f,
+                        pointerX,
+                        levelSelectButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+            }
+
+            //Draw Settings
+            canvas.draw(
+                    settingsButton,
+                    getButtonTint("settings"),
+                    settingsButton.getWidth()/2f,
+                    settingsButton.getHeight()/2f,
+                    settingsButtonPositionX,
+                    settingsButtonPositionY,
+                    0,
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
+            );
+            if(hoveringSettings){
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth()/2f,
+                        hoverPointer.getHeight()/2f,
+                        pointerX,
+                        settingsButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+            }
+
+            //Draw Exit
+            canvas.draw(
+                    exitButton,
+                    getButtonTint("exit"),
+                    exitButton.getWidth()/2f,
+                    exitButton.getHeight()/2f,
+                    exitButtonPositionX,
+                    exitButtonPositionY,
+                    0,
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
+            );
+            if(hoveringExit){
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth()/2f,
+                        hoverPointer.getHeight()/2f,
+                        pointerX,
+                        exitButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+
+        }
         canvas.end();
     }
 
@@ -277,6 +437,22 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
 
     // PROCESSING PLAYER INPUT
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
     /**
      * Called when the screen was touched or a mouse button was pressed.
      *
@@ -309,6 +485,17 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
             pressState = 1;
         }
 
+        //Detect clicks on the reset button
+        rectWidth = scale * BUTTON_SCALE * resetButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * resetButton.getHeight();
+        leftX = resetX - rectWidth / 2.0f;
+        rightX = resetX + rectWidth / 2.0f;
+        topY = resetY - rectHeight / 2.0f;
+        bottomY = resetY + rectHeight / 2.0f;
+        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+            pressState = 2;
+        }
+
         //Detect clicks on the level select button
         rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
@@ -317,7 +504,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         topY = levelSelectY - rectHeight / 2.0f;
         bottomY = levelSelectY + rectHeight / 2.0f;
         if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
-            pressState = 2;
+            pressState = 3;
         }
 
         //Detect clicks on the settings button
@@ -328,7 +515,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         topY = settingsY - rectHeight / 2.0f;
         bottomY = settingsY + rectHeight / 2.0f;
         if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
-            pressState = 3;
+            pressState = 4;
         }
 
         //Detect clicks on the exit button
@@ -339,7 +526,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         topY = saveAndQuitY - rectHeight / 2.0f;
         bottomY = saveAndQuitY + rectHeight / 2.0f;
         if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
-            pressState = 4;
+            pressState = 5;
         }
         return false;
     }
@@ -362,21 +549,26 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
             return false;
         }
 
-        //Level Select
         if (pressState == 2) {
             pressState = 6;
             return false;
         }
 
-        //Settings
+        //Level Select
         if (pressState == 3) {
             pressState = 7;
             return false;
         }
 
-        //Exit
+        //Settings
         if (pressState == 4) {
             pressState = 8;
+            return false;
+        }
+
+        //Exit
+        if (pressState == 5) {
+            pressState = 9;
             return false;
         }
 
@@ -449,6 +641,15 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         float topY = resumeY - rectHeight / 2.0f;
         float bottomY = resumeY + rectHeight / 2.0f;
         hoverResume = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+
+        //Detect hovers on the reset button
+        rectWidth = scale * BUTTON_SCALE * resetButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * resetButton.getHeight();
+        leftX = resetX - rectWidth / 2.0f;
+        rightX = resetX + rectWidth / 2.0f;
+        topY = resetY - rectHeight / 2.0f;
+        bottomY = resetY + rectHeight / 2.0f;
+        hoverReset = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
 
         //Detect hovers on the level select button
         rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
@@ -535,6 +736,28 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     }
 
 
+    @Override
+    public void connected(Controller controller) {
 
+    }
 
+    @Override
+    public void disconnected(Controller controller) {
+
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean buttonUp(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        return false;
+    }
 }
