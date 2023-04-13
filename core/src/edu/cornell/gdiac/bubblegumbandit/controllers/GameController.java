@@ -34,6 +34,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -586,25 +587,36 @@ public class GameController implements Screen {
 
         level.update(dt);
         for (AIController controller: level.aiControllers()){
-            if (controller.getEnemy().fired()){
-                if(controller.getEnemy() instanceof LaserEnemyModel) {
-                    laserController.fireLaser(controller);
-                }
-                else{
+
+            EnemyModel enemy = controller.getEnemy();
+            boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
+            boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
+
+            if(isProjectileEnemy){
+                if (controller.getEnemy().fired()){
                     ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
                     smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                     level.activate(newProj);
                     newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
                 }
+                else{
+                    controller.coolDown(true);
+                }
+            }
+            else if(isLaserEnemy){
+                LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
+                if(laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
+                else{
+                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser();
+                    if(canFire) laserController.fireLaser(controller);
+                }
+            }
 
-            }
-            else{
-                controller.coolDown(true);
-            }
+
         }
         projectileController.update();
         level.getAim().update(canvas, dt);
-        laserController.updateLasers(dt,level.getWorld(), level.getBandit().getPosition());
+        laserController.updateLasers(dt,level.getWorld(), level.getBandit());
 
         // Update the camera
         GameCamera cam = canvas.getCamera();
@@ -649,7 +661,7 @@ public class GameController implements Screen {
      */
     public void draw(float delta) {
         canvas.clear();
-        level.draw(canvas, constantsJson, trajectoryProjectile);
+        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam);
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
