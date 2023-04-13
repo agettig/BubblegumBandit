@@ -126,7 +126,7 @@
         "star": "textures/star.png",
         "sunfish" : "textures/sunfish.png",
         "ship1" : "textures/level1.png",
-        "laserBeam": "textures/laserBeam.png",
+        "laserBeam": "textures/red_laser.png",
         "large_robotoutline": "textures/large_robotWhite.png",
         "med_outline": "textures/med_white.png"
     },

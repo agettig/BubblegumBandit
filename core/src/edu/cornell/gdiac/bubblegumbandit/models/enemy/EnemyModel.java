@@ -59,7 +59,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     private RayCastCone sensing;
 
-    private RayCastCone attacking;
+    public RayCastCone attacking;
 
     /**Reference to the Box2D world */
     private World world;
