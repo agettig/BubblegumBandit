@@ -429,6 +429,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 exitButton = internal.getEntry("exitButton", Texture.class);
             }
         }
+//        System.out.println("width: " + canvas.getWidth() + ", height: " + canvas.getHeight());
+        resize(canvas.getWidth(), canvas.getHeight());
     }
 
     /**
@@ -440,6 +442,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private void draw() {
         canvas.begin();
+        resize((int)canvas.getCamera().viewportWidth, (int)canvas.getCamera().viewportHeight);
         canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
         if (startButton == null || settingsButton == null || exitButton == null || hoverPointer == null) {
             drawProgress(canvas);
@@ -449,6 +452,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             float lowestButtonY = canvas.getCamera().viewportHeight / 6;
             float buttonSpace = highestButtonY - lowestButtonY;
             float gap = buttonSpace / 4;
+
 
             startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
             startButtonPositionY = (int) highestButtonY;
@@ -680,6 +684,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             if (shouldQuit()) {
                 listener.exitScreen(this, GameController.EXIT_QUIT);
             }
+
+
         }
     }
 
@@ -697,6 +703,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float sx = ((float) width) / STANDARD_WIDTH;
         float sy = ((float) height) / STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
+        System.out.println("set scale to " + scale);
 
         this.width = (int) (BAR_WIDTH_RATIO * width);
         centerY = (int) (BAR_HEIGHT_RATIO * height);
@@ -959,8 +966,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float rectHeight = scale * BUTTON_SCALE * startButton.getHeight();
         float leftX = startButtonPositionX - rectWidth / 2.0f;
         float rightX = startButtonPositionX + rectWidth / 2.0f;
-        float topY = startButtonPositionY - rectHeight / 2.0f;
-        float bottomY = startButtonPositionY + rectHeight / 2.0f;
+        float topY = (startButtonPositionY - (rectHeight) / 2.0f);
+        float bottomY = (startButtonPositionY + (rectHeight) / 2.0f);
         hoveringStart = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
 
         //Detect hovers on the level select button
