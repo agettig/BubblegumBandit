@@ -778,6 +778,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             return true;
         }
 
+        Vector2 pixelMouse = canvas.unproject(new Vector2(screenX, screenY));
+
+        float pixelX = pixelMouse.x;
+        float pixelY = pixelMouse.y;
+
+
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
@@ -793,7 +799,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float rightX = startButtonPositionX + rectWidth / 2.0f;
         float topY = startButtonPositionY - rectHeight / 2.0f;
         float bottomY = startButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 1;
         }
 
@@ -804,7 +810,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 2;
         }
 
@@ -815,7 +821,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = settingsButtonPositionX + rectWidth / 2.0f;
         topY = settingsButtonPositionY - rectHeight / 2.0f;
         bottomY = settingsButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 3;
         }
 
@@ -826,7 +832,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = exitButtonPositionX + rectWidth / 2.0f;
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 4;
         }
 
