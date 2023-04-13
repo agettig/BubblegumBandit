@@ -69,11 +69,22 @@
                 }
             }
         },
+        "med_walk":  {
+            "file": "textures/med_walk.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
+        },
         "med_roll":  {
             "file": "textures/med_roll.png",
             "wrap": false,
             "sprites": {
-                "patrol": {
+                "attack": {
                     "size": 4,
                     "rows": 1,
                     "cols": 4
@@ -152,7 +163,7 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/alpha_presentation.json",
+		"level1" : "jsons/test.json",
         "level2":"jsons/alpha.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"

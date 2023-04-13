@@ -116,6 +116,12 @@ public class RollingEnemyModel extends EnemyModel {
                 isRolling = true;
             }
         }
+        if (isRolling){
+            animationController.setAnimation("roll");
+        }
+        else{
+            animationController.setAnimation("patrol");
+        }
 
         cooldownTime--;
 

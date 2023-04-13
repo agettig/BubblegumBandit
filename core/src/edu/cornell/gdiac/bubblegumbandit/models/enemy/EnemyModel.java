@@ -90,7 +90,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     /**
      * Animation controller, controls animations
      */
-    private AnimationController animationController;
+    protected AnimationController animationController;
 
     private TextureRegion gummedTexture;
     // SENSOR FIELDS
