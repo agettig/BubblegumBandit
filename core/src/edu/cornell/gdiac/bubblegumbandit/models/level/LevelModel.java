@@ -710,6 +710,7 @@ public class LevelModel {
                                 asset.getRegionHeight() * firingLaserScale);
                     }
 
+                    // TODO move, handle in collision controller
                     if(!enemy.hasDamagedBandit() && enemy.didHitBandit()){
                         enemy.setDamagedBandit(true);
                         bandit.hitPlayer(LaserController.LASER_DAMAGE);
