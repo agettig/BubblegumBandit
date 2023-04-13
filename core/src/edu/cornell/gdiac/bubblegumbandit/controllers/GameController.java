@@ -34,6 +34,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -589,8 +590,10 @@ public class GameController implements Screen {
             if (controller.getEnemy().fired()){
                 if(controller.getEnemy() instanceof LaserEnemyModel) {
                     laserController.fireLaser(controller);
-                }
-                else{
+                } else if (controller.getEnemy() instanceof RollingEnemyModel) {
+
+
+                } else{
                     ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
                     smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                     level.activate(newProj);
@@ -598,6 +601,7 @@ public class GameController implements Screen {
                 }
 
             }
+            // TODO only projectiles use cooldown
             else{
                 controller.coolDown(true);
             }

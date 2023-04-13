@@ -28,7 +28,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  * <p>
  * Initialization is done by reading the json
  */
-public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
+public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     private TextureRegion outline;
 
@@ -68,9 +68,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         return nextAction;
     }
 
-    private int nextAction;
+    protected int nextAction;
 
-    private int previousAction;
+    protected int previousAction;
 
     /**
      * Cache for internal force calculations
@@ -85,7 +85,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     protected boolean isFlipped;
 
     /** EnemyModel's y-scale: used for flipping gravity. */
-    private float yScale;
+    protected float yScale;
 
     /**
      * Animation controller, controls animations
@@ -356,13 +356,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
         // Process movement command.
         if (movingLeft) {
-            if (previousAction != CONTROL_MOVE_LEFT){
+            if ((previousAction & CONTROL_MOVE_LEFT) == 0){
                 setY((int) getY() + .5f);
             }
             setVX(-speed);
             setFaceRight(false);
         } else if (movingRight) {
-            if (previousAction != CONTROL_MOVE_RIGHT){
+            if ((previousAction & CONTROL_MOVE_RIGHT) == 0){
                 setY((int) getY() + .5f);
             }
             setVX(speed);
