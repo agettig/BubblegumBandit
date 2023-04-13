@@ -385,10 +385,7 @@ public class GameController implements Screen {
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
-
-        int x = levelFormat.get("width").asInt();
-        int y = levelFormat.get("height").asInt();
-        minimap = new Minimap(directory,levelFormat, x, y);
+        minimap = new Minimap();
     }
 
 
@@ -430,6 +427,9 @@ public class GameController implements Screen {
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
+        int x = levelFormat.get("width").asInt();
+        int y = levelFormat.get("height").asInt();
+        minimap.initialize(directory, levelFormat, x, y);
     }
 
     /**
