@@ -474,13 +474,13 @@ public class CollisionController implements ContactListener {
             leftRolling = (bd1.getX() < bd2.getX());
             levelModel.getBandit().hitPlayer(0.5f);
             levelModel.getBandit().setKnockback(true);
-            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 5f : -5f, 3f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
+            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 2f : -2f, 2f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
 //            rollingCollision = true;
         } else if (bd2.getName().equals("rollingrobot") && bd1.equals(levelModel.getBandit())) {
             leftRolling = (bd1.getX() > bd2.getX());
             levelModel.getBandit().hitPlayer(0.5f);
             levelModel.getBandit().setKnockback(true);
-            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 5f : -5f, 3f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
+            levelModel.getBandit().getBody().applyLinearImpulse(leftRolling ? 2f : -2f, 2f, levelModel.getBandit().getX(), levelModel.getBandit().getY(), true);
 //            resetRollingCollision();
         }
     }
