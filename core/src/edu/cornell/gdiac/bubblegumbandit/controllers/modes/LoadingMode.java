@@ -30,6 +30,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -956,10 +957,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     public boolean mouseMoved(int screenX, int screenY) {
 
+        Vector2 pixelMouse = canvas.unproject(new Vector2(screenX, screenY));
+
+        float pixelX = pixelMouse.x;
+        float pixelY = pixelMouse.y;
+
+
+
         if (startButton == null || levelSelectButton == null
                 || settingsButton == null || exitButton == null) return false;
 // Flip to match graphics coordinates
-        screenY = heightY - screenY;
 
         //Detect hovers on the start button
         float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();
@@ -968,7 +975,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float rightX = startButtonPositionX + rectWidth / 2.0f;
         float topY = (startButtonPositionY - (rectHeight) / 2.0f);
         float bottomY = (startButtonPositionY + (rectHeight) / 2.0f);
-        hoveringStart = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringStart = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the level select button
         rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
@@ -977,7 +984,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
-        hoveringLevelSelect = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringLevelSelect = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the settings button
         rectWidth = scale * BUTTON_SCALE * settingsButton.getWidth();
@@ -986,7 +993,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = settingsButtonPositionX + rectWidth / 2.0f;
         topY = settingsButtonPositionY - rectHeight / 2.0f;
         bottomY = settingsButtonPositionY + rectHeight / 2.0f;
-        hoveringSettings = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringSettings = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the exit button
         rectWidth = scale * BUTTON_SCALE * exitButton.getWidth();
@@ -995,7 +1002,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = exitButtonPositionX + rectWidth / 2.0f;
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
-        hoveringExit = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringExit = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         return true;
     }
