@@ -34,6 +34,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -384,10 +385,7 @@ public class GameController implements Screen {
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
-
-        int x = levelFormat.get("width").asInt();
-        int y = levelFormat.get("height").asInt();
-        minimap = new Minimap(directory,levelFormat, x, y);
+        minimap = new Minimap();
     }
 
 
@@ -429,6 +427,9 @@ public class GameController implements Screen {
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
+        int x = levelFormat.get("width").asInt();
+        int y = levelFormat.get("height").asInt();
+        minimap.initialize(directory, levelFormat, x, y);
     }
 
     /**
@@ -589,8 +590,10 @@ public class GameController implements Screen {
             if (controller.getEnemy().fired()){
                 if(controller.getEnemy() instanceof LaserEnemyModel) {
                     laserController.fireLaser(controller);
-                }
-                else{
+                } else if (controller.getEnemy() instanceof RollingEnemyModel) {
+
+
+                } else{
                     ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
                     smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                     level.activate(newProj);
@@ -598,6 +601,7 @@ public class GameController implements Screen {
                 }
 
             }
+            // TODO only projectiles use cooldown
             else{
                 controller.coolDown(true);
             }

@@ -181,6 +181,9 @@ public enum EnemyState implements State<AIController> {
 
         @Override
         public void exit(AIController aiController) {
+            if (aiController.getEnemy() instanceof RollingEnemyModel) {
+                ((RollingEnemyModel) aiController.getEnemy()).resetAttack();
+            }
             talk(aiController, "leave attack");
         }
     },

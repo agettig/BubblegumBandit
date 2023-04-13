@@ -190,8 +190,4 @@ public class LaserEnemyModel extends EnemyModel{
 
     public boolean didHitBandit() { return didHitBandit; }
 
-    @Override
-    public boolean handleMessage(Telegram msg) {
-        return false;
-    }
 }
