@@ -150,7 +150,7 @@ public class LaserController {
              *
              * */
             if (enemy.chargingLaser()) {
-                chargeHitPoint = shootRaycast(world, enemy, bandit.getPosition(), bodiesToIgnore);
+                chargeHitPoint = shootRaycastAt(world, enemy, bandit.getPosition(), bodiesToIgnore);
                 enemy.setBeamIntersect(chargeHitPoint);
             }
 
@@ -161,7 +161,7 @@ public class LaserController {
              * */
             if (enemy.lockingLaser() || enemy.firingLaser()) {
                 //We use the most recent charging hit point to shoot our locked laser towards.
-                lockHitPoint = shootRaycast(world, enemy, chargeHitPoint, bodiesToIgnore);
+                lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
 
                 //If we're firing and hitting the bandit, take some damage.
@@ -175,14 +175,15 @@ public class LaserController {
 
     /**
      * Returns the point at which a laser raycast intersects with
-     * a body of interest. Performs the main raycast.
+     * a body of interest. Performs a raycast from a
+     * LaserEnemyModel's position towards some target.
      *
      * @param world The Box2D world.
      * @param enemy The LaserEnemyModel ray-casting right now.
      * @param target The raycast target position.
      * @param ignores All names of bodies that the raycast should ignore.
      * */
-    private Vector2 shootRaycast(World world,
+    private Vector2 shootRaycastAt(World world,
                                  final LaserEnemyModel enemy,
                                  Vector2 target,
                                  final ArrayList<String> ignores){
@@ -206,6 +207,55 @@ public class LaserController {
         chargeDirection.nor();
         chargeDirection.scl(Integer.MAX_VALUE);
 
+
+        //With the origin and direction, we can calculate the endpoint.
+        chargeEndpoint.set(
+                chargeOrigin.x + chargeDirection.x,
+                chargeOrigin.y + chargeDirection.y
+        );
+
+        //Time to raycast.
+        RayCastCallback chargeRaycast = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point,
+                                          Vector2 normal, float fraction) {
+                Obstacle ob = (Obstacle) fixture.getBody().getUserData();
+
+                //Return what the laser is hitting.
+                if (!ignores.contains(ob.getName())) {
+                    enemy.setHittingBandit(ob.getName().equals("bandit"));
+                    intersect.set(point);
+                    return fraction;
+                }
+                return -1;
+            }
+        };
+        world.rayCast(chargeRaycast, chargeOrigin, chargeEndpoint);
+        return intersect;
+    }
+
+    /**
+     * Returns the point at which a laser raycast intersects with
+     * a body of interest. Performs a raycast from a
+     * LaserEnemyModel's position towards some direction.
+     *
+     * @param world The Box2D world.
+     * @param enemy The LaserEnemyModel ray-casting right now.
+     * @param ignores All names of bodies that the raycast should ignore.
+     * */
+    private Vector2 shootRaycastTowards(World world,
+                                   final LaserEnemyModel enemy,
+                                   final ArrayList<String> ignores){
+
+        //The point at which our raycast will "hit."
+        final Vector2 intersect = new Vector2();
+
+        //Set the charging origin.
+        chargeOrigin.set(enemy.getX(), enemy.getY());
+
+        //We normalize the direction and scale it so that it reaches the screen's end.
+        chargeDirection.nor();
+        chargeDirection.scl(Integer.MAX_VALUE);
 
         //With the origin and direction, we can calculate the endpoint.
         chargeEndpoint.set(
