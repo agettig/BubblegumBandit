@@ -626,7 +626,7 @@ public class LevelModel {
      * @param canvas the drawing context
      */
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
-            gumProjectile, TextureRegion laserBeam) {
+            gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
         canvas.begin();
         if (backgroundRegion != null) {
             drawBackground(canvas);
@@ -637,7 +637,6 @@ public class LevelModel {
         Set<Obstacle> postLaserDraw = new HashSet<>();
 
 
-        drawChargeLasers(laserBeam, canvas);
 
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
@@ -646,6 +645,7 @@ public class LevelModel {
                 obj.draw(canvas);
             }
         }
+        drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
 
 
@@ -671,7 +671,7 @@ public class LevelModel {
         }
     }
 
-    public void drawChargeLasers(TextureRegion asset, GameCanvas canvas) {
+    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
 
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .5f;
@@ -711,26 +711,34 @@ public class LevelModel {
                 );
 
 
-                int numSegments = (int)((dir.len() * scale.x) / asset.getRegionWidth());
+                int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
+                numSegments += 1; //Some extra padding to make it look better.
                 dir.nor();
 
                 //Draw her up!
-                for(int i = 0; i < numSegments + 2; i++){
+                for(int i = 0; i < numSegments; i++){
 
                     //Calculate the positions and angle of the charging laser.
-                    float x = enemyPos.x * scale.x + (i * dir.x * asset.getRegionWidth());
-                    float y = enemyPos.y * scale.y + (i * dir.y * asset.getRegionWidth());
+                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()/2): 0;
+                    float enemyOffsetY = enemy.isFlipped() ? -(enemy.getHeight()*10) : (enemy.getHeight()*10);
 
-                    float enemyOffsetY = enemy.isFlipped() ? -(enemy.getHeight()/4 * scale.y) : (enemy.getHeight()/4 * scale.y);
+                    float x = enemyPos.x * scale.x + (i * dir.x * beam.getRegionWidth());
+                    float y = enemyPos.y * scale.y + (i * dir.y * beam.getRegionWidth());
+
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
+                    //System.out.println(enemy.getGummed());
+                    if(enemy.getGummed()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+
+                    System.out.println("Eye pos: " + (y + enemyOffsetY));
+
                     canvas.draw(
-                            asset,
+                            beam,
                             laserColor,
-                            asset.getRegionWidth(),
-                            asset.getRegionHeight(),
-                            x,
+                            beam.getRegionWidth(),
+                            beam.getRegionHeight(),
+                            x + enemyOffsetX,
                             y + enemyOffsetY,
                             ang,
                             1f,
