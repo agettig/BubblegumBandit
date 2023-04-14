@@ -351,18 +351,18 @@ public enum EnemyState implements State<AIController> {
 
             // if can not reach enemy in need, try moving closer to them
             float diffX = aiController.getEnemy().getX() - target.x;
-            float diffY = aiController.getEnemy().getY() - target.y;
+            float diffY = aiController.getEnemy().getYFeet() - target.y;
 
             // try moving left/right
             // move left
             if (diffX > 0) {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() - 1, (int) aiController.getEnemy().getY());
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() - 1, (int) aiController.getEnemy().getYFeet());
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                     return;
                 }
             } else {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() + 1, (int) aiController.getEnemy().getY());
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() + 1, (int) aiController.getEnemy().getYFeet());
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                     return;
@@ -371,12 +371,12 @@ public enum EnemyState implements State<AIController> {
 
             // try moving up/down
             if (diffY > 0) {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getY() - 1);
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getYFeet() - 1);
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                 }
             } else {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getY() + 1);
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getYFeet() + 1);
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                 }

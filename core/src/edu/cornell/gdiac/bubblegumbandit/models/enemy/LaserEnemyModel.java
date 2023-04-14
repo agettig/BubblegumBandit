@@ -1,13 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
-import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-
-import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_DOWN;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 /**
  * Represents an EnemyModel that attacks with a laser beam.
@@ -42,6 +41,8 @@ public class LaserEnemyModel extends EnemyModel{
 
     private boolean didHitBandit;
 
+    private PolygonShape shape;
+
     /**Creates a LaserEnemy.
      *
      * @param world The Box2D world
@@ -50,6 +51,8 @@ public class LaserEnemyModel extends EnemyModel{
     public LaserEnemyModel(World world, int id){
         super(world, id);
         didHitBandit = false;
+        shape = new PolygonShape();
+        shape.setAsBox(.5f,.5f);
     }
 
     /**Initializes this LaserEnemyModel from JSON and sets its vision radius.
@@ -189,5 +192,24 @@ public class LaserEnemyModel extends EnemyModel{
     public void setHitBandit(boolean didHitBandit) { this.didHitBandit = didHitBandit; }
 
     public boolean didHitBandit() { return didHitBandit; }
+
+    @Override
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+        float y = getYFeet();
+        canvas.drawPhysics(shape, Color.CORAL, (int) getX() + .5f, y, 0,drawScale.x, drawScale.y );
+    }
+
+    @Override
+    public float getYFeet(){
+        float y = (int) super.getY();
+        if (!isFlipped){
+            y -= .5f;
+        }
+        else{
+            y += 1.5f;
+        }
+        return y;
+    }
 
 }
