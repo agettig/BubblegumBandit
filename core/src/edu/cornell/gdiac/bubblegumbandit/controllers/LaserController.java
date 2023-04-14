@@ -22,13 +22,13 @@ public class LaserController {
     private float chargeTime = 1;
 
     /** How long a LaserModel needs to lock in before firing. */
-    private float lockTime = 1f;
+    private float lockTime = .75f;
 
     /**How long a LaserModel beam lasts after charging. */
-    private float firingTime = 1;
+    private float firingTime = 1.5f;
 
     /**How much damage the laser does to the bandit each frame. */
-    private float TICK_DAMAGE = .03f;
+    private float TICK_DAMAGE = .05f;
 
     /**Start point of the laser raycast. */
     private final Vector2 chargeOrigin;
@@ -102,33 +102,44 @@ public class LaserController {
      * @param world The Box2D world.
      * @param bandit The Bandit.
      * */
-    public void updateLasers(float dt, World world, BanditModel bandit){
+    public void updateLasers(float dt, World world, BanditModel bandit) {
 
 
         //Removal of Enemies that began shooting but can no longer see the Bandit
         enemiesToRemove.clear();
-        for(final LaserEnemyModel enemy : lasers){
+        for (final LaserEnemyModel enemy : lasers) {
 
+            boolean disqualified = false;
+
+            //Disqualification #1: too far.
             banditEnemyDist.set(
                     bandit.getX() - enemy.getX(),
                     bandit.getY() - enemy.getY()
             );
             float distance = Math.abs(banditEnemyDist.len());
             float range = 8;
-            if(distance > range){
-                if(enemy.chargingLaser()){
-                    enemiesToRemove.add(enemy);
-                    enemy.resetLaserCycle();
-                }
+            if (distance > range) disqualified = true;
+
+            //Disqualification #2: enemy can't see.
+            if (enemy.getFaceRight()) {
+                if (bandit.getX() < enemy.getX()) disqualified = true;
+            }
+            if (!enemy.getFaceRight()) {
+                if (bandit.getX() > enemy.getX()) disqualified = true;
+            }
+
+            if (disqualified && enemy.chargingLaser()) {
+                enemiesToRemove.add(enemy);
+                enemy.resetLaserCycle();
             }
         }
 
-        for(final LaserEnemyModel enemy : enemiesToRemove){
+        for (final LaserEnemyModel enemy : enemiesToRemove) {
             lasers.remove(enemy);
         }
 
         //Main loop
-        for(final LaserEnemyModel enemy : lasers){
+        for (final LaserEnemyModel enemy : lasers) {
 
             //Update the LaserEnemyModel's age and the Bandit reference.
             enemy.ageLaser(dt, chargeTime, lockTime, firingTime);
@@ -138,7 +149,7 @@ public class LaserController {
              * The LaserBeam follows the bandit's position.
              *
              * */
-            if(enemy.chargingLaser()){
+            if (enemy.chargingLaser()) {
                 chargeHitPoint = shootRaycast(world, enemy, bandit.getPosition(), bodiesToIgnore);
                 enemy.setBeamIntersect(chargeHitPoint);
             }
@@ -148,13 +159,13 @@ public class LaserController {
              * The LaserBeam shoots at the latest charging direction.
              *
              * */
-            if(enemy.lockingLaser() || enemy.firingLaser()){
+            if (enemy.lockingLaser() || enemy.firingLaser()) {
                 //We use the most recent charging hit point to shoot our locked laser towards.
                 lockHitPoint = shootRaycast(world, enemy, chargeHitPoint, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
 
                 //If we're firing and hitting the bandit, take some damage.
-                if(enemy.firingLaser() && enemy.isHittingBandit()){
+                if (enemy.firingLaser() && enemy.isHittingBandit()) {
                     bandit.hitPlayer(TICK_DAMAGE);
                 }
             }
@@ -180,6 +191,9 @@ public class LaserController {
         final Vector2 intersect = new Vector2();
 
         //The origin of the laser beam is at the LaserEnemy's face.
+        float originAdjustX = enemy.getFaceRight() ? enemy.getWidth() + .5f :
+                -enemy.getWidth() -.5f;
+        float originAdjustY = enemy.isFlipped() ? -.5f : .5f;
         chargeOrigin.set(enemy.getX(), enemy.getY());
 
         //The direction of the laser beam is at the passed-in target.

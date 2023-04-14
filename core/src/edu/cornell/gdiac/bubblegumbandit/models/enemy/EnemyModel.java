@@ -127,8 +127,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
     // Stuck in Gum Fields
 
-    /** Manager for the scale for flipping during gravity swaps */
-    private FlippingObject fo = new FlippingObject();
 
     /** where the gum is drawn relative to the center of the robot*/
     private static final float GUM_OFFSET = -3;

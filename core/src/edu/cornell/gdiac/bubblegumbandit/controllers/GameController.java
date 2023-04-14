@@ -213,6 +213,9 @@ public class GameController implements Screen {
      */
     private TextureRegion laserBeam;
 
+    private TextureRegion laserBeamEnd;
+
+
     private TextureRegion stuckGum;
 
     /** The gravity control mode for the player controller */
@@ -383,6 +386,7 @@ public class GameController implements Screen {
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
+        laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
 
@@ -607,7 +611,10 @@ public class GameController implements Screen {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
                 if(laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
                 else{
-                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser();
+                    boolean sameSide = false;
+                    if(enemy.getFaceRight() && enemy.getX() < bandit.getX()) sameSide = true;
+                    if(!enemy.getFaceRight() && enemy.getX() > bandit.getX()) sameSide = true;
+                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
                     if(canFire) laserController.fireLaser(controller);
                 }
             }
@@ -661,7 +668,7 @@ public class GameController implements Screen {
      */
     public void draw(float delta) {
         canvas.clear();
-        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam);
+        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
