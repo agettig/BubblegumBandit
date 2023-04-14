@@ -549,6 +549,10 @@ public class GameController implements Screen {
             }
         }
 
+        if(inputResults.didExpandMinimap()){
+            minimap.toggleMinimap();
+        }
+
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
