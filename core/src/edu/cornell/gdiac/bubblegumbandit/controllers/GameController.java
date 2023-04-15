@@ -611,6 +611,7 @@ public class GameController implements Screen {
             }
         }
         projectileController.update();
+        minimap.updateMinimap(dt);
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt,level.getWorld(), level.getBandit().getPosition());
 
@@ -664,20 +665,9 @@ public class GameController implements Screen {
         hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
 
         Vector2 banditPosition = level.getBandit().getPosition();
-        ArrayList<Vector2> enemyPositions = new ArrayList<>();
-        for(AIController enemyController : level.aiControllers()) {
-            if(enemyController != null){
-                if(enemyController.getEnemy() != null){
-                    Vector2 enemyPos = enemyController.getEnemy().getPosition();
-                    float enemyX = Math.round(enemyPos.x);
-                    float enemyY = Math.round(enemyPos.y);
-                    Vector2 roundedEnemyPos = new Vector2(enemyX, enemyY);
-                    enemyPositions.add(roundedEnemyPos);
-                }
-            }
-        }
 
-         minimap.draw(canvas.getCamera().viewportWidth, canvas.getHeight(), banditPosition, enemyPositions, levelFormat);
+
+        minimap.draw(banditPosition);
 
 
 
