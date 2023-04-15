@@ -148,6 +148,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         return faceRight;
     }
 
+    /** Returns this EnemyModel's Y-Scale.
+     *
+     * @return this EnemyModel's Y-Scale.
+     * */
+    public float getYScale(){ return yScale;}
 
     /** Makes this EnemyModel face right.
      *
