@@ -55,6 +55,10 @@ public class TiledParser {
             }
             tileJson = tileJson.next();
         }
+       // for(int i : tileset.keySet()) {
+        //    System.out.println(i);
+        //}
+        //System.out.println("fin");
         return tileset;
     }
 }
