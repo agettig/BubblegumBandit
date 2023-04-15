@@ -740,15 +740,7 @@ public class LevelModel {
                                 asset.getRegionHeight() * firingLaserScale);
                     }
 
-                    Vector2 intersectLength = new Vector2(
-                            intersect.x - enemyPos.x,
-                            intersect.y - enemyPos.y
-                    );
-                    Vector2 banditDir = new Vector2(
-                            bandit.getX() - enemyPos.x,
-                            bandit.getY() - enemyPos.y
-                    );
-
+                    // TODO move, handle in collision controller
                     if(!enemy.hasDamagedBandit() && enemy.didHitBandit()){
                         enemy.setDamagedBandit(true);
                         bandit.hitPlayer(LaserController.LASER_DAMAGE);

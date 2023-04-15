@@ -49,8 +49,6 @@ public class LaserEnemyModel extends EnemyModel{
      * */
     public LaserEnemyModel(World world, int id){
         super(world, id);
-        // TODO remove
-        setFaceRight(false);
         didHitBandit = false;
     }
 
@@ -192,8 +190,4 @@ public class LaserEnemyModel extends EnemyModel{
 
     public boolean didHitBandit() { return didHitBandit; }
 
-    @Override
-    public boolean handleMessage(Telegram msg) {
-        return false;
-    }
 }

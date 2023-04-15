@@ -36,7 +36,7 @@ public class AlarmController {
   /** The inactive ambient light amount */
   private final float NORMAL_AMBIENT = 0.8f;
   /** The active ambient light amount */
-  private final float ALARM_AMBIENT = 0.6f;
+  private final float ALARM_AMBIENT = 0.5f;
   /** The  distance of an alarm while inactive */
   private final int INACTIVE_DIST = 8;
   /** The  distance of an alarm while active */
@@ -115,8 +115,8 @@ public class AlarmController {
       if(time>pulseTime/3f&&time<pulseTime) {
 
         for(PointLight light : lights) {
-          light.setDistance(time<= pulseTime*(2f/3f) ? light.getDistance()+.1f
-              : light.getDistance()-.1f);
+          light.setDistance(time<= pulseTime*(2f/3f) ? light.getDistance()+.15f
+              : light.getDistance()-.15f);
         }
 
       } else if (time>pulseTime) { {
@@ -150,7 +150,7 @@ public class AlarmController {
       rays.setAmbientLight(ALARM_AMBIENT);
       for(PointLight light : lights) {
         light.setColor(active);
-        light.setDistance(ACTIVE_DIST);
+        light.setDistance(0);
         light.setSoftnessLength(ACTIVE_DIST);
       }
       timeStamp = TimeUtils.millis();

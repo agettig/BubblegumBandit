@@ -1,5 +1,5 @@
 {
-  "bandit" : {
+  "bandit": {
     "run": {
       "strip": "bandit_run.run",
       "fps": 6
@@ -13,22 +13,26 @@
       "fps": 2
     }
   },
-  "small_robot" : {
+  "small_robot": {
     "patrol": {
       "strip": "small_robot_patrol.patrol",
       "fps": 6
     }
   },
-  "large_robot" : {
-  "patrol" : {
-    "strip" : "large_walk.patrol",
-    "fps": 4
-  }
+  "large_robot": {
+    "patrol": {
+      "strip": "large_walk.patrol",
+      "fps": 4
+    }
   },
-  "medium_robot" : {
-    "patrol" : {
-      "strip" : "med_roll.patrol",
+  "medium_robot": {
+    "patrol": {
+      "strip": "med_walk.patrol",
       "fps": 8
-  }
+    },
+    "roll": {
+      "strip": "med_roll.attack",
+      "fps": 8
+    }
   }
 }
