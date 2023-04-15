@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -63,25 +64,20 @@ public class Minimap {
 
     /**
      * Makes the Minimap.
+     * */
+    public Minimap(){
+    }
+
+    /** Initializes the minimap for a given level.
      *
-     * @param directory The BubblegumBandit AssetDirectory reference.
-     * @param levelFormat The JSON level format.
+     * @param directory The asset directory.
+     * @param levelFormat the current level.
      * @param physicsWidth The physics height of the level.
      * @param physicsHeight The physics width of the level.
-     * */
-    public Minimap(AssetDirectory directory, JsonValue levelFormat,
-                   int physicsWidth, int physicsHeight){
-
+     */
+    public void initialize(AssetDirectory directory, JsonValue levelFormat, int physicsWidth, int physicsHeight) {
         //Safety checks.
         assert directory != null;
-        assert levelFormat != null;
-        assert physicsWidth >= 0;
-        assert physicsHeight >= 0;
-
-        //Set fields.
-        width = physicsWidth;
-        height = physicsHeight;
-
         //Make the Minimap's background and map tiles.
         minimapTable = new Table();
         minimapTable.align(Align.bottomRight);
@@ -93,6 +89,14 @@ public class Minimap {
         minimapTable.add(minimapBackground);
         minimapBackground.setSize(0, 0);
         minimapBackground.setColor(new Color(0,0,0,.3f));
+
+        assert levelFormat != null;
+        assert physicsWidth >= 0;
+        assert physicsHeight >= 0;
+
+        //Set fields.
+        width = physicsWidth;
+        height = physicsHeight;
         makeMinimapTiles(directory);
 
         //Find all positions of floors/platforms.
@@ -118,8 +122,8 @@ public class Minimap {
                 floorPositions.add(new Vector2(x, y));
             }
         }
-
     }
+
 
     /**
      * Draws the Minimap.
