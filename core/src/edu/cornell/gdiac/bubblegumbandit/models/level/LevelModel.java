@@ -43,12 +43,9 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
-import java.util.HashMap;
+import java.util.*;
 
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
-
-import java.util.Iterator;
-import java.util.Map;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -132,6 +129,8 @@ public class LevelModel {
     private TiledGraph tiledGraphGravityDown;
     private TiledGraph tiledGraphGravityUp;
 
+    private ArrayList<String> enemyObjectNames;
+
     /**
      * The width of the level.
      */
@@ -155,6 +154,11 @@ public class LevelModel {
      * Reference to background elements in the game
      */
     private Array<BackObjModel> backgroundObjects;
+
+    /**
+     * Reference to support tile objects
+     */
+    private Array<BackgroundTileModel> supportTiles;
 
     /**
      * Returns the aim in this level.
@@ -275,6 +279,7 @@ public class LevelModel {
 
         JsonValue tileLayer = null;
         JsonValue objects = null;
+        JsonValue supports = null;
 
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -291,6 +296,9 @@ public class LevelModel {
                     break;
                 case "Objects":
                     objects = layer.get("Objects");
+                    break;
+                case "Supports":
+                    supports = layer;
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name");
@@ -365,6 +373,7 @@ public class LevelModel {
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
+        supportTiles = new Array<BackgroundTileModel>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
 
@@ -380,6 +389,22 @@ public class LevelModel {
                 newTile.setDrawScale(scale);
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+            }
+        }
+
+        if (supports != null) {
+            int[] supportData = supports.get("data").asIntArray();
+            // Iterate over each support in the world and create if it exists
+            for (int i = 0; i < supportData.length; i++) {
+                int tileVal = supportData[i];
+                if (tileVal != 0) {
+                    BackgroundTileModel newTile = new BackgroundTileModel();
+                    float x = (i % levelWidth) + 0.5f;
+                    float y = levelHeight - (i / levelWidth) - 0.5f;
+                    newTile.initialize(textures.get(tileVal), x, y, scale);
+                    supportTiles.add(newTile);
+
+                }
             }
         }
 
@@ -592,7 +617,7 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
-        alarms.update(dt);
+        alarms.update();
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
@@ -625,13 +650,21 @@ public class LevelModel {
      * @param canvas the drawing context
      */
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
-            gumProjectile) {
+            gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
         canvas.begin();
         if (backgroundRegion != null) {
             drawBackground(canvas);
         }
 
         alarms.drawAlarms(canvas, scale);
+
+        for(BackgroundTileModel tile: supportTiles) {
+            tile.draw(canvas);
+        }
+
+        Set<Obstacle> postLaserDraw = new HashSet<>();
+
+
 
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
@@ -640,10 +673,15 @@ public class LevelModel {
                 obj.draw(canvas);
             }
         }
+        drawChargeLasers(laserBeam, laserBeamEnd, canvas);
+
+
+
 
         aim.drawProjectileRay(canvas);
 
-        drawChargeLasers(gumProjectile, canvas);
+
+
         canvas.end();
 
         if (debug) {
@@ -661,58 +699,77 @@ public class LevelModel {
         alarms.drawLights(canvas, scale);
     }
 
-    public void drawChargeLasers(TextureRegion asset, GameCanvas canvas) {
-        final float chargeLaserScale = 1f;
-        final float firingLaserScale = 7f;
+    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
+
+        //Local variables to scale our laser depending on its phase.
+        final float chargeLaserScale = .5f;
+        final float lockedLaserScale = 1f;
+        final float firingLaserScale = 1.5f;
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
+
+                //Don't draw inactive lasers.
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
-                Vector2 intersect = enemy.getRaycastLine();
+                if(enemy.inactiveLaser()) continue;
+
+
+                //Determine properties based on our laser phase.
+                Color laserColor;
+                float laserThickness;
+
+                if(enemy.chargingLaser()){
+                    laserColor = Color.YELLOW;
+                    laserThickness = chargeLaserScale;
+                }
+                else if(enemy.lockingLaser()){
+                    laserColor = Color.ORANGE;
+                    laserThickness = lockedLaserScale;
+                }
+                else{
+                    laserColor = Color.WHITE;
+                    laserThickness = firingLaserScale;
+                }
+
+                //Math calculations for the laser.
+                Vector2 intersect = enemy.getBeamIntersect();
                 Vector2 enemyPos = enemy.getPosition();
-                if (intersect == null) continue;
                 Vector2 dir = new Vector2(
                         intersect.x - enemyPos.x,
                         intersect.y - enemyPos.y
                 );
-                float gap = 0.01f;
-                int numSegments = (int) (dir.len() / gap);
-                dir.nor();
-                Color transparentYellow = Color.YELLOW;
-                transparentYellow.a = .075f;
-                if (enemy.isChargingLaser()) {
-                    for (int i = 0; i < numSegments; i++) {
-                        float x = enemyPos.x + (dir.x * i * gap);
-                        float y = enemyPos.y + (dir.y * i * gap);
-                        canvas.draw(
-                                asset,
-                                transparentYellow,
-                                asset.getRegionWidth(),
-                                asset.getRegionHeight(),
-                                x * scale.x,
-                                y * scale.y,
-                                asset.getRegionWidth() * chargeLaserScale,
-                                asset.getRegionHeight() * chargeLaserScale);
-                    }
-                } else if (enemy.isFiringLaser()) {
-                    for (int i = 0; i < numSegments; i++) {
-                        float x = enemyPos.x + (dir.x * i * gap);
-                        float y = enemyPos.y + (dir.y * i * gap);
-                        canvas.draw(
-                                asset,
-                                Color.RED,
-                                asset.getRegionWidth(),
-                                asset.getRegionHeight(),
-                                x * scale.x,
-                                y * scale.y,
-                                asset.getRegionWidth() * firingLaserScale,
-                                asset.getRegionHeight() * firingLaserScale);
-                    }
 
-                    // TODO move, handle in collision controller
-                    if(!enemy.hasDamagedBandit() && enemy.didHitBandit()){
-                        enemy.setDamagedBandit(true);
-                        bandit.hitPlayer(LaserController.LASER_DAMAGE);
-                    }
+                beam.setRegionWidth(2);
+                int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
+                if(enemy.getGummed()) numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
+                dir.nor();
+
+                //Draw her up!
+                for(int i = 0; i < numSegments; i++){
+
+
+
+                    //Calculate the positions and angle of the charging laser.
+                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()/2): 0;
+                    float enemyOffsetY = enemy.getHeight()*10;
+
+                    float x = enemyPos.x * scale.x + (i * dir.x * beam.getRegionWidth());
+                    float y = enemyPos.y * scale.y + (i * dir.y * beam.getRegionWidth());
+
+                    float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
+                    float ang = (float) Math.atan(slope);
+
+                    if(enemy.getGummed()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+
+                    canvas.draw(
+                            beam,
+                            laserColor,
+                            beam.getRegionWidth(),
+                            beam.getRegionHeight(),
+                            x + enemyOffsetX,
+                            y + enemyOffsetY* enemy.getYScale(),
+                            ang,
+                            1f,
+                            1 * laserThickness);
                 }
             }
         }

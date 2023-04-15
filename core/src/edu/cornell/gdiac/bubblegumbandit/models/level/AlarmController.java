@@ -10,8 +10,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -39,14 +38,21 @@ public class AlarmController {
   /** The inactive ambient light amount */
   private final float NORMAL_AMBIENT = 0.8f;
   /** The active ambient light amount */
-  private final float ALARM_AMBIENT = 0.4f;
+  private final float ALARM_AMBIENT = 0.5f;
   /** The  distance of an alarm while inactive */
   private final int INACTIVE_DIST = 8;
   /** The  distance of an alarm while active */
   private final int ACTIVE_DIST = 9;
 
+  /**
+   * Tracks start of last pulse cycle
+   */
+  private long timeStamp;
+  /**
+   * Length of pulse cycle, including rests, in milliseconds.
+   */
+  private float pulseTime = 3000;
 
-  private float counter;
 
   /**
    * Creates an alarm system.
@@ -63,9 +69,9 @@ public class AlarmController {
     this.offTexture = new TextureRegion(directory.getEntry("alarm_off", Texture.class));
     for(int i = 0; i<locations.size; i++) {
       lights[i] = new PointLight(rays, rayCount, inactive, INACTIVE_DIST, locations.get(i).x+.5f, locations.get(i).y+.5f);
-//      lights[i].setStaticLight(true);
     }
-    counter = 0;
+    timeStamp = TimeUtils.millis();
+
   }
 
   /**
@@ -103,12 +109,27 @@ public class AlarmController {
   /**
    * Effect: Updates the box2dlights, oscillates distance if alarming.
    */
-  public void update(float dt) {
+  public void update() {
     if(alarming) {
-      counter += dt;
-      for(PointLight light : lights) {
-        light.setDistance(counter - (int) counter < .2 ? 0 : ACTIVE_DIST);
+
+      float time = TimeUtils.timeSinceMillis(timeStamp);
+      if(time>pulseTime/3f&&time<pulseTime) {
+
+        for(PointLight light : lights) {
+          light.setDistance(time<= pulseTime*(2f/3f) ? light.getDistance()+.15f
+              : light.getDistance()-.15f);
+        }
+
+      } else if (time>pulseTime) { {
+       timeStamp = TimeUtils.millis();
+        for(PointLight light : lights) {
+          light.setDistance(0);
+        }
       }
+
+      }
+
+
     }
     rays.update();
   }
@@ -130,9 +151,10 @@ public class AlarmController {
       rays.setAmbientLight(ALARM_AMBIENT);
       for(PointLight light : lights) {
         light.setColor(active);
-        light.setDistance(ACTIVE_DIST);
+        light.setDistance(0);
         light.setSoftnessLength(ACTIVE_DIST);
       }
+      timeStamp = TimeUtils.millis();
     } else if (!set&&alarming) {
       rays.setAmbientLight(NORMAL_AMBIENT);
       for(PointLight light : lights) {

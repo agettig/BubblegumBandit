@@ -103,12 +103,12 @@ public class BubblegumController {
         topLeftGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
 
         // Set outline textures
-        stuckOutline = new TextureRegion(directory.getEntry("stuckOutline", Texture.class));
-        rotatedOutline = new TextureRegion(directory.getEntry("rotatedOutline", Texture.class));
-        topLeftOutline = new TextureRegion(directory.getEntry("topLeftOutline", Texture.class));
-        topRightOutline = new TextureRegion(directory.getEntry("topRightOutline", Texture.class));
-        bottomLeftOutline = new TextureRegion(directory.getEntry("bottomLeftOutline", Texture.class));
-        bottomRightOutline = new TextureRegion(directory.getEntry("bottomRightOutline", Texture.class));
+        stuckOutline = new TextureRegion(directory.getEntry("stuck_outline", Texture.class));
+        rotatedOutline = new TextureRegion(directory.getEntry("rotated_outline", Texture.class));
+        topLeftOutline = new TextureRegion(directory.getEntry("top_left_outline", Texture.class));
+        topRightOutline = new TextureRegion(directory.getEntry("top_right_outline", Texture.class));
+        bottomLeftOutline = new TextureRegion(directory.getEntry("bottom_left_outline", Texture.class));
+        bottomRightOutline = new TextureRegion(directory.getEntry("bottom_right_outline", Texture.class));
 
     }
 
