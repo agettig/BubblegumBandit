@@ -1,10 +1,12 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
-import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 
@@ -56,6 +58,8 @@ public class LaserEnemyModel extends EnemyModel{
         FIRING
     }
 
+    private PolygonShape shape;
+
     /**Creates a LaserEnemy.
      *
      * @param world The Box2D world
@@ -64,6 +68,8 @@ public class LaserEnemyModel extends EnemyModel{
     public LaserEnemyModel(World world, int id){
         super(world, id);
         setFaceRight(false);
+        shape = new PolygonShape();
+        shape.setAsBox(.5f,.5f);
     }
 
     /**Initializes this LaserEnemyModel from JSON. Sets its
@@ -305,4 +311,24 @@ public class LaserEnemyModel extends EnemyModel{
      *         Bandit; otherwise, false.
      * */
     public boolean isHittingBandit() { return hittingBandit; }
+
+    @Override
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+        float y = getYFeet();
+        canvas.drawPhysics(shape, Color.CORAL, (int) getX() + .5f, y, 0,drawScale.x, drawScale.y );
+    }
+
+    @Override
+    public float getYFeet(){
+        float y = (int) super.getY();
+        if (!isFlipped){
+            y -= .5f;
+        }
+        else{
+            y += 1.5f;
+        }
+        return y;
+    }
+
 }
