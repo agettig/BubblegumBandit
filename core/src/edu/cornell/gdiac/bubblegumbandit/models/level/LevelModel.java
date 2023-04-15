@@ -644,8 +644,6 @@ public class LevelModel {
         aim.drawProjectileRay(canvas);
 
         drawChargeLasers(gumProjectile, canvas);
-
-
         canvas.end();
         alarms.drawLights(canvas, scale);
 

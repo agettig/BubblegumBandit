@@ -75,10 +75,7 @@ public class AlarmController {
    */
   public void drawLights(GameCanvas canvas, Vector2 scale) {
 
-    FitViewport view = canvas.getUIViewport();
     GameCamera camera = canvas.getCamera();
-    rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
-        view.getScreenWidth()*2, view.getScreenHeight()*2);
     rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
         camera.position.y / scale.y, camera.viewportWidth * camera.zoom / scale.x,
         camera.viewportHeight * camera.zoom / scale.y);
