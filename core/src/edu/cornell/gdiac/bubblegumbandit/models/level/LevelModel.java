@@ -645,7 +645,6 @@ public class LevelModel {
 
         drawChargeLasers(gumProjectile, canvas);
         canvas.end();
-        alarms.drawLights(canvas, scale);
 
         if (debug) {
             canvas.beginDebug();
@@ -659,6 +658,7 @@ public class LevelModel {
             }
             canvas.endDebug();
         }
+        alarms.drawLights(canvas, scale);
     }
 
     public void drawChargeLasers(TextureRegion asset, GameCanvas canvas) {
