@@ -127,7 +127,6 @@ public class Minimap {
                 float y = height - (i / width) - 1f;
                 expandedTilesTall = Math.max(expandedTilesTall, (int)y);
                 floorPositions.add(new Vector2(x, y));
-                System.out.println("Adding floor at " + new Vector2(x, y));
             }
         }
     }

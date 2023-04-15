@@ -10,6 +10,7 @@ import com.badlogic.gdx.ai.pfa.Heuristic;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledManhattanDistance;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledNode;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
@@ -217,7 +218,7 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
         AIController controller = (AIController) owner;
         graphPath.clear();
         int startX = (int) controller.getEnemy().getX();
-        int startY = (int) controller.getEnemy().getY();
+        int startY = (int) controller.getEnemy().getYFeet();
         if (startX == targetX && startY == targetY) return CONTROL_NO_ACTION;
         boolean found = false;
         if (((AIController) owner).getEnemy().isFlipped()){
@@ -247,7 +248,8 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
      * */
     public boolean canMove(){
         int x = (int) ((AIController) owner).getEnemy().getX();
-        int y = (int) ((AIController) owner).getEnemy().getY();
+        int y = (int) ((AIController) owner).getEnemy().getYFeet();
+
         // TODO fix tile types
         if (((AIController) owner).getEnemy().isFlipped()){
             return tiledGravityUpGraph.getNode(x, y).getType() != 0;
