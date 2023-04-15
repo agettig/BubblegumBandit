@@ -126,7 +126,7 @@
         "topLeftOutline": "textures/gum/topLeftGumWhite.png",
         "rotatedOutline": "textures/gum/rotated_gumWhite.png",
         "small_gum": "textures/gum/small_gum.png",
-        "large_gum": "textures/gum/large_gum.png",
+        "large_gum": "textures/gum/large_gum.png"
 
 
     },
