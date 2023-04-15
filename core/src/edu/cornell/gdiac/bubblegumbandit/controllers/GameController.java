@@ -321,7 +321,7 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/crosshair2.png"));
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
 // Set hotspot to the middle of it (0,0 would be the top-left corner)
         int xHotspot = 16, yHotspot = 16;
         Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
@@ -386,7 +386,7 @@ public class GameController implements Screen {
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
-        stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
+        stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
     }
@@ -680,10 +680,7 @@ public class GameController implements Screen {
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
-
         minimap.draw(banditPosition);
-
-
 
         // Final message
         if (complete && !failed) {

@@ -376,7 +376,7 @@ public class PlayerController{
     private void readKeyboard( boolean secondary) {
         // Give priority to gamepad results
         resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
 
         debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
         primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP)) ||
