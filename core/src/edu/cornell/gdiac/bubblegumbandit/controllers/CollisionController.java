@@ -464,32 +464,30 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("rollingrobot") && bd2.equals(bandit)) {
             boolean leftRolling = (bd1.getX() < bd2.getX());
             boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
-            bandit.hitPlayer(0.5f);
+            bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
             bandit.setKnockback(true);
             bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
         } else if (bd2.getName().equals("rollingrobot") && bd1.equals(bandit)) {
             boolean leftRolling = (bd1.getX() > bd2.getX());
             boolean knockbackUp = levelModel.getWorld().getGravity().y > 0;
-            bandit.hitPlayer(0.5f);
+            bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
             bandit.setKnockback(true);
             bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
         }
     }
-
-    /**
-     * Resolves the effects of a RollingEnemy collision
-     * @param e
-     * @param o
-     */
-    private void resolveRollingEnemyCollision(RollingEnemyModel e, Obstacle o) {
-        //if (e.isRemoved()) return;
-        BanditModel bandit = levelModel.getBandit();
-        if (o.equals(bandit)) {
-            bandit.hitPlayer(e.getDamage());
-            Vector2 pos = bandit.getPosition();
-            bandit.setPosition(pos.x - 2f, pos.y);
-        }
-    }
+//
+//    /**
+//     * Resolves the effects of a RollingEnemy collision
+//     * @param e
+//     * @param o
+//     */
+//    private void resolveRollingEnemyCollision(RollingEnemyModel e, Obstacle o) {
+//        //if (e.isRemoved()) return;
+//        BanditModel bandit = levelModel.getBandit();
+//        if (o.equals(bandit)) {
+//            bandit.hitPlayer(e.getDamage());
+//        }
+//    }
 
     /**
      * Resolves collisions for ground contact, adding the necessary

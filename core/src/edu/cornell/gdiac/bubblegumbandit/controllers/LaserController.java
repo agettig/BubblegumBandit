@@ -30,7 +30,7 @@ public class LaserController {
     private float firingTime = 1.5f;
 
     /**How much damage the laser does to the bandit each frame. */
-    private float TICK_DAMAGE = .05f;
+    private float TICK_DAMAGE = .5f;
 
     /**Start point of the laser raycast. */
     private final Vector2 chargeOrigin;

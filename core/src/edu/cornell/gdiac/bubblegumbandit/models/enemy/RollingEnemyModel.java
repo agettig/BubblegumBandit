@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
-import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -25,7 +24,7 @@ public class RollingEnemyModel extends EnemyModel {
     /**
      * Damage from bumping into a moving robot
      */
-    private float damage = 1;
+    private float damage = 10;
 
     /**
      * If the robot is attacking
