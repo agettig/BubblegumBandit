@@ -312,7 +312,7 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/crosshair2.png"));
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
 // Set hotspot to the middle of it (0,0 would be the top-left corner)
         int xHotspot = 16, yHotspot = 16;
         Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);

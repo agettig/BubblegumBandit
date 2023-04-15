@@ -1,14 +1,13 @@
 {
 	"textures": {
-        "background": "textures/main_menu_background.png",
-		"play": "textures/play.png",
-        "startButton": "textures/continue_game.png",
-        "settingsButton": "textures/settings.png",
-        "exitButton": "textures/quit_game.png",
-        "levelSelectButton": "textures/level_select.png",
-        "hoverPointer": "textures/hover_pointer.png",
+        "background": "textures/UI/main_menu_background.png",
+        "startButton": "textures/UI/continue_game.png",
+        "settingsButton": "textures/UI/settings.png",
+        "exitButton": "textures/UI/quit_game.png",
+        "levelSelectButton": "textures/UI/level_select.png",
+        "hoverPointer": "textures/UI/hover_pointer.png",
         "progress": {
-            "file":      "textures/progressbar.png",
+            "file":      "textures/UI/progressbar.png",
             "atlas":     {
                 "background" : [16,   0, 216, 30],
                 "backleft"   : [0,    0,  15, 30],
