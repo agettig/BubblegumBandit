@@ -497,8 +497,4 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public float getYFeet(){
         return getY();
     }
-
-    public void flipHorizontalDirection(){
-        faceRight = !faceRight;
-    }
 }
