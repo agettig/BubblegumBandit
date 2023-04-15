@@ -710,17 +710,19 @@ public class LevelModel {
                         intersect.y - enemyPos.y
                 );
 
-
+                beam.setRegionWidth(2);
                 int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
-                numSegments += 1; //Some extra padding to make it look better.
+                if(enemy.getGummed()) numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
                 dir.nor();
 
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
 
+
+
                     //Calculate the positions and angle of the charging laser.
                     float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()/2): 0;
-                    float enemyOffsetY = enemy.isFlipped() ? -(enemy.getHeight()*10) : (enemy.getHeight()*10);
+                    float enemyOffsetY = enemy.getHeight()*10;
 
                     float x = enemyPos.x * scale.x + (i * dir.x * beam.getRegionWidth());
                     float y = enemyPos.y * scale.y + (i * dir.y * beam.getRegionWidth());
@@ -728,10 +730,7 @@ public class LevelModel {
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
-                    //System.out.println(enemy.getGummed());
                     if(enemy.getGummed()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
-
-                    System.out.println("Eye pos: " + (y + enemyOffsetY));
 
                     canvas.draw(
                             beam,
@@ -739,7 +738,7 @@ public class LevelModel {
                             beam.getRegionWidth(),
                             beam.getRegionHeight(),
                             x + enemyOffsetX,
-                            y + enemyOffsetY,
+                            y + enemyOffsetY* enemy.getYScale(),
                             ang,
                             1f,
                             1 * laserThickness);
