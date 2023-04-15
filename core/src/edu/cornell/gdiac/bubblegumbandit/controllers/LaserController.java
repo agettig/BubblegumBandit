@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
@@ -159,16 +161,23 @@ public class LaserController {
              * The LaserBeam shoots at the latest charging direction.
              *
              * */
-            if (enemy.lockingLaser() || enemy.firingLaser()) {
+            if (enemy.lockingLaser()) {
                 //We use the most recent charging hit point to shoot our locked laser towards.
+//                bodiesToIgnore.add("bandit");
+                lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
+                enemy.setBeamIntersect(lockHitPoint);
+            }
+
+            if(enemy.firingLaser()){
+                //We use the most recent charging hit point to shoot our locked laser towards.
+                bodiesToIgnore.remove("bandit");
                 lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
 
-                //If we're firing and hitting the bandit, take some damage.
-                if (enemy.firingLaser() && enemy.isHittingBandit()) {
-                    bandit.hitPlayer(TICK_DAMAGE);
-                }
+                //If we're hitting the bandit, take some damage.
+                if (enemy.isHittingBandit()) bandit.hitPlayer(TICK_DAMAGE);
             }
+
         }
     }
 
@@ -249,6 +258,7 @@ public class LaserController {
 
         //The point at which our raycast will "hit."
         final Vector2 intersect = new Vector2();
+        final Vector2 banditIntersect = new Vector2();
 
         //Set the charging origin.
         chargeOrigin.set(enemy.getX(), enemy.getY());
@@ -262,6 +272,10 @@ public class LaserController {
                 chargeOrigin.x + chargeDirection.x,
                 chargeOrigin.y + chargeDirection.y
         );
+
+        //Get the intersect PAST the bandit. Like a tile.
+        //Draw towards the intersect.
+        //If hitting the ban
 
         //Time to raycast.
         RayCastCallback chargeRaycast = new RayCastCallback() {
@@ -280,6 +294,34 @@ public class LaserController {
             }
         };
         world.rayCast(chargeRaycast, chargeOrigin, chargeEndpoint);
-        return intersect;
+
+
+
+
+        /*
+
+        Step 1. Shoot a raycast SUPER far in the direction of the intersect point.
+
+        Step 2. Based on laser percent done, draw a certain amount of that line.
+
+        Step 3. Clamp this line based off whether we're hitting the actual intersect.
+
+        ----
+
+
+
+
+         */
+
+        Vector2 directionOfIntersect = new Vector2(intersect).sub(chargeOrigin);
+        directionOfIntersect.nor();
+        Vector2 farAwayPoint = new Vector2(directionOfIntersect).scl(40).add(chargeOrigin);
+        Vector2 lerpedPoint = new Vector2(chargeOrigin).lerp(farAwayPoint, enemy.getFiringDistance(firingTime));
+
+        float lerpedDist = chargeOrigin.dst(lerpedPoint);
+        float endDist = chargeOrigin.dst(intersect);
+        Vector2 point = lerpedDist < endDist ? lerpedPoint : intersect;
+
+        return enemy.firingLaser() ? point : intersect;
     }
 }

@@ -43,6 +43,8 @@ public class LaserEnemyModel extends EnemyModel{
      * locking, and firing. Resets to zero for each laser shot.*/
     private float age;
 
+    private float firingTimer;
+
 
     /**
      * Every phase that this LaserEnemyModel goes through when it attacks.
@@ -145,6 +147,7 @@ public class LaserEnemyModel extends EnemyModel{
      * */
     public void resetLaserCycle(){
         age = 0;
+        firingTimer = 0;
         phase = LASER_PHASE.INACTIVE;
         cooldownTimer = LASER_COOLDOWN;
     }
@@ -174,14 +177,30 @@ public class LaserEnemyModel extends EnemyModel{
     /**
      * Processes logic for when this LaserEnemyModel is in its firing
      * phase. Updates the phase to firing if not in it already.
+     *
+     * @param dt The Delta Time value.
      * */
-    private void processFiringPhase(){
+    private void processFiringPhase(float dt){
         if(phase != LASER_PHASE.FIRING) setPhase(LASER_PHASE.FIRING);
 
         //Put additional firing logic here.
+        firingTimer += dt;
     }
 
-
+    /**
+     * Returns a percentage that represents how far along this
+     * LaserEnemyModel is along its firing phase. For example,
+     * a return value of .75 means this LaserEnemyModel is 75%
+     * done with its firing phase.
+     *
+     * @param fireTime How long the entire firing phase lasts
+     *
+     * @return completion percentage of this LaserEnemyModel's
+     *         firing phase.
+     * */
+    public float getFiringDistance(float fireTime){
+        return (firingTimer / fireTime);
+    }
 
     /**
      * Updates this LaserEnemyModel's laser phase. This method asserts that
@@ -263,7 +282,7 @@ public class LaserEnemyModel extends EnemyModel{
         float timeToFire = chargeTime + lockTime;
 
         if(age >= timeToReset) resetLaserCycle();
-        else if(age >= timeToFire) processFiringPhase();
+        else if(age >= timeToFire) processFiringPhase(amount);
         else if(age >= chargeTime) processLockedPhase();
         else processChargingPhase();
     }
