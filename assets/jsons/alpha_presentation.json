@@ -177,6 +177,18 @@
          "id":2,
          "name":"Objects",
          "objects":[
+           {
+             "gid":50,
+             "height":113,
+             "id":93,
+             "name":"",
+             "rotation":0,
+             "type":"bandit",
+             "visible":true,
+             "width":64,
+             "x":960,
+             "y":1664
+           },
                 {
                  "gid":52,
                  "height":65,
@@ -223,18 +235,6 @@
                  "visible":true,
                  "width":144,
                  "x":768,
-                 "y":1664
-                },
-                {
-                 "gid":50,
-                 "height":113,
-                 "id":93,
-                 "name":"",
-                 "rotation":0,
-                 "type":"bandit",
-                 "visible":true,
-                 "width":64,
-                 "x":960,
                  "y":1664
                 },
                 {
@@ -1143,6 +1143,14 @@
                  "id":8,
                  "type":"terrain"
                 },
+              {
+               "id":9,
+                "type":"terrain"
+              },
+           {
+             "id":10,
+             "type":"terrain"
+           },
                 {
                  "id":11,
                  "type":"terrain"
@@ -1179,6 +1187,14 @@
                  "id":19,
                  "type":"terrain"
                 },
+           {
+             "id":20,
+             "type":"terrain"
+           },
+           {
+             "id":21,
+             "type":"terrain"
+           },
                 {
                  "id":22,
                  "type":"terrain"
@@ -1215,6 +1231,14 @@
                  "id":30,
                  "type":"terrain"
                 },
+           {
+             "id":31,
+             "type":"terrain"
+           },
+           {
+             "id":32,
+             "type":"terrain"
+           },
                 {
                  "id":33,
                  "type":"terrain"
