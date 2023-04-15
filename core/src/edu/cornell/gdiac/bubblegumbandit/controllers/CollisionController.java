@@ -63,13 +63,6 @@ public class CollisionController implements ContactListener {
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
-    /**true if rolling enemy collision*
-     */
-    private boolean rollingCollision = false;
-    /**true if rolling enemy is left of bandit*
-     */
-    private boolean leftRolling = false;
-
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
 
@@ -407,7 +400,7 @@ public class CollisionController implements ContactListener {
 
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
-            if (gummable.getGummed() && !ob2.getName().equals("unstickProjectile")) {
+            if (gummable.getGummed() && !ob2.equals(levelModel.getBandit())) {
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("robotSplat", 1f);
                 ob2.setStuck(true);
@@ -415,7 +408,7 @@ public class CollisionController implements ContactListener {
         }
         else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
-            if (gummable.getGummed() && !ob1.getName().equals("unstickProjectile")) {
+            if (gummable.getGummed() && !ob1.equals(levelModel.getBandit())) {
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("robotSplat", 1f);
                 ob1.setStuck(true);
@@ -465,33 +458,22 @@ public class CollisionController implements ContactListener {
      * @param bd2 The second Obstacle in the collision.
      */
     private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
+        BanditModel bandit = levelModel.getBandit();
 
-        // Check that obstacles are not null and not an enemy
-        if (bd1 == null || bd2 == null) rollingCollision = false;
-
-        if (bd1.getName().equals("rollingrobot") && bd2.equals(levelModel.getBandit())) {
-            if (bd1.getX() < bd2.getX()) {
-                leftRolling = true;
-            }
-            rollingCollision = true;
-        } else if (bd2.getName().equals("rollingrobot") && bd1.equals(levelModel.getBandit())) {
-            if (bd1.getX() > bd2.getX()) {
-                leftRolling = true;
-            }
-            rollingCollision = true;
+        // TODO: REFACTOR to more general knockback
+        if (bd1.getName().equals("rollingrobot") && bd2.equals(bandit)) {
+            boolean leftRolling = (bd1.getX() < bd2.getX());
+            boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
+            bandit.hitPlayer(0.5f);
+            bandit.setKnockback(true);
+            bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+        } else if (bd2.getName().equals("rollingrobot") && bd1.equals(bandit)) {
+            boolean leftRolling = (bd1.getX() > bd2.getX());
+            boolean knockbackUp = levelModel.getWorld().getGravity().y > 0;
+            bandit.hitPlayer(0.5f);
+            bandit.setKnockback(true);
+            bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
         }
-    }
-
-    public boolean getLeftRolling() {
-        return leftRolling;
-    }
-
-    public boolean getRollingCollision() {
-        return rollingCollision;
-    }
-    public void resetRollingCollision() {
-        rollingCollision = false;
-        leftRolling = false;
     }
 
     /**
@@ -520,9 +502,10 @@ public class CollisionController implements ContactListener {
         Object dataA = fixA.getUserData();
         Object dataB = fixB.getUserData();
 
-        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA) ||
-                (bandit.getSensorName().equals(dataA) && bandit != bodyB)) {
+        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && bodyA.getFilterData().categoryBits != CATEGORY_EVENTTILE) ||
+                (bandit.getSensorName().equals(dataA) && bandit != bodyB && bodyB.getFilterData().categoryBits != CATEGORY_EVENTTILE)) {
             bandit.setGrounded(true);
+            bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }

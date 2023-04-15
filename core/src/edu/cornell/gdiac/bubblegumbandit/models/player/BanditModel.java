@@ -132,11 +132,6 @@ public class BanditModel extends CapsuleObstacle {
 	private float yScale;
 
     /**
-     * Manager for the scale for flipping during gravity swaps
-     */
-    private FlippingObject fo = new FlippingObject();
-
-    /**
      * Camera target for player
      */
     private final Vector2 cameraTarget;
@@ -149,6 +144,8 @@ public class BanditModel extends CapsuleObstacle {
      * Returns the number of stars that have been collected
      */
     private int numStars;
+
+    private boolean isKnockback;
 
 
     /**
@@ -192,6 +189,14 @@ public class BanditModel extends CapsuleObstacle {
      */
     public float getMaxHealth() {
         return MAX_HEALTH;
+    }
+
+    public boolean isKnockback() {
+        return isKnockback;
+    }
+
+    public void setKnockback(boolean knockback) {
+        isKnockback = knockback;
     }
 
     /**
@@ -276,8 +281,7 @@ public class BanditModel extends CapsuleObstacle {
      * @return the value of the player's yScale.
      */
     public float getYScale() {
-//		return yScale;/
-		return fo.getScale();
+		return yScale;
     }
 
     /**
@@ -589,6 +593,9 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         // Don't want to be moving. Damp out player motion
+        if (isKnockback) {
+            return;
+        }
         if (getMovement() == 0f) {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);

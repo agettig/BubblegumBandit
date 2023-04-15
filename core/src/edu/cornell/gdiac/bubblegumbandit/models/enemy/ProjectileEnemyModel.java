@@ -116,8 +116,4 @@ public class ProjectileEnemyModel extends EnemyModel {
         if(!clampVelocity()) getBody().applyForceToCenter(MOVEMENT_FORCE, 0, true);
     }
 
-    @Override
-    public boolean handleMessage(Telegram msg) {
-        return false;
-    }
 }

@@ -28,7 +28,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  * <p>
  * Initialization is done by reading the json
  */
-public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, Gummable {
+public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     private TextureRegion outline;
 
@@ -68,9 +68,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
         return nextAction;
     }
 
-    private int nextAction;
+    protected int nextAction;
 
-    private int previousAction;
+    protected int previousAction;
 
     /**
      * Cache for internal force calculations
@@ -85,12 +85,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     protected boolean isFlipped;
 
     /** EnemyModel's y-scale: used for flipping gravity. */
-    private float yScale;
+    protected float yScale;
 
     /**
      * Animation controller, controls animations
      */
-    private AnimationController animationController;
+    protected AnimationController animationController;
 
     private TextureRegion gummedTexture;
     // SENSOR FIELDS
@@ -356,13 +356,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
 
         // Process movement command.
         if (movingLeft) {
-            if (previousAction != CONTROL_MOVE_LEFT){
+            if ((previousAction & CONTROL_MOVE_LEFT) == 0){
                 setY((int) getY() + .5f);
             }
             setVX(-speed);
             setFaceRight(false);
         } else if (movingRight) {
-            if (previousAction != CONTROL_MOVE_RIGHT){
+            if ((previousAction & CONTROL_MOVE_RIGHT) == 0){
                 setY((int) getY() + .5f);
             }
             setVX(speed);
@@ -404,11 +404,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
             float x = getX() * drawScale.x;
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                x-=getWidth()/2*drawScale.x*effect;
+                 x-=getWidth()/2*drawScale.x*effect;
             }
             if (stuck || gummed){
                 drawn = gummedTexture;
 
+            }
+
+            // TODO: Fix rolling robots so don't have to do this
+            float y = getY() * drawScale.y;
+            if (getName().equals("rollingrobot")) {
+                y += yScale * 16;
+                x += effect * 40;
             }
 
             //if gum, overlay with gumTexture
@@ -419,7 +426,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
                         getY() * drawScale.y, getAngle(), 1, yScale);
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                        getY() * drawScale.y, getAngle(), effect, yScale);
+                        y, getAngle(), effect, yScale);
             }
 //            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
 //            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
