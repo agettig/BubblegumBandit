@@ -71,10 +71,10 @@ public enum EnemyState implements State<AIController> {
 
 
             // action from moving to the left
-            moveLeft = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() - 1, (int) enemy.getY());
+            moveLeft = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() - 1, (int) enemy.getYFeet());
 
             // action from moving to the right
-            moveRight = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() + 1, (int) enemy.getY());
+            moveRight = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() + 1, (int) enemy.getYFeet());
 
             // if enemy can move right and is facing right move right
             // if enemy can move left and is facing left move left
