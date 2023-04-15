@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
-import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -41,9 +40,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     /** true if this EnemyModel is facing right; false if facing left */
     private boolean faceRight;
 
-    /** true if the EnemyModel's feet are on the ground */
-    private boolean isGrounded;
-
     // SENSOR FIELDS
 
     private Color sensorColor;
@@ -72,17 +68,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     protected int previousAction;
 
-    /**
-     * Cache for internal force calculations
-     */
-    private Vector2 forceCache = new Vector2();
-
     public void setNextAction(int nextAction) {
         this.previousAction = this.nextAction;
         this.nextAction = nextAction;
     }
-    /** true if this EnemyModel is upside-down.*/
-    protected boolean isFlipped;
 
     /** EnemyModel's y-scale: used for flipping gravity. */
     protected float yScale;
@@ -93,13 +82,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     protected AnimationController animationController;
 
     private TextureRegion gummedTexture;
-    // SENSOR FIELDS
-    /** Ground sensor to represent our feet */
-    private Fixture sensorFixture;
+
     private CircleShape sensorShape;
     /** The name of the sensor for detection purposes */
 
-//    private PolygonShape robotShape;
+
     private String sensorName;
     /** The color to paint the sensor in debug mode */
     private TextureRegion gummed_robot;
@@ -199,7 +186,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
-        isGrounded = true;
         faceRight = true;
         isFlipped = false;
         nextAction = CONTROL_NO_ACTION;
@@ -290,10 +276,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         sensorShape = new CircleShape();
         sensorShape.setRadius(listeningRadius);
 
-        //TODO experiement
-//
-//        robotShape = new PolygonShape();
-//        robotShape.setAsBox(1.0f, 2.5f);
 
         String gumKey = constantsJson.get("gumTexture").asString();
         gumTexture = new TextureRegion(directory.getEntry(gumKey, Texture.class));
@@ -351,7 +333,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     public void updateMovement(int nextAction){
         // Determine how we are moving.
-//        System.out.println(nextAction);
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
@@ -396,6 +377,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     }
 
     /**
+     * Draws this EnemyModel.
      * Draws this EnemyModel.
      *
      * @param canvas Drawing context
@@ -510,5 +492,13 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     public void changeSpeed(float speed){
         this.speed = speed;
+    }
+
+    public float getYFeet(){
+        return getY();
+    }
+
+    public void flipHorizontalDirection(){
+        faceRight = !faceRight;
     }
 }
