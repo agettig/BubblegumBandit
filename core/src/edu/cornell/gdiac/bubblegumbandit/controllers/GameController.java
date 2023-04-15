@@ -372,11 +372,11 @@ public class GameController implements Screen {
         constantsJson = directory.getEntry("constants", JsonValue.class);
         tilesetJson = directory.getEntry("tileset", JsonValue.class);
 
-        bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
+        bubblegumController.initialize(directory, constantsJson.get("gum_projectile"));
 
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
-        stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
+        stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
     }
 
