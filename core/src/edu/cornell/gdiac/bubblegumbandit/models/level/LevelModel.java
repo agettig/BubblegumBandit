@@ -618,7 +618,7 @@ public class LevelModel {
                 obj.update(dt);
             }
         }
-        alarms.update(dt);
+        alarms.update();
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
