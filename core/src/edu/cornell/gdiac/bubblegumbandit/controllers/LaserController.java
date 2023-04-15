@@ -4,10 +4,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+
 import java.util.HashSet;
 
 /**
@@ -29,7 +29,7 @@ public class LaserController {
     private Vector2 chargeDirection;
 
     /**Damage done by a laser attack to the Bandit */
-    public static final float LASER_DAMAGE = 3f;
+    public static final float LASER_DAMAGE = 30;
 
 
 
