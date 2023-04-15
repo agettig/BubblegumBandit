@@ -81,6 +81,10 @@ public class PlayerController{
     private boolean exitPressed;
     private boolean exitPrevious;
 
+    private boolean minimapPressed;
+
+    private  boolean minimapPrevious;
+
     /** How much did we move horizontally? */
     private float horizontal;
     /** How much did we move vertically? */
@@ -216,6 +220,8 @@ public class PlayerController{
         return resetPressed && !resetPrevious;
     }
 
+    public boolean didExpandMinimap() {return minimapPressed && !minimapPrevious;}
+
     /**
      * Returns true if the player wants to go to the next level.
      *
@@ -304,6 +310,7 @@ public class PlayerController{
         shootPrevious = shootPressed;
         unstickPrevious = unstickPressed;
         resetPrevious  = resetPressed;
+        minimapPrevious = minimapPressed;
         debugPrevious  = debugPressed;
         exitPrevious = exitPressed;
         nextPrevious = nextPressed;
@@ -369,6 +376,8 @@ public class PlayerController{
     private void readKeyboard( boolean secondary) {
         // Give priority to gamepad results
         resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
+        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+
         debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
         primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP)) ||
                 (Gdx.input.isKeyPressed(Input.Keys.W) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));

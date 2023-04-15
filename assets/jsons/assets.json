@@ -111,6 +111,7 @@
         "large_robotoutline": "textures/large_enemy/large_robotWhite.png",
         "large_robot": "textures/large_enemy/large_robot.png",
         "laserBeam": "textures/large_enemy/laserBeam.png",
+        "laserBeamEnd": "textures/large_enemy/red_laser_end.png",
         "large_walk":  {
             "file": "textures/large_enemy/large_anim.png",
             "wrap": false,
