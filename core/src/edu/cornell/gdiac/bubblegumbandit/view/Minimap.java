@@ -120,7 +120,6 @@ public class Minimap {
                 float x = (i % width) + 1f;
                 float y = height - (i / width) - 1f;
                 floorPositions.add(new Vector2(x, y));
-                System.out.println("Adding floor at " + new Vector2(x, y));
             }
         }
     }
