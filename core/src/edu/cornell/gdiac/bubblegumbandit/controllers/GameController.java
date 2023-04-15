@@ -35,6 +35,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -225,7 +226,7 @@ public class GameController implements Screen {
     private int levelNum;
 
     /** The number of levels in the game. */
-    private final int NUM_LEVELS = 1;
+    private final int NUM_LEVELS = 2;
 
     /** Whether the orb has been collected. */
     private boolean orbCollected;
@@ -389,10 +390,7 @@ public class GameController implements Screen {
         laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
         hud = new HUDController(directory);
-
-        int x = levelFormat.get("width").asInt();
-        int y = levelFormat.get("height").asInt();
-        minimap = new Minimap(directory,levelFormat, x, y);
+        minimap = new Minimap();
     }
 
 
@@ -434,6 +432,9 @@ public class GameController implements Screen {
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
+        int x = levelFormat.get("width").asInt();
+        int y = levelFormat.get("height").asInt();
+        minimap.initialize(directory, levelFormat, x, y);
     }
 
     /**

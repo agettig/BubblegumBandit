@@ -61,7 +61,6 @@ public class LaserEnemyModel extends EnemyModel{
      * */
     public LaserEnemyModel(World world, int id){
         super(world, id);
-        // TODO remove
         setFaceRight(false);
     }
 
@@ -287,15 +286,4 @@ public class LaserEnemyModel extends EnemyModel{
      *         Bandit; otherwise, false.
      * */
     public boolean isHittingBandit() { return hittingBandit; }
-
-    /**
-     * Handles communication messages between EnemyModels.
-     *
-     * @return true if the telegram has been successfully handled;
-     *         otherwise, false.
-     * */
-    @Override
-    public boolean handleMessage(Telegram msg) {
-        return false;
-    }
 }

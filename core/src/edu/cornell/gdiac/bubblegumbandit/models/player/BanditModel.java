@@ -132,11 +132,6 @@ public class BanditModel extends CapsuleObstacle {
 	private float yScale;
 
     /**
-     * Manager for the scale for flipping during gravity swaps
-     */
-    private FlippingObject fo = new FlippingObject();
-
-    /**
      * Camera target for player
      */
     private final Vector2 cameraTarget;
@@ -286,8 +281,7 @@ public class BanditModel extends CapsuleObstacle {
      * @return the value of the player's yScale.
      */
     public float getYScale() {
-//		return yScale;/
-		return fo.getScale();
+		return yScale;
     }
 
     /**

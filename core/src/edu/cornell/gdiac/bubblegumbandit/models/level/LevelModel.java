@@ -255,8 +255,6 @@ public class LevelModel {
         scale = new Vector2(1, 1);
         debug = false;
         aim = new AimModel();
-        enemyObjectNames = new ArrayList<>();
-        enemyObjectNames.add("Laser Enemy");
     }
 
 
