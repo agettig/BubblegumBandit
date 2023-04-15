@@ -115,8 +115,8 @@ public class AlarmController {
       if(time>pulseTime/3f&&time<pulseTime) {
 
         for(PointLight light : lights) {
-          light.setDistance(time<= pulseTime*1.5f ? light.getDistance()+.3f
-              : light.getDistance()-.3f);
+          light.setDistance(time<= pulseTime*(2f/3f) ? light.getDistance()+.1f
+              : light.getDistance()-.1f);
         }
 
       } else if (time>pulseTime) { {
