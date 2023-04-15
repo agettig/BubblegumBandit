@@ -130,8 +130,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     /** Manager for the scale for flipping during gravity swaps */
     private FlippingObject fo = new FlippingObject();
 
-    /** where the gum is drawn relative to the center of the robot*/
-    private static final float GUM_OFFSET = -3;
+
+
 
     // endRegion
 
@@ -416,7 +416,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         getY() * drawScale.y, getAngle(), effect, yScale);
                 canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        getY() * drawScale.y + (GUM_OFFSET * yScale), getAngle(), 1, yScale);
+                        getY() * drawScale.y, getAngle(), 1, yScale);
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
                         getY() * drawScale.y, getAngle(), effect, yScale);
@@ -429,16 +429,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Telegraph, G
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            canvas.drawShadow(gummedTexture, origin.x, origin.y, getX() * drawScale.x,
-                    getY() * drawScale.y, getAngle(), effect, yScale);
-            canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        getY() * drawScale.y, getAngle(), effect*OUTLINE_SIZE, yScale*OUTLINE_SIZE);
-            canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                     getY() * drawScale.y, getAngle(), effect, yScale);
             if (gummed) {
-                float x = getX() * drawScale.x;
-                canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, x,
-                        getY() * drawScale.y + (GUM_OFFSET * yScale), getAngle(), 1, yScale);
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()* drawScale.x-5,
+                    getY() * drawScale.y-5*yScale, getAngle(), 1, yScale);
             }
         }
     }
