@@ -134,7 +134,18 @@ public enum EnemyState implements State<AIController> {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
+
+                // flip towards direction of bandit if enemy can not move
+                if (move == 0) {
+
+                    if (banditModel.getX() < aiController.getEnemy().getX()) {
+                        aiController.getEnemy().setFaceRight(false);
+                    } else {
+                        aiController.getEnemy().setFaceRight(true);
+                    }
+                }
             }
+
 
             // set next action
             aiController.getEnemy().setNextAction(move);

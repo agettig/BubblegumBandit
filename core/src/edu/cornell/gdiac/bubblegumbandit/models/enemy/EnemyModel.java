@@ -55,7 +55,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     private RayCastCone sensing;
 
-    private RayCastCone attacking;
+    public RayCastCone attacking;
 
     /**Reference to the Box2D world */
     private World world;
@@ -114,8 +114,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     // Stuck in Gum Fields
 
-    /** Manager for the scale for flipping during gravity swaps */
-    private FlippingObject fo = new FlippingObject();
 
     /** where the gum is drawn relative to the center of the robot*/
     private static final float GUM_OFFSET = -3;
@@ -137,6 +135,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         return faceRight;
     }
 
+    /** Returns this EnemyModel's Y-Scale.
+     *
+     * @return this EnemyModel's Y-Scale.
+     * */
+    public float getYScale(){ return yScale;}
 
     /** Makes this EnemyModel face right.
      *
@@ -493,5 +496,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     public float getYFeet(){
         return getY();
+    }
+
+    public void flipHorizontalDirection(){
+        faceRight = !faceRight;
     }
 }
