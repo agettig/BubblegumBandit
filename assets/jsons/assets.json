@@ -1,21 +1,40 @@
 {
     "textures": {
-        "earth": {
-            "file":	 "textures/texture_draft.png",
-            "wrapU": "repeated",
-            "wrapV": "repeated"
-        },
+
+
+        "health_bar": "textures/UI/health_bar.png",
+        "health_fill": "textures/UI/health_fill.png",
+        "health_icon": "textures/UI/UI_heart.png",
+        "bubblegum_icon": "textures/UI/bubble_icon.png",
+        "sunfish" : "textures/UI/sunfish.png",
+        "ship1" : "textures/UI/level1.png",
+        "minimap_background" : "textures/UI/minimap_background.png",
+        "minimap_tile" : "textures/UI/square.png",
+
+
         "terrain": {
-            "file": "textures/tileset.png"
+            "file": "textures/environment/tileset.png"
         },
         "background": {
-            "file": "textures/background.png",
+            "file": "textures/environment/background.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "dude": "textures/bandit.png",
+        "exit": "textures/environment/shipdoor.png",
+        "alarm_on": "textures/environment/alarm_on.png",
+        "alarm_off": "textures/environment/alarm_off.png",
+        "orb": "textures/environment/orb.png",
+        "box": "textures/environment/box.png",
+        "powercell": "textures/environment/powercellb.png",
+        "chair": "textures/environment/chair.png",
+        "frame": "textures/environment/frameb.png",
+        "star": "textures/environment/star.png",
+        "supports": "textures/environment/supports.png",
+
+        "trajectoryProjectile": "textures/bandit/trajectory.png",
+        "bandit": "textures/bandit/bandit.png",
         "bandit_run":  {
-            "file": "textures/bandit_run.png",
+            "file": "textures/bandit/bandit_run.png",
             "wrap": false,
             "sprites": {
                 "run": {
@@ -26,7 +45,7 @@
             }
         },
         "bandit_idle":  {
-            "file": "textures/bandit_idle.png",
+            "file": "textures/bandit/bandit_idle.png",
             "wrap": false,
             "sprites": {
                 "idle": {
@@ -37,7 +56,7 @@
             }
         },
         "bandit_fall":  {
-            "file": "textures/bandit_fall.png",
+            "file": "textures/bandit/bandit_fall.png",
             "wrap": false,
             "sprites": {
                 "fall": {
@@ -47,8 +66,12 @@
                 }
             }
         },
+
+        "smallrobotoutline": "textures/small_enemy/small_enemyWhite.png",
+        "bullet": "textures/small_enemy/bullet.png",
+        "smallrobot": "textures/small_enemy/small_enemy.png",
         "small_robot_patrol":  {
-            "file": "textures/small_robot_patrol.png",
+            "file": "textures/small_enemy/small_robot_patrol.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -58,19 +81,11 @@
                 }
             }
         },
-        "large_walk":  {
-            "file": "textures/large_anim.png",
-            "wrap": false,
-            "sprites": {
-                "patrol": {
-                    "size": 4,
-                    "rows": 1,
-                    "cols": 4
-                }
-            }
-        },
+
+        "med_outline": "textures/medium_enemy/med_white.png",
+        "med_robot": "textures/medium_enemy/medium_enemy.png",
         "med_walk":  {
-            "file": "textures/med_walk.png",
+            "file": "textures/medium_enemy/med_walk.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -81,7 +96,7 @@
             }
         },
         "med_roll":  {
-            "file": "textures/med_roll.png",
+            "file": "textures/medium_enemy/med_roll.png",
             "wrap": false,
             "sprites": {
                 "attack": {
@@ -91,56 +106,47 @@
                 }
             }
         },
-        "small_robot": "textures/small_enemy.png",
-        "large_robot": "textures/large_robot.png",
-        "med_robot": "textures/medium_enemy.png",
-        "goal": "textures/goaldoor.png",
-        "bandit": "textures/bandit.png",
-        "smallrobot": "textures/small_enemy.png",
-        "largerobot": "textures/large_robot.png",
-        "mediumrobot": "textures/rollingrobot.png",
-        "exit": "textures/shipdoor.png",
-        "gumProjectile": "textures/gum.png",
-        "floatinggum": "textures/gum.png",
-        "trajectoryProjectile": "textures/trajectory.png",
-        "gum": "textures/stuck_gum.png",
-        "topRightGum": "textures/topRightGum.png",
-        "bottomRightGum": "textures/bottomRightGum.png",
-        "bottomLeftGum": "textures/bottomLeftGum.png",
-        "topLeftGum": "textures/topLeftGum.png",
-        "rotatedGum": "textures/rotated_gum.png",
-        "health_bar": "textures/health_bar.png",
-        "health_fill": "textures/health_fill.png",
-        "health_icon": "textures/UI_heart.png",
-        "bubblegum_icon": "textures/bubble_icon.png",
-        "floatingGum": "textures/gum.png",
-        "bullet": "textures/bullet.png",
-        "minimap_background" : "textures/square.png",
-        "minimap_tile" : "textures/Blank_Square.svg.png"
-        "alarm_on": "textures/alarm_on.png",
-        "alarm_off": "textures/alarm_off.png",
-        "gummed_robot": "textures/tinted_small_enemy.png",
-        "orb": "textures/orb.png",
-        "box": "textures/box.png",
-        "powercell": "textures/powercellb.png",
-        "chair": "textures/chair.png",
-        "frame": "textures/frameb.png",
-        "stuckOutline": "textures/stuck_gumWhite.png",
-        "topRightOutline": "textures/topRightGumWhite.png",
-        "bottomRightOutline": "textures/bottomRightGumWhite.png",
-        "bottomLeftOutline": "textures/bottomLeftGumWhite.png",
-        "topLeftOutline": "textures/topLeftGumWhite.png",
-        "rotatedOutline": "textures/rotated_gumWhite.png",
-        "smallrobotoutline": "textures/small_enemyWhite.png",
-        "small_gum": "textures/small_gum.png",
-        "large_gum": "textures/large_gum.png",
-        "star": "textures/star.png",
-        "sunfish" : "textures/sunfish.png",
-        "ship1" : "textures/level1.png",
-        "laserBeam": "textures/red_laser.png",
-        "laserBeamEnd": "textures/red_laser_end.png",
-        "large_robotoutline": "textures/large_robotWhite.png",
-        "med_outline": "textures/med_white.png"
+
+
+        "large_robotoutline": "textures/large_enemy/large_robotWhite.png",
+        "large_robot": "textures/large_enemy/large_robot.png",
+        "laserBeam": "textures/large_enemy/laserBeam.png",
+        "laserBeamEnd": "textures/large_enemy/red_laser_end.png",
+        "large_walk":  {
+            "file": "textures/large_enemy/large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+
+
+
+        "gum_projectile": "textures/gum/gum.png",
+        "floating_gum": "textures/gum/gum.png",
+        "splat_gum": "textures/gum/splat_gum.png",
+        "top_right_gum": "textures/gum/top_right_gum.png",
+        "bottom_right_gum": "textures/gum/bottom_right_gum.png",
+        "bottom_left_gum": "textures/gum/bottom_left_gum.png",
+        "top_left_gum": "textures/gum/top_left_gum.png",
+        "rotated_gum": "textures/gum/rotated_gum.png",
+        "stuck_outline": "textures/gum/splat_gum_outline.png",
+        "top_right_outline": "textures/gum/top_right_gum_outline.png",
+        "bottom_right_outline": "textures/gum/bottom_right_gum_outline.png",
+        "bottom_left_outline": "textures/gum/bottom_left_gum_outline.png",
+        "top_left_outline": "textures/gum/top_left_gum_outline.png",
+        "rotated_outline": "textures/gum/rotated_gum_outline.png",
+        "small_gum": "textures/gum/small_gum.png",
+        "large_gum": "textures/gum/large_gum.png",
+        "med_gum": "textures/gum/med_gum.png",
+        "small_gum_outline": "textures/gum/small_gum_outline.png",
+        "large_gum_outline": "textures/gum/large_gum_outline.png",
+        "med_gum_outline": "textures/gum/med_gum_outline.png"
+
     },
     "fonts": {
         "display": {
@@ -164,8 +170,9 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/test.json",
-        "level2":"jsons/alpha.json",
+
+		"level1" : "jsons/levels/alpha_presentation.json",
+        "level2":"jsons/levels/alpha.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
     }

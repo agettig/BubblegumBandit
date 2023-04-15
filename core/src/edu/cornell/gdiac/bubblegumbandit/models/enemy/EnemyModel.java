@@ -115,8 +115,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     // Stuck in Gum Fields
 
 
-    /** where the gum is drawn relative to the center of the robot*/
-    private static final float GUM_OFFSET = -3;
+
+
 
     // endRegion
 
@@ -399,16 +399,16 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             // TODO: Fix rolling robots so don't have to do this
             float y = getY() * drawScale.y;
             if (getName().equals("rollingrobot")) {
-                y += yScale * 16;
-                x += effect * 40;
+                y += 10*yScale;
             }
+
 
             //if gum, overlay with gumTexture
             if (gummed) {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        getY() * drawScale.y, getAngle(), effect, yScale);
+                        y, getAngle(), effect, yScale);
                 canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        getY() * drawScale.y + (GUM_OFFSET * yScale), getAngle(), 1, yScale);
+                        y, getAngle(), 1, yScale);
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
                         y, getAngle(), effect, yScale);
@@ -420,17 +420,16 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     }
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
+            float y = getY() * drawScale.y;
+            if (getName().equals("rollingrobot")) {
+                y += 10*yScale;
+            }
             float effect = faceRight ? 1.0f : -1.0f;
-            canvas.drawShadow(gummedTexture, origin.x, origin.y, getX() * drawScale.x,
-                    getY() * drawScale.y, getAngle(), effect, yScale);
-            canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        getY() * drawScale.y, getAngle(), effect*OUTLINE_SIZE, yScale*OUTLINE_SIZE);
-            canvas.draw(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                    getY() * drawScale.y, getAngle(), effect, yScale);
+            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                    y, getAngle(), effect, yScale);
             if (gummed) {
-                float x = getX() * drawScale.x;
-                canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, x,
-                        getY() * drawScale.y + (GUM_OFFSET * yScale), getAngle(), 1, yScale);
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()* drawScale.x-5,
+                    y-5*yScale, getAngle(), 1, yScale);
             }
         }
     }

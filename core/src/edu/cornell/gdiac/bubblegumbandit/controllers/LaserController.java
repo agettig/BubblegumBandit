@@ -193,9 +193,9 @@ public class LaserController {
      * @param ignores All names of bodies that the raycast should ignore.
      * */
     private Vector2 shootRaycastAt(World world,
-                                 final LaserEnemyModel enemy,
-                                 Vector2 target,
-                                 final ArrayList<String> ignores){
+                                   final LaserEnemyModel enemy,
+                                   Vector2 target,
+                                   final ArrayList<String> ignores){
 
         //The point at which our raycast will "hit."
         final Vector2 intersect = new Vector2();
@@ -253,8 +253,8 @@ public class LaserController {
      * @param ignores All names of bodies that the raycast should ignore.
      * */
     private Vector2 shootRaycastTowards(World world,
-                                   final LaserEnemyModel enemy,
-                                   final ArrayList<String> ignores){
+                                        final LaserEnemyModel enemy,
+                                        final ArrayList<String> ignores){
 
         //The point at which our raycast will "hit."
         final Vector2 intersect = new Vector2();
