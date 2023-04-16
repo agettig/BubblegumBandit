@@ -18,10 +18,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
-import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 
 import java.lang.reflect.Field;
 
@@ -163,7 +162,7 @@ public class BanditModel extends CapsuleObstacle {
     /**
      * The max amount of health the player can have
      */
-    private final float MAX_HEALTH = 10;
+    private final float MAX_HEALTH = 100;
 
     /**
      * The current amount of health the player has
@@ -624,8 +623,8 @@ public class BanditModel extends CapsuleObstacle {
     public void update(float dt) {
         ticks++;
 
-        if (ticks % 1000 == 0) {
-            healPlayer(1);
+        if (ticks % 10 == 0) {
+            healPlayer((float)0.25);
         }
 
         if (isShooting()) {

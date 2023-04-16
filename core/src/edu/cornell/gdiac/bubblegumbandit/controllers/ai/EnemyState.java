@@ -71,10 +71,10 @@ public enum EnemyState implements State<AIController> {
 
 
             // action from moving to the left
-            moveLeft = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() - 1, (int) enemy.getY());
+            moveLeft = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() - 1, (int) enemy.getYFeet());
 
             // action from moving to the right
-            moveRight = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() + 1, (int) enemy.getY());
+            moveRight = aiController.getEnemyStateMachine().getNextMove((int) enemy.getX() + 1, (int) enemy.getYFeet());
 
             // if enemy can move right and is facing right move right
             // if enemy can move left and is facing left move left
@@ -134,7 +134,18 @@ public enum EnemyState implements State<AIController> {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
+
+                // flip towards direction of bandit if enemy can not move
+                if (move == 0) {
+
+                    if (banditModel.getX() < aiController.getEnemy().getX()) {
+                        aiController.getEnemy().setFaceRight(false);
+                    } else {
+                        aiController.getEnemy().setFaceRight(true);
+                    }
+                }
             }
+
 
             // set next action
             aiController.getEnemy().setNextAction(move);
@@ -351,18 +362,18 @@ public enum EnemyState implements State<AIController> {
 
             // if can not reach enemy in need, try moving closer to them
             float diffX = aiController.getEnemy().getX() - target.x;
-            float diffY = aiController.getEnemy().getY() - target.y;
+            float diffY = aiController.getEnemy().getYFeet() - target.y;
 
             // try moving left/right
             // move left
             if (diffX > 0) {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() - 1, (int) aiController.getEnemy().getY());
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() - 1, (int) aiController.getEnemy().getYFeet());
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                     return;
                 }
             } else {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() + 1, (int) aiController.getEnemy().getY());
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX() + 1, (int) aiController.getEnemy().getYFeet());
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                     return;
@@ -371,12 +382,12 @@ public enum EnemyState implements State<AIController> {
 
             // try moving up/down
             if (diffY > 0) {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getY() - 1);
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getYFeet() - 1);
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                 }
             } else {
-                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getY() + 1);
+                move = aiController.getEnemyStateMachine().getNextMove((int) aiController.getEnemy().getX(), (int) aiController.getEnemy().getYFeet() + 1);
                 if (move != CONTROL_NO_ACTION) {
                     aiController.getEnemy().setNextAction(move);
                 }

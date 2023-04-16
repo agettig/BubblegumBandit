@@ -64,9 +64,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** The bandit's ship, The Sunfish, that follows the players cursor */
     private SunfishModel sunfish;
 
-    /** level icon for level 1 */
-    private LevelIconModel level1;
-
     /** array of all level icons */
     private Array<LevelIconModel> levels;
 
@@ -112,6 +109,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** the level chosen by the player */
     private int selectedLevel;
 
+
+    /** the gap between level icons */
+    private final static float LEVEL_GAP = 500;
+
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
@@ -131,9 +132,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      *
      */
     public LevelSelectMode() {
-        System.out.println("levelSelect");
     }
-
     /**
      * Gather the assets for this controller.
      * <p>
@@ -163,16 +162,16 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         createIcons(directory);
 
-
     }
 
     private void createIcons(AssetDirectory directory){
 
         TextureRegion ship1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
-        level1 = new LevelIconModel(ship1, 1, 100, 500);
+        TextureRegion ship2 = new TextureRegion(directory.getEntry("ship2", Texture.class));
 
         levels = new Array<>();
-        levels.add(level1);
+        levels.add(new LevelIconModel(ship1, 1, 100, 500));
+        levels.add(new LevelIconModel(ship2, 2, ship1.getRegionWidth() + LEVEL_GAP, 500));
     }
 
     /**
@@ -187,7 +186,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         this.canvas = canvas;
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
-        canvas.getCamera().setZoom(1);
+        canvas.getCamera().setZoom(1.5f);
+
     }
 
     /**
@@ -215,8 +215,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         for (LevelIconModel level : levels){
             level.update();
         }
-//        canvas.getCamera().setTarget(sunfish.getPosition());
-//        canvas.getCamera().update(dt);
+        canvas.getCamera().setTarget(sunfish.getPosition());
+        canvas.getCamera().update(dt);
     }
 
     /** returns the level chosen by the player */
@@ -301,12 +301,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         if (active){
-            Vector2 screenCords = new Vector2(screenX, screenY);
-            Vector2 target = canvas.unproject(screenCords);
+            Vector2 target = canvas.unproject(new Vector2(screenX, screenY));
 
             for (LevelIconModel level : levels){
-                System.out.println(level.x +",  " + level.y + " vs " + target.x + ", " + target.y);
-
                 if (level.onIcon(target.x, target.y)){
                     level.setPressState(2);
                 }
@@ -331,12 +328,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
         if (active) {
-            Vector2 screenCords = new Vector2(screenX, screenY);
-            Vector2 target = canvas.unproject(screenCords);
+            Vector2 target = canvas.unproject(new Vector2(screenX, screenY));
 
             for (LevelIconModel level : levels){
 
-                if (level.onIcon(target.x, target.y) && level.getState() == 2){
+                System.out.println(target);
+                if (level.onIcon(target.x, target.y)){
                     ready = true;
                     selectedLevel = level.getLevel();
                 }
@@ -359,22 +356,19 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean mouseMoved(int screenX, int screenY) {
 
         if (active) {
-            Vector2 screenCords = new Vector2(screenX, screenY);
-            Vector2 target = canvas.unproject(screenCords);
-
-            sunfish.setMovement(target);
+            Vector2 target = canvas.unproject(new Vector2(screenX, screenY));
 
             for (LevelIconModel level : levels){
 
-                System.out.println(level.x +",  " + level.y + " vs " + target.x + ", " + target.y);
                 if (level.onIcon(target.x, target.y)){
-                    System.out.println("hovering");
                     level.setPressState(1);
                 }
-//                else{
-//                    level.setPressState(0);
-//                }
+                else{
+                    level.setPressState(0);
+                }
             }
+            sunfish.setMovement(target);
+
         }
         return true;
     }

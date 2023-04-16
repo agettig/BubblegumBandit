@@ -30,7 +30,7 @@ public class SunfishModel extends WheelObstacle {
     private Vector2 lastPos;
 
     /** The ship's speed */
-    private static final float SPEED = 50f;
+    private static final float SPEED = 70f;
 
 
     /** desired angle of rotation */
