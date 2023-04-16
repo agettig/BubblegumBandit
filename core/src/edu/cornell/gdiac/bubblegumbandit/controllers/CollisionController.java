@@ -500,8 +500,8 @@ public class CollisionController implements ContactListener {
         Object dataA = fixA.getUserData();
         Object dataB = fixB.getUserData();
 
-        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && bodyA.getFilterData().categoryBits != CATEGORY_EVENTTILE) ||
-                (bandit.getSensorName().equals(dataA) && bandit != bodyB && bodyB.getFilterData().categoryBits != CATEGORY_EVENTTILE)) {
+        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && !bodyA.getName().equals("cameratile")) ||
+                (bandit.getSensorName().equals(dataA) && bandit != bodyB && !bodyB.getName().equals("cameratile"))) {
             bandit.setGrounded(true);
             bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
