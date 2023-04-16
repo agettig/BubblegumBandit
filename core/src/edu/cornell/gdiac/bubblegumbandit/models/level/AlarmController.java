@@ -2,9 +2,11 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -80,15 +82,14 @@ public class AlarmController {
    */
   public void drawLights(GameCanvas canvas, Vector2 scale) {
 
-    FitViewport view = canvas.getUIViewport();
+    FitViewport viewport = canvas.getUIViewport();
     GameCamera camera = canvas.getCamera();
-    rays.useCustomViewport(view.getScreenX()*2, view.getScreenY()*2,
-        view.getScreenWidth()*2, view.getScreenHeight()*2);
-    rays.setCombinedMatrix(camera.combined.scl(scale.x), camera.position.x / scale.x,
-        camera.position.y / scale.y, camera.viewportWidth * camera.zoom / scale.x,
-        camera.viewportHeight * camera.zoom / scale.y);
-    camera.combined.scl(1/scale.x);
-
+    Matrix4 box2dcombined = camera.combined.cpy();
+    box2dcombined.scl(scale.x);
+    rays.setCombinedMatrix(box2dcombined, camera.position.x / scale.x, camera.position.y / scale.y,
+            camera.viewportWidth * camera.zoom / scale.x, camera.viewportHeight * camera.zoom / scale.y);
+    int bufferScale = Math.round(Gdx.graphics.getBackBufferScale());
+    rays.useCustomViewport((viewport.getScreenX() * bufferScale), viewport.getScreenY() * bufferScale, viewport.getScreenWidth() * bufferScale, viewport.getScreenHeight() * bufferScale);
     rays.render();
 
   }

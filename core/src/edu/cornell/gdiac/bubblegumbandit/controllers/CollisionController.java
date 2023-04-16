@@ -464,7 +464,7 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("rollingrobot") && bd2.equals(bandit)) {
             boolean leftRolling = (bd1.getX() < bd2.getX());
             boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
+            bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
             bandit.setKnockback(true);
             bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
         } else if (bd2.getName().equals("rollingrobot") && bd1.equals(bandit)) {
@@ -500,8 +500,8 @@ public class CollisionController implements ContactListener {
         Object dataA = fixA.getUserData();
         Object dataB = fixB.getUserData();
 
-        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && bodyA.getFilterData().categoryBits != CATEGORY_EVENTTILE) ||
-                (bandit.getSensorName().equals(dataA) && bandit != bodyB && bodyB.getFilterData().categoryBits != CATEGORY_EVENTTILE)) {
+        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && !bodyA.getName().equals("cameratile")) ||
+                (bandit.getSensorName().equals(dataA) && bandit != bodyB && !bodyB.getName().equals("cameratile"))) {
             bandit.setGrounded(true);
             bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
