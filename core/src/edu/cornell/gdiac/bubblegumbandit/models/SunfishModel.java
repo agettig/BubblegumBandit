@@ -24,13 +24,13 @@ public class SunfishModel extends WheelObstacle {
     private Vector2 forceCache;
 
     /** radius of the physics body */
-    private static final float RADIUS = 15f;
+    private static final float RADIUS = 1f;
 
     /** last location of the cursor */
     private Vector2 lastPos;
 
     /** The ship's speed */
-    private static final float SPEED = 5f;
+    private static final float SPEED = 50f;
 
 
     /** desired angle of rotation */
@@ -39,6 +39,15 @@ public class SunfishModel extends WheelObstacle {
     /** the rate at which to update angle */
     private static final float ANGLE_RATE = 0.1f;
 
+    /**
+     * The amount to slow the ship down
+     */
+    private static final float DAMPING = 5f;
+
+    /**
+     * The amount to speed the ship up
+     */
+    private static final float THRUST = 20f;
 
 
     public SunfishModel (TextureRegion texture, float x, float y){
@@ -47,8 +56,7 @@ public class SunfishModel extends WheelObstacle {
         movement = new Vector2(SPEED, SPEED);
         forceCache = new Vector2();
         lastPos = new Vector2();
-
-        setMass(10);
+        setMass(0.01f);
     }
 
 
@@ -74,9 +82,9 @@ public class SunfishModel extends WheelObstacle {
         Vector2 a = body.getPosition();
         Vector2 d = value.sub(a);
 
-        angle = d.angleRad() - ANGLE_OFFSET;
+        angle = d.angleRad();// - ANGLE_OFFSET;
 
-        movement = new Vector2(SPEED, SPEED);
+        movement = new Vector2(SPEED, 0);
         movement.rotateRad(angle);
 
 //        System.out.println(movement);
@@ -85,17 +93,26 @@ public class SunfishModel extends WheelObstacle {
     public void update(float dt){
 //        System.out.println(getVX());
 
+        setMovement(lastPos);
+        float dst = getPosition().dst(lastPos);
 
-        // if not at the cursor yet keep moving
-        if (getPosition().dst(lastPos) > 50){
-            setMovement(lastPos);
-            body.setTransform(body.getPosition().add(movement), angle);
-           // body.applyForce(movement.scl(10), getPosition(), true);
-           // body.setTransform(body.getPosition(), angle);
-
+        //thrust distance
+        if (dst > 500){
+            forceCache.set(movement).scl(THRUST);
+        }
+        //normal speed distance
+        else if (dst > 100){
+//            body.setTransform(body.getPosition().add(movement), 0);
+            forceCache.set(movement);
+        }
+        // damping distance
+        else{
+            forceCache.set(-DAMPING * getVX(), 0);
         }
 
-        super.update(dt);
+        body.applyForce(forceCache, getPosition(), true);
+//            body.applyLinearImpulse(movement, getPosition(), true);
+        body.setTransform(body.getPosition(), angle);
     }
 
 
@@ -105,8 +122,8 @@ public class SunfishModel extends WheelObstacle {
         float x_offset = (texture.getRegionWidth() / 2);
         float y_offset = (texture.getRegionHeight() / 2);
 
-        canvas.draw(texture, Color.WHITE, origin.x + x_offset, origin.y + y_offset, getX(), getY(), getAngle(), 1, 1);
-        //canvas.drawPhysicsLevel(shape, Color.WHITE, getX(), getY(), drawScale.x, drawScale.y);
+        canvas.draw(texture, Color.WHITE, origin.x + x_offset, origin.y + y_offset, getX(), getY(), getAngle() - ANGLE_OFFSET, 1, 1);
+//        canvas.drawPhysicsLevel(shape, Color.WHITE, getX(), getY(), drawScale.x, drawScale.y);
     }
 
 }

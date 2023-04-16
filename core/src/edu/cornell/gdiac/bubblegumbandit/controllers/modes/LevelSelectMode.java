@@ -215,6 +215,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         for (LevelIconModel level : levels){
             level.update();
         }
+//        canvas.getCamera().setTarget(sunfish.getPosition());
+//        canvas.getCamera().update(dt);
     }
 
     /** returns the level chosen by the player */
@@ -283,52 +285,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         heightY = height;
     }
 
-    /**
-     * Called when the Screen is paused.
-     *
-     * This is usually when it's not active or visible on screen. An Application is
-     * also paused before it is destroyed.
-     */
-    public void pause() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * Called when the Screen is resumed from a paused state.
-     *
-     * This is usually when it regains focus.
-     */
-    public void resume() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * Called when this screen becomes the current screen for a Game.
-     */
-    public void show() {
-        // Useless if called in outside animation loop
-        active = true;
-    }
-
-    /**
-     * Called when this screen is no longer the current screen for a Game.
-     */
-    public void hide() {
-        // Useless if called in outside animation loop
-        active = false;
-    }
-
-    /**
-     * Sets the ScreenListener for this mode
-     *
-     * The ScreenListener will respond to requests to quit.
-     */
-    public void setScreenListener(ScreenListener listener) {
-        this.listener = listener;
-    }
-
     // PROCESSING PLAYER INPUT
     /**
      * Called when the screen was touched or a mouse button was pressed.
@@ -345,13 +301,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         if (active){
-
             Vector2 screenCords = new Vector2(screenX, screenY);
             Vector2 target = canvas.unproject(screenCords);
 
-
-
             for (LevelIconModel level : levels){
+                System.out.println(level.x +",  " + level.y + " vs " + target.x + ", " + target.y);
+
                 if (level.onIcon(target.x, target.y)){
                     level.setPressState(2);
                 }
@@ -381,17 +336,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
             for (LevelIconModel level : levels){
 
-                if (level.onIcon(target.x, target.y)){
+                if (level.onIcon(target.x, target.y) && level.getState() == 2){
                     ready = true;
                     selectedLevel = level.getLevel();
                 }
                 else{
                     level.setPressState(0);
                 }
-
             }
-
-
         }
         return true;
     }
@@ -411,6 +363,18 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             Vector2 target = canvas.unproject(screenCords);
 
             sunfish.setMovement(target);
+
+            for (LevelIconModel level : levels){
+
+                System.out.println(level.x +",  " + level.y + " vs " + target.x + ", " + target.y);
+                if (level.onIcon(target.x, target.y)){
+                    System.out.println("hovering");
+                    level.setPressState(1);
+                }
+//                else{
+//                    level.setPressState(0);
+//                }
+            }
         }
         return true;
     }
@@ -532,4 +496,50 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return true;
     }
 
+
+    /**
+     * Called when the Screen is paused.
+     *
+     * This is usually when it's not active or visible on screen. An Application is
+     * also paused before it is destroyed.
+     */
+    public void pause() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Called when the Screen is resumed from a paused state.
+     *
+     * This is usually when it regains focus.
+     */
+    public void resume() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Called when this screen becomes the current screen for a Game.
+     */
+    public void show() {
+        // Useless if called in outside animation loop
+        active = true;
+    }
+
+    /**
+     * Called when this screen is no longer the current screen for a Game.
+     */
+    public void hide() {
+        // Useless if called in outside animation loop
+        active = false;
+    }
+
+    /**
+     * Sets the ScreenListener for this mode
+     *
+     * The ScreenListener will respond to requests to quit.
+     */
+    public void setScreenListener(ScreenListener listener) {
+        this.listener = listener;
+    }
 }
