@@ -113,7 +113,6 @@ public class Minimap {
         makeMinimapTiles(directory);
 
         //Find all positions of floors/platforms.
-        floorPositions = new ArrayList<>();
         JsonValue layer = levelFormat.get("layers").child();
         JsonValue tileLayer = null;
         while (layer != null) {
@@ -124,19 +123,6 @@ public class Minimap {
             layer = layer.next();
         }
         int[] worldData = tileLayer.get("data").asIntArray();
-
-
-        // Iterate over each tile in the world and create if it exists
-        for (int i = 0; i < worldData.length; i++) {
-            int tileVal = worldData[i];
-            if (tileVal != 0) {
-                float x = (i % width) + 1f;
-                expandedTilesLong = Math.max(expandedTilesLong, (int)x);
-                float y = height - (i / width) - 1f;
-                expandedTilesTall = Math.max(expandedTilesTall, (int)y);
-                floorPositions.add(new Vector2(x, y));
-            }
-        }
 
         floorPositions = new ArrayList<>();
         prevBanditPosition = new Vector2();
@@ -153,9 +139,25 @@ public class Minimap {
                 expandedFloors.add(floorPos);
             }
         }
+    }
 
-
-
+    /**
+     * Makes Images to represent all possible tiles in the level.
+     * Indexes them by their position in a 2D array of Images.
+     *
+     * @param directory The AssetDirectory of which to extract textures.
+     * */
+    private void makeMinimapTiles(AssetDirectory directory){
+        minimapTiles = new Image[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                minimapTiles[x][y] =
+                        new Image(directory.getEntry("minimap_tile", Texture.class));
+                minimapTable.add(minimapTiles[x][y]);
+                minimapTiles[x][y].setSize(0,0);
+                minimapTiles[x][y].setColor(new Color(0, 0, 0, 0));
+            }
+        }
     }
 
     /**Sets the scales and sizes that the Minimap will use to draw its
@@ -166,12 +168,6 @@ public class Minimap {
 
     }
 
-    /** Updates the minimap with a time value to help it with transitions
-     * between the condensed and expanded state. */
-    public void updateMinimap(float dt) {
-        if (expanded)expand();
-        else condense();
-    }
 
     /**
      * Draws the Minimap.
@@ -190,7 +186,8 @@ public class Minimap {
         int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
         int topLeftX = expanded ? (width - tilesLong) / 2 :
                 Math.round(banditPosition.x) - tilesLong / 2;
-        int topLeftY = expanded ? (height - tilesTall) / 2 :
+        int middleY = height / 2;
+        int topLeftY = expanded ? middleY - tilesTall / 2 :
                 Math.round(banditPosition.y) - tilesTall / 2;
         int bottomRightX = topLeftX + tilesLong;
         int bottomRightY = topLeftY + tilesTall;
@@ -271,16 +268,6 @@ public class Minimap {
         return validFloors;
     }
 
-    /**Sets the Minimap's size and position to meet expanded standards. */
-    private void expand() {
-        setMinimapSizeAndPosition(expandedScale);
-    }
-
-    /**Sets the Minimap's size and position to meet condensed standards. */
-    private void condense(){
-        setMinimapSizeAndPosition(condensedScale);
-    }
-
 
     /**
      * Sets minimap's background and size to be compliant with
@@ -305,54 +292,6 @@ public class Minimap {
             yOffset = minimapStage.getHeight() - mapHeight - 30;
         }
         minimapBackground.setPosition(xOffset, yOffset);
-    }
-
-
-    /**Expands the minimap if it is condensed. Condenses the minimap
-     * if it is expanded.*/
-    public void toggleMinimap() {
-        expanded = !expanded;
-        toggling = true;
-    }
-
-    /**
-     * Makes Images to represent all possible tiles in the level.
-     * Indexes them by their position in a 2D array of Images.
-     *
-     * @param directory The AssetDirectory of which to extract textures.
-     * */
-    private void makeMinimapTiles(AssetDirectory directory){
-        minimapTiles = new Image[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                minimapTiles[x][y] =
-                        new Image(directory.getEntry("minimap_tile", Texture.class));
-                minimapTable.add(minimapTiles[x][y]);
-                minimapTiles[x][y].setSize(0,0);
-                minimapTiles[x][y].setColor(new Color(0, 0, 0, 0));
-            }
-        }
-    }
-
-
-    /**
-     * Draws a Minimap Tile such that it represents a platform or
-     * wall.
-     *
-     * @param platformImage The Image of the Tile to modify.
-     * */
-    private void drawAsPlatformTile(Image platformImage){
-        platformImage.setColor(Color.WHITE);
-    }
-
-
-    /**
-     * Draws a Minimap Tile such that it represents the Bandit.
-     *
-     * @param banditImage The Image of the Tile to modify.
-     * */
-    private void drawAsBanditTile(Image banditImage){
-        banditImage.setColor(Color.PINK);
     }
 
     /**
@@ -390,9 +329,56 @@ public class Minimap {
         float offsetY = (backgroundH - totalTileH) / 2;
         float tileX = backgroundX + offsetX + (xPos * tileSize);
         float tileY = backgroundY + offsetY + (yPos * tileSize);
+        if(expanded) tileY -= 60;
+        if(expanded) tileX -= 20;
+
 
         //Set the Tile's position and size.
         tileImage.setPosition(tileX, tileY);
         tileImage.setSize(tileSize + 1, tileSize + 1);
+    }
+
+    /**
+     * Draws a Minimap Tile such that it represents a platform or
+     * wall.
+     *
+     * @param platformImage The Image of the Tile to modify.
+     * */
+    private void drawAsPlatformTile(Image platformImage){
+        platformImage.setColor(Color.WHITE);
+    }
+
+
+    /**
+     * Draws a Minimap Tile such that it represents the Bandit.
+     *
+     * @param banditImage The Image of the Tile to modify.
+     * */
+    private void drawAsBanditTile(Image banditImage){
+        banditImage.setColor(Color.PINK);
+    }
+
+    /**Sets the Minimap's size and position to meet expanded standards. */
+    private void expand() {
+        setMinimapSizeAndPosition(expandedScale);
+    }
+
+    /**Sets the Minimap's size and position to meet condensed standards. */
+    private void condense(){
+        setMinimapSizeAndPosition(condensedScale);
+    }
+
+    /**Expands the minimap if it is condensed. Condenses the minimap
+     * if it is expanded.*/
+    public void toggleMinimap() {
+        expanded = !expanded;
+        toggling = true;
+    }
+
+    /** Updates the minimap with a time value to help it with transitions
+     * between the condensed and expanded state. */
+    public void updateMinimap(float dt) {
+        if (expanded)expand();
+        else condense();
     }
 }
