@@ -530,7 +530,6 @@ public class LevelModel {
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
                     cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
-                    System.out.println(cam.getFilterData().categoryBits);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
