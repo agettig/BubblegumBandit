@@ -522,6 +522,7 @@ public class LevelModel {
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+                    coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
                 case "camera_v":
                 case "camera_h":
@@ -529,6 +530,7 @@ public class LevelModel {
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);
                     cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+                    System.out.println(cam.getFilterData().categoryBits);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
@@ -924,7 +926,7 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile") && !ob.equals(bandit)) {
+                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -946,7 +948,8 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("unstickProjectile") && !ob.equals(bandit)) {
+                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") &&
+                        ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.equals(bandit)) {
                     lastCollision[0] = ob;
                     return fraction;
                 }

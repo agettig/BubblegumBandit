@@ -704,7 +704,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float sx = ((float) width) / STANDARD_WIDTH;
         float sy = ((float) height) / STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
-        System.out.println("set scale to " + scale);
 
         this.width = (int) (BAR_WIDTH_RATIO * width);
         centerY = (int) (BAR_HEIGHT_RATIO * height);

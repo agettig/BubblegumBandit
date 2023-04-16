@@ -381,7 +381,6 @@ public class BubblegumController {
         }
         for (int i = 0; i < gummableJointsToRemove.size; i++) {
             Joint j = gummableJointsToRemove.removeFirst();
-            System.out.println(j);
             try {
                 Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
                 ob1.setStuck(false);
