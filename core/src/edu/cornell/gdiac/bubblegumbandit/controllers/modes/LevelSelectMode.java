@@ -131,9 +131,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      *
      */
     public LevelSelectMode() {
-        System.out.println("levelSelect");
     }
-
     /**
      * Gather the assets for this controller.
      * <p>
