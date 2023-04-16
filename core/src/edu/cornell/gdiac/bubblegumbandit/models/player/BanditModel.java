@@ -626,7 +626,6 @@ public class BanditModel extends CapsuleObstacle {
         if (ticks % 10 == 0) {
             healPlayer((float)0.25);
         }
-        System.out.println(health);
 
         if (isShooting()) {
             shootCooldown = shotLimit;
