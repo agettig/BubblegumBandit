@@ -30,6 +30,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -429,6 +430,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 exitButton = internal.getEntry("exitButton", Texture.class);
             }
         }
+//        System.out.println("width: " + canvas.getWidth() + ", height: " + canvas.getHeight());
+        resize(canvas.getWidth(), canvas.getHeight());
     }
 
     /**
@@ -440,6 +443,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private void draw() {
         canvas.begin();
+        resize((int)canvas.getCamera().viewportWidth, (int)canvas.getCamera().viewportHeight);
         canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
         if (startButton == null || settingsButton == null || exitButton == null || hoverPointer == null) {
             drawProgress(canvas);
@@ -449,6 +453,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             float lowestButtonY = canvas.getCamera().viewportHeight / 6;
             float buttonSpace = highestButtonY - lowestButtonY;
             float gap = buttonSpace / 4;
+
 
             startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
             startButtonPositionY = (int) highestButtonY;
@@ -680,6 +685,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             if (shouldQuit()) {
                 listener.exitScreen(this, GameController.EXIT_QUIT);
             }
+
+
         }
     }
 
@@ -770,6 +777,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             return true;
         }
 
+        Vector2 pixelMouse = canvas.unproject(new Vector2(screenX, screenY));
+
+        float pixelX = pixelMouse.x;
+        float pixelY = pixelMouse.y;
+
+
+        System.out.println(pixelX + ", " + pixelY);
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
@@ -785,7 +799,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float rightX = startButtonPositionX + rectWidth / 2.0f;
         float topY = startButtonPositionY - rectHeight / 2.0f;
         float bottomY = startButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 1;
         }
 
@@ -796,7 +810,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 2;
         }
 
@@ -807,7 +821,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = settingsButtonPositionX + rectWidth / 2.0f;
         topY = settingsButtonPositionY - rectHeight / 2.0f;
         bottomY = settingsButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 3;
         }
 
@@ -818,7 +832,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = exitButtonPositionX + rectWidth / 2.0f;
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
-        if (screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY) {
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 4;
         }
 
@@ -949,19 +963,23 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     public boolean mouseMoved(int screenX, int screenY) {
 
+        Vector2 pixelMouse = canvas.unproject(new Vector2(screenX, screenY));
+
+        float pixelX = pixelMouse.x;
+        float pixelY = pixelMouse.y;
+
         if (startButton == null || levelSelectButton == null
                 || settingsButton == null || exitButton == null) return false;
-// Flip to match graphics coordinates
-        screenY = heightY - screenY;
+        // Flip to match graphics coordinates
 
         //Detect hovers on the start button
         float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();
         float rectHeight = scale * BUTTON_SCALE * startButton.getHeight();
         float leftX = startButtonPositionX - rectWidth / 2.0f;
         float rightX = startButtonPositionX + rectWidth / 2.0f;
-        float topY = startButtonPositionY - rectHeight / 2.0f;
-        float bottomY = startButtonPositionY + rectHeight / 2.0f;
-        hoveringStart = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        float topY = (startButtonPositionY - (rectHeight) / 2.0f);
+        float bottomY = (startButtonPositionY + (rectHeight) / 2.0f);
+        hoveringStart = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the level select button
         rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
@@ -970,7 +988,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
-        hoveringLevelSelect = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringLevelSelect = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the settings button
         rectWidth = scale * BUTTON_SCALE * settingsButton.getWidth();
@@ -979,7 +997,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = settingsButtonPositionX + rectWidth / 2.0f;
         topY = settingsButtonPositionY - rectHeight / 2.0f;
         bottomY = settingsButtonPositionY + rectHeight / 2.0f;
-        hoveringSettings = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringSettings = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the exit button
         rectWidth = scale * BUTTON_SCALE * exitButton.getWidth();
@@ -988,7 +1006,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = exitButtonPositionX + rectWidth / 2.0f;
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
-        hoveringExit = screenX >= leftX && screenX <= rightX && screenY >= topY && screenY <= bottomY;
+        hoveringExit = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         return true;
     }

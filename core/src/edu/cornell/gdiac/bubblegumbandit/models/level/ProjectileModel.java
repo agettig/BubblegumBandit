@@ -1,7 +1,5 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
@@ -18,7 +16,7 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     private float gravity = 0;
 
     /** damage that the bullet deals upon impact with player */
-    private float damage = 1;
+    private float damage = 10;
 
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectileController.

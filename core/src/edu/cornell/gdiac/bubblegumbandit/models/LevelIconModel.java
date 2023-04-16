@@ -56,10 +56,10 @@ public class LevelIconModel {
     public void setPressState(int value) {
 
         if (value == 1){
-            tint = Color.BLACK;
+            tint = new Color(.38f, .78f, .81f, 1f);
         }
         else if (value == 2){
-            tint = Color.GRAY;
+            tint = new Color(.18f, .58f, .61f, 1);
         }
         else{
             tint = Color.WHITE;
