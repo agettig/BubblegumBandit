@@ -9,71 +9,71 @@
       1,
       1.75
     ],
-    "bodytype": "dynamic",
+    "bodyType": "dynamic",
     "density": 1.0,
     "friction": 0.0,
     "restitution": 0.0,
     "force": 30.0,
     "damping": 20.0,
-    "maxspeed": 7.0,
+    "maxSpeed": 7.0,
     "texture": "bandit",
-    "debugcolor": "white",
-    "debugopacity": 192,
-    "sensorsize": [
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorSize": [
       0.183,
       0.05
     ],
-    "bottomsensorname": "dudeGroundSensor",
-    "sensorcolor": "red",
-    "sensoropacity": 192,
-    "topsensorname": "dudeTopSensor"
+    "bottomSensorName": "dudeGroundSensor",
+    "sensorColor": "red",
+    "sensorOpacity": 192,
+    "topSensorName": "dudeTopSensor"
   },
   "walls": {
-    "bodytype": "static",
+    "bodyType": "static",
     "density": 0.0,
     "friction": 0.2,
     "restitution": 0.0,
     "texture": "earth",
-    "debugcolor": "yellow",
-    "debugopacity": 200
+    "debugColor": "yellow",
+    "debugOpacity": 200
   },
   "tiles": {
-    "bodytype": "static",
+    "bodyType": "static",
     "density": 0.0,
     "friction": 0.4,
     "restitution": 0.0,
     "texture": "earth",
-    "debugcolor": "yellow",
-    "debugopacity": 200
+    "debugColor": "yellow",
+    "debugOpacity": 200
   },
   "gumProjectile": {
-    "starting_gum": 5,
+    "startingGum": 5,
     "offsetX": 0.6,
     "offsetY": 0.5,
     "speed": 25.0,
     "gravity": 0,
     "density": 10.0,
-    "texture": "gum_projectile",
-    "stuckTexture": "splat_gum",
-    "rotatedStuckTexture": "rotated_gum",
-    "topRightStuckTexture": "top_right_gum",
-    "bottomRightStuckTexture": "bottom_right_gum",
-    "bottomLeftStuckTexture": "bottom_left_gum",
-    "topLeftStuckTexture": "top_left_gum",
-    "stuckTextureOutline": "splat_gum",
-    "rotatedStuckTextureOutline": "rotated_gum",
-    "topRightStuckTextureOutline": "top_right_gum",
-    "bottomRightStuckTextureOutline": "bottom_right_gum",
-    "bottomLeftStuckTextureOutline": "bottom_left_gum",
-    "topLeftStuckTextureOutline": "top_left_gum"
+    "texture": "gumProjectile",
+    "stuckTexture": "splatGum",
+    "rotatedStuckTexture": "rotatedGum",
+    "topRightStuckTexture": "topRightGum",
+    "bottomRightStuckTexture": "bottomRightGum",
+    "bottomLeftStuckTexture": "bottomLeftGum",
+    "topLeftStuckTexture": "topLeftGum",
+    "stuckTextureOutline": "splatGum",
+    "rotatedStuckTextureOutline": "rotatedGum",
+    "topRightStuckTextureOutline": "topRightGum",
+    "bottomRightStuckTextureOutline": "bottomRightGum",
+    "bottomLeftStuckTextureOutline": "bottomLeftGum",
+    "topLeftStuckTextureOutline": "topLeftGum"
   },
-  "floatinggum": {
+  "floatingGum": {
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "texture": "floating_gum",
-    "debugcolor": "yellow",
-    "debugopacity": 200,
+    "texture": "floatingGum",
+    "debugColor": "yellow",
+    "debugOpacity": 200,
     "bobAmount": 0.1,
     "bobSpeed": 3
   },
@@ -82,8 +82,8 @@
     "friction": 0.0,
     "restitution": 0.0,
     "texture": "orb",
-    "debugcolor": "yellow",
-    "debugopacity": 200,
+    "debugColor": "yellow",
+    "debugOpacity": 200,
     "bobAmount": 0.1,
     "bobSpeed": 3
   },
@@ -92,16 +92,16 @@
     "friction": 0.0,
     "restitution": 0.0,
     "texture": "star",
-    "debugcolor": "yellow",
-    "debugopacity": 200,
+    "debugColor": "yellow",
+    "debugOpacity": 200,
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
-  "cameratile": {
-    "debugcolor": "magenta",
-    "debugopacity": 200
+  "cameraTile": {
+    "debugColor": "magenta",
+    "debugOpacity": 200
   },
-  "mediumrobot": {
+  "mediumRobot": {
     "type": "projectile",
     "size": [
       1.6,
@@ -112,24 +112,24 @@
     "restitution": 0.0,
     "force": 10.0,
     "damping": 10.0,
-    "maxspeed": 12.0,
-    "animations" : "medium_robot",
-    "gumTexture": "med_gum",
-    "outline": "med_gum_outline",
-    "texture": "med_robot",
-    "debugcolor": "white",
-    "debugopacity": 192,
-    "sensorcolor": "yellow",
-    "sensoropacity": 192,
-    "visionradius": 3.0,
-    "sensorname": "listeningsensor",
-    "listeningradius": 7,
-    "wanderspeed": 3,
-    "chasespeed": 4,
-    "pursuespeed": 5,
-    "rollingattack": 8
+    "maxSpeed": 12.0,
+    "animations" : "mediumRobot",
+    "gumTexture": "medGum",
+    "outline": "medGumOutline",
+    "texture": "medRobot",
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorColor": "yellow",
+    "sensorOpacity": 192,
+    "visionRadius": 3.0,
+    "sensorName": "listeningsensor",
+    "listeningRadius": 7,
+    "wanderSpeed": 3,
+    "chaseSpeed": 4,
+    "pursueSpeed": 5,
+    "rollingAttack": 8
   },
-  "smallrobot": {
+  "smallRobot": {
     "type": "projectile",
     "size": [
       0.5,
@@ -140,24 +140,24 @@
     "restitution": 0.0,
     "force": 10.0,
     "damping": 2.0,
-    "maxspeed": 5.0,
-    "animations": "small_robot",
-    "texture": "smallrobot",
-    "outline": "small_gum_outline",
-    "gummedTexture": "gummed_robot",
-    "gumTexture": "small_gum",
-    "debugcolor": "white",
-    "debugopacity": 192,
-    "sensorcolor": "yellow",
-    "sensoropacity": 192,
-    "visionradius": 3.0,
-    "sensorname": "listeningsensor",
-    "listeningradius": 7,
-    "wanderspeed": 3,
-    "chasespeed": 4,
-    "pursuespeed": 5
+    "maxSpeed": 5.0,
+    "animations": "smallRobot",
+    "texture": "smallRobot",
+    "outline": "smallGumOutline",
+    "gummedTexture": "gummedRobot",
+    "gumTexture": "smallGum",
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorColor": "yellow",
+    "sensorOpacity": 192,
+    "visionRadius": 3.0,
+    "sensorName": "listeningSensor",
+    "listeningRadius": 7,
+    "wanderSpeed": 3,
+    "chaseSpeed": 4,
+    "pursueSpeed": 5
   },
-  "large_robot": {
+  "largeRobot": {
     "type": "moving",
     "size": [
       1.5,
@@ -168,34 +168,34 @@
     "restitution": 0.0,
     "force": 10.0,
     "damping": 10.0,
-    "maxspeed": 5.0,
-    "animations": "large_robot",
-    "texture": "large_robot",
-    "gumTexture": "large_gum",
-    "outline": "large_gum_outline",
-    "debugcolor": "white",
-    "debugopacity": 192,
-    "sensorcolor": "yellow",
-    "sensoropacity": 192,
-    "visionradius": 3.0,
-    "sensorname": "listeningsensor",
-    "listeningradius": 7,
-    "wanderspeed": 2,
-    "chasespeed": 3,
-    "pursuespeed": 4
+    "maxSpeed": 5.0,
+    "animations": "largeRobot",
+    "texture": "largeRobot",
+    "gumTexture": "largeGum",
+    "outline": "largeGumOutline",
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorColor": "yellow",
+    "sensorOpacity": 192,
+    "visionRadius": 3.0,
+    "sensorName": "listeningSensor",
+    "listeningRadius": 7,
+    "wanderSpeed": 2,
+    "chaseSpeed": 3,
+    "pursueSpeed": 4
   },
   "exit": {
     "size": [
       2,
       3
     ],
-    "bodytype": "static",
+    "bodyType": "static",
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
     "texture": "exit",
-    "debugcolor": "yellow",
-    "debugopacity": 200
+    "debugColor": "yellow",
+    "debugOpacity": 200
   },
   "projectile": {
     "offsetX": 0.6,
@@ -209,8 +209,8 @@
     "density": 1.0,
     "friction": 0.4,
     "restitution": 0.0,
-    "debugcolor": "yellow",
-    "debugopacity": 200,
+    "debugColor": "yellow",
+    "debugOpacity": 200,
     "texture": "box"
   },
   "chair": {
@@ -218,8 +218,8 @@
     "density": 1.0,
     "friction": 0.4,
     "restitution": 0.0,
-    "debugcolor": "yellow",
-    "debugopacity": 200,
+    "debugColor": "yellow",
+    "debugOpacity": 200,
     "texture": "chair"
   },
   "laser": {
@@ -227,10 +227,6 @@
     "offsetY": 0.0,
     "range": 10.0,
     "girth": 2.0,
-    "density" : 1.0,
-    "charge_time" : 2.0,
-    "attack_time" : 2.0,
-    "charge_texture": "charge_laser",
-    "attack_texture": "attack_laser"
+    "density" : 1.0
   }
 }

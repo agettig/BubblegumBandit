@@ -470,7 +470,6 @@ public class LevelModel {
                     break;
 
                 case "bandit":
-
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);

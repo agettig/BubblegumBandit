@@ -1,37 +1,37 @@
 {
   "bandit": {
     "run": {
-      "strip": "bandit_run.run",
+      "strip": "banditRun.run",
       "fps": 6
     },
     "idle": {
-      "strip": "bandit_idle.idle",
+      "strip": "banditIdle.idle",
       "fps": 2
     },
     "fall": {
-      "strip": "bandit_fall.fall",
+      "strip": "banditFall.fall",
       "fps": 2
     }
   },
   "small_robot": {
     "patrol": {
-      "strip": "small_robot_patrol.patrol",
+      "strip": "smallRobotPatrol.patrol",
       "fps": 6
     }
   },
   "large_robot": {
     "patrol": {
-      "strip": "large_walk.patrol",
+      "strip": "largeWalk.patrol",
       "fps": 4
     }
   },
   "medium_robot": {
     "patrol": {
-      "strip": "med_walk.patrol",
+      "strip": "medWalk.patrol",
       "fps": 8
     },
     "roll": {
-      "strip": "med_roll.attack",
+      "strip": "medRoll.attack",
       "fps": 8
     }
   }
