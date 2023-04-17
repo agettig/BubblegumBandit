@@ -331,4 +331,11 @@ public class LaserEnemyModel extends EnemyModel{
         return y;
     }
 
+
+    @Override
+    public void setFaceRight(boolean isRight) {
+        if(chargingLaser() || lockingLaser() || firingLaser()) return;
+        super.setFaceRight(isRight);
+    }
+
 }

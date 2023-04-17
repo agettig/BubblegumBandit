@@ -663,10 +663,6 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
-        Set<Obstacle> postLaserDraw = new HashSet<>();
-
-
-
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
@@ -741,7 +737,7 @@ public class LevelModel {
 
                 beam.setRegionWidth(2);
                 int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
-                if(enemy.getGummed()) numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
+                numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
                 dir.nor();
 
                 //Draw her up!
@@ -750,16 +746,17 @@ public class LevelModel {
 
 
                     //Calculate the positions and angle of the charging laser.
-                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()/2): 0;
+                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()): -(enemy.getWidth());
                     float enemyOffsetY = enemy.getHeight()*10;
-
-                    float x = enemyPos.x * scale.x + (i * dir.x * beam.getRegionWidth());
-                    float y = enemyPos.y * scale.y + (i * dir.y * beam.getRegionWidth());
-
+                    float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
+                    float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
-                    if(enemy.getGummed()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+
+                    if(!enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+                    else enemyOffsetX += (enemy.getWidth()/2)*scale.x;
+
 
                     canvas.draw(
                             beam,
@@ -767,7 +764,7 @@ public class LevelModel {
                             beam.getRegionWidth(),
                             beam.getRegionHeight(),
                             x + enemyOffsetX,
-                            y + enemyOffsetY* enemy.getYScale(),
+                            y + enemyOffsetY * enemy.getYScale(),
                             ang,
                             1f,
                             1 * laserThickness);
