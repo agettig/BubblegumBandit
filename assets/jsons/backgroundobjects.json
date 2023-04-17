@@ -1074,19 +1074,19 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/..\/Tiled\/board\/board_ceiling.png",
+                 "image":"..\/..\/Tiled\/board\/boardCeiling.png",
                  "imageheight":64,
                  "imagewidth":64
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/board\/board_climb.png",
+                 "image":"..\/..\/Tiled\/board\/boardClimb.png",
                  "imageheight":64,
                  "imagewidth":64
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/board\/board_floor.png",
+                 "image":"..\/..\/Tiled\/board\/boardFloor.png",
                  "imageheight":64,
                  "imagewidth":64
                 }],
@@ -1116,14 +1116,14 @@
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/map\/medium_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/mediumEnemy.png",
                  "imageheight":129,
                  "imagewidth":117,
                  "type":"mediumrobot"
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/map\/small_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/smallEnemy.png",
                  "imageheight":65,
                  "imagewidth":43,
                  "type":"smallrobot"
@@ -1138,7 +1138,7 @@
                 {
                  "height":64,
                  "id":4,
-                 "image":"..\/..\/Tiled\/map\/texture_draft.png",
+                 "image":"..\/..\/Tiled\/map\/textureDraft.png",
                  "imageheight":267,
                  "imagewidth":268,
                  "type":"earth",
@@ -1148,7 +1148,7 @@
                 }, 
                 {
                  "id":5,
-                 "image":"..\/..\/Tiled\/map\/goaldoor.png",
+                 "image":"..\/..\/Tiled\/map\/goalDoor.png",
                  "imageheight":96,
                  "imagewidth":96,
                  "type":"exit"
@@ -1175,7 +1175,7 @@
                 }, 
                 {
                  "id":12,
-                 "image":"..\/..\/Tiled\/map\/large_robot.png",
+                 "image":"..\/..\/Tiled\/map\/largeRobot.png",
                  "imageheight":186,
                  "imagewidth":134
                 }],
@@ -1205,14 +1205,14 @@
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/map\/medium_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/mediumEnemy.png",
                  "imageheight":129,
                  "imagewidth":117,
                  "type":"mediumrobot"
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/map\/small_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/smallEnemy.png",
                  "imageheight":65,
                  "imagewidth":43,
                  "type":"smallrobot"
@@ -1227,7 +1227,7 @@
                 {
                  "height":64,
                  "id":4,
-                 "image":"..\/..\/Tiled\/map\/texture_draft.png",
+                 "image":"..\/..\/Tiled\/map\/textureDraft.png",
                  "imageheight":267,
                  "imagewidth":268,
                  "type":"earth",
@@ -1237,7 +1237,7 @@
                 }, 
                 {
                  "id":5,
-                 "image":"..\/..\/Tiled\/map\/shipdoor.png",
+                 "image":"..\/..\/Tiled\/map\/shipDoor.png",
                  "imageheight":176,
                  "imagewidth":144,
                  "type":"exit"
@@ -1265,7 +1265,7 @@
                 }, 
                 {
                  "id":12,
-                 "image":"..\/..\/Tiled\/map\/large_robot.png",
+                 "image":"..\/..\/Tiled\/map\/largeRobot.png",
                  "imageheight":186,
                  "imagewidth":134,
                  "type":"largerobot"
