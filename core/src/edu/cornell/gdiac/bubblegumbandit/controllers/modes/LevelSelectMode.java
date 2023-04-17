@@ -59,13 +59,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private JsonValue constantsJson;
 
     /** Background Space texture */
-    private Texture background;
+    private TextureRegion background;
 
     /** The bandit's ship, The Sunfish, that follows the players cursor */
     private SunfishModel sunfish;
 
     /** array of all level icons */
     private Array<LevelIconModel> levels;
+
 
     /**
      * The Box2D world
@@ -112,6 +113,22 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     /** the gap between level icons */
     private final static float LEVEL_GAP = 500;
+
+
+    //space boundaries
+    /** the width of the sunfish movement bounds */
+    private final static float SPACE_WIDTH = 5000;
+    /** height of sunfish movement bounds */
+    private final static float SPACE_HEIGHT = 5000;
+
+    //the camera dimensions
+    private float camWidth;
+    private float camHeight;
+
+    /** Camera zoom out */
+    private final static float ZOOM = 1.5f;
+
+
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -160,6 +177,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 500, 500);
         sunfish.activatePhysics(world);
 
+        background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
+
         createIcons(directory);
 
     }
@@ -186,8 +205,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         this.canvas = canvas;
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
-        canvas.getCamera().setZoom(1.5f);
+        canvas.getCamera().setZoom(ZOOM);
 
+        camWidth = canvas.getCamera().viewportWidth;
+        camHeight = canvas.getCamera().viewportHeight;
     }
 
     /**
@@ -215,7 +236,29 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         for (LevelIconModel level : levels){
             level.update();
         }
+
+
+        //move camera, while keeping view in bounds
         canvas.getCamera().setTarget(sunfish.getPosition());
+        System.out.println(sunfish.getPosition());
+
+         //x bounds
+        if (sunfish.getX() < camWidth) {
+            canvas.getCamera().setTargetX(camWidth);
+        }
+//        if (sunfish.getX() > SPACE_WIDTH - camWidth){
+//            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
+//
+//        }
+         //y bounds
+        if (sunfish.getY() < camHeight) {
+            canvas.getCamera().setTargetY(camHeight);
+
+        }
+        if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
+            canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
+        }
+
         canvas.getCamera().update(dt);
     }
 
@@ -234,6 +277,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void draw() {
         canvas.clear();
         canvas.begin();
+
+        drawBackground(canvas);
 
         for (LevelIconModel level : levels){
             level.draw(canvas, displayFont);
@@ -283,6 +328,20 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         centerY = (int)(BAR_HEIGHT_RATIO*height);
         centerX = width/2;
         heightY = height;
+    }
+
+    /**
+     * Draws a repeating background, and crops off any overhangs outside the level
+     * to maintain resolution and aspect ratio.
+     *
+     * @param canvas the current canvas
+     */
+    private void drawBackground(GameCanvas canvas) {
+        for (int i = 0; i < SPACE_WIDTH; i += background.getRegionWidth()) {
+            for (int j = 0; j < SPACE_HEIGHT; j += background.getRegionHeight()) {
+                canvas.draw(background, i, j);
+            }
+        }
     }
 
     // PROCESSING PLAYER INPUT
@@ -372,6 +431,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         }
         return true;
     }
+
+
 
     /**
      * Called when a button on the Controller was pressed.

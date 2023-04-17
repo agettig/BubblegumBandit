@@ -30,7 +30,7 @@ public class SunfishModel extends WheelObstacle {
     private Vector2 lastPos;
 
     /** The ship's speed */
-    private static final float SPEED = 70f;
+    private static final float SPEED = 10f;
 
 
     /** desired angle of rotation */
@@ -92,22 +92,23 @@ public class SunfishModel extends WheelObstacle {
 
     public void update(float dt){
 //        System.out.println(getVX());
-
         setMovement(lastPos);
         float dst = getPosition().dst(lastPos);
 
         //thrust distance
         if (dst > 500){
             forceCache.set(movement).scl(THRUST);
+            body.setTransform(body.getPosition().add(movement), 0);
         }
         //normal speed distance
         else if (dst > 100){
-//            body.setTransform(body.getPosition().add(movement), 0);
             forceCache.set(movement);
+            body.setTransform(body.getPosition().add(movement), 0);
         }
         // damping distance
         else{
-            forceCache.set(-DAMPING * getVX(), 0);
+            forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
+
         }
 
         body.applyForce(forceCache, getPosition(), true);
