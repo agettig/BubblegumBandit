@@ -60,7 +60,7 @@ public class Minimap {
     private Vector2 expandedScale;
 
     /** The positions of the tiles */
-    private ArrayList<Vector2> floorPositions;
+    private HashSet<Vector2> floorPositions;
 
     /** true if the Minimap is expanded.*/
     private boolean expanded;
@@ -124,7 +124,7 @@ public class Minimap {
         }
         int[] worldData = tileLayer.get("data").asIntArray();
 
-        floorPositions = new ArrayList<>();
+        floorPositions = new HashSet<>();
         prevBanditPosition = new Vector2();
         expandedFloors = new HashSet<>();
         for (int i = 0; i < worldData.length; i++) {
