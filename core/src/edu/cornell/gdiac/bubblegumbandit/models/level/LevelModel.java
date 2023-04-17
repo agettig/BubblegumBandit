@@ -757,6 +757,10 @@ public class LevelModel {
                     if(!enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
                     else enemyOffsetX += (enemy.getWidth()/2)*scale.x;
 
+                    if(enemy.getStuck() && enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2) * scale.x;
+                    if(enemy.getStuck() && !enemy.getFaceRight()) enemyOffsetX += (enemy.getWidth()/2) * scale.x;
+
+
 
                     canvas.draw(
                             beam,
