@@ -179,7 +179,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         world = new World(new Vector2(0, 0), false);
 
-        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
+        TextureRegion sunfish_texture = new TextureRegion (directory.getEntry("sunfish", Texture.class));
+        TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
+
+        sunfish = new SunfishModel(sunfish_texture, fire, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
         sunfish.activatePhysics(world);
 
         background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
@@ -245,7 +248,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         //move camera, while keeping view in bounds
         canvas.getCamera().setTarget(sunfish.getPosition());
-        System.out.println(sunfish.getPosition());
+//        System.out.println(sunfish.getPosition());
 
          //x bounds
         if (sunfish.getX() < camWidth) {
@@ -396,7 +399,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
             for (LevelIconModel level : levels){
 
-                System.out.println(target);
                 if (level.onIcon(target.x, target.y)){
                     ready = true;
                     selectedLevel = level.getLevel();

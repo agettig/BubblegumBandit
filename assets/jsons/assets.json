@@ -1,7 +1,6 @@
 {
     "textures": {
 
-
         "health_bar": "textures/UI/health_bar.png",
         "health_fill": "textures/UI/health_fill.png",
         "health_icon": "textures/UI/UI_heart.png",
@@ -12,8 +11,7 @@
         "sunfish" : "textures/level_select/sunfish.png",
         "ship1" : "textures/level_select/level1.png",
         "ship2" : "textures/level_select/level2.png",
-
-
+        "fire" : "textures/level_select/fire.png",
 
         "terrain": {
             "file": "textures/environment/tileset.png"
