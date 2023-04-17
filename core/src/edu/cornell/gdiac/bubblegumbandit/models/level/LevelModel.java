@@ -701,7 +701,7 @@ public class LevelModel {
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .5f;
         final float lockedLaserScale = 1f;
-        final float firingLaserScale = 1.5f;
+        final float firingLaserScale = 1.2f;
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
 
@@ -754,11 +754,11 @@ public class LevelModel {
                     float ang = (float) Math.atan(slope);
 
 
-                    if(!enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
-                    else enemyOffsetX += (enemy.getWidth()/2)*scale.x;
+                    if(!enemy.getFaceRight() && !enemy.getGummed() && !enemy.getStuck()) enemyOffsetX -= (enemy.getWidth()/3)*scale.x;
+                    if(enemy.getFaceRight() && !enemy.getGummed() && !enemy.getStuck()) enemyOffsetX += (enemy.getWidth()/3)*scale.x;
 
-                    if(enemy.getStuck() && !enemy.getGummed() && enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2) * scale.x;
-                    if(enemy.getStuck() && !enemy.getGummed() && !enemy.getFaceRight()) enemyOffsetX += (enemy.getWidth()/2) * scale.x;
+                    if(!enemy.getStuck() && enemy.getGummed() && enemy.getFaceRight()) enemyOffsetX += (enemy.getWidth()/2) * scale.x;
+                    if(!enemy.getStuck() && enemy.getGummed() && !enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2) * scale.x;
 
 
 
