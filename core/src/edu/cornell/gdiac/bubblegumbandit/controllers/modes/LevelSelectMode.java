@@ -28,6 +28,8 @@ import edu.cornell.gdiac.util.Controllers;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.XBoxController;
 
+import javax.xml.parsers.SAXParser;
+
 /**
  * Class that provides the level select screen for the state of the game.
  *
@@ -114,6 +116,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** the gap between level icons */
     private final static float LEVEL_GAP = 500;
 
+    /** the gap between level icons and the bounds of space */
+    private final static float SPACE_GAP = 800;
+
 
     //space boundaries
     /** the width of the sunfish movement bounds */
@@ -174,7 +179,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         world = new World(new Vector2(0, 0), false);
 
-        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 500, 500);
+        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
         sunfish.activatePhysics(world);
 
         background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
@@ -189,8 +194,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         TextureRegion ship2 = new TextureRegion(directory.getEntry("ship2", Texture.class));
 
         levels = new Array<>();
-        levels.add(new LevelIconModel(ship1, 1, 100, 500));
-        levels.add(new LevelIconModel(ship2, 2, ship1.getRegionWidth() + LEVEL_GAP, 500));
+        levels.add(new LevelIconModel(ship1, 1, 100, SPACE_HEIGHT - SPACE_GAP));
+        levels.add(new LevelIconModel(ship2, 2, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - SPACE_GAP));
     }
 
     /**
