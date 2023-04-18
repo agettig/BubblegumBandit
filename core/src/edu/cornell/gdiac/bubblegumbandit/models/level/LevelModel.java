@@ -389,6 +389,9 @@ public class LevelModel {
                 TileModel newTile = new TileModel();
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
+                if (textures.get(tileVal) == null)  {
+                    throw new RuntimeException("Tile " + tileVal + " doesn't have a texture");
+                }
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 tiles.put(new Vector2(x, y), newTile);
                 newTile.setDrawScale(scale);
@@ -451,6 +454,8 @@ public class LevelModel {
         JsonValue enemyConstants;
         EnemyModel enemy;
         int enemyCount = 0;
+        Array<EnemyModel> newEnemies = new Array<>();
+
         while (object != null) {
             String objType = object.get("type").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
@@ -491,10 +496,7 @@ public class LevelModel {
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    newEnemies.add(enemy);
                     break;
                 case "mediumrobot":
                     enemyConstants = constants.get(objType);
@@ -502,22 +504,14 @@ public class LevelModel {
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
-
+                    newEnemies.add(enemy);
                     break;
                 case "large_robot":
                     enemyConstants = constants.get(objType);
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    newEnemies.add(enemy);
                     break;
                 case "orb":
                     orbPlaced = true;
@@ -556,6 +550,14 @@ public class LevelModel {
 
         activate(goalDoor);
         goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+
+        for (EnemyModel e : newEnemies) {
+            activate(e);
+            e.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+            enemyControllers.add(new AIController(e, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+            enemyCount++;
+        }
+
         // Add bandit at the end because this affects draw order
         activate(bandit);
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
