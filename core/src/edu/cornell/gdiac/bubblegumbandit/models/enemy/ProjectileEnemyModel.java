@@ -49,7 +49,7 @@ public class ProjectileEnemyModel extends EnemyModel {
      * */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson){
         super.initialize(directory, x, y, constantsJson);
-        setVisionRadius(constantsJson.get("visionradius").asFloat());
+        setVisionRadius(constantsJson.get("visionRadius").asFloat());
     }
 
 

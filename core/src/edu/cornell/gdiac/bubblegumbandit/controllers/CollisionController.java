@@ -63,8 +63,6 @@ public class CollisionController implements ContactListener {
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
-    /**Temp queue for now for sticking robot joints */
-    private Queue<WeldJointDef> stickRobots = new Queue<>();
 
     /** Resets this CollisionController. */
     public void reset(){
@@ -131,7 +129,7 @@ public class CollisionController implements ContactListener {
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
-            checkRollingEnemyCollision(obstacleA, obstacleB);
+            checkMediumEnemyCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -179,9 +177,9 @@ public class CollisionController implements ContactListener {
                 ob2.endCollision(ob1);
             }
 
-            if (ob1.getName().equals("cameratile") && avatar == bd2) {
+            if (ob1.getName().equals("cameraTile") && avatar == bd2) {
                 updateCamera(ob1);
-            } else if (ob2.getName().equals("cameratile") && avatar == bd1) {
+            } else if (ob2.getName().equals("cameraTile") && avatar == bd1) {
                 updateCamera(ob2);
             }
 
@@ -402,7 +400,7 @@ public class CollisionController implements ContactListener {
             gummable = (Gummable) ob1;
             if (gummable.getGummed() && !ob2.equals(levelModel.getBandit())) {
                 bubblegumController.createGummableJoint(gummable, ob2);
-                SoundController.playSound("robotSplat", 1f);
+                SoundController.playSound("enemySplat", 1f);
                 ob2.setStuck(true);
             }
         }
@@ -410,7 +408,7 @@ public class CollisionController implements ContactListener {
             gummable = (Gummable) ob2;
             if (gummable.getGummed() && !ob1.equals(levelModel.getBandit())) {
                 bubblegumController.createGummableJoint(gummable, ob1);
-                SoundController.playSound("robotSplat", 1f);
+                SoundController.playSound("enemySplat", 1f);
                 ob1.setStuck(true);
             }
         }
@@ -457,37 +455,25 @@ public class CollisionController implements ContactListener {
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
-    private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
+    private void checkMediumEnemyCollision(Obstacle bd1, Obstacle bd2) {
         BanditModel bandit = levelModel.getBandit();
 
         // TODO: REFACTOR to more general knockback
-        if (bd1.getName().equals("rollingrobot") && bd2.equals(bandit)) {
-            boolean leftRolling = (bd1.getX() < bd2.getX());
-            boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
+        if (bd1.getName().equals("mediumEnemy") && bd2.equals(bandit)) {
+            boolean leftMedium = (bd1.getX() < bd2.getX());
+            boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
             bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
             bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
-        } else if (bd2.getName().equals("rollingrobot") && bd1.equals(bandit)) {
-            boolean leftRolling = (bd1.getX() > bd2.getX());
-            boolean knockbackUp = levelModel.getWorld().getGravity().y > 0;
+            bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+        } else if (bd2.getName().equals("mediumEnemy") && bd1.equals(bandit)) {
+            boolean leftMedium = (bd1.getX() > bd2.getX());
+            boolean knockBackUp = levelModel.getWorld().getGravity().y > 0;
             bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
             bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
         }
     }
-//
-//    /**
-//     * Resolves the effects of a RollingEnemy collision
-//     * @param e
-//     * @param o
-//     */
-//    private void resolveRollingEnemyCollision(RollingEnemyModel e, Obstacle o) {
-//        //if (e.isRemoved()) return;
-//        BanditModel bandit = levelModel.getBandit();
-//        if (o.equals(bandit)) {
-//            bandit.hitPlayer(e.getDamage());
-//        }
-//    }
+
 
     /**
      * Resolves collisions for ground contact, adding the necessary
@@ -537,11 +523,11 @@ public class CollisionController implements ContactListener {
     }
 
     public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2){
-        if (bd1.getName().equals("floatinggum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
+        if (bd1.getName().equals("floatingGum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
             SoundController.playSound("collectItem", 0.75f);
-        } else if (bd2.getName().equals("floatinggum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
+        } else if (bd2.getName().equals("floatingGum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
             SoundController.playSound("collectItem", 0.75f);

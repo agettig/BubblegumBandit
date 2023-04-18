@@ -352,7 +352,7 @@ public class BubblegumController {
         for (int i = 0; i < gummableAssemblyQueue.size; i++) {
             Joint joint = level.getWorld().createJoint(gummableAssemblyQueue.removeFirst());
             addToGummableMap(joint);
-            SoundController.playSound("robotSplat", 1f);
+            SoundController.playSound("enemySplat", 1f);
         }
         for (int i = 0; i < gumJointsToRemove.size; i++) {
             GumJointPair gumJoint = gumJointsToRemove.removeFirst();

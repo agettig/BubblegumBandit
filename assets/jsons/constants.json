@@ -101,7 +101,7 @@
     "debugColor": "magenta",
     "debugOpacity": 200
   },
-  "mediumRobot": {
+  "mediumEnemy": {
     "type": "projectile",
     "size": [
       1.6,
@@ -113,10 +113,10 @@
     "force": 10.0,
     "damping": 10.0,
     "maxSpeed": 12.0,
-    "animations" : "mediumRobot",
+    "animations" : "mediumEnemy",
     "gumTexture": "medGum",
     "outline": "medGumOutline",
-    "texture": "medRobot",
+    "texture": "medEnemy",
     "debugColor": "white",
     "debugOpacity": 192,
     "sensorColor": "yellow",
@@ -127,9 +127,9 @@
     "wanderSpeed": 3,
     "chaseSpeed": 4,
     "pursueSpeed": 5,
-    "rollingAttack": 8
+    "mediumAttack": 4
   },
-  "smallRobot": {
+  "smallEnemy": {
     "type": "projectile",
     "size": [
       0.5,
@@ -141,10 +141,10 @@
     "force": 10.0,
     "damping": 2.0,
     "maxSpeed": 5.0,
-    "animations": "smallRobot",
-    "texture": "smallRobot",
+    "animations": "smallEnemy",
+    "texture": "smallEnemy",
     "outline": "smallGumOutline",
-    "gummedTexture": "gummedRobot",
+    "gummedTexture": "gummedEnemy",
     "gumTexture": "smallGum",
     "debugColor": "white",
     "debugOpacity": 192,
@@ -157,7 +157,7 @@
     "chaseSpeed": 4,
     "pursueSpeed": 5
   },
-  "largeRobot": {
+  "largeEnemy": {
     "type": "moving",
     "size": [
       1.5,
@@ -169,8 +169,8 @@
     "force": 10.0,
     "damping": 10.0,
     "maxSpeed": 5.0,
-    "animations": "largeRobot",
-    "texture": "largeRobot",
+    "animations": "largeEnemy",
+    "texture": "largeEnemy",
     "gumTexture": "largeGum",
     "outline": "largeGumOutline",
     "debugColor": "white",

@@ -479,7 +479,7 @@ public class LevelModel {
                     goalDoor.initialize(directory, x, y, constants.get(objType));
                     goalDoor.setDrawScale(scale);
                     break;
-                case "smallrobot":
+                case "smallEnemy":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
@@ -490,7 +490,7 @@ public class LevelModel {
                     enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                     enemyCount++;
                     break;
-                case "mediumrobot":
+                case "mediumEnemy":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
@@ -503,7 +503,7 @@ public class LevelModel {
                     enemyCount++;
 
                     break;
-                case "large_robot":
+                case "largeEnemy":
                     enemyConstants = constants.get(objType);
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
@@ -516,15 +516,15 @@ public class LevelModel {
                 case "orb":
                     orbPlaced = true;
                 case "star":
-                case "floatinggum":
+                case "floatingGum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
-                case "camera_v":
-                case "camera_h":
+                case "cameraV":
+                case "cameraH":
                     CameraTileModel cam = new CameraTileModel();
                     cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
                     activate(cam);

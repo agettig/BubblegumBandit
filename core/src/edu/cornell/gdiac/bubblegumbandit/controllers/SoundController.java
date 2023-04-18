@@ -24,9 +24,9 @@ public class SoundController {
     private static SoundEffect gumSplatSound;
 
     /**
-     * The sound when robot is hit with gume.  We only want to play once.
+     * The sound when enemy is hit with gume.  We only want to play once.
      */
-    private static SoundEffect robotSplatSound;
+    private static SoundEffect enemySplatSound;
 
     /**
      * The sound when an item is collected.  We only want to play once.
@@ -46,14 +46,14 @@ public class SoundController {
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
         gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);
-        robotSplatSound = directory.getEntry("robotSplat", SoundEffect.class);
+        enemySplatSound = directory.getEntry("enemySplat", SoundEffect.class);
         collectItemSound = directory.getEntry("collectItem", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
             put(smallEnemyShootingSound, -2);
             put(gumSplatSound, -3);
-            put(robotSplatSound, -4);
+            put(enemySplatSound, -4);
             put(collectItemSound, -5);
         }};
 
@@ -61,7 +61,7 @@ public class SoundController {
             put("jump", jumpSound);
             put("smallEnemyShooting", smallEnemyShootingSound);
             put("gumSplat", gumSplatSound);
-            put("robotSplat", robotSplatSound);
+            put("enemySplat", enemySplatSound);
             put("collectItem", collectItemSound);
         }};
     }
