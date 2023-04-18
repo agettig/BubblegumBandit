@@ -106,7 +106,7 @@ public class CameraTileModel extends TileModel {
      */
     public void initialize(float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants) {
         // make the body fixture into a sensor
-        setName("cameratile");
+        setName("cameraTile");
         setPosition(x,y);
         float width = objectJson.getFloat("width") / scale.x;
         float height = objectJson.getFloat("height") / scale.y;
@@ -118,18 +118,18 @@ public class CameraTileModel extends TileModel {
         // Reflection is best way to convert name to color
         Color debugColor;
         try {
-            String cname = constants.get("debugcolor").asString().toUpperCase();
+            String cname = constants.get("debugColor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             debugColor = new Color((Color)field.get(null));
         } catch (Exception e) {
             debugColor = null; // Not defined
         }
-        int opacity = constants.get("debugopacity").asInt();
+        int opacity = constants.get("debugOpacity").asInt();
         debugColor.mul(opacity/255.0f);
         setDebugColor(debugColor);
 
         // Set object data
-        isHorizontal = objectJson.getString("type").equals("camera_h");
+        isHorizontal = objectJson.getString("type").equals("cameraH");
 
         isFirstFixedX = false;
         isFirstFixedY = false;

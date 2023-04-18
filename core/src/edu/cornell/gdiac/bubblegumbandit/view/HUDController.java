@@ -72,10 +72,10 @@ public class HUDController {
     stage.addActor(table);
     table.setFillParent(true);
 
-    healthBar = new Image(directory.getEntry("health_bar", Texture.class));
-    healthFillText = directory.getEntry("health_fill", Texture.class);
-    healthIcon = new Image(directory.getEntry("health_icon", Texture.class));
-    bubbleIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+    healthBar = new Image(directory.getEntry("healthBar", Texture.class));
+    healthFillText = directory.getEntry("healthFill", Texture.class);
+    healthIcon = new Image(directory.getEntry("healthIcon", Texture.class));
+    bubbleIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
     starIcon1 = new Image(directory.getEntry("star", Texture.class));
     starIcon2 = new Image(directory.getEntry("star", Texture.class));
     starIcon3 = new Image(directory.getEntry("star", Texture.class));

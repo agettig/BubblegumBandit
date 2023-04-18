@@ -13,19 +13,19 @@
       "fps": 2
     }
   },
-  "small_robot": {
+  "smallEnemy": {
     "patrol": {
-      "strip": "smallRobotPatrol.patrol",
+      "strip": "smallEnemyPatrol.patrol",
       "fps": 6
     }
   },
-  "large_robot": {
+  "largeEnemy": {
     "patrol": {
       "strip": "largeWalk.patrol",
       "fps": 4
     }
   },
-  "medium_robot": {
+  "mediumEnemy": {
     "patrol": {
       "strip": "medWalk.patrol",
       "fps": 8

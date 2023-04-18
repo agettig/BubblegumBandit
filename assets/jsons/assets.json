@@ -64,11 +64,11 @@
             }
         },
 
-        "smallRobotOutline": "textures/smallEnemy/smallEnemyWhite.png",
+        "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
-        "smallRobot": "textures/smallEnemy/smallEnemy.png",
-        "smallRobotPatrol":  {
-            "file": "textures/smallEnemy/smallRobotPatrol.png",
+        "smallEnemy": "textures/smallEnemy/smallEnemy.png",
+        "smallEnemyPatrol":  {
+            "file": "textures/smallEnemy/smallEnemyPatrol.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -80,7 +80,7 @@
         },
 
         "medOutline": "textures/mediumEnemy/medWhite.png",
-        "medRobot": "textures/mediumEnemy/mediumEnemy.png",
+        "medEnemy": "textures/mediumEnemy/mediumEnemy.png",
         "medWalk":  {
             "file": "textures/mediumEnemy/medWalk.png",
             "wrap": false,
@@ -105,8 +105,8 @@
         },
 
 
-        "largeRobotOutline": "textures/largeEnemy/largeRobotWhite.png",
-        "largeRobot": "textures/largeEnemy/largeRobot.png",
+        "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
+        "largeEnemy": "textures/largeEnemy/largeEnemy.png",
         "laserBeam": "textures/largeEnemy/laserBeam.png",
         "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
         "largeWalk":  {
@@ -163,7 +163,7 @@
   		"jump" : "sounds/jump.mp3",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
-        "robotSplat": "sounds/splatRobot.wav",
+        "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {

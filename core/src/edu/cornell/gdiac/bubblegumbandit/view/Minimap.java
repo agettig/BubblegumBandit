@@ -91,7 +91,7 @@ public class Minimap {
         minimapStage = new Stage();
         minimapStage.addActor(minimapTable);
         minimapBackground = new Image(
-                directory.getEntry("minimap_background", Texture.class));
+                directory.getEntry("minimapBackground", Texture.class));
         minimapTable.add(minimapBackground);
         minimapBackground.setSize(0, 0);
         minimapBackground.setColor(new Color(0,0,0,.3f));
@@ -286,7 +286,7 @@ public class Minimap {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 minimapTiles[x][y] =
-                        new Image(directory.getEntry("minimap_tile", Texture.class));
+                        new Image(directory.getEntry("minimapTile", Texture.class));
                 minimapTable.add(minimapTiles[x][y]);
                 minimapTiles[x][y].setSize(0,0);
                 minimapTiles[x][y].setColor(new Color(0, 0, 0, 0));

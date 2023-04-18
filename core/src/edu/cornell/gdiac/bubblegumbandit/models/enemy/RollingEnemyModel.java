@@ -77,8 +77,8 @@ public class RollingEnemyModel extends EnemyModel {
     public void initialize(AssetDirectory directory, float x, float y,
                            JsonValue constantsJson) {
         super.initialize(directory, x, y, constantsJson);
-        rollingAttackSpeed = constantsJson.get("rollingattack").asInt();
-        setName("rollingrobot");
+        rollingAttackSpeed = constantsJson.get("mediumAttack").asInt();
+        setName("mediumEnemy");
         attackDuration = 0;
     }
 

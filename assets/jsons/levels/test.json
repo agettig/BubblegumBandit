@@ -110,7 +110,7 @@
                  "id":91,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":1600,
@@ -227,7 +227,7 @@
                          "value":26
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":20.6161960905986,
                  "x":2021.2323921812,
@@ -260,7 +260,7 @@
                          "value":26
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":20.6162,
                  "x":3264,
@@ -272,7 +272,7 @@
                  "id":116,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":3712,
@@ -284,7 +284,7 @@
                  "id":119,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":3264,
@@ -440,7 +440,7 @@
                  "id":134,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":3790.30125523013,
@@ -473,7 +473,7 @@
                          "value":38
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":256,
                  "x":4160,
@@ -506,7 +506,7 @@
                          "value":38
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":31.511371020144,
                  "x":4128.48862897986,
@@ -539,7 +539,7 @@
                          "value":50
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":192,
                  "x":2688,
@@ -572,7 +572,7 @@
                          "value":50
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":192,
                  "x":3596.59107806691,
@@ -605,7 +605,7 @@
                          "value":50
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":2,
                  "x":3776,
@@ -628,7 +628,7 @@
                          "value":41
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":2,
                  "x":2880,
@@ -651,7 +651,7 @@
                          "value":41
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":15.8177402385436,
                  "x":4106.05210295041,
@@ -684,7 +684,7 @@
                          "value":50
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":64,
                  "x":3776,
@@ -732,7 +732,7 @@
                  "id":151,
                  "name":"",
                  "rotation":0,
-                 "type":"mediumrobot",
+                 "type":"mediumEnemy",
                  "visible":true,
                  "width":117,
                  "x":1005.1323499362,
@@ -949,19 +949,19 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/..\/Tiled\/board\/board_ceiling.png",
+                 "image":"..\/..\/Tiled\/board\/boardCeiling.png",
                  "imageheight":64,
                  "imagewidth":64
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/board\/board_climb.png",
+                 "image":"..\/..\/Tiled\/board\/boardClimb.png",
                  "imageheight":64,
                  "imagewidth":64
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/board\/board_floor.png",
+                 "image":"..\/..\/Tiled\/board\/boardFloor.png",
                  "imageheight":64,
                  "imagewidth":64
                 }],
@@ -984,17 +984,17 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/..\/Tiled\/map\/camera_v.png",
+                 "image":"..\/..\/Tiled\/map\/cameraV.png",
                  "imageheight":64,
                  "imagewidth":64,
-                 "type":"camera_v"
+                 "type":"cameraV"
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/map\/camera_h.png",
+                 "image":"..\/..\/Tiled\/map\/cameraH.png",
                  "imageheight":64,
                  "imagewidth":64,
-                 "type":"camera_h"
+                 "type":"cameraH"
                 }],
          "tilewidth":64
         }, 
@@ -1180,29 +1180,29 @@
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/map\/medium_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/mediumEnemy.png",
                  "imageheight":129,
                  "imagewidth":117,
-                 "type":"mediumrobot"
+                 "type":"mediumEnemy"
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/map\/small_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/smallEnemy.png",
                  "imageheight":65,
                  "imagewidth":43,
-                 "type":"smallrobot"
+                 "type":"smallEnemy"
                 }, 
                 {
                  "id":3,
                  "image":"..\/..\/Tiled\/map\/gum.png",
                  "imageheight":25,
                  "imagewidth":25,
-                 "type":"floatinggum"
+                 "type":"floatingGum"
                 }, 
                 {
                  "height":64,
                  "id":4,
-                 "image":"..\/..\/Tiled\/map\/texture_draft.png",
+                 "image":"..\/..\/Tiled\/map\/textureDraft.png",
                  "imageheight":267,
                  "imagewidth":268,
                  "type":"earth",
@@ -1240,10 +1240,10 @@
                 }, 
                 {
                  "id":12,
-                 "image":"..\/..\/Tiled\/map\/large_robot.png",
+                 "image":"..\/..\/Tiled\/map\/largeEnemy.png",
                  "imageheight":186,
                  "imagewidth":134,
-                 "type":"large_robot"
+                 "type":"largeEnemy"
                 }, 
                 {
                  "id":13,
@@ -1285,29 +1285,29 @@
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/map\/medium_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/mediumEnemy.png",
                  "imageheight":129,
                  "imagewidth":117,
-                 "type":"mediumrobot"
+                 "type":"mediumEnemy"
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/map\/small_enemy.png",
+                 "image":"..\/..\/Tiled\/map\/smallEnemy.png",
                  "imageheight":65,
                  "imagewidth":43,
-                 "type":"smallrobot"
+                 "type":"smallEnemy"
                 }, 
                 {
                  "id":3,
                  "image":"..\/..\/Tiled\/map\/gum.png",
                  "imageheight":25,
                  "imagewidth":25,
-                 "type":"floatinggum"
+                 "type":"floatingGum"
                 }, 
                 {
                  "height":64,
                  "id":4,
-                 "image":"..\/..\/Tiled\/map\/texture_draft.png",
+                 "image":"..\/..\/Tiled\/map\/textureDraft.png",
                  "imageheight":267,
                  "imagewidth":268,
                  "type":"earth",
@@ -1345,10 +1345,10 @@
                 }, 
                 {
                  "id":12,
-                 "image":"..\/..\/Tiled\/map\/large_robot.png",
+                 "image":"..\/..\/Tiled\/map\/largeEnemy.png",
                  "imageheight":186,
                  "imagewidth":134,
-                 "type":"large_robot"
+                 "type":"largeEnemy"
                 }, 
                 {
                  "id":13,
@@ -1383,19 +1383,19 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/..\/Tiled\/board\/board_ceiling.png",
+                 "image":"..\/..\/Tiled\/board\/boardCeiling.png",
                  "imageheight":64,
                  "imagewidth":64
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/board\/board_climb.png",
+                 "image":"..\/..\/Tiled\/board\/boardClimb.png",
                  "imageheight":64,
                  "imagewidth":64
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/board\/board_floor.png",
+                 "image":"..\/..\/Tiled\/board\/boardFloor.png",
                  "imageheight":64,
                  "imagewidth":64
                 }],
