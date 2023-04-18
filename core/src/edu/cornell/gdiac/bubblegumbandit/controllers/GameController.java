@@ -552,11 +552,6 @@ public class GameController implements Screen {
             }
         }
 
-        if(inputResults.didExpandMinimap()){
-            minimap.toggleMinimap();
-        }
-
-
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
@@ -625,7 +620,7 @@ public class GameController implements Screen {
 
         }
         projectileController.update();
-        minimap.updateMinimap(dt);
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt,level.getWorld(), level.getBandit());
 
