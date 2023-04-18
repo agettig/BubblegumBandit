@@ -2,23 +2,16 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import jdk.javadoc.internal.doclets.toolkit.taglets.UserTaglet;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_TERRAIN;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_TERRAIN;
 
 
 public class Minimap {
@@ -56,6 +49,24 @@ public class Minimap {
     /**(X, Y) scale of the Minimap when it is in its smaller form. */
     private Vector2 condensedScale;
 
+    /** Position of the Minimap background when fully condensed.*/
+    private Vector2 condensedPosition;
+
+    /** Position of the Minimap background when fully expanded.*/
+    private Vector2 expandedPosition;
+
+    /** Most recent position of the Minimap.*/
+    private Vector2 currentPosition;
+
+    /** Most recent size of the Minimap.*/
+    private Vector2 currentSize;
+
+    /** Size of the Minimap background when fully condensed.*/
+    private Vector2 condensedSize;
+
+    /** Size of the Minimap background when fully expanded.*/
+    private Vector2 expandedSize;
+
     /**(X, Y) scale of the Minimap when it is in its larger form. */
     private Vector2 expandedScale;
 
@@ -75,20 +86,14 @@ public class Minimap {
     /** Bandit's position during the previous draw pass. */
     private Vector2 prevBanditPosition;
 
-    /** How far we are moving between minimap states. */
-    private float lerpProgress = 0f;
-
-    /** How long it takes to transition between Minimap states. */
-    private final float LERP_TIME = .25f;
-
-    /** true if we're toggling and moving between states. */
-    private boolean toggling = false;
-
     /** Floors to draw when the Minimap is expanded.*/
     private Set<Vector2> expandedFloors;
 
-    private Set<Vector2> prevVisibleTiles = new HashSet<>();
+    /** Tiles that were visible in the previous draw pass.*/
+    private Set<Vector2> prevVisibleTiles;
 
+    /** How quickly the Minimap changes states.*/
+    private final float TRANSITION_SPEED = 15f;
 
     /** Initializes the minimap for a given level.
      *
@@ -99,7 +104,6 @@ public class Minimap {
      */
     public void initialize(AssetDirectory directory, JsonValue levelFormat, int physicsWidth, int physicsHeight) {
         //Make the Minimap's background and map tiles.
-        setScales();
         minimapTable = new Table();
         minimapTable.align(Align.bottomRight);
         minimapTable.setFillParent(true);
@@ -115,6 +119,7 @@ public class Minimap {
         assert physicsHeight >= 0;
 
         //Set fields.
+        setScales();
         width = physicsWidth;
         height = physicsHeight;
         makeMinimapTiles(directory);
@@ -134,6 +139,7 @@ public class Minimap {
         floorPositions = new HashSet<>();
         prevBanditPosition = new Vector2();
         expandedFloors = new HashSet<>();
+        prevVisibleTiles = new HashSet<>();
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
             if (tileVal != 0) {
@@ -173,6 +179,25 @@ public class Minimap {
         condensedScale = new Vector2(.22f, .25f);
         expandedScale = new Vector2(condensedScale.x * 3.5f, condensedScale.y * 3.5f);
         currentScale = new Vector2();
+
+        float condensedMapLength = condensedScale.x * minimapStage.getWidth();
+        float condensedMapHeight = condensedScale.y * minimapStage.getHeight();
+        condensedSize = new Vector2(condensedMapLength, condensedMapHeight);
+
+        float expandedMapLength = expandedScale.x * minimapStage.getWidth();
+        float expandedMapHeight = expandedScale.y * minimapStage.getHeight();
+        expandedSize = new Vector2(expandedMapLength, expandedMapHeight);
+
+        float condensedXOffset = minimapStage.getWidth() - condensedMapLength - 30;
+        float condensedYOffset = minimapStage.getHeight() - condensedMapHeight - 30;
+        condensedPosition = new Vector2(condensedXOffset, condensedYOffset);
+
+        float expandedXOffset = (minimapStage.getWidth() - expandedMapLength) / 2;
+        float expandedYOffset = (minimapStage.getHeight() - expandedMapHeight) / 2;
+        expandedPosition = new Vector2(expandedXOffset, expandedYOffset);
+
+        currentPosition = new Vector2(minimapBackground.getX(), minimapBackground.getY());
+        currentSize = new Vector2(minimapBackground.getWidth(), minimapBackground.getHeight());
     }
 
 
@@ -207,8 +232,7 @@ public class Minimap {
 
         //Bandit positional optimization: only if the Bandit moved.
         if (!expanded && !banditPosition.equals(prevBanditPosition)) {
-            validFloors = condensedFloors(banditPosition,
-                    topLeftX, topLeftY, bottomRightX, bottomRightY);
+            validFloors = condensedFloors(topLeftX, topLeftY, bottomRightX, bottomRightY);
             prevBanditPosition.set(banditPosition);
         }
 
@@ -261,8 +285,7 @@ public class Minimap {
      *
      * @return  Set of Vector2 positions that represent Tiles to draw when
      *          the Minimap is condensed.*/
-    private Set<Vector2> condensedFloors(Vector2 banditPosition, int topLeftX,
-                                         int topLeftY, int bottomRightX, int bottomRightY) {
+    private Set<Vector2> condensedFloors(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY) {
         Set<Vector2> validFloors = new HashSet<>();
         for (int x = topLeftX; x < bottomRightX; x++) {
             for (int y = topLeftY; y < bottomRightY; y++) {
@@ -277,27 +300,22 @@ public class Minimap {
 
 
     /**
-     * Sets minimap's background and size to be compliant with
-     * some (X, Y) scale.
-     *
+     * Sets minimap's position and size to be compliant with its
+     * current state.
      */
-    private void setMinimapSizeAndPosition() {
-        // Set the background's size.
-        float mapLength = currentScale.x * minimapStage.getWidth();
-        float mapHeight = currentScale.y * minimapStage.getHeight();
-        minimapBackground.setSize(mapLength, mapHeight);
-
-        // Set the background's position.
-        float xOffset;
-        float yOffset;
-        if (currentScale.equals(expandedScale)) {
-            xOffset = (minimapStage.getWidth() - mapLength) / 2;
-            yOffset = (minimapStage.getHeight() - mapHeight) / 2;
-        } else {
-            xOffset = minimapStage.getWidth() - mapLength - 30;
-            yOffset = minimapStage.getHeight() - mapHeight - 30;
+    private void setMinimapSizeAndPosition(boolean smoothTransition) {
+        if(smoothTransition){
+            minimapBackground.setSize(currentSize.x, currentSize.y);
+            minimapBackground.setPosition(currentPosition.x, currentPosition.y);
         }
-        minimapBackground.setPosition(xOffset, yOffset);
+        else{
+            if(expanded) minimapBackground.setSize(expandedSize.x, expandedSize.y);
+            else minimapBackground.setSize(condensedSize.x, condensedSize.y);
+
+            // Set the background's position.
+            if(expanded) minimapBackground.setPosition(expandedPosition.x, expandedPosition.y);
+            else minimapBackground.setPosition(condensedPosition.x, condensedPosition.y);
+        }
     }
 
     /**
@@ -345,7 +363,6 @@ public class Minimap {
     }
 
 
-
     /**
      * Draws a Minimap Tile such that it represents a platform or
      * wall.
@@ -370,14 +387,12 @@ public class Minimap {
     private void expand() {
         expanded = true;
         currentScale.set(expandedScale);
-        setMinimapSizeAndPosition();
     }
 
     /**Sets the Minimap's size and position to meet condensed standards. */
     private void condense(){
         expanded = false;
         currentScale.set(condensedScale);
-        setMinimapSizeAndPosition();
     }
 
 
@@ -393,7 +408,48 @@ public class Minimap {
         if(!expanded && !holdingMapKey) condense();
 
         //Swapping
-        if(holdingMapKey && !expanded) expand();
-        if(!holdingMapKey && expanded) condense();
+        if(holdingMapKey && !expanded){
+            expand();
+        }
+        if(!holdingMapKey && expanded){
+            condense();
+        }
+
+        //Linear Interpolation Logic
+        if (expanded) {
+            currentSize.x = MathUtils.lerp(
+                    currentSize.x,
+                    expandedSize.x,
+                    TRANSITION_SPEED * dt);
+            currentSize.y = MathUtils.lerp(currentSize.y,
+                    expandedSize.y,
+                    TRANSITION_SPEED * dt);
+            currentPosition.x = MathUtils.lerp(
+                    currentPosition.x,
+                    expandedPosition.x,
+                    TRANSITION_SPEED * dt);
+            currentPosition.y = MathUtils.lerp(
+                    currentPosition.y,
+                    expandedPosition.y,
+                    TRANSITION_SPEED * dt);
+        } else {
+            currentSize.x = MathUtils.lerp(
+                    currentSize.x,
+                    condensedSize.x,
+                    TRANSITION_SPEED * dt);
+            currentSize.y = MathUtils.lerp(
+                    currentSize.y,
+                    condensedSize.y,
+                    TRANSITION_SPEED * dt);
+            currentPosition.x = MathUtils.lerp(
+                    currentPosition.x,
+                    condensedPosition.x,
+                    TRANSITION_SPEED * dt);
+            currentPosition.y = MathUtils.lerp(
+                    currentPosition.y,
+                    condensedPosition.y,
+                    TRANSITION_SPEED * dt);
+        }
+        setMinimapSizeAndPosition(true);
     }
 }
