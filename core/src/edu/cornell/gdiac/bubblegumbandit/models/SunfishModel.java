@@ -2,6 +2,7 @@ package edu.cornell.gdiac.bubblegumbandit.models;
 
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -83,15 +84,6 @@ public class SunfishModel extends WheelObstacle {
         ship_offset = new Vector2(texture.getRegionWidth()/ 2, texture.getRegionHeight() / 2);
         exhaust_offset = new Vector2(0, ship_offset.y * 1.5f);
 
-    }
-
-
-    /**
-     * Sets movement of the ship.
-     */
-    public void setMovement(float x, float y){
-        Vector2 vec = new Vector2(x, y);
-        setMovement(vec);
     }
 
 
