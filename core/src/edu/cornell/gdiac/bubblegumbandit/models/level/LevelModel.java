@@ -301,17 +301,22 @@ public class LevelModel {
                     supports = layer;
                     break;
                 default:
-                    throw new RuntimeException("Invalid layer name");
+                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");
             }
             layer = layer.next();
         }
 
         if (boardGravityDownLayer == null || boardGravityUpLayer == null || tileLayer == null || objects == null) {
-            throw new RuntimeException("Missing layer data");
+            throw new RuntimeException("Missing layer data. Should have: BoardGravityDown, BoardGravityUp, Terrain, and Objects.");
         }
 
         int[] worldData = tileLayer.get("data").asIntArray();
         float gravity = 0;
+
+        if (levelFormat.get("properties") == null) {
+            throw new RuntimeException("Set the level properties [gravity] and [timer] in "
+                    + "Map -> Map Properties.");
+        }
 
         JsonValue property = levelFormat.get("properties").child();
         while (property != null) {
@@ -535,7 +540,6 @@ public class LevelModel {
                     alarmPos.add(new Vector2(x, y));
                     break;
                 default:
-                    enemyConstants = null;
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
             object = object.next();
