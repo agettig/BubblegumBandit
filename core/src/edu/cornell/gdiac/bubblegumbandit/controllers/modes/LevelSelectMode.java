@@ -240,10 +240,27 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void update(float dt) {
         world.step(dt, 8, 3);
 
-        sunfish.update(dt);
+        Vector2 mousePos = canvas.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+
         for (LevelIconModel level : levels){
+
+            if (level.getState() != 2) {
+                if (level.onIcon(mousePos.x, mousePos.y)) {
+                    level.setPressState(1);
+                } else {
+                    level.setPressState(0);
+                }
+            }
+
             level.update();
         }
+
+        sunfish.setMovement(mousePos);
+        sunfish.update(dt);
+
+//        for (LevelIconModel level : levels){
+//            level.update();
+//        }
 
 
         //move camera, while keeping view in bounds
@@ -399,7 +416,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
             for (LevelIconModel level : levels){
 
-                if (level.onIcon(target.x, target.y)){
+                if (level.onIcon(target.x, target.y) && level.getState() == 2){
                     ready = true;
                     selectedLevel = level.getLevel();
                 }
@@ -421,21 +438,23 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public boolean mouseMoved(int screenX, int screenY) {
 
-        if (active) {
-            Vector2 target = canvas.unproject(new Vector2(screenX, screenY));
-
-            for (LevelIconModel level : levels){
-
-                if (level.onIcon(target.x, target.y)){
-                    level.setPressState(1);
-                }
-                else{
-                    level.setPressState(0);
-                }
-            }
-            sunfish.setMovement(target);
-
-        }
+//        if (active) {
+//            Vector2 screenCords = new Vector2(screenX, screenY);
+//            Vector2 target = canvas.unproject(screenCords);
+//
+//            for (LevelIconModel level : levels){
+//
+//                if (level.onIcon(target.x, target.y)){
+//                    level.setPressState(1);
+//                }
+//                else{
+//                    level.setPressState(0);
+//                }
+//            }
+//
+//            sunfish.setMovement(target);
+//
+//        }
         return true;
     }
 
@@ -501,7 +520,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean keyUp(int keycode) {
         return true;
     }
-
 
 
     /**

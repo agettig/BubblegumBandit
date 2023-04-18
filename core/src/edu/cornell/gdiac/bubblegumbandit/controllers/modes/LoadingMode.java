@@ -782,8 +782,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-
-        System.out.println(pixelX + ", " + pixelY);
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
