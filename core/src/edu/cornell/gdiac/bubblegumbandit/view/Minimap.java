@@ -130,10 +130,10 @@ public class Minimap {
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
             if (tileVal != 0) {
-                float x = (i % width) + 1f;
-                expandedTilesLong = Math.max(expandedTilesLong, (int)x);
+                float x = i % width;
+                expandedTilesLong = Math.max(expandedTilesLong, (int)x + 1);
                 float y = height - (i / width) - 1f;
-                expandedTilesTall = Math.max(expandedTilesTall, (int)y);
+                expandedTilesTall = Math.max(expandedTilesTall, (int)y + 1);
                 Vector2 floorPos = new Vector2(x, y);
                 floorPositions.add(floorPos);
                 expandedFloors.add(floorPos);
