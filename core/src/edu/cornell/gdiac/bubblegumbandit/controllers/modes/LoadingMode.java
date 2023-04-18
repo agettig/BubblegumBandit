@@ -400,8 +400,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         assets.loadAssets();
 
         int levelCount = 2; //grab from where?
-        if(!SaveData.saveExists()) SaveData.makeData(levelCount, false);
-
+        if(!SaveData.saveExists()) SaveData.makeData(levelCount, false); //is this a VM thing?
         active = true;
 
 
