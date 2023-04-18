@@ -12,6 +12,8 @@
         "ship1" : "textures/level_select/level1.png",
         "ship2" : "textures/level_select/level2.png",
         "fire" : "textures/level_select/fire.png",
+        "boost" : "textures/level_select/boost.png",
+
 
         "terrain": {
             "file": "textures/environment/tileset.png"
