@@ -4,9 +4,9 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class SoundController {
+
     /**
      * The jump sound.  We only want to play once.
      */
@@ -40,9 +40,31 @@ public class SoundController {
     /**Hashmap holding sounds and corresponding string */
     private static HashMap<String, SoundEffect> sounds ;
 
+    private static SoundController controller;
+
+    private float musicVolume;
+
+    private float soundEffectsVolume;
+
+
     public SoundController() {}
 
-    public static void initialize(AssetDirectory directory) {
+
+    /**
+     * Return the singleton instance of the input controller
+     *
+     * @return the singleton instance of the input controller
+     */
+    public static SoundController getInstance() {
+        if (controller == null) {
+            controller = new SoundController();
+        }
+        return controller;
+    }
+
+    public void initialize(AssetDirectory directory){
+        musicVolume = .5f;
+        soundEffectsVolume = 1f;
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
         gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);
@@ -68,7 +90,8 @@ public class SoundController {
 
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
-        return playSound(s, soundIds.get(s), volume);
+        int soundId = soundIds.get(s);
+        return playSound(s,soundId, volume * getInstance().soundEffectsVolume);
     }
 
     /**
@@ -122,6 +145,14 @@ public class SoundController {
                 key.stop(soundIds.get(key));
             }
         }
+    }
+
+    public void setMusicVolume(float volume){
+        musicVolume = volume;
+    }
+
+    public void setEffectsVolume(float volume){
+        soundEffectsVolume = volume;
     }
 
 }

@@ -160,6 +160,10 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
+       },
+        "codygoonRegular": {
+            "file": "fonts/CodygoonRegular.ttf",
+            "size": 36
         }
     },
 	"soundfx": {
