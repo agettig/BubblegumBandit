@@ -59,6 +59,10 @@ public class Minimap {
     /**(X, Y) scale of the Minimap when it is in its larger form. */
     private Vector2 expandedScale;
 
+    /**Current (X, Y) scale of the Minimap, somewhere in-between the
+     * condensed and expanded scales. */
+    private Vector2 currentScale;
+
     /** The positions of the tiles */
     private HashSet<Vector2> floorPositions;
 
@@ -73,6 +77,9 @@ public class Minimap {
 
     /** How far we are moving between minimap states. */
     private float lerpProgress = 0f;
+
+    /** How long it takes to transition between Minimap states. */
+    private final float LERP_TIME = .25f;
 
     /** true if we're toggling and moving between states. */
     private boolean toggling = false;
@@ -165,7 +172,7 @@ public class Minimap {
     private void setScales(){
         condensedScale = new Vector2(.22f, .25f);
         expandedScale = new Vector2(condensedScale.x * 3.5f, condensedScale.y * 3.5f);
-
+        currentScale = new Vector2();
     }
 
 
@@ -273,18 +280,17 @@ public class Minimap {
      * Sets minimap's background and size to be compliant with
      * some (X, Y) scale.
      *
-     * @param scale The scale to apply to the minimap.
      */
-    private void setMinimapSizeAndPosition(Vector2 scale) {
+    private void setMinimapSizeAndPosition() {
         // Set the background's size.
-        float mapLength = scale.x * minimapStage.getWidth();
-        float mapHeight = scale.y * minimapStage.getHeight();
+        float mapLength = currentScale.x * minimapStage.getWidth();
+        float mapHeight = currentScale.y * minimapStage.getHeight();
         minimapBackground.setSize(mapLength, mapHeight);
 
         // Set the background's position.
         float xOffset;
         float yOffset;
-        if (scale.equals(expandedScale)) {
+        if (currentScale.equals(expandedScale)) {
             xOffset = (minimapStage.getWidth() - mapLength) / 2;
             yOffset = (minimapStage.getHeight() - mapHeight) / 2;
         } else {
@@ -338,6 +344,8 @@ public class Minimap {
         tileImage.setSize(tileSize + 1, tileSize + 1);
     }
 
+
+
     /**
      * Draws a Minimap Tile such that it represents a platform or
      * wall.
@@ -360,25 +368,32 @@ public class Minimap {
 
     /**Sets the Minimap's size and position to meet expanded standards. */
     private void expand() {
-        setMinimapSizeAndPosition(expandedScale);
+        expanded = true;
+        currentScale.set(expandedScale);
+        setMinimapSizeAndPosition();
     }
 
     /**Sets the Minimap's size and position to meet condensed standards. */
     private void condense(){
-        setMinimapSizeAndPosition(condensedScale);
+        expanded = false;
+        currentScale.set(condensedScale);
+        setMinimapSizeAndPosition();
     }
 
-    /**Expands the minimap if it is condensed. Condenses the minimap
-     * if it is expanded.*/
-    public void toggleMinimap() {
-        expanded = !expanded;
-        toggling = true;
-    }
 
     /** Updates the minimap with a time value to help it with transitions
-     * between the condensed and expanded state. */
-    public void updateMinimap(float dt) {
-        if (expanded)expand();
-        else condense();
+     * between the condensed and expanded state.
+     *
+     * @param dt The Delta Time value
+     * @param holdingMapKey true if the player is holding down the key
+     *                      to expand the Minimap
+     * */
+    public void updateMinimap(float dt, boolean holdingMapKey) {
+        //Start of game
+        if(!expanded && !holdingMapKey) condense();
+
+        //Swapping
+        if(holdingMapKey && !expanded) expand();
+        if(!holdingMapKey && expanded) condense();
     }
 }
