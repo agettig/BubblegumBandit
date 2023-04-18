@@ -14,37 +14,27 @@ import org.w3c.dom.Text;
 /** Class to represent the moving ship on the level select screen */
 public class SunfishModel extends WheelObstacle {
 
+    // textures
+
     /** texture of the sunfish */
     private TextureRegion texture;
 
     /** texture of the fire */
     private TextureRegion fire_texture;
 
-
     /** texture of boosted fire */
     private TextureRegion boost_texture;
+
+    // constants
 
     /** Rotate image for front of ship to point */
     private static final float ANGLE_OFFSET =(float) (90 * (Math.PI / 180));
 
-    /** current movement of the ship*/
-    private Vector2 movement;
-
-    /** Cache for internal force calculations */
-    private Vector2 forceCache;
-
     /** radius of the physics body */
     private static final float RADIUS = 1f;
 
-    /** last location of the cursor */
-    private Vector2 lastPos;
-
     /** The ship's speed */
     private static final float SPEED = 10f;
-
-
-    /** desired angle of rotation */
-    private float angle;
 
     /** the rate at which to update angle */
     private static final float ANGLE_RATE = 0.1f;
@@ -59,15 +49,19 @@ public class SunfishModel extends WheelObstacle {
      */
     private static final float THRUST = 20f;
 
+    // attributes
 
-    /** an array of fire coming out of the sunfish */
-    private Array<Fire> exhaust;
+    /** current movement of the ship*/
+    private Vector2 movement;
 
-    /** How long between shots */
-    private static final int COOLDOWN_TIME  = 8;
+    /** Cache for internal force calculations */
+    private Vector2 forceCache;
 
-    /** How long before ship can fire again */
-    private int cooldown;
+    /** last location of the cursor */
+    private Vector2 lastPos;
+
+    /** desired angle of rotation */
+    private float angle;
 
     /** offset of texture position where ship should be drawn */
     private static Vector2 ship_offset;
@@ -75,9 +69,21 @@ public class SunfishModel extends WheelObstacle {
     /** offset of ship position where exhaust should be drawn */
     private static Vector2 exhaust_offset;
 
-
     /** flag for whether the sunfish is in hyperspeed */
     private boolean boosting;
+
+    // attributes relating to exhaust
+
+    /** an array of fire coming out of the sunfish */
+    private Array<Fire> exhaust;
+
+    /** Distance between flames */
+    private static final int COOLDOWN_TIME  = 8;
+
+    /** How long we can draw flame again */
+    private int cooldown;
+
+    // endRegion
 
     public SunfishModel (TextureRegion texture, TextureRegion fire_texture, TextureRegion boost_texture, float x, float y){
         super(x, y, RADIUS);
@@ -186,9 +192,6 @@ public class SunfishModel extends WheelObstacle {
             fire.draw(canvas);
         }
 
-//        float x_offset = (texture.getRegionWidth() / 2);
-//        float y_offset = (texture.getRegionHeight() / 2);
-
         canvas.draw(texture, Color.WHITE, origin.x + ship_offset.x, origin.y + ship_offset.y, getX(), getY(), getAngle() - ANGLE_OFFSET, 1, 1);
     }
 
@@ -200,6 +203,7 @@ public class SunfishModel extends WheelObstacle {
 
         /** X-coordinate of fire position */
         public float x;
+
         /** Y-coordinate of fire position */
         public float y;
 
@@ -230,11 +234,6 @@ public class SunfishModel extends WheelObstacle {
         public void update(float dt) {
             age++;
             scale = 1 - age/MAX_AGE;
-
-//            // hyper speed flames are larger
-//            if (boosted){
-//                scale *= 2;
-//            }
         }
 
         /** Returns true if this fire object should still be drawn */

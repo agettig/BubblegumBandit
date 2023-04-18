@@ -44,7 +44,9 @@ import javax.xml.parsers.SAXParser;
  * loading screen.
  */
 public class LevelSelectMode implements Screen, InputProcessor, ControllerListener {
-    // There are TWO asset managers.  One to load the loading screen.  The other to load the assets
+
+    // technical attributes
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -60,51 +62,39 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     private JsonValue constantsJson;
 
-    /** Background Space texture */
-    private TextureRegion background;
-
-    /** The bandit's ship, The Sunfish, that follows the players cursor */
-    private SunfishModel sunfish;
-
-    /** array of all level icons */
-    private Array<LevelIconModel> levels;
-
-
-    /**
-     * The Box2D world
-     */
-    protected World world;
-
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 800;
     /** Standard window height (for scaling) */
     private static int STANDARD_HEIGHT = 700;
-    /** Ratio of the bar width to the screen */
-    private static float BAR_WIDTH_RATIO  = 0.66f;
-    /** Ration of the bar height to the screen */
-    private static float BAR_HEIGHT_RATIO = 0.25f;
+    /** Scaling factor for when the student changes the resolution. */
+    private float scale;
 
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    /** The width of the progress bar */
-    private int width;
-    /** The y-coordinate of the center of the progress bar */
-    private int centerY;
-    /** The x-coordinate of the center of the progress bar */
-    private int centerX;
-    /** The height of the canvas window (necessary since sprite origin != screen origin) */
-    private int heightY;
-    /** Scaling factor for when the student changes the resolution. */
-    private float scale;
+    // level select specific attributes
 
+    /**
+     * The Box2D world
+     */
+    protected World world;
+
+    /** Background Space texture */
+    private TextureRegion background;
+
+    /** The bandit's ship, The Sunfish, that follows the players cursor */
+    private SunfishModel sunfish;
+
+    // level icon attributes
+
+    /** array of all level icons */
+    private Array<LevelIconModel> levels;
 
     /** Whether this player mode is still active */
     private boolean active;
-
 
     /** whether the player has chosen a level to play */
     private boolean ready;
@@ -112,13 +102,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** the level chosen by the player */
     private int selectedLevel;
 
-
     /** the gap between level icons */
     private final static float LEVEL_GAP = 500;
 
     /** the gap between level icons and the bounds of space */
     private final static float SPACE_GAP = 800;
-
 
     //space boundaries
     /** the width of the sunfish movement bounds */
@@ -227,6 +215,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         canvas = null;
         sunfish = null;
         world = null;
+        levels = null;
     }
 
     /**
@@ -349,11 +338,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         float sx = ((float)width)/STANDARD_WIDTH;
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
-
-        this.width = (int)(BAR_WIDTH_RATIO*width);
-        centerY = (int)(BAR_HEIGHT_RATIO*height);
-        centerX = width/2;
-        heightY = height;
     }
 
     /**
@@ -438,24 +422,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean mouseMoved(int screenX, int screenY) {
-
-//        if (active) {
-//            Vector2 screenCords = new Vector2(screenX, screenY);
-//            Vector2 target = canvas.unproject(screenCords);
-//
-//            for (LevelIconModel level : levels){
-//
-//                if (level.onIcon(target.x, target.y)){
-//                    level.setPressState(1);
-//                }
-//                else{
-//                    level.setPressState(0);
-//                }
-//            }
-//
-//            sunfish.setMovement(target);
-//
-//        }
         return true;
     }
 
