@@ -36,26 +36,6 @@ public class SettingsMode implements Screen{
      */
     private TextureRegionDrawable background;
 
-    /**
-     * Label for controls
-     */
-    private Texture controlsLabel;
-
-    /**
-     * Label for music controls
-     */
-    private Texture musicLabel;
-
-    /**
-     * Label for sound effects
-     */
-    private Texture soundEffectsLabel;
-
-    /**
-     * Label for display mode
-     */
-    private Texture displayModeLabel;
-
     private TextButton backButton;
 
     private boolean backButtonClicked;
