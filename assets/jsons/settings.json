@@ -1,0 +1,8 @@
+{
+  "textures": {
+    "background": "textures/settings/settingsBackground.png",
+    "sliderTexture": "textures/settings/slider.png",
+    "knob": "textures/settings/bubbleUI.png",
+    "sliderBeforeKnob": "textures/settings/sliderwhite.png"
+  }
+}

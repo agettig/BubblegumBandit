@@ -148,8 +148,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
 
-        SoundController.initialize(directory);
-
         constantsJson = directory.getEntry("constants", JsonValue.class);
 
         Gdx.input.setInputProcessor( this );

@@ -374,7 +374,7 @@ public class GameController implements Screen {
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
 
-        SoundController.initialize(directory);
+
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -771,43 +771,6 @@ public class GameController implements Screen {
         this.listener = listener;
     }
 
- /**
-     * Method to ensure that a sound asset is only played once.
-     * <p>
-     * Every time you play a sound asset, it makes a new instance of that sound.
-     * If you play the sounds to close together, you will have overlapping copies.
-     * To prevent that, you must stop the sound before you play it again.  That
-     * is the purpose of this method.  It stops the current instance playing (if
-     * any) and then returns the id of the new instance for tracking.
-     *
-     * @param sound   The sound asset to play
-     * @param soundId The previously playing sound instance
-     * @return the new sound instance for this asset.
-     */
-    public static long playSound(SoundEffect sound, long soundId) {
-        return playSound(sound, soundId, 1.0f);
-    }
-
-    /**
-     * Method to ensure that a sound asset is only played once.
-     * <p>
-     * Every time you play a sound asset, it makes a new instance of that sound.
-     * If you play the sounds to close together, you will have overlapping copies.
-     * To prevent that, you must stop the sound before you play it again.  That
-     * is the purpose of this method.  It stops the current instance playing (if
-     * any) and then returns the id of the new instance for tracking.
-     *
-     * @param sound   The sound asset to play
-     * @param soundId The previously playing sound instance
-     * @param volume  The sound volume
-     * @return the new sound instance for this asset.
-     */
-    public static long playSound(SoundEffect sound, long soundId, float volume) {
-        if (soundId != -1 && sound.isPlaying(soundId)) {
-            sound.stop(soundId);
-        }
-        return sound.play(volume);
-    }
 
     public void setGravity(float gravity) {
         float g = gravity;

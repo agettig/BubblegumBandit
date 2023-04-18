@@ -10,16 +10,10 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import jdk.javadoc.internal.doclets.toolkit.taglets.UserTaglet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_TERRAIN;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_TERRAIN;
-
 
 public class Minimap {
 
@@ -142,7 +136,7 @@ public class Minimap {
     /** Updates the minimap with a time value to help it with transitions
      * between the condensed and expanded state. */
     public void updateMinimap(float dt) {
-        if (expanded)expand();
+        if (expanded) expand();
         else condense();
     }
 
