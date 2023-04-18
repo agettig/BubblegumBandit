@@ -22,6 +22,7 @@ public class SaveData {
     for(int i = 2; i<levelCount+1; i++) {
       prefs.putInteger(""+i, lockLevels? LOCKED : INCOMPLETE);
     }
+    prefs.flush();
   }
 
   private static int getLevelStatus(int level) {
