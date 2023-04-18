@@ -171,7 +171,7 @@
 	},
 	"jsons" : {
 
-		"level1" : "jsons/levels/alpha_presentation.json",
+		"level1" : "jsons/levels/alphaPresentation.json",
         "level2":"jsons/levels/alpha.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json"
