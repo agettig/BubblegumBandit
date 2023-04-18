@@ -181,8 +181,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         TextureRegion sunfish_texture = new TextureRegion (directory.getEntry("sunfish", Texture.class));
         TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
+        TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
 
-        sunfish = new SunfishModel(sunfish_texture, fire, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
+        sunfish = new SunfishModel(sunfish_texture, fire, boost, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
         sunfish.activatePhysics(world);
 
         background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
@@ -472,6 +473,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean buttonDown (Controller controller, int buttonCode) {
+
         return true;
     }
 
@@ -498,7 +500,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.SPACE){
+            sunfish.setBoosting(true);
+        }
         return true;
+
     }
 
     /**
@@ -518,6 +524,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.SPACE){
+            sunfish.setBoosting(false);
+        }
         return true;
     }
 

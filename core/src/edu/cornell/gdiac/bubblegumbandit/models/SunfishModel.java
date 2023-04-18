@@ -20,6 +20,10 @@ public class SunfishModel extends WheelObstacle {
     /** texture of the fire */
     private TextureRegion fire_texture;
 
+
+    /** texture of boosted fire */
+    private TextureRegion boost_texture;
+
     /** Rotate image for front of ship to point */
     private static final float ANGLE_OFFSET =(float) (90 * (Math.PI / 180));
 
@@ -71,10 +75,15 @@ public class SunfishModel extends WheelObstacle {
     /** offset of ship position where exhaust should be drawn */
     private static Vector2 exhaust_offset;
 
-    public SunfishModel (TextureRegion texture, TextureRegion fire_texture, float x, float y){
+
+    /** flag for whether the sunfish is in hyperspeed */
+    private boolean boosting;
+
+    public SunfishModel (TextureRegion texture, TextureRegion fire_texture, TextureRegion boost_texture, float x, float y){
         super(x, y, RADIUS);
         this.texture = texture;
         this.fire_texture = fire_texture;
+        this.boost_texture = boost_texture;
         movement = new Vector2(SPEED, SPEED);
         forceCache = new Vector2();
         lastPos = new Vector2();
@@ -83,6 +92,7 @@ public class SunfishModel extends WheelObstacle {
         cooldown = 0;
         ship_offset = new Vector2(texture.getRegionWidth()/ 2, texture.getRegionHeight() / 2);
         exhaust_offset = new Vector2(0, ship_offset.y * 1.5f);
+//        setMass(0.1f);
 
     }
 
@@ -108,26 +118,38 @@ public class SunfishModel extends WheelObstacle {
 //        System.out.println(movement);
     }
 
+    /** whether the ship has entered hyperspeed
+     *
+     * a boosting ship moves faster
+     *
+     * @param value
+     */
+    public void setBoosting (boolean value){
+        boosting = value;
+    }
+
+
     public void update(float dt){
 //        System.out.println(getVX());
-        setMovement(lastPos);
+
         float dst = getPosition().dst(lastPos);
 
-        //thrust distance
-        if (dst > 500){
-            forceCache.set(movement).scl(THRUST);
-            body.setTransform(body.getPosition().add(movement), 0);
-        }
-        //normal speed distance
-        else if (dst > 100){
-            forceCache.set(movement);
-            body.setTransform(body.getPosition().add(movement), 0);
-        }
         // damping distance
-        else{
+        if (dst < 100){
             forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
 
         }
+        //boosting distance
+        else if (boosting){
+            forceCache.set(movement).scl(THRUST);
+            body.setTransform(body.getPosition().add(movement.scl(1.8f)), 0);
+        }
+        //normal speed distance
+        else {
+            forceCache.set(movement);
+            body.setTransform(body.getPosition().add(movement), 0);
+        }
+
         body.applyForce(forceCache, getPosition(), true);
 //            body.applyLinearImpulse(movement, getPosition(), true);
         body.setTransform(body.getPosition(), angle);
@@ -187,6 +209,9 @@ public class SunfishModel extends WheelObstacle {
         /** Amount to scale the fire size */
         private float scale;
 
+        /** whether this flame is boosted */
+        private boolean boosted;
+
         /**
          * Creates a fire object by setting its position and velocity.
          *
@@ -199,11 +224,17 @@ public class SunfishModel extends WheelObstacle {
             this.x  = x;  this.y  = y;
             this.age = 0;
             this.scale = 1;
+            this.boosted = boosting;
         }
 
         public void update(float dt) {
             age++;
             scale = 1 - age/MAX_AGE;
+
+//            // hyper speed flames are larger
+//            if (boosted){
+//                scale *= 2;
+//            }
         }
 
         /** Returns true if this fire object should still be drawn */
@@ -212,7 +243,13 @@ public class SunfishModel extends WheelObstacle {
         }
 
         public void draw (GameCanvas canvas){
-            canvas.draw(fire_texture, Color.WHITE, origin.x, origin.y, x, y, 0, scale, scale);
+            if (boosted){
+                canvas.draw(boost_texture, Color.WHITE, origin.x + boost_texture.getRegionWidth() / 2f,
+                        origin.y + boost_texture.getRegionHeight() / 2f, x, y, 0, scale, scale);
+            }
+            else
+                canvas.draw(fire_texture, Color.WHITE, origin.x + fire_texture.getRegionWidth() / 2f,
+                        origin.y + fire_texture.getRegionHeight() / 2f, x, y, 0, scale, scale);
         }
 
     }
