@@ -95,6 +95,17 @@
                 }
             }
         },
+        "shielded_med_walk":  {
+            "file": "textures/medium_enemy/shielded_med_walk.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
+        },
         "med_roll":  {
             "file": "textures/medium_enemy/med_roll.png",
             "wrap": false,
