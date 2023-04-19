@@ -177,19 +177,19 @@
          "id":2,
          "name":"Objects",
          "objects":[
-           {
-             "gid":50,
-             "height":113,
-             "id":8,
-             "name":"",
-             "rotation":0,
-             "type":"bandit",
-             "visible":true,
-             "width":64,
-             "x":2304,
-             "y":2496
-           },
-           {
+                {
+                 "gid":50,
+                 "height":113,
+                 "id":8,
+                 "name":"",
+                 "rotation":0,
+                 "type":"bandit",
+                 "visible":true,
+                 "width":64,
+                 "x":2304,
+                 "y":2496
+                }, 
+                {
                  "gid":62,
                  "height":186,
                  "id":1,
@@ -260,7 +260,7 @@
                  "width":144,
                  "x":2048,
                  "y":2496
-                },
+                }, 
                 {
                  "gid":52,
                  "height":65,
@@ -1598,21 +1598,15 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"..\/..\/Tiled\/tilesets\/board\/board_ceiling.png",
-                 "imageheight":64,
-                 "imagewidth":64
+                 "image":"..\/..\/Tiled\/tilesets\/board\/board_ceiling.png"
                 }, 
                 {
                  "id":1,
-                 "image":"..\/..\/Tiled\/tilesets\/board\/board_climb.png",
-                 "imageheight":64,
-                 "imagewidth":64
+                 "image":"..\/..\/Tiled\/tilesets\/board\/board_climb.png"
                 }, 
                 {
                  "id":2,
-                 "image":"..\/..\/Tiled\/tilesets\/board\/board_floor.png",
-                 "imageheight":64,
-                 "imagewidth":64
+                 "image":"..\/..\/Tiled\/tilesets\/board\/board_floor.png"
                 }],
          "tilewidth":64
         }, 
@@ -1634,15 +1628,11 @@
                 {
                  "id":0,
                  "image":"..\/..\/Tiled\/tilesets\/map\/camera_v.png",
-                 "imageheight":64,
-                 "imagewidth":64,
                  "type":"camera_v"
                 }, 
                 {
                  "id":1,
                  "image":"..\/..\/Tiled\/tilesets\/map\/camera_h.png",
-                 "imageheight":64,
-                 "imagewidth":64,
                  "type":"camera_h"
                 }],
          "tilewidth":64
@@ -1650,7 +1640,7 @@
         {
          "columns":11,
          "firstgid":6,
-         "image":"..\/..\/Tiled\/tilesets\/terrain\/tileset.png",
+         "image":"..\/..\/textures\/environment\/tileset.png",
          "imageheight":256,
          "imagewidth":704,
          "margin":0,
@@ -1694,16 +1684,16 @@
                 {
                  "id":8,
                  "type":"terrain"
-                },
-           {
-             "id":9,
-             "type":"terrain"
-           },
-           {
-             "id":10,
-             "type":"terrain"
-           },
-           {
+                }, 
+                {
+                 "id":9,
+                 "type":"terrain"
+                }, 
+                {
+                 "id":10,
+                 "type":"terrain"
+                }, 
+                {
                  "id":11,
                  "type":"terrain"
                 }, 
@@ -1738,16 +1728,16 @@
                 {
                  "id":19,
                  "type":"terrain"
-                },
-           {
-             "id":20,
-             "type":"terrain"
-           },
-           {
-             "id":21,
-             "type":"terrain"
-           },
-           {
+                }, 
+                {
+                 "id":20,
+                 "type":"terrain"
+                }, 
+                {
+                 "id":21,
+                 "type":"terrain"
+                }, 
+                {
                  "id":22,
                  "type":"terrain"
                 }, 
@@ -1782,16 +1772,16 @@
                 {
                  "id":30,
                  "type":"terrain"
-                },
-           {
-             "id":31,
-             "type":"terrain"
-           },
-           {
-             "id":32,
-             "type":"terrain"
-           },
-           {
+                }, 
+                {
+                 "id":31,
+                 "type":"terrain"
+                }, 
+                {
+                 "id":32,
+                 "type":"terrain"
+                }, 
+                {
                  "id":33,
                  "type":"terrain"
                 }, 
@@ -1847,37 +1837,29 @@
                 {
                  "id":0,
                  "image":"..\/..\/Tiled\/tilesets\/map\/bandit.png",
-                 "imageheight":113,
-                 "imagewidth":64,
                  "type":"bandit"
                 }, 
                 {
                  "id":1,
                  "image":"..\/..\/Tiled\/tilesets\/map\/medium_enemy.png",
-                 "imageheight":129,
-                 "imagewidth":117,
                  "type":"mediumrobot"
                 }, 
                 {
                  "id":2,
                  "image":"..\/..\/Tiled\/tilesets\/map\/small_enemy.png",
-                 "imageheight":65,
-                 "imagewidth":43,
                  "type":"smallrobot"
                 }, 
                 {
                  "id":3,
                  "image":"..\/..\/Tiled\/tilesets\/map\/gum.png",
-                 "imageheight":25,
-                 "imagewidth":25,
                  "type":"floatinggum"
                 }, 
                 {
                  "height":64,
                  "id":4,
                  "image":"..\/..\/Tiled\/tilesets\/map\/texture_draft.png",
-                 "imageheight":267,
-                 "imagewidth":268,
+                 "imageheight":64,
+                 "imagewidth":64,
                  "type":"earth",
                  "width":64,
                  "x":0,
@@ -1886,50 +1868,36 @@
                 {
                  "id":5,
                  "image":"..\/..\/Tiled\/tilesets\/map\/shipdoor.png",
-                 "imageheight":176,
-                 "imagewidth":144,
                  "type":"exit"
                 }, 
                 {
                  "id":9,
                  "image":"..\/..\/Tiled\/tilesets\/map\/orb.png",
-                 "imageheight":40,
-                 "imagewidth":40,
                  "type":"orb"
                 }, 
                 {
                  "id":10,
                  "image":"..\/..\/Tiled\/tilesets\/map\/alarm.png",
-                 "imageheight":43,
-                 "imagewidth":44,
                  "type":"alarm"
                 }, 
                 {
                  "id":11,
                  "image":"..\/..\/Tiled\/tilesets\/map\/star.png",
-                 "imageheight":48,
-                 "imagewidth":48,
                  "type":"star"
                 }, 
                 {
                  "id":12,
                  "image":"..\/..\/Tiled\/tilesets\/map\/large_robot.png",
-                 "imageheight":186,
-                 "imagewidth":134,
                  "type":"large_robot"
                 }, 
                 {
                  "id":13,
                  "image":"..\/..\/Tiled\/tilesets\/map\/box.png",
-                 "imageheight":65,
-                 "imagewidth":65,
                  "type":"box"
                 }, 
                 {
                  "id":14,
                  "image":"..\/..\/Tiled\/tilesets\/map\/chair.png",
-                 "imageheight":90,
-                 "imagewidth":65,
                  "type":"chair"
                 }],
          "tilewidth":144
