@@ -19,6 +19,16 @@
       "fps": 6
     }
   },
+  "shielded_small_robot": {
+    "patrol": {
+      "strip": "shielded_small_robot_patrol.patrol",
+      "fps": 6
+    },
+    "unshielded_patrol": {
+      "strip": "small_robot_patrol.patrol",
+      "fps": 6
+    }
+  },
   "large_robot": {
     "patrol": {
       "strip": "large_walk.patrol",

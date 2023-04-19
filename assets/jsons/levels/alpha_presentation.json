@@ -429,7 +429,7 @@
                  "id":119,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"shieldedlargerobot",
                  "visible":true,
                  "width":134,
                  "x":3264,

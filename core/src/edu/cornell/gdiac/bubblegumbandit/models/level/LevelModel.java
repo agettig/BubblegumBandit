@@ -489,6 +489,18 @@ public class LevelModel {
                     enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                     enemyCount++;
                     break;
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
+                    break;
                 case "mediumrobot":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);

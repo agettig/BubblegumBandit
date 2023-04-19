@@ -620,9 +620,6 @@ public class GameController implements Screen {
                     if(!enemy.getFaceRight() && enemy.getX() > bandit.getX()) sameSide = true;
                     boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
                     if(canFire) {
-                        if (enemy instanceof Shield) {
-                            ((Shield) enemy).isShielded(false);
-                        }
                         laserController.fireLaser(controller);
                     }
                 }
