@@ -212,6 +212,33 @@
     "chasespeed": 3,
     "pursuespeed": 4
   },
+  "shieldedlargerobot": {
+    "type": "moving",
+    "size": [
+      1.5,
+      2.8
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 5.0,
+    "animations": "shielded_large_robot",
+    "texture": "large_robot",
+    "gumTexture": "large_gum",
+    "outline": "large_gum_outline",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 2,
+    "chasespeed": 3,
+    "pursuespeed": 4
+  },
   "exit": {
     "size": [
       2,

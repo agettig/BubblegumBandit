@@ -13,17 +13,17 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
-public class ShieldedRollingEnemyModel extends RollingEnemyModel implements Shield {
+public class ShieldedLaserEnemyModel extends LaserEnemyModel implements Shield {
 
     private boolean isShielded;
 
     /**
-     * Creates a ShieldedRollingEnemy.
+     * Creates a ShieldedLaserEnemy.
      *
      * @param world The Box2D world
      * @param id    the id of this Enemy
      */
-    public ShieldedRollingEnemyModel(World world, int id) {
+    public ShieldedLaserEnemyModel(World world, int id) {
         super(world, id);
         isShielded = true;
     }
@@ -36,12 +36,12 @@ public class ShieldedRollingEnemyModel extends RollingEnemyModel implements Shie
         isShielded = value;
     }
 
-    public void setShieldedTexture() {
-        animationController.setAnimation("patrol");
+    public void setUnshieldedTexture() {
+        animationController.setAnimation("unshielded_patrol");
     }
 
-    public void setUnshieldedTexture() {
-        animationController.setAnimation("roll");
+    public void setShieldedTexture() {
+        animationController.setAnimation("patrol");
     }
 
     /**
@@ -55,6 +55,6 @@ public class ShieldedRollingEnemyModel extends RollingEnemyModel implements Shie
     public void initialize(AssetDirectory directory, float x, float y,
                            JsonValue constantsJson) {
         super.initialize(directory, x, y, constantsJson);
-        setName("shieldedRollingEnemy");
+        setName("shieldedLaserEnemy");
     }
 }
