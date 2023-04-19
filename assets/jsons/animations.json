@@ -14,7 +14,7 @@
     },
     "knock": {
       "strip": "bandit_knock.knock",
-      "fps": 4
+      "fps": 6
     }
 
   },
