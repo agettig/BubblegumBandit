@@ -11,7 +11,12 @@
     "fall": {
       "strip": "bandit_fall.fall",
       "fps": 2
+    },
+    "knock": {
+      "strip": "bandit_knock.knock",
+      "fps": 4
     }
+
   },
   "small_robot": {
     "patrol": {

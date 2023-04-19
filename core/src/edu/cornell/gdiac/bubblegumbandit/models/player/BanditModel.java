@@ -196,7 +196,12 @@ public class BanditModel extends CapsuleObstacle {
 
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
+       if(knockback) {
+          // System.out.println("setting");
+           animationController.setAnimation("knock", false);
+       }
     }
+
 
     /**
      * Decreases the player's health
@@ -653,9 +658,12 @@ public class BanditModel extends CapsuleObstacle {
         cameraTarget.x = getX() * drawScale.x;
         cameraTarget.y = getY() * drawScale.y;
 
-        if (!isGrounded) animationController.setAnimation("fall");
-        else if (getMovement() == 0) animationController.setAnimation("idle");
-        else animationController.setAnimation("run");
+        if(!animationController.hasTemp()) {
+            if (!isGrounded) animationController.setAnimation("fall", true);
+            else if (getMovement() == 0) animationController.setAnimation("idle", true);
+            else animationController.setAnimation("run", true);
+        }
+     //   System.out.println(isKnockback);
 
         super.update(dt);
     }
