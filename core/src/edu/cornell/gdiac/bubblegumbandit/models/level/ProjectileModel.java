@@ -1,7 +1,9 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 
 /**
@@ -88,5 +90,12 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
      */
     public boolean isRemoved() {
         return !alive;
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        float angle = getLinearVelocity().angleRad();
+        canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,angle,1,1);
+
     }
 }

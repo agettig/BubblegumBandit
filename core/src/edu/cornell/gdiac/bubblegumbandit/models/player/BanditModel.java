@@ -321,6 +321,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param value whether the dude is on the ground.
      */
     public void setGrounded(boolean value) {
+       // if(!isGrounded&&value) make a poof!
         isGrounded = value;
         if (isGrounded) {
             hasFlipped = false;
