@@ -17,6 +17,9 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -40,6 +43,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.bubblegumbandit.view.ShipBackground;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -108,6 +112,9 @@ public class LevelModel {
      * The background of the level, cropped if necessary
      */
     private TextureRegion backgroundRegion;
+
+
+    private ShipBackground shipBackground;
 
     /**
      * The amount of time counted down after the orb is collected.
@@ -370,6 +377,7 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
+//        shipBackground = new ShipBackground(backgroundRegion);
 
         HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
@@ -783,22 +791,43 @@ public class LevelModel {
      * @param canvas the current canvas
      */
     private void drawBackground(GameCanvas canvas) {
-        for (int i = 0; i < levelWidth * scale.x; i += backgroundRegion.getRegionWidth()) {
-            for (int j = 0; j < levelHeight * scale.x; j += backgroundRegion.getRegionHeight()) {
-                if (j + backgroundRegion.getRegionHeight() > levelHeight * scale.x) {
-                    backgroundRegion.setRegionY((int) (backgroundText.getHeight()
-                            - (levelHeight * scale.x - j)));
-                }
-                if (i + backgroundRegion.getRegionWidth() > levelWidth * scale.x) {
-                    backgroundRegion.setRegionWidth((int) (levelWidth * scale.x - i));
-                }
-                canvas.draw(backgroundRegion, i, j);
-                backgroundRegion.setRegionX(0);
-                backgroundRegion.setRegionY(0);
-                backgroundRegion.setRegionHeight(backgroundText.getHeight());
-                backgroundRegion.setRegionWidth(backgroundText.getWidth());
-            }
-        }
+//        for (int i = 0; i < levelWidth * scale.x; i += backgroundRegion.getRegionWidth()) {
+//            for (int j = 0; j < levelHeight * scale.x; j += backgroundRegion.getRegionHeight()) {
+//                if (j + backgroundRegion.getRegionHeight() > levelHeight * scale.x) {
+//                    backgroundRegion.setRegionY((int) (backgroundText.getHeight()
+//                            - (levelHeight * scale.x - j)));
+//                }
+//                if (i + backgroundRegion.getRegionWidth() > levelWidth * scale.x) {
+//                    backgroundRegion.setRegionWidth((int) (levelWidth * scale.x - i));
+//                }
+//                canvas.draw(backgroundRegion, i, j);
+//                backgroundRegion.setRegionX(0);
+//                backgroundRegion.setRegionY(0);
+//                backgroundRegion.setRegionHeight(backgroundText.getHeight());
+//                backgroundRegion.setRegionWidth(backgroundText.getWidth());
+//            }
+//        }
+
+//        PolygonSprite poly;
+//        PolygonSpriteBatch polyBatch = new PolygonSpriteBatch(); // To assign at the beginning
+//        Texture textureSolid;
+//
+//        PolygonRegion polyReg = new PolygonRegion(backgroundRegion,
+//                new float[] {      // Four vertices
+//                        0, 0,            // Vertex 0         3--2
+//                        100, 0,          // Vertex 1         | /|
+//                        100, 100,        // Vertex 2         |/ |
+//                        0, 100           // Vertex 3         0--1
+//                }, new short[] {
+//                0, 1, 2,         // Two triangles using vertex indices.
+//                0, 2, 3          // Take care of the counter-clockwise direction.
+//        });
+//
+//        canvas.draw(polyReg, 0, 0);
+//        poly = new PolygonSprite(polyReg);
+//        poly.setOrigin(a, b);
+//        polyBatch = new PolygonSpriteBatch();
+
     }
 
     /**
