@@ -134,6 +134,17 @@
                 }
             }
         },
+        "shielded_large_walk":  {
+            "file": "textures/large_enemy/shielded_large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
 
 
 

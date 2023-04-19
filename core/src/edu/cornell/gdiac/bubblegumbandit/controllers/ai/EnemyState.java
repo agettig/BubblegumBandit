@@ -26,6 +26,11 @@ public enum EnemyState implements State<AIController> {
             if (aiController.getEnemyStateMachine().getTicks() > 120) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(true);
+            }
+
             // set next action to no action
             aiController.getEnemy().setNextAction(CONTROL_NO_ACTION);
         }
@@ -51,6 +56,11 @@ public enum EnemyState implements State<AIController> {
                 aiController.getEnemyStateMachine().changeState(CHASE);
             }
             setAction(aiController);
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(true);
+                ((Shield) aiController.getEnemy()).setShieldedTexture();
+            }
         }
 
         public void setAction(AIController aiController) {
@@ -124,7 +134,8 @@ public enum EnemyState implements State<AIController> {
             }
 
             if (aiController.getEnemy() instanceof Shield) {
-                ((Shield) aiController.getEnemy()).isShielded(false);
+                ((Shield) aiController.getEnemy()).isShielded(true);
+                ((Shield) aiController.getEnemy()).setShieldedTexture();
             }
 
             // update action
@@ -182,6 +193,7 @@ public enum EnemyState implements State<AIController> {
 
             if (aiController.getEnemy() instanceof Shield) {
                 ((Shield) aiController.getEnemy()).isShielded(false);
+                ((Shield) aiController.getEnemy()).setUnshieldedTexture();
             }
 
             // if can move find next move
