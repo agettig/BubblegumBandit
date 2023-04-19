@@ -49,11 +49,9 @@ public class PoofController {
     }
     for(Poof poof: trash) {
       poofs.removeValue(poof, false);
-      System.out.println("trashed");
     }
 
 
-    System.out.println(poofs.size);
     for(Poof poof: poofs) {
       poof.draw(canvas);
     }
