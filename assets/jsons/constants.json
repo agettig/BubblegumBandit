@@ -101,6 +101,34 @@
     "debugcolor": "magenta",
     "debugopacity": 200
   },
+  "shieldedmediumrobot": {
+    "type": "projectile",
+    "size": [
+      1.6,
+      1.6
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 12.0,
+    "animations" : "shielded_medium_robot",
+    "gumTexture": "med_gum",
+    "outline": "med_gum_outline",
+    "texture": "med_robot",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 3,
+    "chasespeed": 4,
+    "pursuespeed": 5,
+    "rollingattack": 8
+  },
   "mediumrobot": {
     "type": "projectile",
     "size": [
