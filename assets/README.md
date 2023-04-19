@@ -1,6 +1,6 @@
 # Using Tiled for this project
 
-### Important: In Tiled Preferences, check "Embed Tilesets" (this is a new change as of 3/28) and "Resolve object types and properties" under "Export Options". Otherwise, you will get errors.
+### Important: In Tiled Preferences, check "Resolve object types and properties" under "Export Options" and "Repeat last export on save" under Saving and Loading. Don't check "Embed tilesets". Otherwise, you will get errors.
 
 ## Making a new level
 To make a new level, you can either copy the existing one and use as a template or create a new map.
@@ -20,14 +20,14 @@ Add all other objects in the Objects layer. Each of them should be a Tile Object
 ## Exporting a level
 To add the level to the game, click Export as JSON and put the level in the jsons folder for the game, then add a new level json value in assets.json. If you aren't replacing an existing level, increase NUM_LEVELS in GameController.
 
-If you added a new object type, you will also have to export the tileset as a json and replace objects.json with it in the jsons folder.
+If you added a new object type, you will also have to update objects.json.
 
 Before exporting, make sure the following Map Properties are set in Custom Properties:
 - gravity (standard: -15)
 - timer (time to escape after getting orb in seconds) (default: 60)
 
 ## Adding new objects
-To add a new type of object, just go to the objects tileset (objects.tsx) and click "add tile". Add the image, then set the "class" field to the object's name in the asset directory. 
+To add a new type of object, just go to the objects tileset (objects.json) and click "add tile". Add the image, then set the "class" field to the object's name in the asset directory. 
 
 To get the new object working in the game, you will need to add to the parsing code in LevelModel.populate() to support a new object type. You can check the object's name, and if it matches, create a new object and initialize it.
 

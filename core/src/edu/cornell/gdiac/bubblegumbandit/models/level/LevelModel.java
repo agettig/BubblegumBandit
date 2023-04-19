@@ -374,9 +374,8 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
-        supportTiles = new Array<BackgroundTileModel>();
+        supportTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
 
