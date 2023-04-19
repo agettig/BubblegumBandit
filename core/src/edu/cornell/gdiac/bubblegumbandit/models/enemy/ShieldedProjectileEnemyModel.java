@@ -15,6 +15,9 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 public class ShieldedProjectileEnemyModel extends ProjectileEnemyModel implements Shield {
 
+    /**
+     * is true when the enemies shield is on
+     */
     private boolean isShielded;
 
     /**
