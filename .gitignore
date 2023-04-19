@@ -1,6 +1,8 @@
 ## Java
 .DS_Store
 
+*.tiled_session
+
 core/resources/
 desktop/out/
 out/
