@@ -444,10 +444,25 @@ public class CollisionController implements ContactListener {
     private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
-            levelModel.getBandit().hitPlayer(p.getDamage());
+            applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f);
         }
         p.destroy();
     }
+
+    private void applyKnockback(Obstacle other, BanditModel bandit,
+                                boolean yImpact, float damage, float impact) {
+        boolean left = (other.getX() < bandit.getX());
+        boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
+        bandit.hitPlayer(damage);
+        bandit.setKnockback(true);
+        if(yImpact) bandit.getBody().applyLinearImpulse(left ? impact : -impact,
+            knockbackUp ? impact : -impact, bandit.getX(), bandit.getY(), true);
+        else {
+            bandit.getBody().applyLinearImpulse(left ? impact : -impact,
+               0, bandit.getX(), bandit.getY(), true);
+        }
+    }
+
 
     /**
      * Checks if there was an rolling enemy collision in the Box2D world.
@@ -460,19 +475,11 @@ public class CollisionController implements ContactListener {
     private void checkRollingEnemyCollision(Obstacle bd1, Obstacle bd2) {
         BanditModel bandit = levelModel.getBandit();
 
-        // TODO: REFACTOR to more general knockback
+
         if (bd1.getName().equals("rollingrobot") && bd2.equals(bandit)) {
-            boolean leftRolling = (bd1.getX() < bd2.getX());
-            boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
-            bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            applyKnockback(bd1, bandit, true, ((RollingEnemyModel)bd1).getDamage(), 2f);
         } else if (bd2.getName().equals("rollingrobot") && bd1.equals(bandit)) {
-            boolean leftRolling = (bd1.getX() > bd2.getX());
-            boolean knockbackUp = levelModel.getWorld().getGravity().y > 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
-            bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftRolling ? 2f : -2f, knockbackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            applyKnockback(bd2, bandit,true, ((RollingEnemyModel)bd1).getDamage(), 2f);
         }
     }
 //

@@ -411,11 +411,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
                         y, getAngle(), 1, yScale);
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                        y, getAngle(), effect, yScale);
+                    y, getAngle(), effect, yScale);
             }
-//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-//            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-//            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//
         }
     }
     public void drawWithOutline(GameCanvas canvas) {
