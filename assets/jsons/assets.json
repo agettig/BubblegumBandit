@@ -66,6 +66,18 @@
                 }
             }
         },
+        "bandit_knock": {
+            "file": "textures/bandit/bandit_knockback.png",
+            "wrap": false,
+            "sprites": {
+                "knock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+
+        },
 
         "smallrobotoutline": "textures/small_enemy/small_enemyWhite.png",
         "bullet": "textures/small_enemy/bullet.png",
