@@ -362,11 +362,10 @@ public class LevelModel {
 
         scale.x = pSize[0];
         scale.y = pSize[1];
-        JsonValue tileset = levelFormat.get("tilesets").child();
-        while (!tileset.get("name").asString().equals("board")) {
-            tileset = tileset.next();
-        }
-        int boardIdOffset = tileset.getInt("firstgid");
+
+        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
+
+        int boardIdOffset = TiledParser.boardIdOffset;
 
         tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f / 8);
         tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f / 8);
@@ -376,7 +375,6 @@ public class LevelModel {
         backgroundRegion = new TextureRegion(backgroundText);
 
 
-        HashMap<Integer, TextureRegion> textures = TiledParser.createTileset(directory, levelFormat);
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
         supportTiles = new Array<BackgroundTileModel>();
         enemyControllers = new Array<>();
@@ -390,7 +388,7 @@ public class LevelModel {
                 float x = (i % levelWidth) + 0.5f;
                 float y = levelHeight - (i / levelWidth) - 0.5f;
                 if (textures.get(tileVal) == null)  {
-                    throw new RuntimeException("Tile " + tileVal + " doesn't have a texture");
+                    throw new RuntimeException("Tile " + (tileVal) + " doesn't have a texture");
                 }
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 tiles.put(new Vector2(x, y), newTile);

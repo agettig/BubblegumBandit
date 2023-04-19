@@ -170,10 +170,12 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-
 		"level1" : "jsons/levels/alphaPresentation.json",
         "level2":"jsons/levels/alpha.json",
         "constants": "jsons/constants.json",
-        "animations" : "jsons/animations.json"
+        "animations" : "jsons/animations.json",
+        "supports" : "tilesets/supports.json",
+        "terrain" : "tilesets/terrain.json",
+        "objects" : "tilesets/objects.json"
     }
 }

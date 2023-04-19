@@ -1,0 +1,235 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "jsons/levels/alphaPresentation.json",
+    "expandedProjectPaths": [
+        ".",
+        "rules",
+        "jsons/levels",
+        "jsons",
+        "tilesets"
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/NewLevel.json": {
+            "scale": 0.09315732758620689,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1975.153267784847,
+                "y": 2941.2608444187395
+            }
+        },
+        "jsons/levels/NewLevel.json#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/NewLevel.json#objects": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/NewLevel.json#terrain": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha.json": {
+            "scale": 0.06168402777777778,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2853.250773993808,
+                "y": 2350.6895581198987
+            }
+        },
+        "jsons/levels/alpha.json#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha.json#camera": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha.json#objects": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha.json#supports": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha.json#terrain": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentation.json": {
+            "scale": 0.1903,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 2390.961639516553,
+                "y": 1697.320021019443
+            }
+        },
+        "jsons/levels/alphaPresentation.json#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentation.json#camera": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "jsons/levels/alphaPresentation.json#objects": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentation.json#supports": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "jsons/levels/alphaPresentation.json#terrain": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentationTest.tmj": {
+            "scale": 0.1007,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2909.6325719960278,
+                "y": 2909.632571996028
+            }
+        },
+        "jsons/levels/alphaPresentationTest.tmj#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentationTest.tmj#camera": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentationTest.tmj#supports": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/objects.json": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/supports.json": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/terrain.json": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/test.json": {
+            "scale": 0.06168402777777778,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2885.6740782437373,
+                "y": 2383.1128623698282
+            }
+        },
+        "jsons/levels/test.json#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/test.json#camera": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/test.json#objects": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/test.json#terrain": {
+            "scaleInDock": 1
+        },
+        "rules/rules_1.tmx": {
+            "scale": 0.354,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 344.6327683615819,
+                "y": 669.4915254237288
+            }
+        },
+        "rules/rules_2.tmx": {
+            "scale": 0.18505208333333334,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 848.4097945398255,
+                "y": 1372.5865465803547
+            }
+        },
+        "tilesets/board.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/board.tmx": {
+            "scaleInDock": 1
+        },
+        "tilesets/board.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/camera.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/camera.tmx": {
+            "scaleInDock": 1
+        },
+        "tilesets/camera.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/objects.json": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/objects.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/supports.json": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/supports.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/terrain.json": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/terrain.json.tsj": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/terrain.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "/Users/bmneuwirth/BubblegumBandit/assets/jsons/levels",
+    "last.externalTilesetPath": "/Users/bmneuwirth/BubblegumBandit/assets/tilesets",
+    "last.imagePath": "/Users/bmneuwirth/BubblegumBandit/assets/tilesets/camera",
+    "lastUsedTilesetExportFilter": "JSON tileset files (*.tsj *.json)",
+    "map.lastUsedExportFilter": "All Files (*)",
+    "map.lastUsedFormat": "json",
+    "openFiles": [
+        "jsons/levels/alphaPresentation.json"
+    ],
+    "project": "Bandit.tiled-project",
+    "recentFiles": [
+        "jsons/levels/alphaPresentation.json",
+        "rules/rules_2.tmx",
+        "rules/rules_1.tmx",
+        "tilesets/terrain.json",
+        "tilesets/supports.json",
+        "tilesets/objects.json",
+        "tilesets/supports.tsx",
+        "tilesets/terrain.json.tsj",
+        "tilesets/camera.json",
+        "tilesets/board.json",
+        "tilesets/camera.tsx",
+        "jsons/levels/NewLevel.json"
+    ],
+    "tileset.lastUsedFormat": "json"
+}
