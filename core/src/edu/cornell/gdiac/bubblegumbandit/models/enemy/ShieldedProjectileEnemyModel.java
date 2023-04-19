@@ -36,6 +36,12 @@ public class ShieldedProjectileEnemyModel extends ProjectileEnemyModel implement
     }
 
     public void isShielded(boolean value) {
+        if (value == false) {
+            setUnshieldedTexture();
+        }
+        else {
+            setShieldedTexture();
+        }
         isShielded = value;
     }
 

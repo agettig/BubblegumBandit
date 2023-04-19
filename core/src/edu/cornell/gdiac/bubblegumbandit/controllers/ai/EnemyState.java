@@ -5,10 +5,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShieldedRollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel.*;
@@ -61,11 +58,9 @@ public enum EnemyState implements State<AIController> {
 
             if (aiController.getEnemy() instanceof Shield) {
                 ((Shield) aiController.getEnemy()).isShielded(true);
-                ((Shield) aiController.getEnemy()).setShieldedTexture();
                 if (aiController.getEnemy() instanceof LaserEnemyModel) {
                     if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
                         ((Shield) aiController.getEnemy()).isShielded(false);
-                        ((Shield) aiController.getEnemy()).setUnshieldedTexture();
                     }
                 }
             }
@@ -143,11 +138,9 @@ public enum EnemyState implements State<AIController> {
 
             if (aiController.getEnemy() instanceof Shield) {
                 ((Shield) aiController.getEnemy()).isShielded(true);
-                ((Shield) aiController.getEnemy()).setShieldedTexture();
                 if (aiController.getEnemy() instanceof LaserEnemyModel) {
                     if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
                         ((Shield) aiController.getEnemy()).isShielded(false);
-                        ((Shield) aiController.getEnemy()).setUnshieldedTexture();
                     }
                 }
             }
@@ -207,7 +200,6 @@ public enum EnemyState implements State<AIController> {
 
             if (aiController.getEnemy() instanceof Shield) {
                 ((Shield) aiController.getEnemy()).isShielded(false);
-                ((Shield) aiController.getEnemy()).setUnshieldedTexture();
             }
 
             // if can move find next move
@@ -351,7 +343,6 @@ public enum EnemyState implements State<AIController> {
 
             if (aiController.getEnemy() instanceof Shield) {
                 ((Shield) aiController.getEnemy()).isShielded(false);
-                ((Shield) aiController.getEnemy()).setUnshieldedTexture();
             }
 
             // determine if enemy can shoot

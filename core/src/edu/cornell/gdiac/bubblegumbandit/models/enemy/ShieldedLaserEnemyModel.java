@@ -36,6 +36,12 @@ public class ShieldedLaserEnemyModel extends LaserEnemyModel implements Shield {
     }
 
     public void isShielded(boolean value) {
+        if (value == false) {
+            setUnshieldedTexture();
+        }
+        else {
+            setShieldedTexture();
+        }
         isShielded = value;
     }
 
