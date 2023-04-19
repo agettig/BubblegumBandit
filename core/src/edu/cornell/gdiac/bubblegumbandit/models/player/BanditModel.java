@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.PoofController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -145,6 +146,9 @@ public class BanditModel extends CapsuleObstacle {
     private int numStars;
 
     private boolean isKnockback;
+
+    /** Reference to PoofController, which renders player particle effects */
+    private PoofController poofController;
 
 
     /**
@@ -321,7 +325,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param value whether the dude is on the ground.
      */
     public void setGrounded(boolean value) {
-       // if(!isGrounded&&value) make a poof!
+        if(!isGrounded&&value) poofController.makePoof(getX(),getY()-getHeight()/2*yScale, drawScale, yScale==-1);
         isGrounded = value;
         if (isGrounded) {
             hasFlipped = false;
@@ -479,6 +483,7 @@ public class BanditModel extends CapsuleObstacle {
         setPosition(x, y);
         cameraTarget.set(x * drawScale.x, y * drawScale.y);
         setDimension(size[0], size[1]);
+        poofController = new PoofController("poof", directory);
 
         animationController = new AnimationController(directory, "bandit");
 
@@ -685,6 +690,7 @@ public class BanditModel extends CapsuleObstacle {
 
 
         }
+        poofController.draw(canvas);
 
     }
 

@@ -78,6 +78,18 @@
             }
 
         },
+        "poof": {
+            "file": "textures/bandit/poof.png",
+            "wrap": false,
+            "sprites": {
+                "poof": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+
+        },
 
         "smallrobotoutline": "textures/small_enemy/small_enemyWhite.png",
         "bullet": "textures/small_enemy/bullet.png",

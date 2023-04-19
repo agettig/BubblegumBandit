@@ -47,9 +47,10 @@ public class AnimationController {
     timeSinceLastFrame += Gdx.graphics.getDeltaTime();
 
     if(finished) {
-      if (timeSinceLastFrame < 1f / tempFPS) {
+      if (timeSinceLastFrame > 1f / tempFPS) {
         finished = false;
         temp = null;
+        timeSinceLastFrame = 0;
       } else return temp;
     }
 
@@ -63,8 +64,9 @@ public class AnimationController {
     strip.setFrame(frame);
     timeSinceLastFrame = 0;
 
-    if(temp!=null) {
+    if(temp!=null&&temp.getFrame()==temp.getSize()-1) {
       finished = true; //discard after one loop
+
     }
 
     return strip;
@@ -73,6 +75,10 @@ public class AnimationController {
 
   public boolean hasTemp() {
     return temp != null;
+  }
+
+  public boolean hasAnimation() {
+    return temp!=null&&current!=null;
   }
 
   public String getCurrentAnimation() {
@@ -95,6 +101,15 @@ public class AnimationController {
     } else {
       System.err.println("Animation "+name+" does not exist in this context.");
     }
+  }
+
+  public void clearAnimations() {
+    this.current = null;
+    this.currentName = "No animation playing.";
+    this.FPS = -1;
+    this.temp = null;
+    this.tempFPS = -1;
+    this.tempName = "No animation playing.";
   }
 
 

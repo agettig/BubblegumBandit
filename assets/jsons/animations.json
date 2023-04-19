@@ -39,5 +39,13 @@
       "strip": "med_roll.attack",
       "fps": 8
     }
+  },
+  "poof": {
+    "poof": {
+      "strip": "poof.poof",
+      "fps": 16
+    }
   }
+
+
 }
