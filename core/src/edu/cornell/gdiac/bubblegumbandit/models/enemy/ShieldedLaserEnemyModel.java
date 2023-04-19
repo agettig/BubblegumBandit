@@ -15,6 +15,9 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 public class ShieldedLaserEnemyModel extends LaserEnemyModel implements Shield {
 
+    /**
+     * is true when the enemies shield is on
+     */
     private boolean isShielded;
 
     /**
@@ -45,7 +48,7 @@ public class ShieldedLaserEnemyModel extends LaserEnemyModel implements Shield {
     }
 
     /**
-     * Initializes this ShieldedRollingEnemyModel from JSON and sets its vision radius.
+     * Initializes this ShieldedLaserEnemyModel from JSON and sets its vision radius.
      *
      * @param directory     The BubblegumBandit asset directory
      * @param x             the x position to set this ProjectileEnemyModel
