@@ -192,6 +192,7 @@ public class GameController implements Screen {
     /** Reference to LaserController instance */
     private LaserController laserController;
 
+
     /**
      * Gum gravity scale when creating gum
      */
@@ -389,6 +390,7 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
+
     }
 
 
