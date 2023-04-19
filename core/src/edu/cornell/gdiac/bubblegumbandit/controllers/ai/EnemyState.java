@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShieldedRollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel.*;
@@ -333,6 +334,11 @@ public enum EnemyState implements State<AIController> {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
+            }
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(false);
+                ((Shield) aiController.getEnemy()).setUnshieldedTexture();
             }
 
             // determine if enemy can shoot

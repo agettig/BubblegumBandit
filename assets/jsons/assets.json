@@ -81,6 +81,17 @@
                 }
             }
         },
+        "shielded_small_robot_patrol":  {
+            "file": "textures/small_enemy/shielded_small_robot_patrol.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
 
         "med_outline": "textures/medium_enemy/med_white.png",
         "med_robot": "textures/medium_enemy/medium_enemy.png",
