@@ -396,7 +396,7 @@ public class PlayerController{
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
         nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
         prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
-        reloadPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_4);
+        reloadPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_4) && !primePressed && !Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A);
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
