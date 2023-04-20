@@ -154,6 +154,8 @@ public class BanditModel extends CapsuleObstacle {
     /** Reference to PoofController, which renders player particle effects */
     private PoofController poofController;
 
+    private TextureRegion deadText;
+
 
     /**
      * Returns the camera target for the player.
@@ -204,8 +206,7 @@ public class BanditModel extends CapsuleObstacle {
 
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
-       if(knockback) {
-          // System.out.println("setting");
+       if(knockback && health>0) {
            animationController.setAnimation("knock", false);
        }
     }
@@ -433,6 +434,12 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    /** Kills the bandit! Officially. Drains health and triggers death animation. */
+    public void kill() {
+        health = 0;
+        animationController.setAnimation("death", false);
+    }
+
     /**
      * Returns true if this character is facing right
      *
@@ -489,6 +496,7 @@ public class BanditModel extends CapsuleObstacle {
         setDimension(size[0], size[1]);
         poofController = new PoofController("poof", directory);
 
+
         animationController = new AnimationController(directory, "bandit");
 
         // Technically, we should do error checking here.
@@ -518,6 +526,10 @@ public class BanditModel extends CapsuleObstacle {
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
+
+        String deadKey = constantsJson.get("deadtexture").asString();
+        deadText = new TextureRegion(directory.getEntry(deadKey, Texture.class));
+
 
         // Get the sensor information
         Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
@@ -646,7 +658,7 @@ public class BanditModel extends CapsuleObstacle {
     public void update(float dt) {
         ticks++;
 
-        if (ticks % 10 == 0) {
+        if (ticks % 10 == 0 && health>0) {
             healPlayer((float)0.25);
         }
 
@@ -690,7 +702,7 @@ public class BanditModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
 
-            if(!animationController.hasTemp()) {
+            if(!animationController.hasTemp()&&health>0) {
                 if (!isGrounded) animationController.setAnimation("fall", true);
                 else if (getMovement() == 0) animationController.setAnimation("idle", true);
                 else {
@@ -704,9 +716,17 @@ public class BanditModel extends CapsuleObstacle {
             }
 
             float effect = faceRight ? 1.0f : -1.0f;
-            if(backpedal) effect *= -1f;
+            if(backpedal&&health>0) effect *= -1f;
 
-            canvas.drawWithShadow(animationController.getFrame(), Color.WHITE, origin.x, origin.y,
+            TextureRegion text = animationController.getFrame();
+            if(!animationController.hasTemp()&&health<=0) {
+                text = deadText;
+            }
+
+
+
+
+            canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
                     getY() * drawScale.y, getAngle(), effect, yScale);
 

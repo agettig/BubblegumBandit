@@ -90,6 +90,19 @@
             }
 
         },
+        "bandit_death": {
+            "file": "textures/bandit/bandit_death.png",
+            "wrap": false,
+            "sprites": {
+                "death": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
+        "bandit_dead" : "textures/bandit/bandit_dead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",

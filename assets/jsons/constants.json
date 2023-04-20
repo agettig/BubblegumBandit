@@ -26,7 +26,8 @@
     "bottomsensorname": "dudeGroundSensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
-    "topsensorname": "dudeTopSensor"
+    "topsensorname": "dudeTopSensor",
+    "deadtexture" : "bandit_dead"
   },
   "walls": {
     "bodytype": "static",

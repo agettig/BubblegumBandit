@@ -19,6 +19,10 @@
     "back": {
       "strip": "bandit_backpedal.back",
       "fps": 6
+    },
+    "death": {
+      "strip": "bandit_death.death",
+      "fps": 6
     }
 
   },

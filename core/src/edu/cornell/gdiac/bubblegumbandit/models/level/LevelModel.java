@@ -678,8 +678,7 @@ public class LevelModel {
 
 
 
-
-        aim.drawProjectileRay(canvas);
+        if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
 
 
 
