@@ -36,7 +36,7 @@ public class ShipBackground {
     private TextureRegion space_bg;
 
     /** The positions of the tiles */
-    private ArrayList<Vector2> floorPositions;
+    private ArrayList<Vector2> cornerPositions;
 
     /** the smallest x coordinate to offset all other x values with */
     private float x_offset;
@@ -76,7 +76,7 @@ public class ShipBackground {
         y_offset = height;
 
         //Find all positions of floors/platforms.
-        floorPositions = new ArrayList<>();
+        cornerPositions = new ArrayList<>();
         JsonValue layer = levelFormat.get("layers").child();
         JsonValue tileLayer = null;
         while (layer != null) {
@@ -97,37 +97,31 @@ public class ShipBackground {
 
                 float x = (i % width) + 1f;
                 float y = height - (i / width) - 1f;
-                floorPositions.add(new Vector2(x, y));
+                cornerPositions.add(new Vector2(x, y));
 
                 if (x < x_offset) x_offset = x;
                 if (y < y_offset) y_offset = y;
 
             }
         }
-
-
-        vertices = new float[(floorPositions.size()) * 2];
-        for (int i = 0; i < vertices.length; i+=2){
-            vertices[i] = (floorPositions.get(i/2).x - x_offset) * 64;
-            vertices[i + 1] = (floorPositions.get(i/2).y - y_offset) * 64;
-            System.out.println(vertices[i] + ", " + vertices[i + 1] );
-        }
-
         createPolygons();
     }
 
     public void createPolygons(){
-        //        new float[] {      // Four vertices
-//                0, 0,            // Vertex 0         3--2
-//                1000, 0,          // Vertex 1         | /|
-//                1000, 1000,        // Vertex 2         |/ |
-//                0, 1000           // Vertex 3         0--1
 
-//        new short[] {
+//        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
+//                new float[] {      // Four vertices
+//                        0, 0,            // Vertex 0         3--2
+//                        100, 0,          // Vertex 1         | /|
+//                        100, 100,        // Vertex 2         |/ |
+//                        0, 100           // Vertex 3         0--1
+//                }, new short[] {
 //                0, 1, 2,         // Two triangles using vertex indices.
 //                0, 2, 3          // Take care of the counter-clockwise direction.
 //        });
 
+
+        //space polygon is just a large rectangle
         spaceReg = new PolygonRegion(space_bg,
                 new float[] {      // Four vertices
                         0, 0,            // Vertex 0         3--2
@@ -139,15 +133,37 @@ public class ShipBackground {
                 0, 2, 3          // Take care of the counter-clockwise direction.
         });
 
+        //create ship polygon
+
+        // change corner positions into a list of vertices compatible with PolygonRegion
+        vertices = new float[(cornerPositions.size()) * 2];
+        for (int i = 0; i < vertices.length; i+=2){
+            vertices[i] = (cornerPositions.get(i/2).x - x_offset) * 64;
+            vertices[i + 1] = (cornerPositions.get(i/2).y - y_offset) * 64;
+            System.out.println(vertices[i] + ", " + vertices[i + 1] );
+        }
+
+        // index of cornerPositions that represents the origin
+        int origin = 6;
+        int lastvert = cornerPositions.size()-1;
+
+        //create list of triangles that make up the polygon
+        short[] triangles = new short[(cornerPositions.size()) * 3];
+        for (int i = 0; i < cornerPositions.size(); i++){
+            triangles[i] = (short) origin;
+            triangles[i + 1] = lastvert != origin ? (short) lastvert : (short) (lastvert - 1);
+            triangles [i + 2] = lastvert != origin ? (short) (lastvert - 1) : (short) (lastvert - 2);
+        }
+
         shipReg = new PolygonRegion(ship_bg,
                 vertices,
                 new short[]{
                         6, 7, 5,         // Two triangles using vertex indices.
                         6, 5, 4,          // Take care of the counter-clockwise direction.
                         6, 4, 1,
-                        6, 1, 0,
-                        6, 1, 3,
-                        6, 2, 3
+                        6, 3, 2,
+                        6, 2, 1,
+                        6, 1, 0
                 });
     }
 
