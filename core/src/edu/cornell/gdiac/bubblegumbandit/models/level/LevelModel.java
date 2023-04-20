@@ -558,6 +558,16 @@ public class LevelModel {
         alarms = new AlarmController(alarmPos, directory, world);
     }
 
+    /**
+     * Spawns all EnemyModels that should drop in after the Bandit picks
+     * up the orb.
+     *
+     * @param enemyData JSON file containing data of Enemies to spawn
+     * */
+    public void spawnPostOrbEnemies(JsonValue enemyData){
+
+    }
+
     public void dispose() {
         for (Obstacle obj : objects) {
             obj.deactivatePhysics(world);
