@@ -537,6 +537,7 @@ public class GameController implements Screen {
             bandit.applyForce();
         } else {
             bandit.setVX(0f);
+            if(bandit.isGrounded())bandit.setVY(0);
         }
 
 
