@@ -524,6 +524,64 @@
                  "width":44,
                  "x":1600,
                  "y":1536
+                }, 
+                {
+                 "height":319.291139240506,
+                 "id":179,
+                 "properties":[
+                        {
+                         "name":"pinkx1",
+                         "type":"int",
+                         "value":31
+                        }, 
+                        {
+                         "name":"pinkx2",
+                         "type":"int",
+                         "value":51
+                        }, 
+                        {
+                         "name":"pinky1",
+                         "type":"int",
+                         "value":11
+                        }, 
+                        {
+                         "name":"pinky2",
+                         "type":"int",
+                         "value":26
+                        }],
+                 "template":"..\/..\/tilesets\/camera\/camera_h.tx",
+                 "width":15,
+                 "x":2019.1617440225,
+                 "y":1660.48382559775
+                }, 
+                {
+                 "height":326.323488045007,
+                 "id":181,
+                 "properties":[
+                        {
+                         "name":"greenx1",
+                         "type":"int",
+                         "value":31
+                        }, 
+                        {
+                         "name":"greenx2",
+                         "type":"int",
+                         "value":51
+                        }, 
+                        {
+                         "name":"greeny1",
+                         "type":"int",
+                         "value":11
+                        }, 
+                        {
+                         "name":"greeny2",
+                         "type":"int",
+                         "value":26
+                        }],
+                 "template":"..\/..\/tilesets\/camera\/camera_h.tx",
+                 "width":15,
+                 "x":3280.59071729958,
+                 "y":1663.15049226442
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -702,7 +760,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":179,
+ "nextobjectid":185,
  "orientation":"orthogonal",
  "properties":[
         {
