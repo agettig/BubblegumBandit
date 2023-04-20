@@ -131,6 +131,10 @@ public class BanditModel extends CapsuleObstacle {
 	/** The y scale for this player (used for flip effect) */
 	private float yScale;
 
+    /** used to decide between backpedal/run */
+    private boolean backpedal;
+
+
     /**
      * Camera target for player
      */
@@ -591,6 +595,14 @@ public class BanditModel extends CapsuleObstacle {
         return true;
     }
 
+    public void setFacingDirection(float cursorX) {
+        if(!faceRight) {
+            backpedal = (cursorX>getX());
+        } else {
+            backpedal = (cursorX<getX());
+        }
+    }
+
 
     /**
      * Applies the force to the body of this dude
@@ -664,11 +676,6 @@ public class BanditModel extends CapsuleObstacle {
         cameraTarget.x = getX() * drawScale.x;
         cameraTarget.y = getY() * drawScale.y;
 
-        if(!animationController.hasTemp()) {
-            if (!isGrounded) animationController.setAnimation("fall", true);
-            else if (getMovement() == 0) animationController.setAnimation("idle", true);
-            else animationController.setAnimation("run", true);
-        }
      //   System.out.println(isKnockback);
 
         super.update(dt);
@@ -682,7 +689,22 @@ public class BanditModel extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         if (texture != null) {
+
+            if(!animationController.hasTemp()) {
+                if (!isGrounded) animationController.setAnimation("fall", true);
+                else if (getMovement() == 0) animationController.setAnimation("idle", true);
+                else {
+                    if(backpedal) {
+                        animationController.setAnimation("back", true);
+                    } else {
+                        animationController.setAnimation("run", true);
+                    }
+
+                }
+            }
+
             float effect = faceRight ? 1.0f : -1.0f;
+            if(backpedal) effect *= -1f;
 
             canvas.drawWithShadow(animationController.getFrame(), Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
