@@ -87,19 +87,10 @@ public class ShipBackground {
         // width x height matrix as array
         int[] worldData = tileLayer.get("data").asIntArray();
 
-        // index of tile to start tracing the map
-//        int startTile = 0;
-
-        //ids for corner tiles, determine the vertices of the polygon
-//        IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27});
-
-
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
             if (cornerIds.contains(tileVal)) {
-                startTile = i;
-                System.out.println(startTile);
 
                 float x = (i % width) + 1f;
                 float y = height - (i / width) - 1f;
@@ -111,9 +102,6 @@ public class ShipBackground {
             }
         }
 
-        //trace perimeter of ship counter-clockwise to collect vertices
-//        trace(worldData, startTile - height, DOWN);
-
 
         vertices = new float[(floorPositions.size()) * 2];
         for (int i = 0; i < vertices.length; i+=2){
@@ -122,52 +110,6 @@ public class ShipBackground {
             System.out.println(vertices[i] + ", " + vertices[i + 1] );
         }
     }
-
-    /**
-     * Trace perimeter of ship counter clock wise to collect vertices
-     * returns true when full loop is complete
-     */
-    private boolean trace(int[] worldData, int tile, int direction){
-        System.out.println(startTile);
-        if (tile == startTile) return true; //finished loop
-        if (tile >= worldData.length || tile < 0) return false; //out of bounds
-
-        int tileVal = worldData[tile];
-        System.out.println(tileVal);
-        if (tileVal == 0) return false;
-
-        //add tile to floorpositions
-        addCorner(worldData, tile);
-
-        boolean isFinished;
-
-//        //find next tile
-        if (direction == DOWN){
-            isFinished = trace(worldData, tile - height, DOWN);
-            System.out.println("down");
-//            //loop reached dead end, change direction (isFinished == false)
-//            if (!isFinished) {
-//                isFinished = trace()
-//            }
-        }
-        return false;
-    }
-
-
-    /** adds vertex to floor positions if valid corner */
-    private void addCorner(int[] worldData, int i){
-        int tileVal = worldData[i];
-        if (cornerIds.contains(tileVal)) {
-            float x = (i % width) + 1f;
-            float y = height - (i / width) - 1f;
-            floorPositions.add(new Vector2(x, y));
-
-            if (x < x_offset) x_offset = x;
-            if (y < y_offset) y_offset = y;
-            startTile = i;
-        }
-    }
-
 
     public void draw(GameCanvas canvas){
 
