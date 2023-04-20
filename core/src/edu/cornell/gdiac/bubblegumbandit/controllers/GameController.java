@@ -234,6 +234,9 @@ public class GameController implements Screen {
 
     /**Tick counter for gum reloading*/
     private long ticks;
+    /**Whether the player is reloading gum */
+    private boolean reloadingGum;
+
 
     /**
      * Returns true if the level is completed.
@@ -340,6 +343,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         levelNum = 1;
+        reloadingGum = false;
         setComplete(false);
         setFailure(false);
 
@@ -561,9 +565,13 @@ public class GameController implements Screen {
             minimap.toggleMinimap();
         }
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 15 == 0) {
+            if (ticks % 20 == 0) {
                 bubblegumController.addAmmo(1);
+                reloadingGum = true;
             }
+        }
+        else {
+            reloadingGum = false;
         }
 
 
@@ -686,7 +694,7 @@ public class GameController implements Screen {
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
+        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
