@@ -383,7 +383,7 @@ public class BubblegumController {
             Joint j = gummableJointsToRemove.removeFirst();
             try {
                 Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
-                ob1.setStuck(false);
+                ob1.setGummed(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob1.flipGravity();
                 }

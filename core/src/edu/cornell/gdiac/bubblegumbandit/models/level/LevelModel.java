@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
@@ -964,7 +965,7 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") && !ob.equals(bandit)) {
+                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -977,6 +978,8 @@ public class LevelModel {
          */
         private final Obstacle[] lastCollision = new Obstacle[1];
 
+        private HashSet<java.lang.String> canUnstickThrough = new HashSet<>();
+
         /**
          * The raycast callback used for the unsticking raycast.
          * This has a different raycast so the origin can be within the player.
@@ -986,8 +989,11 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") &&
+                if (!canUnstickThrough.contains(ob.getName()) &&
                         ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.equals(bandit)) {
+                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                        return -1;
+                    }
                     lastCollision[0] = ob;
                     return fraction;
                 }
@@ -1008,6 +1014,8 @@ public class LevelModel {
             directionCache = new Vector2();
             endCache = new Vector2();
             originCache = new Vector2();
+            canUnstickThrough.add("gumProjectile");
+            canUnstickThrough.add("cameratile");
         }
 
         /**
