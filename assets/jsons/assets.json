@@ -78,6 +78,19 @@
             }
 
         },
+        "bandit_backpedal": {
+            "file": "textures/bandit/bandit_backpedal.png",
+            "wrap": false,
+            "sprites": {
+                "back": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+
+        },
+
         "poof": {
             "file": "textures/bandit/poof.png",
             "wrap": false,

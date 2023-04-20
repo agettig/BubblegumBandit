@@ -15,6 +15,10 @@
     "knock": {
       "strip": "bandit_knock.knock",
       "fps": 6
+    },
+    "back": {
+      "strip": "bandit_backpedal.back",
+      "fps": 6
     }
 
   },
