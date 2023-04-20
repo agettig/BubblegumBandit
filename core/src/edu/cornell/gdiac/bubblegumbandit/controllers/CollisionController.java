@@ -479,7 +479,7 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("rollingrobot") && bd2.equals(bandit)) {
             applyKnockback(bd1, bandit, true, ((RollingEnemyModel)bd1).getDamage(), 2f);
         } else if (bd2.getName().equals("rollingrobot") && bd1.equals(bandit)) {
-            applyKnockback(bd2, bandit,true, ((RollingEnemyModel)bd1).getDamage(), 2f);
+            applyKnockback(bd2, bandit,true, ((RollingEnemyModel)bd2).getDamage(), 2f);
         }
     }
 //
