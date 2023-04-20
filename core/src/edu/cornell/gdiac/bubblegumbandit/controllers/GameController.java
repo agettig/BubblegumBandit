@@ -550,6 +550,9 @@ public class GameController implements Screen {
             if (level.getBackgroundObjects() != null) {
                 for (BackObjModel o : level.getBackgroundObjects()) o.flip();
             }
+            for (Obstacle flippable : level.getFlippables()) {
+                flippable.flipGravity();
+            }
         }
 
         if(inputResults.didExpandMinimap()){

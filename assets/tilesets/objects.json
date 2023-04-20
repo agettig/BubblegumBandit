@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":11,
+ "tilecount":12,
  "tiledversion":"1.10.0",
  "tileheight":186,
  "tiles":[
@@ -96,8 +96,15 @@
          "imageheight":90,
          "imagewidth":65,
          "type":"chair"
+        }, 
+        {
+         "id":15,
+         "image":"..\/textures\/environment\/crushing_block.png",
+         "imageheight":128,
+         "imagewidth":256,
+         "type":"crushing_block"
         }],
- "tilewidth":144,
+ "tilewidth":256,
  "type":"tileset",
  "version":"1.10"
 }

@@ -145,9 +145,11 @@
         "med_gum": "textures/gum/med_gum.png",
         "small_gum_outline": "textures/gum/small_gum_outline.png",
         "large_gum_outline": "textures/gum/large_gum_outline.png",
-        "med_gum_outline": "textures/gum/med_gum_outline.png"
+        "med_gum_outline": "textures/gum/med_gum_outline.png",
 
-    },
+        "crushing_block": "textures/objects/crushing_block.png",
+        "crushing_block_gummed": "textures/objects/crushing_block_gummed.png",
+        "crushing_block_outline": "textures/objects/crushing_block_outline.png"},
     "fonts": {
         "display": {
             "file": 	"fonts/RetroGame.ttf",

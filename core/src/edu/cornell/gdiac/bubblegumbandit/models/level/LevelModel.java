@@ -120,6 +120,11 @@ public class LevelModel {
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
+    /**
+     * All the flippable objects in the world.
+     */
+    protected PooledList<Obstacle> flippableObjects = new PooledList<Obstacle>();
+
     private Array<AIController> enemyControllers;
 
     public Array<AIController> aiControllers() {
@@ -215,6 +220,13 @@ public class LevelModel {
      */
     public ExitModel getExit() {
         return goalDoor;
+    }
+
+    /** Returns the flippable objects in the level.
+     * @return the flippable objects
+     */
+    public PooledList<Obstacle> getFlippables() {
+        return flippableObjects;
     }
 
     /**
@@ -539,6 +551,13 @@ public class LevelModel {
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
                     break;
+                case "crushing_block":
+                    CrusherModel crush = new CrusherModel();
+                    crush.initialize(directory, scale, x, y, object, constants.get("crushing_block"));
+                    activate(crush);
+                    flippableObjects.add(crush);
+                    crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
@@ -628,6 +647,14 @@ public class LevelModel {
                 entry.remove();
             } else {
                 obj.update(dt);
+            }
+        }
+        iterator = flippableObjects.entryIterator();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obj = entry.getValue();
+            if (obj.isRemoved()) {
+                entry.remove();
             }
         }
         alarms.update();

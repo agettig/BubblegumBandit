@@ -88,8 +88,10 @@ public abstract class Obstacle {
 	/**
 	 * Flips the player's angle and direction when the world gravity is flipped
 	 */
-	public void flippedGravity() {
-		isFlipped = !isFlipped;
+	public void flipGravity() {
+		if (!gummed && !stuck) {
+			isFlipped = !isFlipped;
+		}
 	}
 
 	// Gum methods
