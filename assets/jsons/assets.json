@@ -20,6 +20,12 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "space_bg": {
+            "file": "textures/environment/space_sample.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+
         "exit": "textures/environment/shipdoor.png",
         "alarm_on": "textures/environment/alarm_on.png",
         "alarm_off": "textures/environment/alarm_off.png",

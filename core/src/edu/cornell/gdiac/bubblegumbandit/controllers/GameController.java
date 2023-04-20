@@ -389,7 +389,8 @@ public class GameController implements Screen {
         hud = new HUDController(directory);
         minimap = new Minimap();
 
-        shipBackground =  new ShipBackground(new TextureRegion(directory.getEntry("background", Texture.class)));
+        shipBackground =  new ShipBackground(new TextureRegion(directory.getEntry("background", Texture.class)),
+                new TextureRegion(directory.getEntry("space_bg", Texture.class)));
     }
 
 
