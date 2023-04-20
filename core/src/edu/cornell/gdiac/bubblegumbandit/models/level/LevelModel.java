@@ -454,7 +454,16 @@ public class LevelModel {
         Array<EnemyModel> newEnemies = new Array<>();
 
         while (object != null) {
-            String objType = object.get("type").asString();
+            JsonValue objTypeJson = object.get("type");
+            String objType;
+            if (objTypeJson != null) {
+                objType = object.get("type").asString();
+            } else { // Template
+                objType = object.get("template").asString();
+                int substringStart = objType.lastIndexOf("/") + 1;
+                int substringEnd = objType.lastIndexOf(".");
+                objType = objType.substring(substringStart, substringEnd);
+            }
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
 
@@ -523,7 +532,7 @@ public class LevelModel {
                 case "camera_v":
                 case "camera_h":
                     CameraTileModel cam = new CameraTileModel();
-                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"));
+                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"), objType.equals("camera_h"));
                     activate(cam);
                     cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
