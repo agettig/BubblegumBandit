@@ -533,10 +533,11 @@ public class GameController implements Screen {
         bandit.applyForce();
 
         float grav =  level.getWorld().getGravity().y;
-        if ((bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
+        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
-                (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
-        ) {
+                (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0));
+        shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
+        if (shouldFlip) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = SoundController.playSound("jump", 0.25f);

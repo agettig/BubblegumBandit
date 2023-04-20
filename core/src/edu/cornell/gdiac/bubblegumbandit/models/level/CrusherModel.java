@@ -5,6 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -13,6 +18,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 
 /**
@@ -20,11 +26,27 @@ import java.lang.reflect.Field;
  **/
 public class CrusherModel extends BoxObstacle implements Gummable {
 
+    // TODO: Make this a kinematic body, simulate gravity and enable bandit pushing, then use internal
+    // sensor to detect crushing
+
+    /** Used to handle flipping logic */
     private FlippingObject flippingObject;
 
     private TextureRegion gummedTexture;
 
     private TextureRegion outlineTexture;
+
+    /** Bottom sensor to detect bottom crushes */
+    private Fixture bottomSensorFixture;
+    private PolygonShape bottomSensorShape;
+    private String bottomSensorName;
+
+    private Color sensorColor;
+
+    /** Top sensor to detect bottom crushes */
+    private Fixture topSensorFixture;
+    private PolygonShape topSensorShape;
+    private String topSensorName;
 
     /**
      * Create a new TileModel with degenerate settings
@@ -57,7 +79,7 @@ public class CrusherModel extends BoxObstacle implements Gummable {
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
-        setBodyType(constants.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+        setBodyType(BodyType.DynamicBody);
         setFixedRotation(true);
         setDensity(constants.get("density").asFloat());
         setFriction(constants.get("friction").asFloat());
@@ -90,6 +112,50 @@ public class CrusherModel extends BoxObstacle implements Gummable {
         texture = new TextureRegion(directory.getEntry(key, Texture.class));
         outlineTexture = texture;
 
+        // Initialize the sensors used to detect when things are being crushed.
+        // Get the sensor information
+        Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
+        float[] sSize = constants.get("sensorsize").asFloatArray();
+        bottomSensorShape = new PolygonShape();
+        bottomSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
+
+        // Reflection is best way to convert name to color
+        try {
+            String cname = constants.get("sensorcolor").asString().toUpperCase();
+            Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+            sensorColor = new Color((Color) field.get(null));
+        } catch (Exception e) {
+            sensorColor = null; // Not defined
+        }
+        opacity = constants.get("sensoropacity").asInt();
+        sensorColor.mul(opacity / 255.0f);
+        bottomSensorName = constants.get("bottomsensorname").asString();
+
+        sensorCenter = new Vector2(0, getHeight() / 2);
+        topSensorShape = new PolygonShape();
+        topSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
+
+        // Reflection is best way to convert name to color
+        topSensorName = constants.get("topsensorname").asString();
+    }
+
+    public boolean activatePhysics(World world) {
+        // create the box from our superclass
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = getDensity();
+        sensorDef.isSensor = true;
+        sensorDef.shape = bottomSensorShape;
+        bottomSensorFixture = body.createFixture(sensorDef);
+        bottomSensorFixture.setUserData(bottomSensorName);
+
+        sensorDef.shape = topSensorShape;
+        topSensorFixture = body.createFixture(sensorDef);
+        topSensorFixture.setUserData(topSensorName);
+        return true;
     }
 
     public void update(float dt) {
@@ -111,9 +177,18 @@ public class CrusherModel extends BoxObstacle implements Gummable {
         }
     }
 
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+//        Vector2 bottomSensorPos = bottomSensorFixture.getBody().getPosition();
+//        Vector2 topSensorPos = topSensorFixture.getBody().getPosition();
+//        canvas.drawPhysics(bottomSensorShape, sensorColor, bottomSensorPos.x * drawScale.x, bottomSensorPos.y * drawScale.y);
+//        canvas.drawPhysics(topSensorShape, sensorColor, topSensorPos.x * drawScale.x, topSensorPos.y * drawScale.y);
+    }
+
     @Override
     public void drawWithOutline(GameCanvas canvas) {
         canvas.draw(outlineTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1.1f, flippingObject.getScale()*1.1f);
         canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, flippingObject.getScale());
     }
+
 }

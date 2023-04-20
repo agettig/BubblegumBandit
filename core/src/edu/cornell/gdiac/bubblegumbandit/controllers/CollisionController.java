@@ -2,9 +2,11 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
@@ -63,6 +65,8 @@ public class CollisionController implements ContactListener {
     /** true if the win condition has been met */
     private boolean winConditionMet;
 
+    private boolean shouldFlipGravity;
+
     /**Temp queue for now for sticking robot joints */
     private Queue<WeldJointDef> stickRobots = new Queue<>();
 
@@ -84,6 +88,7 @@ public class CollisionController implements ContactListener {
         sensorFixtures = new ObjectSet<Fixture>();
         bubblegumController = controller;
         this.levelModel = levelModel;
+        shouldFlipGravity = false;
     }
 
     /** Initializes this CollisionController
@@ -92,6 +97,16 @@ public class CollisionController implements ContactListener {
      */
     public void initialize(GameCamera camera) {
         this.camera = camera;
+    }
+
+    /** Gets whether gravity should be flipped due to a collision.
+     * If gravity should be flipped, gravity is then set to not need to be flipped. */
+    public boolean shouldFlipGravity() {
+        if (shouldFlipGravity) {
+            shouldFlipGravity = false;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -132,6 +147,7 @@ public class CollisionController implements ContactListener {
             resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
             checkRollingEnemyCollision(obstacleA, obstacleB);
+            resolveCrusherCollision(obstacleA, fixA, obstacleB, fixB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -433,6 +449,48 @@ public class CollisionController implements ContactListener {
             resolveProjectileCollision((ProjectileModel) bd1, bd2);
         } else if (bd2.getName().equals("projectile")) {
             resolveProjectileCollision((ProjectileModel) bd2, bd1);
+        }
+    }
+
+    /**
+     * Checks if there was a collision between a crusher and an enemy or player.
+     * *
+     * @param bd1 The first Obstacle in the collision.
+     * @param bd2 The second Obstacle in the collision.
+     */
+    private void resolveCrusherCollision(Obstacle bd1, Fixture fix1, Obstacle bd2, Fixture fix2) {
+
+        // Check that obstacles are not null and one is a crusher sensor
+        if (bd1 == null || bd2 == null) return;
+        Obstacle crusher;
+        Obstacle crushed;
+        String sensorName = levelModel.getWorld().getGravity().y < 0 ? "crushing_bottom_sensor" : "crushing_top_sensor";
+        if (sensorName.equals(fix1.getUserData())) {
+            crusher = bd1;
+            crushed = bd2;
+        } else if (sensorName.equals(fix2.getUserData())) {
+            crusher = bd2;
+            crushed = bd1;
+        } else {
+            return;
+        }
+        if (crushed.getName().contains("enemy")) {
+            // Check if enemy is beneath crusher and stopped (if it's stopped, it's pinched).
+            // If so, trigger its deletion.
+            // This might cause bugs. If there is some unexpected crusher behavior, this is probably
+            // what needs to be changed.
+            if (Math.abs(crushed.getVY()) < 0.001f) {
+                crushed.markRemoved(true);
+            }
+        } else if (crushed.equals(levelModel.getBandit())) {
+            if (Math.abs(crushed.getVY()) < 0.001f) {
+                // Flip gravity again and make the bandit take damage.
+                levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE);
+                shouldFlipGravity = true;
+            }
+        } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
+            // Screen shake cause block hit the floor
+            camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, .5f);
         }
     }
 
