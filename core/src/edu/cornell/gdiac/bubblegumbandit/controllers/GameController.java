@@ -229,6 +229,10 @@ public class GameController implements Screen {
     /** Whether the orb has been collected. */
     private boolean orbCollected;
 
+    /** true if Enemies that should spawn after the orb gets picked up
+     * have been created*/
+    private boolean spawnedPostOrbEnemies;
+
     /** Countdown timer after collecting the orb. */
     private float orbCountdown;
 
@@ -641,9 +645,17 @@ public class GameController implements Screen {
         }
         canvas.getCamera().update(dt);
 
+        //Check to create post-orb enemies
+        if(orbCollected && !spawnedPostOrbEnemies){
+            level.spawnPostOrbEnemies(levelFormat);
+            spawnedPostOrbEnemies = true;
+        }
+
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);
+
+
 
         // TODO add to collision controller
         // TODO have attack action for rolling enemy
