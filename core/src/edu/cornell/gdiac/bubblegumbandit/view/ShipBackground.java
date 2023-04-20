@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
@@ -27,9 +29,31 @@ public class ShipBackground {
      */
     private TextureRegion ship_bg;
 
+    /** The positions of the tiles */
+    private ArrayList<Vector2> floorPositions;
+
+    /** the smallest x coordinate to offset all other x values with */
+    private float x_offset;
+
+    /** the smallest y coordinate to offset all other y values with */
+
+    private float y_offset;
+
+    private float[] vertices;
+
+    private int startTile;
+
+    //ids for corner tiles, determine the vertices of the polygon
+    private IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27});
+
+    private int DOWN = 0;
+    private int RIGHT = 1;
+    private int UP = 2;
+    private int LEFT = 3;
 
     public ShipBackground(TextureRegion bg) {
         ship_bg = bg;
+        startTile = -1;
     }
 
     /** Initializes the minimap for a given level.
@@ -45,50 +69,130 @@ public class ShipBackground {
 //        //Set fields.
         width = physicsWidth;
         height = physicsHeight;
-//        makeMinimapTiles(directory);
-//
-//        //Find all positions of floors/platforms.
-//        floorPositions = new ArrayList<>();
-//        JsonValue layer = levelFormat.get("layers").child();
-//        JsonValue tileLayer = null;
-//        while (layer != null) {
-//            String layerName = layer.getString("name");
-//            if ("Terrain".equals(layerName)) {
-//                tileLayer = layer;
+        x_offset = width;
+        y_offset = height;
+
+        //Find all positions of floors/platforms.
+        floorPositions = new ArrayList<>();
+        JsonValue layer = levelFormat.get("layers").child();
+        JsonValue tileLayer = null;
+        while (layer != null) {
+            String layerName = layer.getString("name");
+            if ("Terrain".equals(layerName)) {
+                tileLayer = layer;
+            }
+            layer = layer.next();
+        }
+
+        // width x height matrix as array
+        int[] worldData = tileLayer.get("data").asIntArray();
+
+        // index of tile to start tracing the map
+//        int startTile = 0;
+
+        //ids for corner tiles, determine the vertices of the polygon
+//        IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27});
+
+
+        // Iterate over each tile in the world and create if it exists
+        for (int i = 0; i < worldData.length; i++) {
+            int tileVal = worldData[i];
+            if (cornerIds.contains(tileVal)) {
+                startTile = i;
+                System.out.println(startTile);
+
+                float x = (i % width) + 1f;
+                float y = height - (i / width) - 1f;
+                floorPositions.add(new Vector2(x, y));
+
+                if (x < x_offset) x_offset = x;
+                if (y < y_offset) y_offset = y;
+
+            }
+        }
+
+        //trace perimeter of ship counter-clockwise to collect vertices
+//        trace(worldData, startTile - height, DOWN);
+
+
+        vertices = new float[(floorPositions.size()) * 2];
+        for (int i = 0; i < vertices.length; i+=2){
+            vertices[i] = (floorPositions.get(i/2).x - x_offset) * 64;
+            vertices[i + 1] = (floorPositions.get(i/2).y - y_offset) * 64;
+            System.out.println(vertices[i] + ", " + vertices[i + 1] );
+        }
+    }
+
+    /**
+     * Trace perimeter of ship counter clock wise to collect vertices
+     * returns true when full loop is complete
+     */
+    private boolean trace(int[] worldData, int tile, int direction){
+        System.out.println(startTile);
+        if (tile == startTile) return true; //finished loop
+        if (tile >= worldData.length || tile < 0) return false; //out of bounds
+
+        int tileVal = worldData[tile];
+        System.out.println(tileVal);
+        if (tileVal == 0) return false;
+
+        //add tile to floorpositions
+        addCorner(worldData, tile);
+
+        boolean isFinished;
+
+//        //find next tile
+        if (direction == DOWN){
+            isFinished = trace(worldData, tile - height, DOWN);
+            System.out.println("down");
+//            //loop reached dead end, change direction (isFinished == false)
+//            if (!isFinished) {
+//                isFinished = trace()
 //            }
-//            layer = layer.next();
-//        }
-//        int[] worldData = tileLayer.get("data").asIntArray();
-//
-//
-//        // Iterate over each tile in the world and create if it exists
-//        for (int i = 0; i < worldData.length; i++) {
-//            int tileVal = worldData[i];
-//            if (tileVal != 0) {
-//                float x = (i % width) + 1f;
-//                expandedTilesLong = Math.max(expandedTilesLong, (int)x);
-//                float y = height - (i / width) - 1f;
-//                expandedTilesTall = Math.max(expandedTilesTall, (int)y);
-//                floorPositions.add(new Vector2(x, y));
-//            }
-//        }
+        }
+        return false;
+    }
+
+
+    /** adds vertex to floor positions if valid corner */
+    private void addCorner(int[] worldData, int i){
+        int tileVal = worldData[i];
+        if (cornerIds.contains(tileVal)) {
+            float x = (i % width) + 1f;
+            float y = height - (i / width) - 1f;
+            floorPositions.add(new Vector2(x, y));
+
+            if (x < x_offset) x_offset = x;
+            if (y < y_offset) y_offset = y;
+            startTile = i;
+        }
     }
 
 
     public void draw(GameCanvas canvas){
 
-        PolygonRegion polyReg = new PolygonRegion(ship_bg,
-                new float[] {      // Four vertices
-                        0, 0,            // Vertex 0         3--2
-                        width, 0,          // Vertex 1         | /|
-                        width, height,        // Vertex 2         |/ |
-                        0, height           // Vertex 3         0--1
-                }, new short[] {
-                0, 1, 2,         // Two triangles using vertex indices.
-                0, 2, 3          // Take care of the counter-clockwise direction.
-        });
-//
-        canvas.draw(polyReg, 0, 0);
+//        new float[] {      // Four vertices
+//                0, 0,            // Vertex 0         3--2
+//                1000, 0,          // Vertex 1         | /|
+//                1000, 1000,        // Vertex 2         |/ |
+//                0, 1000           // Vertex 3         0--1
+
+//        new short[] {
+//                0, 1, 2,         // Two triangles using vertex indices.
+//                0, 2, 3          // Take care of the counter-clockwise direction.
+//        });
+
+        if (vertices != null) {
+            canvas.begin();
+            PolygonRegion polyReg = new PolygonRegion(ship_bg,
+                    vertices,
+                    new short[]{
+                            2, 3, 1,         // Two triangles using vertex indices.
+                            2, 1, 0          // Take care of the counter-clockwise direction.
+                    });
+            canvas.draw(polyReg, x_offset * 64, y_offset * 64);
+            canvas.end();
+        }
 
     }
 
