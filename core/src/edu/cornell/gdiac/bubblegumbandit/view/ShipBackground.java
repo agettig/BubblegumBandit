@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -46,19 +47,15 @@ public class ShipBackground {
 
     private float[] vertices;
 
-    private int startTile;
-
     //ids for corner tiles, determine the vertices of the polygon
     private IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27});
 
-    private int DOWN = 0;
-    private int RIGHT = 1;
-    private int UP = 2;
-    private int LEFT = 3;
+
+    private PolygonRegion spaceReg;
+    private  PolygonRegion shipReg;
 
     public ShipBackground(TextureRegion bg, TextureRegion space_bg) {
         ship_bg = bg;
-        startTile = -1;
         this.space_bg = space_bg;
     }
 
@@ -115,11 +112,12 @@ public class ShipBackground {
             vertices[i + 1] = (floorPositions.get(i/2).y - y_offset) * 64;
             System.out.println(vertices[i] + ", " + vertices[i + 1] );
         }
+
+        createPolygons();
     }
 
-    public void draw(GameCanvas canvas){
-
-//        new float[] {      // Four vertices
+    public void createPolygons(){
+        //        new float[] {      // Four vertices
 //                0, 0,            // Vertex 0         3--2
 //                1000, 0,          // Vertex 1         | /|
 //                1000, 1000,        // Vertex 2         |/ |
@@ -130,9 +128,7 @@ public class ShipBackground {
 //                0, 2, 3          // Take care of the counter-clockwise direction.
 //        });
 
-        canvas.begin();
-
-        PolygonRegion space = new PolygonRegion(space_bg,
+        spaceReg = new PolygonRegion(space_bg,
                 new float[] {      // Four vertices
                         0, 0,            // Vertex 0         3--2
                         width*64, 0,          // Vertex 1         | /|
@@ -143,16 +139,23 @@ public class ShipBackground {
                 0, 2, 3          // Take care of the counter-clockwise direction.
         });
 
-        canvas.draw(space, 0,0);
-
-
-        PolygonRegion polyReg = new PolygonRegion(ship_bg,
+        shipReg = new PolygonRegion(ship_bg,
                 vertices,
                 new short[]{
-                        2, 3, 1,         // Two triangles using vertex indices.
-                        2, 1, 0          // Take care of the counter-clockwise direction.
+                        6, 7, 5,         // Two triangles using vertex indices.
+                        6, 5, 4,          // Take care of the counter-clockwise direction.
+                        6, 4, 1,
+                        6, 1, 0,
+                        6, 1, 3,
+                        6, 2, 3
                 });
-        canvas.draw(polyReg, x_offset * 64, y_offset * 64);
+    }
+
+    public void draw(GameCanvas canvas){
+        canvas.begin();
+
+        canvas.draw(spaceReg, 0,0);
+        canvas.draw(shipReg, x_offset * 64, y_offset * 64);
 
         canvas.end();
 
