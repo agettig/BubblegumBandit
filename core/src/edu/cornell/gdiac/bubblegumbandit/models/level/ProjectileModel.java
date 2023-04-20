@@ -18,7 +18,7 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     private float gravity = 0;
 
     /** damage that the bullet deals upon impact with player */
-    private float damage = 10;
+    private float damage = 500; //should be 10
 
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectileController.

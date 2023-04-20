@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.view;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -43,15 +44,19 @@ public class AnimationController {
 
   }
 
+
   public FilmStrip getFrame() {
     timeSinceLastFrame += Gdx.graphics.getDeltaTime();
 
     if(finished) {
-      if (timeSinceLastFrame > 1f / tempFPS) {
+      if (timeSinceLastFrame >= 1f / tempFPS) {
         finished = false;
         temp = null;
         timeSinceLastFrame = 0;
-      } else return temp;
+      } else {
+        return temp;
+      }
+
     }
 
     FilmStrip strip = temp==null ? current : temp;
