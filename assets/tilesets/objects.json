@@ -99,7 +99,7 @@
         }, 
         {
          "id":15,
-         "image":"..\/textures\/environment\/crushing_block.png",
+         "image":"..\/textures\/objects\/crushing_block.png",
          "imageheight":128,
          "imagewidth":256,
          "type":"crushing_block"

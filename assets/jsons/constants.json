@@ -47,7 +47,6 @@
     "debugopacity": 200
   },
   "crushing_block": {
-    "bodytype": "dynamic",
     "density": 0.4,
     "friction": 0.2,
     "restitution": 0.0,
@@ -57,7 +56,15 @@
     "debugcolor": "yellow",
     "debugopacity": 200,
     "rotaterate": 0.08,
-    "gravityscale": 1.5
+    "gravityscale": 1.5,
+    "sensorsize": [
+      1.9,
+      0.05
+    ],
+    "bottomsensorname": "crushing_bottom_sensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "topsensorname": "crushing_top_sensor"
   },
   "gumProjectile": {
     "starting_gum": 5,
