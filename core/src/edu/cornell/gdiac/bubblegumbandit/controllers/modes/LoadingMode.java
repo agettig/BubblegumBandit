@@ -430,7 +430,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 exitButton = internal.getEntry("exitButton", Texture.class);
             }
         }
-//        System.out.println("width: " + canvas.getWidth() + ", height: " + canvas.getHeight());
         resize(canvas.getWidth(), canvas.getHeight());
     }
 
