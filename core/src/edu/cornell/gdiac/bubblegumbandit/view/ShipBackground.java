@@ -25,9 +25,14 @@ public class ShipBackground {
     private int height;
 
     /**
-     * The background of the level, cropped if necessary
+     * The background of the ship, cropped if necessary
      */
     private TextureRegion ship_bg;
+
+    /**
+     * The space background of the level, cropped if necessary
+     */
+    private TextureRegion space_bg;
 
     /** The positions of the tiles */
     private ArrayList<Vector2> floorPositions;
@@ -51,9 +56,10 @@ public class ShipBackground {
     private int UP = 2;
     private int LEFT = 3;
 
-    public ShipBackground(TextureRegion bg) {
+    public ShipBackground(TextureRegion bg, TextureRegion space_bg) {
         ship_bg = bg;
         startTile = -1;
+        this.space_bg = space_bg;
     }
 
     /** Initializes the minimap for a given level.
@@ -124,17 +130,31 @@ public class ShipBackground {
 //                0, 2, 3          // Take care of the counter-clockwise direction.
 //        });
 
-        if (vertices != null) {
-            canvas.begin();
-            PolygonRegion polyReg = new PolygonRegion(ship_bg,
-                    vertices,
-                    new short[]{
-                            2, 3, 1,         // Two triangles using vertex indices.
-                            2, 1, 0          // Take care of the counter-clockwise direction.
-                    });
-            canvas.draw(polyReg, x_offset * 64, y_offset * 64);
-            canvas.end();
-        }
+        canvas.begin();
+
+        PolygonRegion space = new PolygonRegion(space_bg,
+                new float[] {      // Four vertices
+                        0, 0,            // Vertex 0         3--2
+                        width*64, 0,          // Vertex 1         | /|
+                        width*64, height*64,        // Vertex 2         |/ |
+                        0, height * 64           // Vertex 3         0--1
+                }, new short[] {
+                0, 1, 2,         // Two triangles using vertex indices.
+                0, 2, 3          // Take care of the counter-clockwise direction.
+        });
+
+        canvas.draw(space, 0,0);
+
+
+        PolygonRegion polyReg = new PolygonRegion(ship_bg,
+                vertices,
+                new short[]{
+                        2, 3, 1,         // Two triangles using vertex indices.
+                        2, 1, 0          // Take care of the counter-clockwise direction.
+                });
+        canvas.draw(polyReg, x_offset * 64, y_offset * 64);
+
+        canvas.end();
 
     }
 
