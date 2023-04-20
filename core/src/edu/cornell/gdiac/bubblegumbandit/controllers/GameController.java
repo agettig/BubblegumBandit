@@ -232,6 +232,9 @@ public class GameController implements Screen {
     /** Countdown timer after collecting the orb. */
     private float orbCountdown;
 
+    /**Tick counter for gum reloading*/
+    private long ticks;
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -330,6 +333,7 @@ public class GameController implements Screen {
 
 
         //Technicals
+        ticks = 0;
         complete = false;
         failed = false;
         active = false;
@@ -508,6 +512,7 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        ticks++;
         if(collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
             if (levelNum > NUM_LEVELS) {
@@ -554,6 +559,11 @@ public class GameController implements Screen {
 
         if(inputResults.didExpandMinimap()){
             minimap.toggleMinimap();
+        }
+        if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            if (ticks % 15 == 0) {
+                bubblegumController.addAmmo(1);
+            }
         }
 
 
