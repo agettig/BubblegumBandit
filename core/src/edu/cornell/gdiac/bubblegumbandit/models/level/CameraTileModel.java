@@ -112,6 +112,7 @@ public class CameraTileModel extends TileModel {
         float height = objectJson.getFloat("height") / scale.y;
         setDimension(width, height);
         setSensor(true);
+        this.isHorizontal = isHorizontal;
 
         setBodyType(BodyDef.BodyType.StaticBody);
 

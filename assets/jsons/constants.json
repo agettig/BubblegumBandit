@@ -46,6 +46,18 @@
     "debugcolor": "yellow",
     "debugopacity": 200
   },
+  "crushing_block": {
+    "bodytype": "dynamic",
+    "density": 0.4,
+    "friction": 0.2,
+    "restitution": 0.0,
+    "texture": "crushing_block",
+    "gummedtexture": "crushing_block_gummed",
+    "outlinetexture": "crushing_block_outline",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "rotaterate": 0.08
+  },
   "gumProjectile": {
     "starting_gum": 5,
     "offsetX": 0.6,
