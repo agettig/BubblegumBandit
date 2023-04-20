@@ -56,7 +56,8 @@
     "outlinetexture": "crushing_block_outline",
     "debugcolor": "yellow",
     "debugopacity": 200,
-    "rotaterate": 0.08
+    "rotaterate": 0.08,
+    "gravityscale": 1.5
   },
   "gumProjectile": {
     "starting_gum": 5,

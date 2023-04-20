@@ -62,6 +62,7 @@ public class CrusherModel extends BoxObstacle implements Gummable {
         setDensity(constants.get("density").asFloat());
         setFriction(constants.get("friction").asFloat());
         setRestitution(constants.get("restitution").asFloat());
+        setGravityScale(constants.get("gravityscale").asFloat());
 
         // Reflection is best way to convert name to color
         Color debugColor;
