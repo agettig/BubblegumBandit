@@ -95,6 +95,9 @@ public class Minimap {
     /** How quickly the Minimap changes states.*/
     private final float TRANSITION_SPEED = 15f;
 
+    /** true if the Minimap has been initialized.*/
+    private boolean initialized;
+
     /** Initializes the minimap for a given level.
      *
      * @param directory The asset directory.
@@ -104,6 +107,7 @@ public class Minimap {
      */
     public void initialize(AssetDirectory directory, JsonValue levelFormat, int physicsWidth, int physicsHeight) {
         //Make the Minimap's background and map tiles.
+        initialized = false;
         minimapTable = new Table();
         minimapTable.align(Align.bottomRight);
         minimapTable.setFillParent(true);
@@ -152,6 +156,7 @@ public class Minimap {
                 expandedFloors.add(floorPos);
             }
         }
+        initialized = true;
     }
 
     /**
@@ -207,6 +212,8 @@ public class Minimap {
      * @param banditPosition Tile position of the Bandit.
      * */
     public void draw(Vector2 banditPosition){
+
+        if(!initialized) return;
 
         //Make our collection.
         Set<Vector2> validFloors;
