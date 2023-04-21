@@ -1,7 +1,6 @@
 {
     "textures": {
 
-
         "health_bar": "textures/UI/health_bar.png",
         "health_fill": "textures/UI/health_fill.png",
         "health_icon": "textures/UI/UI_heart.png",
@@ -66,6 +65,7 @@
                 }
             }
         },
+        "bandit_guide": "textures/bandit/doubleArrow.png",
 
         "smallrobotoutline": "textures/small_enemy/small_enemyWhite.png",
         "bullet": "textures/small_enemy/bullet.png",
@@ -170,10 +170,12 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-
-		"level1" : "jsons/levels/alpha_presentation.json",
+		"level1" : "jsons/levels/alphaPresentation.json",
         "level2":"jsons/levels/alpha.json",
         "constants": "jsons/constants.json",
-        "animations" : "jsons/animations.json"
+        "animations" : "jsons/animations.json",
+        "supports" : "tilesets/supports.json",
+        "terrain" : "tilesets/terrain.json",
+        "objects" : "tilesets/objects.json"
     }
 }

@@ -83,8 +83,8 @@ public class PlayerController{
     private boolean exitPressed;
     private boolean exitPrevious;
 
+    /** Whether the minimap button was pressed.*/
     private boolean minimapPressed;
-
     private  boolean minimapPrevious;
 
     /** How much did we move horizontally? */
@@ -222,7 +222,7 @@ public class PlayerController{
         return resetPressed && !resetPrevious;
     }
 
-    public boolean didExpandMinimap() {return minimapPressed && !minimapPrevious;}
+    public boolean didExpandMinimap() {return minimapPressed;}
 
     public boolean didReload() {return reloadPressed;}
 
