@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -314,6 +315,13 @@ public class CollisionController implements ContactListener {
         int orientation = 0;
         if (gum != null && gum.canAddObstacle(body)){
             if (gummable != null) {
+                if (gummable instanceof LaserEnemyModel) {
+                    if (!((LaserEnemyModel) gummable).shouldStick()) {
+                        gum.markRemoved(true);
+                        ((LaserEnemyModel) gummable).addGumHit();
+                        return;
+                    }
+                }
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);

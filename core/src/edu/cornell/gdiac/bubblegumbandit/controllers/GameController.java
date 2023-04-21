@@ -233,6 +233,12 @@ public class GameController implements Screen {
     /** Countdown timer after collecting the orb. */
     private float orbCountdown;
 
+    /**Tick counter for gum reloading*/
+    private long ticks;
+    /**Whether the player is reloading gum */
+    private boolean reloadingGum;
+
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -331,12 +337,14 @@ public class GameController implements Screen {
 
 
         //Technicals
+        ticks = 0;
         complete = false;
         failed = false;
         active = false;
         countdown = -1;
         orbCountdown = -1;
         levelNum = 1;
+        reloadingGum = false;
         setComplete(false);
         setFailure(false);
 
@@ -434,6 +442,9 @@ public class GameController implements Screen {
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
+        int x = levelFormat.get("width").asInt();
+        int y = levelFormat.get("height").asInt();
+        minimap.initialize(directory, levelFormat, x, y);
     }
 
     /**
@@ -509,6 +520,7 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        ticks++;
         if(collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
             SaveData.setStatus(levelNum-1, level.getBandit().getNumStars());
@@ -555,6 +567,17 @@ public class GameController implements Screen {
                 for (BackObjModel o : level.getBackgroundObjects()) o.flip();
             }
         }
+
+        if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            if (ticks % 20 == 0) {
+                bubblegumController.addAmmo(1);
+                reloadingGum = true;
+            }
+        }
+        else {
+            reloadingGum = false;
+        }
+
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
@@ -675,7 +698,7 @@ public class GameController implements Screen {
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
+        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
