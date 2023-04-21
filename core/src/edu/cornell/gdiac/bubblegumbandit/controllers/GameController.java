@@ -698,10 +698,10 @@ public class GameController implements Screen {
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
-            displayFont.setColor(Color.RED);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 150);
-            canvas.end();
+            //displayFont.setColor(Color.RED);
+            //canvas.begin(); // DO NOT SCALE
+           // canvas.drawTextCentered("FAILURE!", displayFont, 150);
+           // canvas.end();
         }
     }
 

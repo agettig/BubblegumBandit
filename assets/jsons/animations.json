@@ -22,7 +22,7 @@
     },
     "death": {
       "strip": "bandit_death.death",
-      "fps": 6
+      "fps": 8
     }
 
   },

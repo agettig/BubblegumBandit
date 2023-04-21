@@ -109,9 +109,9 @@
             "wrap": false,
             "sprites": {
                 "poof": {
-                    "size": 4,
+                    "size": 3,
                     "rows": 1,
-                    "cols": 4
+                    "cols": 3
                 }
             }
 
