@@ -7,8 +7,10 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShieldedRollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -289,6 +291,9 @@ public class CollisionController implements ContactListener {
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
+            if (bodyB instanceof Shield) {
+                if (((Shield) bodyB).isShielded()) {gum.markRemoved(true); return;}
+            }
             if (bodyB instanceof Gummable) {
                 gummable = (Gummable) bodyB;
             }
@@ -296,6 +301,9 @@ public class CollisionController implements ContactListener {
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
+            if (bodyA instanceof Shield) {
+                if (((Shield) bodyA).isShielded()) {gum.markRemoved(true); return;}
+            }
             if (bodyA instanceof Gummable) {
                 gummable = (Gummable) bodyA;
             }

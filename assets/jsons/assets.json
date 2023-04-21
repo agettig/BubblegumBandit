@@ -81,11 +81,33 @@
                 }
             }
         },
+        "shielded_small_robot_patrol":  {
+            "file": "textures/small_enemy/shielded_small_robot_patrol.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
 
         "med_outline": "textures/medium_enemy/med_white.png",
         "med_robot": "textures/medium_enemy/medium_enemy.png",
         "med_walk":  {
             "file": "textures/medium_enemy/med_walk.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
+        },
+        "shielded_med_walk":  {
+            "file": "textures/medium_enemy/shielded_med_walk.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -114,6 +136,17 @@
         "laserBeamEnd": "textures/large_enemy/red_laser_end.png",
         "large_walk":  {
             "file": "textures/large_enemy/large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "shielded_large_walk":  {
+            "file": "textures/large_enemy/shielded_large_anim.png",
             "wrap": false,
             "sprites": {
                 "patrol": {

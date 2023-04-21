@@ -29,6 +29,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
@@ -398,9 +399,6 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
-        int x = levelFormat.get("width").asInt();
-        int y = levelFormat.get("height").asInt();
-        minimap.initialize(directory, levelFormat, x, y);
     }
 
 
@@ -640,7 +638,12 @@ public class GameController implements Screen {
                     if(enemy.getFaceRight() && enemy.getX() < bandit.getX()) sameSide = true;
                     if(!enemy.getFaceRight() && enemy.getX() > bandit.getX()) sameSide = true;
                     boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
-                    if(canFire) laserController.fireLaser(controller);
+                    if(canFire) {
+                        if (enemy instanceof Shield) {
+                            ((Shield) enemy).isShielded(false);
+                        }
+                        laserController.fireLaser(controller);
+                    }
                 }
             }
 

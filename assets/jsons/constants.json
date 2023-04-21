@@ -102,6 +102,34 @@
     "debugcolor": "magenta",
     "debugopacity": 200
   },
+  "shieldedmediumrobot": {
+    "type": "projectile",
+    "size": [
+      1.6,
+      1.6
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 12.0,
+    "animations" : "shielded_medium_robot",
+    "gumTexture": "med_gum",
+    "outline": "med_gum_outline",
+    "texture": "med_robot",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 3,
+    "chasespeed": 4,
+    "pursuespeed": 5,
+    "rollingattack": 8
+  },
   "mediumrobot": {
     "type": "projectile",
     "size": [
@@ -158,6 +186,34 @@
     "chasespeed": 4,
     "pursuespeed": 5
   },
+  "shieldedsmallrobot": {
+    "type": "projectile",
+    "size": [
+      0.5,
+      1.0
+    ],
+    "density": 0.5,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 2.0,
+    "maxspeed": 5.0,
+    "animations": "shielded_small_robot",
+    "texture": "smallrobot",
+    "outline": "small_gum_outline",
+    "gummedTexture": "gummed_robot",
+    "gumTexture": "small_gum",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 3,
+    "chasespeed": 4,
+    "pursuespeed": 5
+  },
   "large_robot": {
     "type": "moving",
     "size": [
@@ -171,6 +227,33 @@
     "damping": 10.0,
     "maxspeed": 5.0,
     "animations": "large_robot",
+    "texture": "large_robot",
+    "gumTexture": "large_gum",
+    "outline": "large_gum_outline",
+    "debugcolor": "white",
+    "debugopacity": 192,
+    "sensorcolor": "yellow",
+    "sensoropacity": 192,
+    "visionradius": 3.0,
+    "sensorname": "listeningsensor",
+    "listeningradius": 7,
+    "wanderspeed": 2,
+    "chasespeed": 3,
+    "pursuespeed": 4
+  },
+  "shieldedlargerobot": {
+    "type": "moving",
+    "size": [
+      1.5,
+      2.8
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxspeed": 5.0,
+    "animations": "shielded_large_robot",
     "texture": "large_robot",
     "gumTexture": "large_gum",
     "outline": "large_gum_outline",
