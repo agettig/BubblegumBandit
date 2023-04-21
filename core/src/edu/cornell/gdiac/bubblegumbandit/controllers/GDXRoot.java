@@ -150,8 +150,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (screen == loading && exitCode == 7) {
 			settingsMode.setScreenListener(this);
-			BitmapFont f = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
-			settingsMode.initialize(f);
+			BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
+			BitmapFont projectSpace = loading.getAssets().getEntry("projectSpace", BitmapFont.class);
+			settingsMode.initialize(codygoonRegular, projectSpace);
 			setScreen(settingsMode);
 		} else if (screen == settingsMode) {
 			loading.setScreenListener(this);
