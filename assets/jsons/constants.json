@@ -48,6 +48,7 @@
   },
   "gumProjectile": {
     "starting_gum": 5,
+    "max_gum": 25,
     "offsetX": 0.6,
     "offsetY": 0.5,
     "speed": 25.0,
