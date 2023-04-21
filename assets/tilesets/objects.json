@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":11,
+ "tilecount":14,
  "tiledversion":"1.10.0",
  "tileheight":186,
  "tiles":[
@@ -96,6 +96,27 @@
          "imageheight":90,
          "imagewidth":65,
          "type":"chair"
+        }, 
+        {
+         "id":28,
+         "image":"..\/textures\/large_enemy\/large_robot_shield.png",
+         "imageheight":186,
+         "imagewidth":134,
+         "type":"shieldedlargerobot"
+        }, 
+        {
+         "id":29,
+         "image":"..\/textures\/medium_enemy\/medium_enemy_shield.png",
+         "imageheight":126,
+         "imagewidth":109,
+         "type":"shieldedmediumrobot"
+        }, 
+        {
+         "id":30,
+         "image":"..\/textures\/small_enemy\/small_enemy_shield.png",
+         "imageheight":65,
+         "imagewidth":43,
+         "type":"shieldedsmallrobot"
         }],
  "tilewidth":144,
  "type":"tileset",
