@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
  **/
 public class CrusherModel extends BoxObstacle implements Gummable {
 
+    public static final float traumaAmt = 0.5f;
     // TODO: Make this a kinematic body, simulate gravity and enable bandit pushing, then use internal
     // sensor to detect crushing
 

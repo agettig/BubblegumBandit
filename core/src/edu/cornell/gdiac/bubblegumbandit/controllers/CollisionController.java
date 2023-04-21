@@ -490,7 +490,7 @@ public class CollisionController implements ContactListener {
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
             // Screen shake cause block hit the floor
-            camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, .5f);
+            camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, Math.abs(CrusherModel.traumaAmt));
         }
     }
 
