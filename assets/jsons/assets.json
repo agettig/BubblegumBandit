@@ -168,6 +168,14 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
+        },
+        "codygoon": {
+            "file" : "fonts/Codygoon.ttf",
+            "size": 64
+        },
+        "project" : {
+            "file" : "fonts/ProjectSpace.ttf",
+            "size": 64
         }
     },
 	"soundfx": {
