@@ -157,13 +157,13 @@
             "file": "fonts/LucidaGrande.ttf",
             "size": 16
         },
-        "times": {
-            "file": "fonts/TimesRoman.ttf",
-            "size": 32
-       },
         "codygoonRegular": {
             "file": "fonts/CodygoonRegular.ttf",
             "size": 36
+        },
+        "projectSpace": {
+            "file": "fonts/ProjectSpace.ttf",
+            "size": 40
         }
     },
 	"soundfx": {
