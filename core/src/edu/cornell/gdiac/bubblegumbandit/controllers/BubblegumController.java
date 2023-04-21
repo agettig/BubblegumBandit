@@ -29,6 +29,9 @@ public class BubblegumController {
     /**Amount of active gum. */
     private static int activeGum;
 
+    /**Maximum allowed gum for the level*/
+    private int maxGum;
+
     /**The map of stuck Bubblegum obstacles to their joints. */
     private static ObjectMap<GumModel, ObjectSet<GumJointPair>> stuckBubblegum;
 
@@ -88,6 +91,7 @@ public class BubblegumController {
     /** Initialize bubblegumController stats */
     public void initialize(AssetDirectory directory, JsonValue json) {
         gumAmmo = json.get("starting_gum").asInt();
+        maxGum = json.get("max_gum").asInt();
         startingGum = gumAmmo;
         String key = json.get("stuckTexture").asString();
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -124,6 +128,9 @@ public class BubblegumController {
     public void fireGum() {
         gumAmmo -= 1;
     }
+
+    /** Check if player already holds max gum*/
+    public boolean atMaxGum() {return gumAmmo == maxGum;}
 
     /** increases amount of ammo by ammo */
     public void addAmmo(int ammo) {

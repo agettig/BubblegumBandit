@@ -49,6 +49,8 @@ public class PlayerController{
     }
 
     // Fields to manage buttons
+    /**Whether the gum reload button was pressed */
+    private boolean reloadPressed;
     /** Whether the reset button was pressed. */
     private boolean resetPressed;
     private boolean resetPrevious;
@@ -81,8 +83,8 @@ public class PlayerController{
     private boolean exitPressed;
     private boolean exitPrevious;
 
+    /** Whether the minimap button was pressed.*/
     private boolean minimapPressed;
-
     private  boolean minimapPrevious;
 
     /** How much did we move horizontally? */
@@ -110,6 +112,15 @@ public class PlayerController{
 
     /** If gum was collected */
     private boolean collect;
+
+    private static int[] values = new int[]{Input.Keys.A,
+                                      Input.Keys.D,
+                                      Input.Keys.SPACE,
+                                      Input.Keys.SPACE,
+                                      Input.Keys.SHIFT_LEFT,
+                                      Input.Keys.R,
+                                      Input.Buttons.LEFT,
+                                      Input.Buttons.RIGHT};
 
     /** An X-Box controller (if it is connected) */
     XBoxController xbox;
@@ -176,6 +187,13 @@ public class PlayerController{
     }
 
     /**
+     *
+     * */
+    public static void changeControls(int[] v){
+        values = v;
+    }
+
+    /**
      * Returns true if the secondary action button was pressed.
      *
      * This is a one-press button. It only returns true at the moment it was
@@ -220,7 +238,9 @@ public class PlayerController{
         return resetPressed && !resetPrevious;
     }
 
-    public boolean didExpandMinimap() {return minimapPressed && !minimapPrevious;}
+    public boolean didExpandMinimap() {return minimapPressed;}
+
+    public boolean didReload() {return reloadPressed;}
 
     /**
      * Returns true if the player wants to go to the next level.
@@ -375,45 +395,39 @@ public class PlayerController{
      */
     private void readKeyboard( boolean secondary) {
         // Give priority to gamepad results
-        resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
 
+        // TODO remove
+        resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_4));
         debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
         primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP)) ||
                 (Gdx.input.isKeyPressed(Input.Keys.W) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
         secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
-        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
-        exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-        gravityUp = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
-        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.S) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
+        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
+        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
         collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
         cameraPressed = (secondary && cameraPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_2));
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
-        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
-        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(values[1])) {
             horizontal += 1.0f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(values[0])) {
             horizontal -= 1.0f;
         }
+        reloadPressed = Gdx.input.isKeyPressed(values[5]) && !primePressed && !Gdx.input.isKeyPressed(values[1]) && !Gdx.input.isKeyPressed(values[0]);
 
 
-        vertical = (secondary ? vertical : 0.0f);
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            vertical += 1.0f;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            vertical -= 1.0f;
-        }
+        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(values[4]));
+        exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+        gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(values[2]));
+        gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(values[3]));
+
 
         // Mouse results
-        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
-        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(Input.Buttons.RIGHT));
+        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(values[6]));
+        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(values[7]));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }
