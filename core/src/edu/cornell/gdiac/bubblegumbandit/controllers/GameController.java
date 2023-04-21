@@ -30,6 +30,7 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -233,6 +234,12 @@ public class GameController implements Screen {
     /** Countdown timer after collecting the orb. */
     private float orbCountdown;
 
+    /**Tick counter for gum reloading*/
+    private long ticks;
+    /**Whether the player is reloading gum */
+    private boolean reloadingGum;
+
+
     /**
      * Returns true if the level is completed.
      * <p>
@@ -331,12 +338,14 @@ public class GameController implements Screen {
 
 
         //Technicals
+        ticks = 0;
         complete = false;
         failed = false;
         active = false;
         countdown = -1;
         orbCountdown = -1;
         levelNum = 1;
+        reloadingGum = false;
         setComplete(false);
         setFailure(false);
 
@@ -509,8 +518,12 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        ticks++;
         if(collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
+            SaveData.setStatus(levelNum-1, level.getBandit().getNumStars());
+            SaveData.unlock(levelNum);
+
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;
             }
@@ -553,8 +566,14 @@ public class GameController implements Screen {
             }
         }
 
-        if(inputResults.didExpandMinimap()){
-            minimap.toggleMinimap();
+        if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            if (ticks % 20 == 0) {
+                bubblegumController.addAmmo(1);
+                reloadingGum = true;
+            }
+        }
+        else {
+            reloadingGum = false;
         }
 
 
@@ -631,7 +650,7 @@ public class GameController implements Screen {
 
         }
         projectileController.update();
-        minimap.updateMinimap(dt);
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt,level.getWorld(), level.getBandit());
 
@@ -682,7 +701,7 @@ public class GameController implements Screen {
 
         if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
+        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
