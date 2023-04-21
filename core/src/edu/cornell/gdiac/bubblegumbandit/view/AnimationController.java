@@ -93,7 +93,7 @@ public class AnimationController {
 
 
   public void setAnimation(String name, boolean loop) {
-    if(animations.containsKey(name)) {
+    if(animations.containsKey(name)&&(currentName!=name)) {
       timeSinceLastFrame = 0f;
       if(loop) {
         current = animations.get(name);
@@ -105,7 +105,7 @@ public class AnimationController {
         tempFPS = fps.get(name);
       }
     } else {
-      System.err.println("Animation "+name+" does not exist in this context.");
+      if(!animations.containsKey(name)) System.err.println("Animation "+name+" does not exist in this context.");
     }
   }
 
