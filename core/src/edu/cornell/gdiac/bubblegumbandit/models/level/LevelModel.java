@@ -33,12 +33,10 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -165,6 +163,8 @@ public class LevelModel {
      * Reference to support tile objects
      */
     private Array<BackgroundTileModel> supportTiles;
+
+    private Vector2 orbPostion;
 
     /**
      * Returns the aim in this level.
@@ -517,6 +517,18 @@ public class LevelModel {
                     enemy.setDrawScale(scale);
                     newEnemies.add(enemy);
                     break;
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
+                    break;
                 case "mediumrobot":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
@@ -524,6 +536,30 @@ public class LevelModel {
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
                     newEnemies.add(enemy);
+                    break;
+                case "shieldedmediumrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedRollingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
+                break;
+                case "shieldedlargerobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedLaserEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    activate(enemy);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+
+                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+                    enemyCount++;
                     break;
                 case "large_robot":
                     enemyConstants = constants.get(objType);
@@ -534,6 +570,7 @@ public class LevelModel {
                     break;
                 case "orb":
                     orbPlaced = true;
+                    orbPostion = new Vector2(x,y);
                 case "star":
                 case "floatinggum":
                     Collectible coll = new Collectible();
@@ -573,6 +610,8 @@ public class LevelModel {
         if (!orbPlaced) {
             throw new RuntimeException("Level missing orb");
         }
+
+        bandit.setOrbPostion(orbPostion);
 
         activate(goalDoor);
         goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
@@ -710,7 +749,8 @@ public class LevelModel {
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
-            } else {
+            }
+            else {
                 obj.draw(canvas);
             }
         }
