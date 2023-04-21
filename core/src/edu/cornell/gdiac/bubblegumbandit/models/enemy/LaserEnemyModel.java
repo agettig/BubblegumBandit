@@ -46,6 +46,10 @@ public class LaserEnemyModel extends EnemyModel{
     private float age;
 
     private float firingTimer;
+    /**Amount of gum needed to stick the robot*/
+    private int gumToStick;
+    /**Amount of gum currently stuck to robot*/
+    private int gumStuck;
 
 
     /**
@@ -70,6 +74,8 @@ public class LaserEnemyModel extends EnemyModel{
         setFaceRight(false);
         shape = new PolygonShape();
         shape.setAsBox(.5f,.5f);
+        gumToStick = 1;
+        gumStuck = 0;
     }
 
     /**Initializes this LaserEnemyModel from JSON. Sets its
@@ -94,6 +100,12 @@ public class LaserEnemyModel extends EnemyModel{
      * otherwise, returns false.
      * */
     public boolean inactiveLaser() {return phase == LASER_PHASE.INACTIVE;}
+
+    /**Increments the number of times robot has been hit with gum by 1 */
+    public void addGumHit() {gumStuck += 1;}
+
+    /**Check how much gum robot has been hit with*/
+    public boolean shouldStick() {return gumStuck == gumToStick;}
 
 
     /**
