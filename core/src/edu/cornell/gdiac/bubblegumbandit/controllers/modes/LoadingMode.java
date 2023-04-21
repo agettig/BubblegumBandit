@@ -33,6 +33,7 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
@@ -402,7 +403,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         // Start loading the real assets
         assets = new AssetDirectory(file);
         assets.loadAssets();
+
+        int levelCount = 2; //grab from where?
+        if(!SaveData.saveExists())  {
+            SaveData.makeData(levelCount, false);
+        }
+            //is this a VM thing?
+
         active = true;
+
+
     }
 
     /**

@@ -55,10 +55,12 @@ public class HUDController {
   private Label gumCount;
   private Label orbCountdown;
   private Label fpsLabel;
+  private Label reloadGum;
 
   private Image starIcon1;
   private Image starIcon2;
   private Image starIcon3;
+  private Image reloadGumIcon;
   private Label starCount;
 
 
@@ -76,6 +78,7 @@ public class HUDController {
     healthFillText = directory.getEntry("health_fill", Texture.class);
     healthIcon = new Image(directory.getEntry("health_icon", Texture.class));
     bubbleIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+    reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
     starIcon1 = new Image(directory.getEntry("star", Texture.class));
     starIcon2 = new Image(directory.getEntry("star", Texture.class));
     starIcon3 = new Image(directory.getEntry("star", Texture.class));
@@ -112,6 +115,13 @@ public class HUDController {
     orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
     stage.addActor(orbCountdown);
 
+    reloadGum = new Label("", new Label.LabelStyle(font, Color.WHITE));
+    reloadGum.setFontScale(0.8f);
+    reloadGum.setPosition(stage.getWidth() / 2 - 15, stage.getHeight() / 4, Align.center);
+    reloadGumIcon.setPosition(stage.getWidth() / 2 - 50, stage.getHeight() / 4, Align.center);
+    stage.addActor(reloadGum);
+    stage.addActor(reloadGumIcon);
+
     fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
     fpsLabel.setFontScale(0.5f);
     table.add(fpsLabel).padLeft(10);
@@ -134,7 +144,7 @@ public class HUDController {
     view.apply(true);
   }
 
-  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS) {
+  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS, boolean reloadingGum) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -169,6 +179,15 @@ public class HUDController {
       orbCountdown.setText("0" + timer);
     }else {
       orbCountdown.setText("");
+    }
+
+    if (reloadingGum) {
+      reloadGumIcon.setVisible(true);
+      reloadGum.setText("x" + bubblegumController.getAmmo());
+    }
+    else {
+      reloadGum.setText("");
+      reloadGumIcon.setVisible(false);
     }
 
     if (showFPS) {

@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.util.ScreenListener;
 import org.w3c.dom.Text;
@@ -22,10 +24,13 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class SettingsMode implements Screen{
+public class SettingsMode implements Screen {
 
-    /** The stage, contains all HUD elements */
+    /**
+     * The stage, contains all HUD elements
+     */
     private Stage stage;
 
     /**
@@ -58,6 +63,8 @@ public class SettingsMode implements Screen{
 
     private TextButton controlsBackButton;
 
+    private TextButton reloadGumButton;
+
     private boolean backButtonClicked;
 
 
@@ -66,7 +73,9 @@ public class SettingsMode implements Screen{
      */
     private boolean active;
 
-    /** The container for laying out all HUD elements */
+    /**
+     * The container for laying out all HUD elements
+     */
     private Table settingsTable;
 
     private Table controlsTable;
@@ -91,20 +100,22 @@ public class SettingsMode implements Screen{
 
     private Label.LabelStyle labelStyle;
 
-    public final Color bubblegumPink = new Color(1, 149/255f, 138/255f, 1);
+    public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
 
-    public final Color spaceBlue = new Color(55/255f, 226/255f, 226/255f, 1);
+    public final Color spaceBlue = new Color(55 / 255f, 226 / 255f, 226 / 255f, 1);
 
-    private String keyPressed;
+    private TextButton checkedButton;
 
-    private ArrayList<TextButton> inputButtons;
+    private HashMap<TextButton, Integer> buttonIndexMap = new HashMap<>();
+
+    private int[] values;
 
     public SettingsMode() {
         internal = new AssetDirectory("jsons/settings.json");
         internal.loadAssets();
         internal.finishLoading();
 
-        Texture slider= internal.getEntry("sliderTexture", Texture.class);
+        Texture slider = internal.getEntry("sliderTexture", Texture.class);
         Texture knob = internal.getEntry("knob", Texture.class);
         Texture sliderBeforeKnobTexture = internal.getEntry("sliderBeforeKnob", Texture.class);
 
@@ -124,21 +135,28 @@ public class SettingsMode implements Screen{
         controlsTable.setFillParent(true);
         stage.addActor(settingsTable);
         settingsTable.debug();
-        keyPressed = "";
-        inputButtons = new ArrayList<>();
+        values = new int[]{Input.Keys.A,
+                           Input.Keys.D,
+                           Input.Keys.SPACE,
+                           Input.Keys.SPACE,
+                           Input.Keys.SHIFT_LEFT,
+                           Input.Keys.R,
+                           Input.Buttons.LEFT,
+                           Input.Buttons.RIGHT};
     }
+
     public void setViewport(Viewport view) {
         stage.setViewport(view);
         view.apply(true);
     }
 
-    public void createSliders(){
+    public void createSliders() {
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(sliderTexture, sliderKnob);
         sliderStyle.knobBefore = sliderBeforeKnob;
 
         musicSlider = new Slider(0, 1, .05f, false, sliderStyle);
-        musicSlider.sizeBy(2,1);
-        musicSlider.addListener(new ChangeListener(){
+        musicSlider.sizeBy(2, 1);
+        musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 SoundController.getInstance().setMusicVolume(musicSlider.getValue());
@@ -147,7 +165,7 @@ public class SettingsMode implements Screen{
         musicSlider.setValue(.5f);
 
         soundEffectsSlider = new Slider(0, 1, .05f, false, sliderStyle);
-        soundEffectsSlider.addListener(new ChangeListener(){
+        soundEffectsSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 SoundController.getInstance().setEffectsVolume(soundEffectsSlider.getValue());
@@ -157,7 +175,7 @@ public class SettingsMode implements Screen{
     }
 
 
-    public void makeSettingsTable(){
+    public void makeSettingsTable() {
         settingsStyle = new Label.LabelStyle(this.titleFont, spaceBlue);
         labelStyle = new Label.LabelStyle(this.labelFont, Color.WHITE);
         Label settings = new Label("Settings", settingsStyle);
@@ -168,14 +186,15 @@ public class SettingsMode implements Screen{
 
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.titleFont);
 
-        backButtonSettings = new TextButton("Back",backButtonStyle);
+        backButtonSettings = new TextButton("Back", backButtonStyle);
         backButtonSettings.getLabel().setFontScale(.5f);
 
-        backButtonSettings.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
+        backButtonSettings.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 System.out.println("clicked");
                 backButtonClicked = true;
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 backButtonSettings.getLabel().setColor(bubblegumPink);
@@ -189,11 +208,12 @@ public class SettingsMode implements Screen{
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
 
         controlsButton = new TextButton("Controls", controlsButtonStyle);
-        controlsButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
+        controlsButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 stage.addActor(controlsTable);
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 controlsButton.getLabel().setColor(bubblegumPink);
@@ -219,12 +239,11 @@ public class SettingsMode implements Screen{
         settingsTable.add(backButtonSettings);
         settingsTable.row();
 
-        for (Cell cell: settingsTable.getCells()){
+        for (Cell cell : settingsTable.getCells()) {
             cell.align(Align.left);
-            if (cell.getColumn()==0){
-                cell.pad(10,10,10,100);
-            }
-            else{
+            if (cell.getColumn() == 0) {
+                cell.pad(10, 10, 10, 100);
+            } else {
                 cell.pad(10);
             }
         }
@@ -241,18 +260,26 @@ public class SettingsMode implements Screen{
         Label shootGum = new Label("Shoot Gum", labelStyle);
         Label unstickGum = new Label("Unstick Gum", labelStyle);
         Label toggleMinimap = new Label("Toggle Minimap", labelStyle);
+        Label reloadGum = new Label("Reload Gum", labelStyle);
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.titleFont);
 
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
         controlsButtonStyle.checkedFontColor = bubblegumPink;
 
 
-
         strafeLeftButton = new TextButton("A", controlsButtonStyle);
-        strafeLeftButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
-
+        strafeLeftButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == strafeLeftButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = strafeLeftButton;
+                }
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 strafeLeftButton.getLabel().setColor(bubblegumPink);
@@ -264,10 +291,18 @@ public class SettingsMode implements Screen{
         });
 
         strafeRightButton = new TextButton("D", controlsButtonStyle);
-        strafeRightButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
-
+        strafeRightButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == strafeRightButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = strafeRightButton;
+                }
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 strafeRightButton.getLabel().setColor(bubblegumPink);
@@ -278,11 +313,19 @@ public class SettingsMode implements Screen{
             }
         });
 
-        toggleGravityUpButton = new TextButton("W", controlsButtonStyle);
-        toggleGravityUpButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
-
+        toggleGravityUpButton = new TextButton("SPACE", controlsButtonStyle);
+        toggleGravityUpButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == toggleGravityUpButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = toggleGravityUpButton;
+                }
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 toggleGravityUpButton.getLabel().setColor(bubblegumPink);
@@ -293,11 +336,19 @@ public class SettingsMode implements Screen{
             }
         });
 
-        toggleGravityDownButton = new TextButton("W", controlsButtonStyle);
-        toggleGravityDownButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
-
+        toggleGravityDownButton = new TextButton("SPACE", controlsButtonStyle);
+        toggleGravityDownButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == toggleGravityDownButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = toggleGravityDownButton;
+                }
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 toggleGravityDownButton.getLabel().setColor(bubblegumPink);
@@ -308,11 +359,19 @@ public class SettingsMode implements Screen{
             }
         });
 
-        toggleMinimapButton = new TextButton("SHIFT", controlsButtonStyle);
-        toggleMinimapButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
-
+        toggleMinimapButton = new TextButton("L-SHIFT", controlsButtonStyle);
+        toggleMinimapButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == toggleMinimapButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = toggleMinimapButton;
+                }
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 toggleMinimapButton.getLabel().setColor(bubblegumPink);
@@ -325,16 +384,20 @@ public class SettingsMode implements Screen{
 
         shootGumButton = new TextButton("LEFT CLICK", controlsButtonStyle);
 
-        shootGumButton.addListener(new ClickListener(){
+        shootGumButton.addListener(new ClickListener() {
 
 
-            public void clicked(InputEvent event, float x, float y){
-                for (TextButton button: inputButtons){
-                    if (button != shootGumButton){
-                        button.setChecked(false);
-                    }
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == shootGumButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = shootGumButton;
                 }
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
 //                shootGumButton.getLabel().setColor(bubblegumPink);
@@ -345,14 +408,33 @@ public class SettingsMode implements Screen{
             }
         });
         unstickGumButton = new TextButton("RIGHT CLICK", controlsButtonStyle);
-        unstickGumButton.addListener(new ClickListener(){
+        unstickGumButton.addListener(new ClickListener() {
 
 
-            public void clicked(InputEvent event, float x, float y){
-                for (TextButton button: inputButtons){
-                    if (button != unstickGumButton){
-                        button.setChecked(false);
-                    }
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == unstickGumButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = unstickGumButton;
+                }
+            }
+        });
+
+        reloadGumButton = new TextButton("R", controlsButtonStyle);
+        reloadGumButton.addListener(new ClickListener() {
+
+
+            public void clicked(InputEvent event, float x, float y) {
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == reloadGumButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = reloadGumButton;
                 }
             }
         });
@@ -360,11 +442,12 @@ public class SettingsMode implements Screen{
         controlsBackButton = new TextButton("Back", backButtonStyle);
         controlsBackButton.getLabel().setFontScale(.5f);
 
-        controlsBackButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
+        controlsBackButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 stage.addActor(settingsTable);
             }
+
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 controlsBackButton.getLabel().setColor(bubblegumPink);
@@ -374,15 +457,6 @@ public class SettingsMode implements Screen{
                 controlsBackButton.getLabel().setColor(Color.WHITE);
             }
         });
-
-
-        inputButtons.add(strafeLeftButton);
-        inputButtons.add(strafeRightButton);
-        inputButtons.add(toggleGravityUpButton);
-        inputButtons.add(toggleGravityDownButton);
-        inputButtons.add(toggleMinimapButton);
-        inputButtons.add(shootGumButton);
-        inputButtons.add(unstickGumButton);
 
         controlsTable.row();
         controlsTable.add(controls);
@@ -402,6 +476,9 @@ public class SettingsMode implements Screen{
         controlsTable.add(toggleMinimap);
         controlsTable.add(toggleMinimapButton);
         controlsTable.row();
+        controlsTable.add(reloadGum);
+        controlsTable.add(reloadGumButton);
+        controlsTable.row();
         controlsTable.add(shootGum);
         controlsTable.add(shootGumButton);
         controlsTable.row();
@@ -410,18 +487,27 @@ public class SettingsMode implements Screen{
         controlsTable.row();
         controlsTable.add(controlsBackButton);
 
-        for (Cell cell: controlsTable.getCells()){
+        for (Cell cell : controlsTable.getCells()) {
             cell.align(Align.left);
-            if (cell.getColumn()==0){
-                cell.pad(10,10,10,100);
-            }
-            else{
+            if (cell.getColumn() == 0) {
+                cell.pad(10, 10, 10, 100);
+            } else {
                 cell.pad(10);
             }
         }
+
+        buttonIndexMap.put(strafeLeftButton, 0);
+        buttonIndexMap.put(strafeRightButton, 1);
+        buttonIndexMap.put(toggleGravityUpButton, 2);
+        buttonIndexMap.put(toggleGravityDownButton, 3);
+        buttonIndexMap.put(toggleMinimapButton, 4);
+        buttonIndexMap.put(reloadGumButton, 5);
+        buttonIndexMap.put(shootGumButton, 6);
+        buttonIndexMap.put(unstickGumButton, 7);
+
     }
 
-    public void initialize(BitmapFont labelFont, BitmapFont projectSpace){
+    public void initialize(BitmapFont labelFont, BitmapFont projectSpace) {
         if (this.labelFont != null) {
             stage.clear();
             stage.addActor(settingsTable);
@@ -431,7 +517,6 @@ public class SettingsMode implements Screen{
         this.titleFont = projectSpace;
         makeSettingsTable();
         makeControlsTable();
-
     }
 
 
@@ -446,7 +531,8 @@ public class SettingsMode implements Screen{
 
 
     public void draw() {
-        stage.draw();}
+        stage.draw();
+    }
 
     @Override
     public void show() {
@@ -465,7 +551,6 @@ public class SettingsMode implements Screen{
             stage.getBatch().begin();
             stage.getBatch().draw(background.getRegion(), 0, 0, stage.getWidth(), stage.getHeight());
             stage.getBatch().end();
-            keyPressed = "";
             draw();
             if (backButtonClicked) {
                 listener.exitScreen(this, 0);
@@ -492,6 +577,7 @@ public class SettingsMode implements Screen{
     @Override
     public void hide() {
         active = false;
+        PlayerController.changeControls(values);
     }
 
     @Override
@@ -502,26 +588,28 @@ public class SettingsMode implements Screen{
     public class SettingsInputProcessor extends InputAdapter {
         @Override
         public boolean keyUp(int keycode) {
-            for (TextButton inputButton: inputButtons){
-                if(inputButton.isChecked()){
-                    keyPressed = Input.Keys.toString(keycode);
-                    inputButton.setText(keyPressed.toUpperCase());
-                }
+            if (checkedButton != null && checkedButton != shootGumButton && checkedButton != unstickGumButton) {
+                values[buttonIndexMap.get(checkedButton)] = keycode;
+                checkedButton.setText(Input.Keys.toString(keycode).toUpperCase());
+                checkedButton.setChecked(false);
+                checkedButton = null;
             }
             return true;
         }
 
         @Override
-        public boolean touchUp (int screenX, int screenY, int pointer, int button) {
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
-            for (TextButton inputButton: inputButtons){
-                if (inputButton.isChecked()){
-                    if (button == Input.Buttons.LEFT){
-                        inputButton.setText("LEFT CLICK");
-                    } else if (button == Input.Buttons.RIGHT) {
-                        inputButton.setText("RIGHT CLICK");
-                    }
+            if (checkedButton != null && (checkedButton == shootGumButton || checkedButton == unstickGumButton)) {
+                if (button == Input.Buttons.LEFT) {
+                    checkedButton.setText("LEFT CLICK");
+                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
+                } else if (button == Input.Buttons.RIGHT) {
+                    checkedButton.setText("RIGHT CLICK");
+                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.RIGHT;
                 }
+                checkedButton.setChecked(false);
+                checkedButton = null;
             }
             return true;
         }
