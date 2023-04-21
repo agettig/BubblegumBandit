@@ -94,6 +94,7 @@ public class AnimationController {
 
   public void setAnimation(String name, boolean loop) {
     if(animations.containsKey(name)) {
+      timeSinceLastFrame = 0f;
       if(loop) {
         current = animations.get(name);
         currentName = name;
