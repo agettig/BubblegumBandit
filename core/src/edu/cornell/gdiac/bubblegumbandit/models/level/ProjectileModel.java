@@ -18,7 +18,7 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     private float gravity = 0;
 
     /** damage that the bullet deals upon impact with player */
-    private float damage = 500;
+    private float damage = 20;
 
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectileController.
@@ -95,7 +95,8 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     @Override
     public void draw(GameCanvas canvas) {
         float angle = getLinearVelocity().angleRad();
-        canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,angle,1,1);
+        canvas.drawWithShadow(texture,Color.WHITE,origin.x,origin.y,
+            getX()*drawScale.x,getY()*drawScale.x,angle,1,1);
 
     }
 }
