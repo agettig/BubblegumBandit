@@ -129,7 +129,8 @@ public class LevelModel {
     private TiledGraph tiledGraphGravityDown;
     private TiledGraph tiledGraphGravityUp;
 
-    private ArrayList<String> enemyObjectNames;
+    /** EnemyModels to spawn after the orb gets picked up. */
+    private HashSet<EnemyModel> postOrbEnemies;
 
     /**
      * The width of the level.
@@ -280,6 +281,7 @@ public class LevelModel {
         JsonValue tileLayer = null;
         JsonValue objects = null;
         JsonValue supports = null;
+        JsonValue postOrb = null;
 
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -299,6 +301,9 @@ public class LevelModel {
                     break;
                 case "Supports":
                     supports = layer;
+                    break;
+                case "PostOrb":
+                    postOrb = layer;
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name");
@@ -325,26 +330,6 @@ public class LevelModel {
             property = property.next();
         }
 
-        //initialize dynamic background elements
-//        JsonValue backJV =levelFormat.get("backgroundObj");
-//
-//        int numObj = backJV.get("numObj").asInt();
-//        JsonValue info = backJV.get("objects").child();
-//
-//        backgroundObjects = new BackObjModel[numObj];
-//
-//        for (int i = 0; i < numObj; i ++){
-//            BackObjModel o = new BackObjModel();
-//            o.initialize(directory, backJV, info);
-//
-//            o.setDrawScale(scale);
-//            activate(o);
-//            o.setFilter(CATEGORY_BACK, MASK_BACK);
-//
-//            info = info.next();
-//
-//            backgroundObjects[i] = o;
-//        }
 
         //------------------------------------------------
 
@@ -539,6 +524,32 @@ public class LevelModel {
             }
             object = object.next();
         }
+
+        while (postOrb != null){
+            String objType = postOrb.get("type").asString();
+            float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
+            float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
+
+
+            switch (objType) {
+                case "smallEnemy":
+                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "mediumEnemy":
+                    enemy = new RollingEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "largeEnemy":
+                    enemy = new LaserEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(objType + " is not a valid post orb object");
+            }
+            postOrb = postOrb.next();
+        }
+
         if (goalDoor == null) {
             throw new RuntimeException("Level missing exit");
         }
