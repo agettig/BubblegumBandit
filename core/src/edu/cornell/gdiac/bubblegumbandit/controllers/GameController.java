@@ -29,6 +29,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -510,6 +511,9 @@ public class GameController implements Screen {
     public void update(float dt) {
         if(collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
+            SaveData.setStatus(levelNum-1, level.getBandit().getNumStars());
+            SaveData.unlock(levelNum);
+
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;
             }
