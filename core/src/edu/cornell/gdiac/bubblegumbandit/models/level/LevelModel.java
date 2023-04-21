@@ -160,6 +160,8 @@ public class LevelModel {
      */
     private Array<BackgroundTileModel> supportTiles;
 
+    private Vector2 orbPostion;
+
     /**
      * Returns the aim in this level.
      */
@@ -521,6 +523,7 @@ public class LevelModel {
                     break;
                 case "orb":
                     orbPlaced = true;
+                    orbPostion = new Vector2(x,y);
                 case "star":
                 case "floatinggum":
                     Collectible coll = new Collectible();
@@ -553,6 +556,8 @@ public class LevelModel {
         if (!orbPlaced) {
             throw new RuntimeException("Level missing orb");
         }
+
+        bandit.setOrbPostion(orbPostion);
 
         activate(goalDoor);
         goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
