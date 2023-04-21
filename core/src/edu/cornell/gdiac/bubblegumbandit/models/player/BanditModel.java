@@ -127,8 +127,8 @@ public class BanditModel extends CapsuleObstacle {
      */
     private long ticks;
 
-	/** The y scale for this player (used for flip effect) */
-	private float yScale;
+    /** The y scale for this player (used for flip effect) */
+    private float yScale;
 
     /**
      * Camera target for player
@@ -145,6 +145,15 @@ public class BanditModel extends CapsuleObstacle {
     private int numStars;
 
     private boolean isKnockback;
+
+    private Texture guide;
+
+    private Vector2 orbPostion;
+
+    public void setOrbPostion(Vector2 orbPostion){
+        assert orbPostion != null;
+        this.orbPostion = orbPostion;
+    }
 
 
     /**
@@ -280,7 +289,7 @@ public class BanditModel extends CapsuleObstacle {
      * @return the value of the player's yScale.
      */
     public float getYScale() {
-		return yScale;
+        return yScale;
     }
 
     /**
@@ -475,6 +484,7 @@ public class BanditModel extends CapsuleObstacle {
         setDimension(size[0], size[1]);
 
         animationController = new AnimationController(directory, "bandit");
+        guide = directory.getEntry("bandit_guide", Texture.class);
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
@@ -633,21 +643,21 @@ public class BanditModel extends CapsuleObstacle {
             shootCooldown = Math.max(0, shootCooldown - 1);
         }
 
-		if (yScale > 1) {
-			yScale = 1;
-		} else if (yScale < -1) {
-			yScale = -1;
-		}
+        if (yScale > 1) {
+            yScale = 1;
+        } else if (yScale < -1) {
+            yScale = -1;
+        }
 
-		if (!isFlipped && yScale < 1) {
-			if (yScale != -1 || !stuck) {
-				yScale += 0.1f;
-			}
-		} else if (isFlipped && yScale > -1) {
-			if (yScale != 1 || !stuck) {
-				yScale -= 0.1f;
-			}
-		}
+        if (!isFlipped && yScale < 1) {
+            if (yScale != -1 || !stuck) {
+                yScale += 0.1f;
+            }
+        } else if (isFlipped && yScale > -1) {
+            if (yScale != 1 || !stuck) {
+                yScale -= 0.1f;
+            }
+        }
 
         // Change camera target
         cameraTarget.x = getX() * drawScale.x;
@@ -674,9 +684,18 @@ public class BanditModel extends CapsuleObstacle {
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
                     getY() * drawScale.y, getAngle(), effect, yScale);
 
-
         }
 
+        float deltaX = orbPostion.x - getX();
+        float deltaY = orbPostion.y - getY();
+
+        double theta = Math.atan2(deltaY, deltaX);
+        double x = getX() + 1 * Math.cos(theta);
+        double y = getY() + 1.25 * Math.sin(theta);
+
+        if (!orbCollected){
+            canvas.draw(guide,Color.WHITE, (float) (guide.getWidth()/2), guide.getHeight()/2, (float) x * drawScale.x, (float) y * drawScale.y,(float)theta, 1, 1);
+        }
     }
 
     /**
