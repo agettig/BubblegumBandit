@@ -141,6 +141,9 @@ public class LevelModel {
      */
     private int levelHeight;
 
+    private int enemyCount;
+
+
     /**
      * Lighting system
      */
@@ -430,7 +433,6 @@ public class LevelModel {
         JsonValue object = objects.child();
         JsonValue enemyConstants;
         EnemyModel enemy;
-        int enemyCount = 0;
         while (object != null) {
             String objType = object.get("type").asString();
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
@@ -530,18 +532,35 @@ public class LevelModel {
             float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
 
-
             switch (objType) {
                 case "smallEnemy":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    enemyCount++;
                     postOrbEnemies.add(enemy);
                     break;
                 case "mediumEnemy":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    enemyCount++;
                     postOrbEnemies.add(enemy);
                     break;
                 case "largeEnemy":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     enemy = new LaserEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+                    enemyCount++;
                     postOrbEnemies.add(enemy);
                     break;
                 default:
@@ -573,10 +592,14 @@ public class LevelModel {
      * Spawns all EnemyModels that should drop in after the Bandit picks
      * up the orb.
      *
-     * @param enemyData JSON file containing data of Enemies to spawn
+     * @param constants JSON file containing data of Enemies to spawn
      * */
-    public void spawnPostOrbEnemies(JsonValue enemyData){
-
+    public void spawnPostOrbEnemies(JsonValue constants){
+        for(EnemyModel enemy : postOrbEnemies){
+            enemyCount++;
+            enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+            activate(enemy);
+        }
     }
 
     public void dispose() {
