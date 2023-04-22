@@ -115,6 +115,10 @@ public abstract class Obstacle {
 		return collidedObs;
 	}
 
+	public void clearCollisions(){
+		collidedObs.clear();
+	}
+
 
 	/// BodyDef Methods
 	/**
