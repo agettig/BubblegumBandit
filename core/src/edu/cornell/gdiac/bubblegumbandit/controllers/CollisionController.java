@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -120,6 +121,13 @@ public class CollisionController implements ContactListener {
             }
             if (obstacleB instanceof Gummable) {
                 obstacleB.startCollision(obstacleA);
+            }
+
+            if (obstacleB instanceof EnemyModel && obstacleA instanceof TileModel) {
+                ((EnemyModel) obstacleB).setTile((TileModel) obstacleA);
+            }
+            if (obstacleA instanceof EnemyModel && obstacleB instanceof TileModel) {
+                ((EnemyModel) obstacleA).setTile((TileModel) obstacleB);
             }
 
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
@@ -316,10 +324,10 @@ public class CollisionController implements ContactListener {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
-                    for (Obstacle ob : gummable.getCollisions()) {
-                        System.out.println(ob.getName());
-                        bubblegumController.createGummableJoint(gummable, ob);
-                    }
+//                    for (Obstacle ob : gummable.getCollisions()) {
+//                        System.out.println(ob.getName());
+                        bubblegumController.createGummableJoint(gummable, gummable.getTile());
+                   // }
                 }
             }
             else if (body instanceof TileModel) {
@@ -457,18 +465,22 @@ public class CollisionController implements ContactListener {
         BanditModel bandit = levelModel.getBandit();
 
         // TODO: REFACTOR to more general knockback
-        if (bd1.getName().equals("mediumEnemy") && bd2.equals(bandit)) {
-            boolean leftMedium = (bd1.getX() < bd2.getX());
-            boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
-            bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
-        } else if (bd2.getName().equals("mediumEnemy") && bd1.equals(bandit)) {
-            boolean leftMedium = (bd1.getX() > bd2.getX());
-            boolean knockBackUp = levelModel.getWorld().getGravity().y > 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
-            bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+        if (bd1 instanceof RollingEnemyModel && bd2.equals(bandit)) {
+            if (!bd1.getGummed() && !bd1.getStuck()) {
+                boolean leftMedium = (bd1.getX() < bd2.getX());
+                boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
+                bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
+                bandit.setKnockback(true);
+                bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            }
+        } else if (bd2 instanceof RollingEnemyModel && bd1.equals(bandit)) {
+            if (!bd2.getGummed() && !bd2.getStuck()) {
+                boolean leftMedium = (bd1.getX() > bd2.getX());
+                boolean knockBackUp = levelModel.getWorld().getGravity().y > 0;
+                bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
+                bandit.setKnockback(true);
+                bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            }
         }
     }
 
