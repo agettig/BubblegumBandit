@@ -5,10 +5,14 @@
         "health_fill": "textures/UI/health_fill.png",
         "health_icon": "textures/UI/UI_heart.png",
         "bubblegum_icon": "textures/UI/bubble_icon.png",
-        "sunfish" : "textures/UI/sunfish.png",
-        "ship1" : "textures/UI/level1.png",
         "minimap_background" : "textures/UI/minimap_background.png",
         "minimap_tile" : "textures/UI/square.png",
+
+        "sunfish" : "textures/level_select/sunfish.png",
+        "ship1" : "textures/level_select/level1.png",
+        "ship2" : "textures/level_select/level2.png",
+        "fire" : "textures/level_select/fire.png",
+        "boost" : "textures/level_select/boost.png",
 
 
         "terrain": {
@@ -16,6 +20,11 @@
         },
         "background": {
             "file": "textures/environment/background.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "space_bg": {
+            "file": "textures/environment/space_sample.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -193,6 +202,14 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
+        },
+        "codygoon": {
+            "file" : "fonts/Codygoon.ttf",
+            "size": 64
+        },
+        "project" : {
+            "file" : "fonts/ProjectSpace.ttf",
+            "size": 64
         }
     },
 	"soundfx": {
