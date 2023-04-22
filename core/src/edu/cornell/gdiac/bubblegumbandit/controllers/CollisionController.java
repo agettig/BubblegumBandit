@@ -458,18 +458,22 @@ public class CollisionController implements ContactListener {
         BanditModel bandit = levelModel.getBandit();
 
         // TODO: REFACTOR to more general knockback
-        if (bd1.getName().equals("mediumEnemy") && bd2.equals(bandit)) {
-            boolean leftMedium = (bd1.getX() < bd2.getX());
-            boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
-            bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
-        } else if (bd2.getName().equals("mediumEnemy") && bd1.equals(bandit)) {
-            boolean leftMedium = (bd1.getX() > bd2.getX());
-            boolean knockBackUp = levelModel.getWorld().getGravity().y > 0;
-            bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
-            bandit.setKnockback(true);
-            bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+        if (bd1 instanceof RollingEnemyModel && bd2.equals(bandit)) {
+            if (!bd1.getGummed() && !bd1.getStuck()) {
+                boolean leftMedium = (bd1.getX() < bd2.getX());
+                boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
+                bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
+                bandit.setKnockback(true);
+                bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            }
+        } else if (bd2 instanceof RollingEnemyModel && bd1.equals(bandit)) {
+            if (!bd2.getGummed() && !bd2.getStuck()) {
+                boolean leftMedium = (bd1.getX() > bd2.getX());
+                boolean knockBackUp = levelModel.getWorld().getGravity().y > 0;
+                bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
+                bandit.setKnockback(true);
+                bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+            }
         }
     }
 
