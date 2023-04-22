@@ -130,7 +130,6 @@ public class CollisionController implements ContactListener {
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
-            checkMediumEnemyCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -171,10 +170,10 @@ public class CollisionController implements ContactListener {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
-            if (ob1 instanceof Gummable && ob1.getGummed()) {
+            if (ob1 instanceof Gummable) {
                 ob1.endCollision(ob2);
             }
-            if (ob2 instanceof Gummable && ob2.getGummed()) {
+            if (ob2 instanceof Gummable) {
                 ob2.endCollision(ob1);
             }
 
