@@ -619,7 +619,7 @@ public class BanditModel extends CapsuleObstacle {
             }
         } else {
             forceCache.set(getMovement(), 0);
-            body.applyForce(forceCache, getPosition(), true);
+           body.applyForce(forceCache, getPosition(), true);
         }
     }
 
