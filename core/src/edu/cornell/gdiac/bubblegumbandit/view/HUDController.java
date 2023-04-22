@@ -124,7 +124,7 @@ public class HUDController {
 
     for (int i = 0; i < 6; i++) {
       Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
-      reloadGumIcon.setPosition(stage.getWidth() / 2 - 100 + i*50, stage.getHeight() / 4, Align.center);
+      reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
       reloadGumCount[i] = reloadGumIcon;
       reloadGumIcon.setVisible(false);
       stage.addActor(reloadGumIcon);
