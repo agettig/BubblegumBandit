@@ -99,13 +99,13 @@ public class SettingsMode implements Screen {
     private TextButton reloadGumButton;
 
     /**
-     * Whether or not back butotn to main menu was clicked
+     * Whether back butotn to main menu was clicked
      */
     private boolean backButtonClicked;
 
 
     /**
-     * Whether or not this player mode is still active
+     * Whether this player mode is still active
      */
     private boolean active;
 
@@ -229,13 +229,12 @@ public class SettingsMode implements Screen {
 
         stage = new Stage();
         settingsTable = new Table();
-        settingsTable.align(Align.center);
+        settingsTable.align(Align.topLeft);
         controlsTable = new Table();
-        controlsTable.align(Align.center);
+        controlsTable.align(Align.topLeft);
         settingsTable.setFillParent(true);
         controlsTable.setFillParent(true);
         stage.addActor(settingsTable);
-        settingsTable.debug();
         values = new int[]{Input.Keys.A,
                            Input.Keys.D,
                            Input.Keys.SPACE,
@@ -339,26 +338,21 @@ public class SettingsMode implements Screen {
 
 
         settingsTable.row();
-        settingsTable.add(settings);
+        settingsTable.add(settings).pad(100,100,40,0);
         settingsTable.row();
-        settingsTable.add(music);
-        settingsTable.add(musicSlider).width(460);
+        settingsTable.add(music).pad(0, 160, 32, 455);
+        settingsTable.add(musicSlider).width(460).pad(0, 0, 32, 0);
         settingsTable.row();
-        settingsTable.add(soundEffects);
-        settingsTable.add(soundEffectsSlider).width(460);
+        settingsTable.add(soundEffects).pad(0, 160, 32, 295);;
+        settingsTable.add(soundEffectsSlider).width(460).pad(0, 0, 32, 0);;
         settingsTable.row();
-        settingsTable.add(controlsButton);
+        settingsTable.add(controlsButton).pad(0, 160, 40, 0);;
         settingsTable.row();
-        settingsTable.add(backButtonSettings);
+        settingsTable.add(backButtonSettings).pad(0,100,0,0);
         settingsTable.row();
 
         for (Cell cell : settingsTable.getCells()) {
             cell.align(Align.left);
-            if (cell.getColumn() == 0) {
-                cell.pad(10, 10, 10, 100);
-            } else {
-                cell.pad(10);
-            }
         }
         settingsTable.columnDefaults(1).setActorWidth(400);
         settingsTable.columnDefaults(1).fillX();
@@ -588,7 +582,7 @@ public class SettingsMode implements Screen {
 
 
         controlsTable.row();
-        controlsTable.add(controls);
+        controlsTable.add(controls).pad(100,100,40,0);
 
         buttonIndexMap.put(moveLeftButton, 0);
         buttonIndexMap.put(moveRightButton, 1);
@@ -599,21 +593,23 @@ public class SettingsMode implements Screen {
         buttonIndexMap.put(shootGumButton, 6);
         buttonIndexMap.put(unstickGumButton, 7);
 
-        for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
-            TextButton button = entry.getKey();
-            int index = entry.getValue();
+        int rightPadding[] = new int[]{0, 240, 220, 120, 80, 280, 240, 200};
+        TextButton[] buttons = new TextButton[]{moveLeftButton, moveRightButton,
+                                                toggleGravityUpButton, toggleGravityDownButton,
+                                                toggleMinimapButton, reloadGumButton,
+                                                shootGumButton, unstickGumButton};
+
+        for (int i = 0; i < 8; i++){
+            TextButton button = buttons[i];
             controlsTable.row();
-            controlsTable.add(labels[index]);
-            controlsTable.add(button);
+            controlsTable.add(labels[i]).pad(0,160,20,rightPadding[i]);
+            controlsTable.add(button).pad(0,0,20,0);
         }
+        controlsTable.row();
+        controlsTable.add(controlsBackButton).pad(20,100,0,0);
 
         for (Cell cell : controlsTable.getCells()) {
             cell.align(Align.left);
-            if (cell.getColumn() == 0) {
-                cell.pad(10, 10, 10, 100);
-            } else {
-                cell.pad(10);
-            }
         }
     }
 
@@ -682,6 +678,10 @@ public class SettingsMode implements Screen {
 
     @Override
     public void render(float delta) {
+        // TODO clear screen (crashing on mac??)
+//        Gdx.gl.glClearColor( 0, 0, 0, 1 );
+//        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
+
         if (active) {
             stage.act();
             draw();
@@ -735,6 +735,10 @@ public class SettingsMode implements Screen {
                 checkedButton.setText(Input.Keys.toString(keycode).toUpperCase());
                 checkedButton.setChecked(false);
                 checkedButton = null;
+            }
+            if (keycode == Input.Keys.NUM_1){
+                controlsTable.setDebug(!controlsTable.getDebug());
+                settingsTable.setDebug(!settingsTable.getDebug());
             }
             return true;
         }
