@@ -171,6 +171,13 @@ public class CollisionController implements ContactListener {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
+            if (ob1 instanceof Gummable) {
+                ob1.endCollision(ob2);
+            }
+            if (ob2 instanceof Gummable) {
+                ob2.endCollision(ob1);
+            }
+
             if (ob1.getName().equals("cameraTile") && avatar == bd2) {
                 updateCamera(ob1);
             } else if (ob2.getName().equals("cameraTile") && avatar == bd1) {
