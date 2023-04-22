@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.helpers;
 
 import com.badlogic.gdx.utils.ObjectSet;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 /** This is an interface that lets anything be gummable. All of these methods are implemented in Obstacle except
@@ -23,4 +24,6 @@ public interface Gummable extends Unstickable {
     public void setStuck(boolean value);
 
     public boolean getStuck();
+
+    public TileModel getTile();
 }
