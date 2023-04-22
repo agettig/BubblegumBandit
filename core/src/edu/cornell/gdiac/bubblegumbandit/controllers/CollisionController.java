@@ -114,6 +114,21 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
+
+
+            if(obstacleA instanceof RollingEnemyModel) {
+                if (((RollingEnemyModel) obstacleA).getId() == 2) {
+                    System.out.println("Here");
+                }
+            }
+
+            if(obstacleB instanceof RollingEnemyModel){
+                if(((RollingEnemyModel)obstacleB).getId() == 2){
+                    System.out.println("Here");
+                }
+            }
+
+
             if (obstacleA instanceof Gummable) {
                 obstacleA.startCollision(obstacleB);
             }
@@ -169,6 +184,7 @@ public class CollisionController implements ContactListener {
         try{
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
+
 
             if (ob1 instanceof Gummable) {
                 ob1.endCollision(ob2);

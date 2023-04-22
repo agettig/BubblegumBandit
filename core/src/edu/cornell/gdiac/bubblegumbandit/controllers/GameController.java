@@ -581,16 +581,13 @@ public class GameController implements Screen {
             if (unstickable != null) {
                 Obstacle unstickableOb = (Obstacle) unstickable;
                 if (unstickableOb.getName().equals("stickyGum")) {
-                    // Unstick it
                     bubblegumController.removeGum((GumModel) unstickable);
                     SoundController.playSound("enemySplat", 1f); // Temp sound
                 } else if (unstickableOb instanceof Gummable) {
                     Gummable gummable = (Gummable) unstickableOb;
                     if (gummable.getGummed()) {
-                        // Ungum it
                         bubblegumController.removeGummable(gummable);
                         SoundController.playSound("enemySplat", 1f); // Temp sound
-
                     }
                 }
             }
