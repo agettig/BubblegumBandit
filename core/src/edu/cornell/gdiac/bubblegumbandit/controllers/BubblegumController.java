@@ -350,7 +350,9 @@ public class BubblegumController {
             SoundController.playSound("gumSplat", 0.5f);
         }
         for (int i = 0; i < gummableAssemblyQueue.size; i++) {
-            Joint joint = level.getWorld().createJoint(gummableAssemblyQueue.removeFirst());
+            WeldJointDef def = gummableAssemblyQueue.removeFirst();
+            if(def.bodyB == null || def.bodyA == null) return;
+            Joint joint = level.getWorld().createJoint(def);
             addToGummableMap(joint);
             SoundController.playSound("enemySplat", 1f);
         }
