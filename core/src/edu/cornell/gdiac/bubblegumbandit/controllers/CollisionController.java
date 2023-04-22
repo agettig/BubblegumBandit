@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -122,6 +123,13 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA);
             }
 
+            if (obstacleB instanceof EnemyModel && obstacleA instanceof TileModel) {
+                ((EnemyModel) obstacleB).setTile((TileModel) obstacleA);
+            }
+            if (obstacleA instanceof EnemyModel && obstacleB instanceof TileModel) {
+                ((EnemyModel) obstacleA).setTile((TileModel) obstacleB);
+            }
+
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
@@ -171,10 +179,10 @@ public class CollisionController implements ContactListener {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
-            if (ob1 instanceof Gummable && ob1.getGummed()) {
+            if (ob1 instanceof Gummable) {
                 ob1.endCollision(ob2);
             }
-            if (ob2 instanceof Gummable && ob2.getGummed()) {
+            if (ob2 instanceof Gummable) {
                 ob2.endCollision(ob1);
             }
 
@@ -317,10 +325,10 @@ public class CollisionController implements ContactListener {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
-                    for (Obstacle ob : gummable.getCollisions()) {
-                        System.out.println(ob.getName());
-                        bubblegumController.createGummableJoint(gummable, ob);
-                    }
+//                    for (Obstacle ob : gummable.getCollisions()) {
+//                        System.out.println(ob.getName());
+                        bubblegumController.createGummableJoint(gummable, gummable.getTile());
+                   // }
                 }
             }
             else if (body instanceof TileModel) {
