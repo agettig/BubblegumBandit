@@ -223,6 +223,8 @@ public class BubblegumController {
     public void removeGummable(Gummable gummable) {
         gummable.setGummed(false);
 
+
+        if(!stuckToGummable.containsKey(gummable)) return;
         for (Joint j : stuckToGummable.get(gummable)) {
             gummableJointsToRemove.addLast(j);
         }
