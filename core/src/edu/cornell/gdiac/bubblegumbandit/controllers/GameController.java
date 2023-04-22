@@ -659,16 +659,6 @@ public class GameController implements Screen {
 
         // TODO add to collision controller
         // TODO have attack action for rolling enemy
-//        if (collisionController.getRollingCollision()) {
-//            bandit.hitPlayer(0.5f);
-//            if (collisionController.getLeftRolling()) {
-//                bandit.getBody().applyForce(30f, 1f, bandit.getX(), bandit.getY(), true);
-//            }
-//            else {
-//                bandit.getBody().applyForce(-30f, 1f, bandit.getX(), bandit.getY(), true);
-//            }
-//            collisionController.resetRollingCollision();
-//        }
     }
 
 
