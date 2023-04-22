@@ -114,6 +114,7 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
+
             if (obstacleA instanceof Gummable) {
                 obstacleA.startCollision(obstacleB);
             }
@@ -121,9 +122,9 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA);
             }
 
+            resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
-            resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB);
@@ -169,13 +170,6 @@ public class CollisionController implements ContactListener {
         try{
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
-
-            if (ob1 instanceof Gummable) {
-                ob1.endCollision(ob2);
-            }
-            if (ob2 instanceof Gummable) {
-                ob2.endCollision(ob1);
-            }
 
             if (ob1.getName().equals("cameraTile") && avatar == bd2) {
                 updateCamera(ob1);
@@ -317,11 +311,9 @@ public class CollisionController implements ContactListener {
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
                     for (Obstacle ob : gummable.getCollisions()) {
+                        System.out.println(ob.getName());
                         bubblegumController.createGummableJoint(gummable, ob);
                     }
-                }
-                else {
-                    gummable.setStuck(true);
                 }
             }
             else if (body instanceof TileModel) {

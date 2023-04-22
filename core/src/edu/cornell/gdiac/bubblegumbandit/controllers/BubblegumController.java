@@ -384,6 +384,7 @@ public class BubblegumController {
             try {
                 Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
                 ob1.setStuck(false);
+                ob1.setGummed(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob1.flippedGravity();
                 }
@@ -393,6 +394,7 @@ public class BubblegumController {
             try {
                 Obstacle ob2 = (Obstacle) j.getBodyB().getUserData();
                 ob2.setStuck(false);
+                ob2.setGummed(false);
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob2.flippedGravity();
                 }

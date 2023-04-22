@@ -14,6 +14,8 @@ public interface Gummable extends Unstickable {
 
     public ObjectSet<Obstacle> getCollisions();
 
+    public void clearCollisions();
+
     public void setGummed(boolean value);
 
     public boolean getGummed();
