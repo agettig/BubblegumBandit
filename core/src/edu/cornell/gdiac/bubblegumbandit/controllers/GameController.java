@@ -726,7 +726,6 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
-        canvas.clear();
         level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());

@@ -42,9 +42,9 @@ public class SoundController {
 
     private static SoundController controller;
 
-    private float musicVolume;
+    private static float musicVolume;
 
-    private float soundEffectsVolume;
+    private static float soundEffectsVolume;
 
 
     public SoundController() {}
@@ -91,7 +91,7 @@ public class SoundController {
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
-        return playSound(s,soundId, volume * getInstance().soundEffectsVolume);
+        return playSound(s,soundId, volume * soundEffectsVolume);
     }
 
     /**
