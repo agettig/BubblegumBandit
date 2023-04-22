@@ -66,7 +66,7 @@ public class HUDController {
 
   public HUDController(AssetDirectory directory) {
 
-    font = directory.getEntry("display", BitmapFont.class);
+    font = directory.getEntry("codygoonRegular", BitmapFont.class);
     stage = new Stage();
 
     table = new Table();
@@ -100,8 +100,6 @@ public class HUDController {
     table.add(bubbleIcon);
 
     gumCount = new Label("x0", new Label.LabelStyle(font, Color.WHITE));
-    gumCount.setFontScale(0.5f);
-
     table.add(gumCount).padLeft(10);
     table.row();
     table.add(starIcon1);
