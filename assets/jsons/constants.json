@@ -47,8 +47,8 @@
     "debugopacity": 200
   },
   "gumProjectile": {
-    "starting_gum": 5,
-    "max_gum": 25,
+    "starting_gum": 6,
+    "max_gum": 6,
     "offsetX": 0.6,
     "offsetY": 0.5,
     "speed": 25.0,
