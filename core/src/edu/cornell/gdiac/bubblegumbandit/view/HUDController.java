@@ -68,7 +68,7 @@ public class HUDController {
 
   public HUDController(AssetDirectory directory) {
 
-    font = directory.getEntry("display", BitmapFont.class);
+    font = directory.getEntry("codygoonRegular", BitmapFont.class);
     stage = new Stage();
 
     table = new Table();
