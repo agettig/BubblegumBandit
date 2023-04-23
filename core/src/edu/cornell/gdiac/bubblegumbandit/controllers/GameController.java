@@ -414,7 +414,6 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
-
     }
 
 
@@ -595,10 +594,12 @@ public class GameController implements Screen {
         }
 
 
-        float grav = level.getWorld().getGravity().y;
-        if ((bandit.isGrounded() || !bandit.hasFlipped()) &&
-                ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
-                        (PlayerController.getInstance().getGravityDown() && grav > 0))) {
+        float grav =  level.getWorld().getGravity().y;
+        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) &&
+               ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
+                (PlayerController.getInstance().getGravityDown() && grav > 0));
+        shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
+        if (shouldFlip) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = SoundController.playSound("jump", 0.25f);
@@ -611,6 +612,9 @@ public class GameController implements Screen {
             }
             if (level.getBackgroundObjects() != null) {
                 for (BackObjModel o : level.getBackgroundObjects()) o.flip();
+            }
+            for (Obstacle flippable : level.getFlippables()) {
+                flippable.flipGravity();
             }
         }
 

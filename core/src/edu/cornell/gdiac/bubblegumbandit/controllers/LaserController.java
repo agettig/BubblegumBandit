@@ -78,7 +78,7 @@ public class LaserController {
         lasers =  new HashSet<>();
         bodiesToIgnore = new ArrayList<>();
         bodiesToIgnore.add("Laser Enemy");
-        bodiesToIgnore.add("cameratile");
+        bodiesToIgnore.add("door");
         bodiesToIgnore.add("exit");
         bodiesToIgnore.add("gumProjectile");
         enemiesToRemove = new HashSet<>();

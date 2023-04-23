@@ -16,9 +16,9 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":11,
+ "tilecount":14,
  "tiledversion":"1.10.0",
- "tileheight":186,
+ "tileheight":256,
  "tiles":[
         {
          "id":0,
@@ -96,8 +96,29 @@
          "imageheight":90,
          "imagewidth":65,
          "type":"chair"
+        }, 
+        {
+         "id":15,
+         "image":"..\/textures\/objects\/crushing_block.png",
+         "imageheight":128,
+         "imagewidth":256,
+         "type":"crushing_block"
+        }, 
+        {
+         "id":16,
+         "image":"..\/textures\/objects\/door_unlocked.png",
+         "imageheight":256,
+         "imagewidth":64,
+         "type":"door_v"
+        }, 
+        {
+         "id":17,
+         "image":"..\/textures\/objects\/door_locked.png",
+         "imageheight":256,
+         "imagewidth":64,
+         "type":"door_v_locked"
         }],
- "tilewidth":144,
+ "tilewidth":256,
  "type":"tileset",
  "version":"1.10"
 }
