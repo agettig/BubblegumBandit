@@ -79,6 +79,7 @@ public class LevelModel {
      */
     private final float trajectoryScale = 0.5f;
 
+
     /**
      * The Box2D world
      */
