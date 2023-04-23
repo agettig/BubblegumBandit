@@ -581,15 +581,20 @@ public class SettingsMode implements Screen {
         7: unstick */
 
         int[] values = SaveData.getKeyBindings();
+        for(int i : values) System.out.println(Input.Keys.toString(i));
 
-        moveLeftButton = new TextButton(Input.Keys.toString(values[0]), controlsButtonStyle);
-        moveRightButton = new TextButton(Input.Keys.toString(values[1]), controlsButtonStyle);
-        toggleGravityUpButton = new TextButton(Input.Keys.toString(values[2]), controlsButtonStyle);
-        toggleGravityDownButton = new TextButton(Input.Keys.toString(values[3]), controlsButtonStyle);
-        toggleMinimapButton = new TextButton(Input.Keys.toString(values[4]), controlsButtonStyle);
-        shootGumButton = new TextButton(Input.Keys.toString(values[5]), controlsButtonStyle);
-        unstickGumButton = new TextButton(Input.Keys.toString(values[6]), controlsButtonStyle);
-        reloadGumButton = new TextButton(Input.Keys.toString(values[7]), controlsButtonStyle);
+        moveLeftButton = new TextButton(Input.Keys.toString(values[0]).toUpperCase(), controlsButtonStyle);
+        moveRightButton = new TextButton(Input.Keys.toString(values[1]).toUpperCase(), controlsButtonStyle);
+        toggleGravityUpButton = new TextButton(Input.Keys.toString(values[2]).toUpperCase(), controlsButtonStyle);
+        toggleGravityDownButton = new TextButton(Input.Keys.toString(values[3]).toUpperCase(), controlsButtonStyle);
+        toggleMinimapButton = new TextButton(Input.Keys.toString(values[4]).toUpperCase(), controlsButtonStyle);
+        shootGumButton = new TextButton(Input.Keys.toString(values[6]).toUpperCase(), controlsButtonStyle);
+        if(values[6]==Input.Buttons.LEFT) shootGumButton.setText("Left Click".toUpperCase());
+        else if(values[6]==Input.Buttons.RIGHT) shootGumButton.setText("Right Click".toUpperCase());
+            unstickGumButton = new TextButton(Input.Keys.toString(values[7]), controlsButtonStyle);
+        if(values[7]==Input.Buttons.LEFT) unstickGumButton.setText("Left Click".toUpperCase());
+        else if(values[7]==Input.Buttons.RIGHT) unstickGumButton.setText("Right Click".toUpperCase());
+        reloadGumButton = new TextButton(Input.Keys.toString(values[5]).toUpperCase(), controlsButtonStyle);
 
         controlsBackButton = new TextButton("Back", backButtonStyle);
         controlsBackButton.getLabel().setFontScale(.5f);
@@ -753,16 +758,18 @@ public class SettingsMode implements Screen {
          */
         @Override
         public boolean keyUp(int keycode) {
-            if (checkedButton != null && checkedButton != shootGumButton && checkedButton != unstickGumButton) {
+           if (checkedButton != null && checkedButton != shootGumButton && checkedButton != unstickGumButton) {
                 values[buttonIndexMap.get(checkedButton)] = keycode;
                 checkedButton.setText(Input.Keys.toString(keycode).toUpperCase());
                 checkedButton.setChecked(false);
                 checkedButton = null;
             }
-            if (keycode == Input.Keys.NUM_1){
-                controlsTable.setDebug(!controlsTable.getDebug());
-                settingsTable.setDebug(!settingsTable.getDebug());
-            }
+
+          //  }
+            //if (keycode == Input.Keys.NUM_1){
+            //    controlsTable.setDebug(!controlsTable.getDebug());
+            //    settingsTable.setDebug(!settingsTable.getDebug());
+           // }
             return true;
         }
 
