@@ -128,7 +128,8 @@
     ],
     "sensorname": "door_sensor",
     "sensorcolor": "red",
-    "sensoropacity": 192
+    "sensoropacity": 192,
+    "lockedtexture": "locked_door"
   },
   "shieldedmediumrobot": {
     "type": "projectile",

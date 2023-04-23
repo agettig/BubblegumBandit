@@ -463,6 +463,8 @@ public class LevelModel {
         int enemyCount = 0;
         Array<EnemyModel> newEnemies = new Array<>();
 
+        HashMap<Integer, EnemyModel> enemyIds = new HashMap<>();
+
         while (object != null) {
             JsonValue objTypeJson = object.get("type");
             String objType;
@@ -474,6 +476,7 @@ public class LevelModel {
                 int substringEnd = objType.lastIndexOf(".");
                 objType = objType.substring(substringStart, substringEnd);
             }
+            int objId = (object.getInt("id"));
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
 
@@ -513,6 +516,7 @@ public class LevelModel {
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
                     newEnemies.add(enemy);
+                    enemyIds.put(objId, enemy);
                     break;
                 case "shieldedsmallrobot":
                     enemyConstants = constants.get(objType);
@@ -522,7 +526,7 @@ public class LevelModel {
                     enemy.setDrawScale(scale);
                     activate(enemy);
                     enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
+                    enemyIds.put(objId, enemy);
                     enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                     enemyCount++;
                     break;
@@ -532,6 +536,7 @@ public class LevelModel {
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "shieldedmediumrobot":
@@ -542,7 +547,7 @@ public class LevelModel {
                     enemy.setDrawScale(scale);
                     activate(enemy);
                     enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
+                    enemyIds.put(objId, enemy);
                     enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                     enemyCount++;
                 break;
@@ -554,7 +559,7 @@ public class LevelModel {
                     enemy.setDrawScale(scale);
                     activate(enemy);
                     enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
+                    enemyIds.put(objId, enemy);
                     enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
                     enemyCount++;
                     break;
@@ -563,6 +568,7 @@ public class LevelModel {
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "orb":
@@ -576,10 +582,12 @@ public class LevelModel {
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
+                case "door_v_locked":
                 case "door_v":
                 case "door_h":
                     DoorModel door = new DoorModel();
-                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"));
+                    boolean isLocked = objType.contains("locked");
+                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
                     activate(door);
                     door.setFilter(CATEGORY_EVENTTILE, MASK_DOOR_SENSOR);
                     break;

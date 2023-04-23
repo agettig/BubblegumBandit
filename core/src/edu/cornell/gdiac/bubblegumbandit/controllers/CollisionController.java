@@ -548,9 +548,6 @@ public class CollisionController implements ContactListener {
             return;
         }
         if (ob.equals(levelModel.getBandit()) || ob.getName().contains("enemy")) {
-            if (ob.getName().contains("enemy")) {
-                System.out.println("Enemy triggering this");
-            }
             if (isBeginContact) {
                 door.addObInRange(ob);
             } else {

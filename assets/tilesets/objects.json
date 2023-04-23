@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":13,
+ "tilecount":14,
  "tiledversion":"1.10.0",
  "tileheight":256,
  "tiles":[
@@ -110,6 +110,13 @@
          "imageheight":256,
          "imagewidth":64,
          "type":"door_v"
+        }, 
+        {
+         "id":17,
+         "image":"..\/textures\/objects\/door_locked.png",
+         "imageheight":256,
+         "imagewidth":64,
+         "type":"door_v_locked"
         }],
  "tilewidth":256,
  "type":"tileset",
