@@ -236,14 +236,7 @@ public class SettingsMode implements Screen {
         settingsTable.setFillParent(true);
         controlsTable.setFillParent(true);
         stage.addActor(settingsTable);
-        values = new int[]{Input.Keys.A,
-                           Input.Keys.D,
-                           Input.Keys.SPACE,
-                           Input.Keys.SPACE,
-                           Input.Keys.SHIFT_LEFT,
-                           Input.Keys.R,
-                           Input.Buttons.LEFT,
-                           Input.Buttons.RIGHT};
+        values = SaveData.getKeyBindings();
 
         SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
@@ -736,7 +729,6 @@ public class SettingsMode implements Screen {
     public void hide() {
         active = false;
         checkedButton = null;
-        PlayerController.changeControls(values);
         SaveData.setKeyBindings(values);
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
