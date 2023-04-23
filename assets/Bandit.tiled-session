@@ -1,0 +1,52 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "jsons/levels/alpha.json": {
+            "scale": 0.06283854166666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 4758.226274347287,
+                "y": 4774.140074595938
+            }
+        },
+        "jsons/levels/alpha_presentation.json": {
+            "scale": 0.06283854166666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 4758.226274347287,
+                "y": 2355.242436800663
+            }
+        },
+        "jsons/levels/alpha_presentation.json#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha_presentation.json#camera": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha_presentation.json#objects": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha_presentation.json#supports": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alpha_presentation.json#terrain": {
+            "scaleInDock": 1
+        },
+        "tilesets/objects.json": {
+            "dynamicWrapping": true
+        }
+    },
+    "openFiles": [
+    ],
+    "project": "Bandit.tiled-project",
+    "recentFiles": [
+        "jsons/levels/alpha.json",
+        "jsons/levels/alpha_presentation.json"
+    ]
+}
