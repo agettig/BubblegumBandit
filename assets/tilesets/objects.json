@@ -16,9 +16,9 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":12,
+ "tilecount":13,
  "tiledversion":"1.10.0",
- "tileheight":186,
+ "tileheight":256,
  "tiles":[
         {
          "id":0,
@@ -103,6 +103,13 @@
          "imageheight":128,
          "imagewidth":256,
          "type":"crushing_block"
+        }, 
+        {
+         "id":16,
+         "image":"..\/textures\/objects\/door_unlocked.png",
+         "imageheight":256,
+         "imagewidth":64,
+         "type":"door_v"
         }],
  "tilewidth":256,
  "type":"tileset",
