@@ -235,6 +235,8 @@ public class GameCamera  extends OrthographicCamera {
     }
 
     /** Apply screen shake trauma if the obstacle causing it is on screen.
+     * Use positive trauma for the camera to move up at first (good for gravity facing up)
+     * and negative trauma for the camera to move down at first (something falling down).
      *
      * @param xPos the pixel x position of the obstacle causing the trauma.
      * @param yPos the pixel y position of the obstacle causing the trauma.

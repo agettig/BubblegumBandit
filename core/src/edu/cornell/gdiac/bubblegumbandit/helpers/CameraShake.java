@@ -5,15 +5,17 @@ import java.util.Random;
 public class CameraShake {
 
     // Shake constants
-    /** The max screen shake angle */
-    private final float MAX_ANGLE = 5;
 
     /** The max camera offset from screen shake */
-    private final float MAX_OFFSET = 10;
+    // TODO: Make dependent on resolution (percentage of screen)
+    private final float MAX_OFFSET = 40;
 
-    private final float TRAUMA_DECREASE = 5f;
+    /** Changes the frequency of the damped harmonic motion */
+    private final float DT_FACTOR = 20;
 
-    private final Random random = new Random();
+    private final float TRAUMA_DECREASE = .925f;
+
+    private float time;
 
     // Shake fields
     /** The current screen shake angle */
@@ -33,6 +35,7 @@ public class CameraShake {
         offsetX = 0;
         offsetY = 0;
         angle = 0;
+        time = 0;
     }
 
     public float getAngle() {
@@ -48,21 +51,26 @@ public class CameraShake {
     }
 
     public void addTrauma(float trauma) {
-        this.trauma += trauma;
+        time = trauma > 0 ? 0 : (float) Math.PI;
+        this.trauma += Math.abs(trauma);
         if (this.trauma > 1) { // Clamp
             this.trauma = 1;
         }
     }
 
     public void update(float dt) {
+        offsetY = (float) (Math.sin(time) * trauma * MAX_OFFSET);
+
         // Reduce trauma
         if (trauma > 0) {
-            trauma -= (TRAUMA_DECREASE * dt);
+            trauma *= TRAUMA_DECREASE;
         }
-        float shake = trauma * trauma;
-        angle = MAX_ANGLE * shake * (random.nextFloat() * 2 - 1);
-        offsetX = MAX_OFFSET * shake * (random.nextFloat() * 2 - 1);
-        offsetY = MAX_OFFSET * shake * (random.nextFloat() * 2 - 1);
+
+        time += dt * DT_FACTOR;
+        if (time > Float.MAX_VALUE) {
+            time -= Float.MAX_VALUE;
+        }
+
     }
 
 

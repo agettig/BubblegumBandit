@@ -478,14 +478,16 @@ public class CollisionController implements ContactListener {
 
         // Check that obstacles are not null and one is a crusher sensor
         if (bd1 == null || bd2 == null) return;
-        Obstacle crusher;
+        CrusherModel crusher;
         Obstacle crushed;
-        String sensorName = levelModel.getWorld().getGravity().y < 0 ? "crushing_bottom_sensor" : "crushing_top_sensor";
-        if (sensorName.equals(fix1.getUserData())) {
-            crusher = bd1;
+
+        float levelGrav = levelModel.getWorld().getGravity().y;
+//        String sensorName = levelModel.getWorld().getGravity().y < 0 ? "crushing_bottom_sensor" : "crushing_top_sensor";
+        if (fix1.getUserData() instanceof CrusherModel) {
+            crusher = (CrusherModel) fix1.getUserData();
             crushed = bd2;
-        } else if (sensorName.equals(fix2.getUserData())) {
-            crusher = bd2;
+        } else if (fix2.getUserData() instanceof CrusherModel) {
+            crusher = (CrusherModel) fix2.getUserData();
             crushed = bd1;
         } else {
             return;
@@ -506,7 +508,11 @@ public class CollisionController implements ContactListener {
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
             // Screen shake cause block hit the floor
-            camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, Math.abs(CrusherModel.traumaAmt));
+            if (!crusher.didSmash) {
+                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
+            }
+            crusher.maxAbsFallVel = 0;
+            crusher.didSmash = true;
         }
     }
 
