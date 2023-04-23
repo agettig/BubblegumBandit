@@ -247,6 +247,10 @@ public class LevelModel {
         alarms.setAlarms(true);
     }
 
+    public void endAlarms(){
+        alarms.setAlarms(false);
+    }
+
     /**
      * Creates a new LevelModel
      * <p>
@@ -880,6 +884,14 @@ public class LevelModel {
      */
     public float getOrbCountdown() {
         return timer;
+    }
+
+    public void remakeOrb(AssetDirectory directory, JsonValue constants){
+        Collectible coll = new Collectible();
+        coll.initialize(directory, orbPostion.x, orbPostion.y, scale, constants.get("orb"));
+        activate(coll);
+        coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+        coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
     }
 
     public class AimModel {
