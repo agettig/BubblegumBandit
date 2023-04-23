@@ -27,8 +27,6 @@ import java.lang.reflect.Field;
 public class CrusherModel extends BoxObstacle implements Gummable {
 
     public static final float traumaAmt = 0.5f;
-    // TODO: Make this a kinematic body, simulate gravity and enable bandit pushing, then use internal
-    // sensor to detect crushing
 
     /** Used to handle flipping logic */
     private FlippingObject flippingObject;
@@ -49,12 +47,18 @@ public class CrusherModel extends BoxObstacle implements Gummable {
     private PolygonShape topSensorShape;
     private String topSensorName;
 
+    /** The velocity with the maximum magnitude during a given fall */
+    public float maxAbsFallVel;
+
+    public boolean didSmash;
+
     /**
      * Create a new TileModel with degenerate settings
      */
     public CrusherModel() {
         super(0,0,1,1);
         collidedObs = new ObjectSet<>();
+        maxAbsFallVel = 0;
     }
 
     /**
@@ -151,16 +155,30 @@ public class CrusherModel extends BoxObstacle implements Gummable {
         sensorDef.isSensor = true;
         sensorDef.shape = bottomSensorShape;
         bottomSensorFixture = body.createFixture(sensorDef);
-        bottomSensorFixture.setUserData(bottomSensorName);
+        bottomSensorFixture.setUserData(this);
 
         sensorDef.shape = topSensorShape;
         topSensorFixture = body.createFixture(sensorDef);
-        topSensorFixture.setUserData(topSensorName);
+        topSensorFixture.setUserData(this);
         return true;
     }
 
     public void update(float dt) {
         flippingObject.updateYScale(isFlipped);
+        if (getVY() > maxAbsFallVel && getVY() > 0) {
+            maxAbsFallVel = getVY();
+        } else if (getVY() < maxAbsFallVel && getVY() < 0) {
+            maxAbsFallVel = getVY();
+        }
+    }
+
+    @Override
+    public void flipGravity() {
+        if (!gummed && !stuck) {
+            isFlipped = !isFlipped;
+            didSmash = false;
+        }
+
     }
 
     /**
