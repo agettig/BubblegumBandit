@@ -551,8 +551,8 @@ public class SettingsMode implements Screen {
      */
     private void makeControlsTable() {
         Label controls = new Label("Controls", headingsStyle);
-        Label moveLeft = new Label("Strafe Left", labelStyle);
-        Label moveRight = new Label("Strafe Right", labelStyle);
+        Label moveLeft = new Label("Move Left", labelStyle);
+        Label moveRight = new Label("Move Right", labelStyle);
         Label toggleGravityUp = new Label("Toggle Gravity Up", labelStyle);
         Label toggleGravityDown = new Label("Toggle Gravity Down", labelStyle);
         Label shootGum = new Label("Shoot Gum", labelStyle);
