@@ -5,6 +5,7 @@
         "health_fill": "textures/UI/health_fill.png",
         "health_icon": "textures/UI/UI_heart.png",
         "bubblegum_icon": "textures/UI/bubble_icon.png",
+        "empty_gum": "textures/UI/empty_gum.png",
         "minimap_background" : "textures/UI/minimap_background.png",
         "minimap_tile" : "textures/UI/square.png",
 
