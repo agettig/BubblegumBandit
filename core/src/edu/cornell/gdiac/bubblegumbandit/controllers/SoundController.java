@@ -91,12 +91,12 @@ public class SoundController {
             put("game", game);
         }};
        engine = (AudioEngine) Gdx.audio;
-
+       musicPlayer = engine.newMusicBuffer( false, 44100 );
     }
 
     public static void playMusic(String sound){
+        musicPlayer.clearSources();
         AudioSource sample = music.get(sound);
-        musicPlayer = engine.newMusicBuffer( false, 44100 );
         musicPlayer.setLooping(true);
         musicPlayer.addSource(sample);
         musicPlayer.play();
