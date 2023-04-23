@@ -16,6 +16,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.util.Controllers;
 import edu.cornell.gdiac.util.XBoxController;
 
@@ -113,14 +114,7 @@ public class PlayerController{
     /** If gum was collected */
     private boolean collect;
 
-    private static int[] values = new int[]{Input.Keys.A,
-                                      Input.Keys.D,
-                                      Input.Keys.SPACE,
-                                      Input.Keys.SPACE,
-                                      Input.Keys.SHIFT_LEFT,
-                                      Input.Keys.R,
-                                      Input.Buttons.LEFT,
-                                      Input.Buttons.RIGHT};
+    private static int[] keyBindings;
 
     /** An X-Box controller (if it is connected) */
     XBoxController xbox;
@@ -190,7 +184,7 @@ public class PlayerController{
      *
      * */
     public static void changeControls(int[] v){
-        values = v;
+        keyBindings = v;
     }
 
     /**
@@ -312,6 +306,8 @@ public class PlayerController{
         }
         crosshair = new Vector2();
         crosscache = new Vector2();
+        keyBindings = SaveData.getKeyBindings();
+        //change + fetch keyBindings from save data
     }
 
     /**
@@ -395,7 +391,17 @@ public class PlayerController{
      */
     private void readKeyboard( boolean secondary) {
         // Give priority to gamepad results
+        /*the key bindings are as follows:
+        0: left
+        1: right
+        2: grav up
+        3: grav down
+        4: minimap
+        5: reload (and you can't be moving at the time? why doesn't it just stop you from moving?)
+        6: shoot
+        7: unstick
 
+        */
         // TODO remove
         resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_4));
         debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
@@ -410,24 +416,25 @@ public class PlayerController{
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
-        if (Gdx.input.isKeyPressed(values[1])) {
+        if (Gdx.input.isKeyPressed(keyBindings[1])) {
             horizontal += 1.0f;
         }
-        if (Gdx.input.isKeyPressed(values[0])) {
+        if (Gdx.input.isKeyPressed(keyBindings[0])) {
             horizontal -= 1.0f;
         }
-        reloadPressed = Gdx.input.isKeyPressed(values[5]) && !primePressed && !Gdx.input.isKeyPressed(values[1]) && !Gdx.input.isKeyPressed(values[0]);
+        reloadPressed = Gdx.input.isKeyPressed(keyBindings[5]) && !primePressed && !Gdx.input.isKeyPressed(
+            keyBindings[1]) && !Gdx.input.isKeyPressed(keyBindings[0]);
 
 
-        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(values[4]));
+        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(keyBindings[4]));
         exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-        gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(values[2]));
-        gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(values[3]));
+        gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(keyBindings[2]));
+        gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(keyBindings[3]));
 
 
         // Mouse results
-        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(values[6]));
-        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(values[7]));
+        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(keyBindings[6]));
+        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(keyBindings[7]));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }

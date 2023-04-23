@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.HashMap;
@@ -256,6 +257,7 @@ public class SettingsMode implements Screen {
         view.apply(true);
     }
 
+
     /**
      * Create music and sound effects sliders
      */
@@ -296,7 +298,8 @@ public class SettingsMode implements Screen {
 
         createSliders();
 
-        TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.titleFont);
+        TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null,
+            null, null, this.titleFont);
 
         backButtonSettings = new TextButton("Back", backButtonStyle);
         backButtonSettings.getLabel().setFontScale(.5f);
@@ -546,6 +549,8 @@ public class SettingsMode implements Screen {
 
     }
 
+
+
     /**
      * Make controls table
      */
@@ -565,14 +570,27 @@ public class SettingsMode implements Screen {
         controlsButtonStyle.checkedFontColor = bubblegumPink;
 
 
-        moveLeftButton = new TextButton("A", controlsButtonStyle);
-        moveRightButton = new TextButton("D", controlsButtonStyle);
-        toggleGravityUpButton = new TextButton("SPACE", controlsButtonStyle);
-        toggleGravityDownButton = new TextButton("SPACE", controlsButtonStyle);
-        toggleMinimapButton = new TextButton("L-SHIFT", controlsButtonStyle);
-        shootGumButton = new TextButton("LEFT CLICK", controlsButtonStyle);
-        unstickGumButton = new TextButton("RIGHT CLICK", controlsButtonStyle);
-        reloadGumButton = new TextButton("R", controlsButtonStyle);
+     /*the key bindings are as follows:
+        0: left
+        1: right
+        2: grav up
+        3: grav down
+        4: minimap
+        5: reload (and you can't be moving at the time? why doesn't it just stop you from moving?)
+        6: shoot
+        7: unstick */
+
+        int[] values = SaveData.getKeyBindings();
+
+        moveLeftButton = new TextButton(Input.Keys.toString(values[0]), controlsButtonStyle);
+        moveRightButton = new TextButton(Input.Keys.toString(values[1]), controlsButtonStyle);
+        toggleGravityUpButton = new TextButton(Input.Keys.toString(values[2]), controlsButtonStyle);
+        toggleGravityDownButton = new TextButton(Input.Keys.toString(values[3]), controlsButtonStyle);
+        toggleMinimapButton = new TextButton(Input.Keys.toString(values[4]), controlsButtonStyle);
+        shootGumButton = new TextButton(Input.Keys.toString(values[5]), controlsButtonStyle);
+        unstickGumButton = new TextButton(Input.Keys.toString(values[6]), controlsButtonStyle);
+        reloadGumButton = new TextButton(Input.Keys.toString(values[7]), controlsButtonStyle);
+
         controlsBackButton = new TextButton("Back", backButtonStyle);
         controlsBackButton.getLabel().setFontScale(.5f);
 
@@ -711,6 +729,8 @@ public class SettingsMode implements Screen {
         active = false;
         checkedButton = null;
         PlayerController.changeControls(values);
+        SaveData.setKeyBindings(values);
+        //add to save data
     }
 
     @Override
