@@ -11,8 +11,6 @@ public class SoundController {
      * The jump sound.  We only want to play once.
      */
     private static SoundEffect jumpSound;
-
-
     /**
      * The small enemy shooting sound.  We only want to play once.
      */
