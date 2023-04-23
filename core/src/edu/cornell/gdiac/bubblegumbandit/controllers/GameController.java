@@ -194,16 +194,6 @@ public class GameController implements Screen {
     private LaserController laserController;
 
     /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
-
-    /**
      * The texture of the trajectory projectile
      */
     private TextureRegion trajectoryProjectile;
@@ -409,6 +399,7 @@ public class GameController implements Screen {
      */
     public void reset() {
 
+        System.out.println(levelNum);
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
         collisionController.reset();
@@ -434,6 +425,19 @@ public class GameController implements Screen {
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
         canvas.getCamera().setLevelSize(level.getBounds().width * level.getScale().x, level.getBounds().height * level.getScale().y);
+    }
+
+    public void respawn(){
+        setComplete(false);
+        setFailure(false);
+        countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
+        level.endAlarms();
+
+        level.remakeOrb(directory, constantsJson);
+        bubblegumController.resetAmmo();
+        level.getBandit().respawnPlayer();
     }
 
     /**
@@ -481,7 +485,13 @@ public class GameController implements Screen {
         }
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
-            reset();
+
+            if (orbCollected && !complete){
+                respawn();
+            }
+            else {
+                reset();
+            }
         }
 
         if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
