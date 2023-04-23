@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import java.util.HashMap;
 
 public class SoundController {
@@ -63,8 +64,11 @@ public class SoundController {
     }
 
     public void initialize(AssetDirectory directory){
-        musicVolume = .5f;
-        soundEffectsVolume = 1f;
+       // musicVolume = .5f;
+       // soundEffectsVolume = 1f;
+        musicVolume = SaveData.getMusicVolume();
+        soundEffectsVolume = SaveData.getSFXVolume();
+        //get from save data
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
         gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);

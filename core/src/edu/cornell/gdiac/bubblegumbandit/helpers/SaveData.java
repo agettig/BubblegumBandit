@@ -21,6 +21,10 @@ public class SaveData {
 
   public static void makeData(int levelCount, boolean lockLevels) {
     Preferences prefs =  Gdx.app.getPreferences(prefsName);
+
+    prefs.putFloat("music", .5f);
+    prefs.putFloat("sfx", 1f);
+
     prefs.putInteger("level1", -1);
     for(int i = 2; i<levelCount+1; i++) {
       prefs.putInteger("level"+i, lockLevels? LOCKED : INCOMPLETE);
@@ -116,6 +120,28 @@ public class SaveData {
     }
     prefs.flush();
   }
+
+  public static float getMusicVolume() {
+    return  Gdx.app.getPreferences(prefsName).getFloat("music");
+  }
+
+  public static float getSFXVolume() {
+    return  Gdx.app.getPreferences(prefsName).getFloat("sfx");
+  }
+
+  public static void setMusicVolume(float val) {
+    Preferences prefs = Gdx.app.getPreferences(prefsName);
+    prefs.putFloat("music", val);
+    prefs.flush();
+  }
+  public static void setSFXVolume(float val) {
+    Preferences prefs = Gdx.app.getPreferences(prefsName);
+    prefs.putFloat("sfx", val);
+    prefs.flush();
+  }
+
+
+
 
 
 }

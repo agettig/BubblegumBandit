@@ -273,7 +273,7 @@ public class SettingsMode implements Screen {
                 SoundController.getInstance().setMusicVolume(musicSlider.getValue());
             }
         });
-        musicSlider.setValue(.5f);
+        musicSlider.setValue(SaveData.getMusicVolume());
 
         soundEffectsSlider = new Slider(0, 1, .05f, false, sliderStyle);
         soundEffectsSlider.addListener(new ChangeListener() {
@@ -282,7 +282,7 @@ public class SettingsMode implements Screen {
                 SoundController.getInstance().setEffectsVolume(soundEffectsSlider.getValue());
             }
         });
-        soundEffectsSlider.setValue(.5f);
+        soundEffectsSlider.setValue(SaveData.getSFXVolume());
     }
 
 
@@ -731,6 +731,8 @@ public class SettingsMode implements Screen {
         checkedButton = null;
         PlayerController.changeControls(values);
         SaveData.setKeyBindings(values);
+        SaveData.setSFXVolume(soundEffectsSlider.getValue());
+        SaveData.setMusicVolume(musicSlider.getValue());
         //add to save data
     }
 
