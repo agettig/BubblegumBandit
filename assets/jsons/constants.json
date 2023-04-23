@@ -118,9 +118,10 @@
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
-  "cameratile": {
+  "door": {
     "debugcolor": "magenta",
-    "debugopacity": 200
+    "debugopacity": 200,
+    "texture": "door"
   },
   "shieldedmediumrobot": {
     "type": "projectile",

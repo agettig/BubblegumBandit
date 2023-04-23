@@ -12,7 +12,6 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShieldedRollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -198,9 +197,9 @@ public class CollisionController implements ContactListener {
                 ob2.endCollision(ob1);
             }
 
-            if (ob1.getName().equals("cameratile") && avatar == bd2) {
+            if (ob1.getName().equals("door") && avatar == bd2) {
                 updateCamera(ob1);
-            } else if (ob2.getName().equals("cameratile") && avatar == bd1) {
+            } else if (ob2.getName().equals("door") && avatar == bd1) {
                 updateCamera(ob2);
             }
 
@@ -220,37 +219,41 @@ public class CollisionController implements ContactListener {
 
     }
 
-    /** Updates the camera based on the collision between the player and the camera tile.
+    /** Updates the camera based on the collision between the player and the door.
      *
-     * @param ob the camera tile */
+     * @param ob the door */
     private void updateCamera(Obstacle ob) {
-        CameraTileModel camTile = (CameraTileModel) ob;
+        DoorModel door = (DoorModel) ob;
         BanditModel avatar = levelModel.getBandit();
 
         Vector2 ul;
         Vector2 lr;
-        boolean isFirst = !((camTile.isHorizontal() && avatar.getX() > camTile.getX()) ||
-                (!camTile.isHorizontal() && avatar.getY() < camTile.getY()));
-        if (isFirst) {
-            ul = camTile.getFirstUpperLeft();
-            lr = camTile.getFirstLowerRight();
+        boolean isFirst;
+        if (!door.isHorizontal()) {
+            isFirst = avatar.getX() - door.getX() < 0;
         } else {
-            ul = camTile.getSecondUpperLeft();
-            lr = camTile.getSecondLowerRight();
+            isFirst = avatar.getY() - door.getY() < 0;
+        }
+        if (isFirst) {
+            ul = door.getFirstUpperLeft();
+            lr = door.getFirstLowerRight();
+        } else {
+            ul = door.getSecondUpperLeft();
+            lr = door.getSecondLowerRight();
         }
         Vector2 scale = levelModel.getScale();
         float zoomWidth = 0;
         float zoomHeight = 0;
         boolean fixCamera = false;
 
-        if ((isFirst && camTile.isFirstFixedX()) || (!isFirst && camTile.isSecondFixedX())) {
+        if ((isFirst && door.isFirstFixedX()) || (!isFirst && door.isSecondFixedX())) {
             float centerX = (ul.x + lr.x) * scale.x / 2f;
             zoomWidth = Math.abs(ul.x - lr.x) * scale.x;
             camera.setFixedX(true);
             camera.setTargetX(centerX);
             fixCamera = true;
         }
-        if ((isFirst && camTile.isFirstFixedY()) || (!isFirst && camTile.isSecondFixedY())) {
+        if ((isFirst && door.isFirstFixedY()) || (!isFirst && door.isSecondFixedY())) {
             float centerY = (ul.y + lr.y) * scale.y / 2f;
             zoomHeight = Math.abs(ul.y - lr.y) * scale.y;
             camera.setFixedY(true);
@@ -580,8 +583,8 @@ public class CollisionController implements ContactListener {
         Object dataA = fixA.getUserData();
         Object dataB = fixB.getUserData();
 
-        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && !bodyA.getName().equals("cameratile")) ||
-                (bandit.getSensorName().equals(dataA) && bandit != bodyB && !bodyB.getName().equals("cameratile"))) {
+        if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && !bodyA.getName().equals("door")) ||
+                (bandit.getSensorName().equals(dataA) && bandit != bodyB && !bodyB.getName().equals("door"))) {
             bandit.setGrounded(true);
             bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);

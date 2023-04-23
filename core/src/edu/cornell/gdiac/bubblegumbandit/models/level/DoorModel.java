@@ -1,16 +1,16 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.JsonValue;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 
+import edu.cornell.gdiac.assets.AssetDirectory;
 import java.lang.reflect.Field;
 
-public class CameraTileModel extends TileModel {
+public class DoorModel extends TileModel {
 
     /** Whether this is a horizontal camera tile or a vertical camera tile. */
     private boolean isHorizontal;
@@ -84,10 +84,10 @@ public class CameraTileModel extends TileModel {
         return secondLowerRight;
     }
 
-    /** Constructs a new CameraTileModel
+    /** Constructs a new DoorModel
      * Uses generic values to start
      */
-    public CameraTileModel() {
+    public DoorModel() {
         super();
         firstUpperLeft = new Vector2();
         firstLowerRight = new Vector2();
@@ -97,16 +97,18 @@ public class CameraTileModel extends TileModel {
 
     /** Initializes the camera tile model.
      *
+     * @param directory the asset directory of the level
      * @param x the x position of the camera tile
      * @param y the y position of the camera tile
-     * @parma scale the scale of the level
+     * @param scale the scale of the level
      * @param levelHeight the height of the level
      * @param objectJson the json value representing the camera tile
      * @param constants the json value representing the constants of the camera tile
      */
-    public void initialize(float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal) {
+    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal) {
         // make the body fixture into a sensor
-        setName("cameratile");
+        setName("door");
+
         setPosition(x,y);
         float width = objectJson.getFloat("width") / scale.x;
         float height = objectJson.getFloat("height") / scale.y;
@@ -129,6 +131,10 @@ public class CameraTileModel extends TileModel {
         debugColor.mul(opacity/255.0f);
         setDebugColor(debugColor);
 
+        String key = constants.get("texture").asString();
+        TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        setTexture(texture);
+
         // Set object data
         isFirstFixedX = false;
         isFirstFixedY = false;
@@ -140,41 +146,43 @@ public class CameraTileModel extends TileModel {
         while (property != null) {
             String name = property.getString("name");
             float value = property.getFloat("value");
-            float yValue = levelHeight - value - 1;
-            switch (name) {
-                case "greenx1":
-                    firstUpperLeft.x = value;
-                    isFirstFixedX = true;
-                    break;
-                case "greeny1":
-                    firstUpperLeft.y = yValue + 1;
-                    isFirstFixedY = true;
-                    break;
-                case "greenx2":
-                    firstLowerRight = new Vector2();
-                    firstLowerRight.x = value + 1f;
-                    break;
-                case "greeny2":
-                    firstLowerRight.y = yValue;
-                    break;
-                case "pinkx1":
-                    secondUpperLeft = new Vector2();
-                    secondUpperLeft.x = value;
-                    isSecondFixedX = true;
-                    break;
-                case "pinky1":
-                    secondUpperLeft.y = yValue + 1;
-                    isSecondFixedY = true;
-                    break;
-                case "pinkx2":
-                    secondLowerRight = new Vector2();
-                    secondLowerRight.x = value + 1f;
-                    break;
-                case "pinky2":
-                    secondLowerRight.y = yValue;
-                    break;
-                default:
-                    throw new UnsupportedOperationException(name + " is not a valid property");
+            if (value != -1) {
+                float yValue = levelHeight - value - 1;
+                switch (name) {
+                    case "leftx1":
+                        firstUpperLeft.x = value;
+                        isFirstFixedX = true;
+                        break;
+                    case "lefty1":
+                        firstUpperLeft.y = yValue + 1;
+                        isFirstFixedY = true;
+                        break;
+                    case "leftx2":
+                        firstLowerRight = new Vector2();
+                        firstLowerRight.x = value + 1f;
+                        break;
+                    case "lefty2":
+                        firstLowerRight.y = yValue;
+                        break;
+                    case "rightx1":
+                        secondUpperLeft = new Vector2();
+                        secondUpperLeft.x = value;
+                        isSecondFixedX = true;
+                        break;
+                    case "righty1":
+                        secondUpperLeft.y = yValue + 1;
+                        isSecondFixedY = true;
+                        break;
+                    case "rightx2":
+                        secondLowerRight = new Vector2();
+                        secondLowerRight.x = value + 1f;
+                        break;
+                    case "righty2":
+                        secondLowerRight.y = yValue;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException(name + " is not a valid property for a door");
+                }
             }
             property = property.next();
         }

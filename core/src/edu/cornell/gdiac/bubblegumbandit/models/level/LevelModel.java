@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
@@ -28,12 +27,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.LaserController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
@@ -579,12 +576,12 @@ public class LevelModel {
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
-                case "camera_v":
-                case "camera_h":
-                    CameraTileModel cam = new CameraTileModel();
-                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"), objType.equals("camera_h"));
-                    activate(cam);
-                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+                case "door_v":
+                case "door_h":
+                    DoorModel door = new DoorModel();
+                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"));
+                    activate(door);
+                    door.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
@@ -1005,7 +1002,7 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") && !ob.equals(bandit)) {
+                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("door") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -1055,7 +1052,7 @@ public class LevelModel {
             endCache = new Vector2();
             originCache = new Vector2();
             canUnstickThrough.add("gumProjectile");
-            canUnstickThrough.add("cameratile");
+            canUnstickThrough.add("door");
         }
 
         /**
