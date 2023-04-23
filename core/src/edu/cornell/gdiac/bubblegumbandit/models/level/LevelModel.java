@@ -799,8 +799,6 @@ public class LevelModel {
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
 
-
-
                     //Calculate the positions and angle of the charging laser.
                     float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()/2): 0;
                     float enemyOffsetY = enemy.getHeight()*10;
@@ -811,7 +809,8 @@ public class LevelModel {
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
-                    if(enemy.getGummed()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+                    enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+                    if(enemy.getFaceRight()) enemyOffsetX *= -1;
 
                     canvas.draw(
                             beam,
