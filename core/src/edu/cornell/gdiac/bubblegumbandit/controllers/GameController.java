@@ -567,7 +567,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 20 == 0) {
+            if (ticks % 60 == 0) {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }

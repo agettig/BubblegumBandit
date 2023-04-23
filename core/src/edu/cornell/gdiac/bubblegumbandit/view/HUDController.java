@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -52,16 +53,16 @@ public class HUDController {
 
   private Image healthIcon;
   private Image bubbleIcon;
-  private Label gumCount;
   private Label orbCountdown;
   private Label fpsLabel;
-  private Label reloadGum;
-
   private Image starIcon1;
   private Image starIcon2;
   private Image starIcon3;
   private Image reloadGumIcon;
   private Label starCount;
+
+  private Image[] gumCount = new Image[6];
+  private Image[] reloadGumCount = new Image[6];
 
 
   public HUDController(AssetDirectory directory) {
@@ -97,12 +98,17 @@ public class HUDController {
     healthFill.setY(healthBar.getY() + healthBar.getHeight() * HEALTH_MARGIN);
 
     table.row();
-    table.add(bubbleIcon);
+    for (int i = 0; i < 6; i++) {
+      Image emptyGum = new Image(directory.getEntry("empty_gum", Texture.class));
+      emptyGum.setPosition(32 + i*50, stage.getHeight() - 103);
+      stage.addActor(emptyGum);
 
-    gumCount = new Label("x0", new Label.LabelStyle(font, Color.WHITE));
-    gumCount.setFontScale(0.5f);
+      Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+      reloadGumIcon.setPosition(32 + i*50, stage.getHeight() - 103);
+      gumCount[i] = reloadGumIcon;
+      stage.addActor(reloadGumIcon);
+    }
 
-    table.add(gumCount).padLeft(10);
     table.row();
     table.add(starIcon1);
     table.add(starIcon2);
@@ -115,12 +121,14 @@ public class HUDController {
     orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
     stage.addActor(orbCountdown);
 
-    reloadGum = new Label("", new Label.LabelStyle(font, Color.WHITE));
-    reloadGum.setFontScale(0.8f);
-    reloadGum.setPosition(stage.getWidth() / 2 - 15, stage.getHeight() / 4, Align.center);
-    reloadGumIcon.setPosition(stage.getWidth() / 2 - 50, stage.getHeight() / 4, Align.center);
-    stage.addActor(reloadGum);
-    stage.addActor(reloadGumIcon);
+
+    for (int i = 0; i < 6; i++) {
+      Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+      reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
+      reloadGumCount[i] = reloadGumIcon;
+      reloadGumIcon.setVisible(false);
+      stage.addActor(reloadGumIcon);
+    }
 
     fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
     fpsLabel.setFontScale(0.5f);
@@ -171,7 +179,16 @@ public class HUDController {
 
     healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
-    gumCount.setText("x" + bubblegumController.getAmmo() );
+
+    int currentAmmo = bubblegumController.getAmmo();
+    for (int i = 0; i < currentAmmo; i++) {
+      Image gumImage = gumCount[i];
+      gumImage.setVisible(true);
+    }
+    for (int i = currentAmmo; i < 6; i++) {
+      Image gumImage = gumCount[i];
+      gumImage.setVisible(false);
+    }
 
     if (timer >= 9) {
       orbCountdown.setText(timer);
@@ -182,12 +199,16 @@ public class HUDController {
     }
 
     if (reloadingGum) {
-      reloadGumIcon.setVisible(true);
-      reloadGum.setText("x" + bubblegumController.getAmmo());
+      for (int i = 0; i < currentAmmo; i++) {
+        Image gumImage = reloadGumCount[i];
+        gumImage.setVisible(true);
+      }
     }
     else {
-      reloadGum.setText("");
-      reloadGumIcon.setVisible(false);
+      for (int i = 0; i < reloadGumCount.length; i++) {
+        Image gumImage = reloadGumCount[i];
+        gumImage.setVisible(false);
+      }
     }
 
     if (showFPS) {
