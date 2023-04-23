@@ -164,6 +164,12 @@ public class BanditModel extends CapsuleObstacle {
         assert orbPostion != null;
         this.orbPostion = orbPostion;
     }
+    public void respawnPlayer(){
+        setX(orbPostion.x - 1);
+        setY(orbPostion.y);
+        orbCollected = false;
+        healPlayer(100);
+    }
 
 
     /**
