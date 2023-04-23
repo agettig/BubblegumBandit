@@ -63,11 +63,12 @@ public class HUDController {
 
   private Image[] gumCount = new Image[6];
   private Image[] reloadGumCount = new Image[6];
+  private Image[] emptyGumCount = new Image[6];
 
 
   public HUDController(AssetDirectory directory) {
 
-    font = directory.getEntry("display", BitmapFont.class);
+    font = directory.getEntry("codygoonRegular", BitmapFont.class);
     stage = new Stage();
 
     table = new Table();
@@ -124,9 +125,15 @@ public class HUDController {
 
     for (int i = 0; i < 6; i++) {
       Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+      Image emptyGumIcon = new Image(directory.getEntry("empty_gum", Texture.class));
+      emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
       reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
+
+      emptyGumCount[i] = emptyGumIcon;
       reloadGumCount[i] = reloadGumIcon;
+      emptyGumIcon.setVisible(false);
       reloadGumIcon.setVisible(false);
+      stage.addActor(emptyGumIcon);
       stage.addActor(reloadGumIcon);
     }
 
@@ -199,6 +206,10 @@ public class HUDController {
     }
 
     if (reloadingGum) {
+      for (int i = 0; i < 6; i++) {
+        Image emptyGumImage = emptyGumCount[i];
+        emptyGumImage.setVisible(true);
+      }
       for (int i = 0; i < currentAmmo; i++) {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(true);
@@ -208,6 +219,10 @@ public class HUDController {
       for (int i = 0; i < reloadGumCount.length; i++) {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(false);
+      }
+      for (int i = 0; i < 6; i++) {
+        Image emptyGumImage = emptyGumCount[i];
+        emptyGumImage.setVisible(false);
       }
     }
 
