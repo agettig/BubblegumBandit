@@ -138,6 +138,7 @@ public class CollisionController implements ContactListener {
             resolveGummableGumCollision(obstacleA, obstacleB);
             resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
+            checkMediumEnemyCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
