@@ -26,7 +26,8 @@
     "bottomsensorname": "dudeGroundSensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
-    "topsensorname": "dudeTopSensor"
+    "topsensorname": "dudeTopSensor",
+    "deadtexture" : "bandit_dead"
   },
   "walls": {
     "bodytype": "static",
@@ -284,7 +285,7 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 7.0,
+    "speed": 10.0,
     "density": 10.0,
     "texture": "bullet"
   },

@@ -27,7 +27,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.LaserController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
@@ -510,11 +509,7 @@ public class LevelModel {
                     enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    newEnemies.add(enemy);
                     break;
                 case "mediumrobot":
                     enemyConstants = constants.get(objType);
@@ -530,23 +525,15 @@ public class LevelModel {
                     enemy = new ShieldedRollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
-                break;
+                    newEnemies.add(enemy);
+                    break;
                 case "shieldedlargerobot":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new ShieldedLaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    newEnemies.add(enemy);
                     break;
                 case "large_robot":
                     enemyConstants = constants.get(objType);
@@ -714,6 +701,11 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
+        Set<Obstacle> postLaserDraw = new HashSet<>();
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
+
+
+
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
@@ -726,8 +718,7 @@ public class LevelModel {
 
 
 
-
-        aim.drawProjectileRay(canvas);
+        if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
 
 
 
@@ -1116,14 +1107,19 @@ public class LevelModel {
         }
 
         /**
-         * Draws the path of the projectile using the result of a raycast. Only works for shooting in a straight line (gravity scale of 0).
+         * Draws the path of the projectile using the result of a raycast.
+         * Only works for shooting in a straight line (gravity scale of 0).
          *
          * @param canvas The GameCanvas to draw the trajectory on.
          */
         public void drawProjectileRay(GameCanvas canvas) {
             for (int i = 0; i < range; i++) {
-                canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
-                        dotPos[2 * i + 1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
+                canvas.draw(trajectoryTexture, COLORS[i],
+                    trajectoryTexture.getRegionWidth() / 2f,
+                    trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
+                        dotPos[2 * i + 1] * scale.y,
+                    trajectoryTexture.getRegionWidth() * trajectoryScale,
+                    trajectoryTexture.getRegionHeight() * trajectoryScale);
             }
         }
     }
