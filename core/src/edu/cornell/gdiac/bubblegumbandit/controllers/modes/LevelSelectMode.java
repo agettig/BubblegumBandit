@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.LevelIconModel;
@@ -121,6 +122,17 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Camera zoom out */
     private final static float ZOOM = 1.5f;
 
+    // music
+
+    /** music to play */
+    AudioSource[] samples;
+
+    /** A queue to play music */
+    MusicQueue music;
+
+    /** An effect filter to apply */
+    EffectFilter filter;
+
 
 
     /**
@@ -177,6 +189,16 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
 
         createIcons(directory);
+
+
+        //music
+        AudioSource sample= directory.getEntry( "menu", AudioSource.class );
+//        AudioSource sample= directory.getEntry( "inGame", AudioSource.class );
+        AudioEngine engine = (AudioEngine)Gdx.audio;
+        music = engine.newMusicBuffer( false, 44100 );
+        music.setLooping(true);
+        music.addSource(sample);
+        music.play();
 
     }
 

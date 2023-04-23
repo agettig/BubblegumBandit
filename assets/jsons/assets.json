@@ -219,6 +219,11 @@
         "robotSplat": "sounds/splatRobot.wav",
         "collectItem": "sounds/collectItem.wav"
 	},
+    "samples": {
+        "menu": "sounds/music/spaceCruising.ogg",
+        "inGame": "sounds/music/bgBallad.ogg"
+
+    },
 	"jsons" : {
 		"level1" : "jsons/levels/alphaPresentation.json",
         "level2":"jsons/levels/alpha.json",
