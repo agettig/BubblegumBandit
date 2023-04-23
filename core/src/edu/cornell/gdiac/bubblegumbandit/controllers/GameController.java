@@ -194,6 +194,7 @@ public class GameController implements Screen {
     /** Reference to LaserController instance */
     private LaserController laserController;
 
+
     /**
      * Gum gravity scale when creating gum
      */
@@ -399,6 +400,7 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
+
     }
 
 
@@ -496,12 +498,13 @@ public class GameController implements Screen {
         if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
 
         else if (orbCollected && orbCountdown <= 0) {
-            level.getBandit().hitPlayer(level.getBandit().getHealth());
+            level.getBandit().kill();
         }
 
         //Check for failure.
         if (!getFailure() && level.getBandit().getHealth() <= 0) {
             setFailure(true);
+            level.getBandit().kill();
             return false;
         }
         return true;
@@ -542,12 +545,18 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        float movement = inputResults.getHorizontal() * bandit.getForce();
-        bandit.setMovement(movement);
-        bandit.applyForce();
+        if(bandit.getHealth()>0) {
+            float movement = inputResults.getHorizontal() * bandit.getForce();
+            bandit.setMovement(movement);
+            bandit.applyForce();
+        } else {
+            bandit.setVX(0f);
+            if(bandit.isGrounded())bandit.setVY(0);
+        }
+
 
         float grav =  level.getWorld().getGravity().y;
-        if ((bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
+        if ((bandit.getHealth()>0)&&(bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
                 (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
         ) {
@@ -567,7 +576,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 20 == 0) {
+            if (ticks % 60 == 0) {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }
@@ -577,7 +586,7 @@ public class GameController implements Screen {
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
+        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth()>0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -592,7 +601,7 @@ public class GameController implements Screen {
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick()) {
+        if (inputResults.didUnstick()&&bandit.getHealth()>0) {
             Unstickable unstickable = level.getAim().getSelected();
             if (unstickable != null) {
                 Obstacle unstickableOb = (Obstacle) unstickable;
@@ -714,10 +723,10 @@ public class GameController implements Screen {
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
-            displayFont.setColor(Color.RED);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 150);
-            canvas.end();
+            //displayFont.setColor(Color.RED);
+            //canvas.begin(); // DO NOT SCALE
+           // canvas.drawTextCentered("FAILURE!", displayFont, 150);
+           // canvas.end();
         }
     }
 
