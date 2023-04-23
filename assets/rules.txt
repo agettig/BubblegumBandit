@@ -1,0 +1,3 @@
+
+./rules/rules_1.tmx
+./rules/rules_2.tmx

@@ -1,15 +1,18 @@
 {
     "textures": {
-
-
         "health_bar": "textures/UI/health_bar.png",
         "health_fill": "textures/UI/health_fill.png",
         "health_icon": "textures/UI/UI_heart.png",
         "bubblegum_icon": "textures/UI/bubble_icon.png",
-        "sunfish" : "textures/UI/sunfish.png",
-        "ship1" : "textures/UI/level1.png",
+        "empty_gum": "textures/UI/empty_gum.png",
         "minimap_background" : "textures/UI/minimap_background.png",
         "minimap_tile" : "textures/UI/square.png",
+
+        "sunfish" : "textures/level_select/sunfish.png",
+        "ship1" : "textures/level_select/level1.png",
+        "ship2" : "textures/level_select/level2.png",
+        "fire" : "textures/level_select/fire.png",
+        "boost" : "textures/level_select/boost.png",
 
 
         "terrain": {
@@ -17,6 +20,11 @@
         },
         "background": {
             "file": "textures/environment/background.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "space_bg": {
+            "file": "textures/environment/space_sample.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -66,6 +74,7 @@
                 }
             }
         },
+        "bandit_guide": "textures/bandit/doubleArrow.png",
         "bandit_knock": {
             "file": "textures/bandit/bandit_knockback.png",
             "wrap": false,
@@ -131,11 +140,33 @@
                 }
             }
         },
+        "shielded_small_robot_patrol":  {
+            "file": "textures/small_enemy/shielded_small_robot_patrol.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
 
         "med_outline": "textures/medium_enemy/med_white.png",
         "med_robot": "textures/medium_enemy/medium_enemy.png",
         "med_walk":  {
             "file": "textures/medium_enemy/med_walk.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
+        },
+        "shielded_med_walk":  {
+            "file": "textures/medium_enemy/shielded_med_walk.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -164,6 +195,17 @@
         "laserBeamEnd": "textures/large_enemy/red_laser_end.png",
         "large_walk":  {
             "file": "textures/large_enemy/large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "shielded_large_walk":  {
+            "file": "textures/large_enemy/shielded_large_anim.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -210,6 +252,14 @@
         "times": {
             "file": "fonts/TimesRoman.ttf",
             "size": 32
+        },
+        "codygoon": {
+            "file" : "fonts/Codygoon.ttf",
+            "size": 64
+        },
+        "project" : {
+            "file" : "fonts/ProjectSpace.ttf",
+            "size": 64
         }
     },
 	"soundfx": {
@@ -220,10 +270,12 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-
-		"level1" : "jsons/levels/alpha_presentation.json",
+		"level1" : "jsons/levels/alphaPresentation.json",
         "level2":"jsons/levels/alpha.json",
         "constants": "jsons/constants.json",
-        "animations" : "jsons/animations.json"
+        "animations" : "jsons/animations.json",
+        "supports" : "tilesets/supports.json",
+        "terrain" : "tilesets/terrain.json",
+        "objects" : "tilesets/objects.json"
     }
 }
