@@ -46,11 +46,11 @@ public class ShieldedProjectileEnemyModel extends ProjectileEnemyModel implement
     }
 
     public void setUnshieldedTexture() {
-        animationController.setAnimation("unshielded_patrol");
+        animationController.setAnimation("unshielded_patrol", true);
     }
 
     public void setShieldedTexture() {
-        animationController.setAnimation("patrol");
+        animationController.setAnimation("patrol", true);
     }
 
     /**
