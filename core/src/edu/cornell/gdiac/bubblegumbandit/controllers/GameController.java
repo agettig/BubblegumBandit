@@ -194,15 +194,6 @@ public class GameController implements Screen {
     /** Reference to LaserController instance */
     private LaserController laserController;
 
-    /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
 
     /**
      * The texture of the trajectory projectile
@@ -218,9 +209,6 @@ public class GameController implements Screen {
 
 
     private TextureRegion stuckGum;
-
-    /** The gravity control mode for the player controller */
-    private boolean gravityToggle = true;
 
     /** The number of the current level. */
     private int levelNum;
@@ -445,6 +433,19 @@ public class GameController implements Screen {
         minimap.initialize(directory, levelFormat, x, y);
     }
 
+    public void respawn(){
+        setComplete(false);
+        setFailure(false);
+        countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
+        level.endAlarms();
+
+        level.remakeOrb(directory, constantsJson);
+        bubblegumController.resetAmmo();
+        level.getBandit().respawnPlayer();
+    }
+
     /**
      * Returns whether to process the update loop
      * <p>
@@ -467,7 +468,6 @@ public class GameController implements Screen {
         if (input.didCameraSwap()) {
             canvas.getCamera().toggleDebug();
         }
-        if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
         if (input.didAdvance()) {
             levelNum++;
             if (levelNum > NUM_LEVELS) {
@@ -490,18 +490,25 @@ public class GameController implements Screen {
         }
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
-            reset();
+
+            if (orbCollected && !complete){
+                respawn();
+            }
+            else {
+                reset();
+            }
         }
 
         if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
 
         else if (orbCollected && orbCountdown <= 0) {
-            level.getBandit().hitPlayer(level.getBandit().getHealth());
+            level.getBandit().kill();
         }
 
         //Check for failure.
         if (!getFailure() && level.getBandit().getHealth() <= 0) {
             setFailure(true);
+            level.getBandit().kill();
             return false;
         }
         return true;
@@ -542,14 +549,20 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        float movement = inputResults.getHorizontal() * bandit.getForce();
-        bandit.setMovement(movement);
-        bandit.applyForce();
+        if(bandit.getHealth()>0) {
+            float movement = inputResults.getHorizontal() * bandit.getForce();
+            bandit.setMovement(movement);
+            bandit.applyForce();
+        } else {
+            bandit.setVX(0f);
+            if(bandit.isGrounded())bandit.setVY(0);
+        }
+
 
         float grav =  level.getWorld().getGravity().y;
-        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
-                (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
-                (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0));
+        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) &&
+               ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
+                (PlayerController.getInstance().getGravityDown() && grav > 0));
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip) {
             Vector2 currentGravity = level.getWorld().getGravity();
@@ -571,7 +584,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 20 == 0) {
+            if (ticks % 60 == 0) {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }
@@ -581,7 +594,7 @@ public class GameController implements Screen {
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
+        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth()>0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -596,7 +609,7 @@ public class GameController implements Screen {
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick()) {
+        if (inputResults.didUnstick()&&bandit.getHealth()>0) {
             Unstickable unstickable = level.getAim().getSelected();
             if (unstickable != null) {
                 Obstacle unstickableOb = (Obstacle) unstickable;
