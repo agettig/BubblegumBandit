@@ -14,9 +14,11 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class DoorModel extends TileModel {
 
@@ -103,7 +105,17 @@ public class DoorModel extends TileModel {
     /** The obstacles in the range of the door. */
     private final ObjectSet<Obstacle> obsInRange;
 
-    /** The physics world */
+    /** Whether the door is locked */
+    private boolean isLocked;
+
+    /** The texture for the locked door. */
+    private TextureRegion lockedTexture;
+
+    /** The ids of the enemies required to unlock the door */
+    private ObjectSet<Integer> enemyIds;
+
+    /** The map from enemy ids to enemy object */
+    private HashMap<Integer, EnemyModel> enemyMap;
 
     /** Constructs a new DoorModel
      * Uses generic values to start
@@ -116,6 +128,7 @@ public class DoorModel extends TileModel {
         secondLowerRight = new Vector2();
         isOpen = false;
         obsInRange = new ObjectSet<>();
+        enemyIds = new ObjectSet<>();
     }
 
     /** Initializes the camera tile model.
@@ -127,8 +140,10 @@ public class DoorModel extends TileModel {
      * @param levelHeight the height of the level
      * @param objectJson the json value representing the camera tile
      * @param constants the json value representing the constants of the camera tile
+     * @param isHorizontal whether the door is horizontal
+     * @param enemyMap hashmap mapping enemy ids to actual enemies
      */
-    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal) {
+    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal, boolean isLocked, HashMap<Integer, EnemyModel> enemyMap) {
         // make the body fixture into a sensor
         setName("door");
 
@@ -157,6 +172,12 @@ public class DoorModel extends TileModel {
         String key = constants.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
+
+
+        key = constants.get("lockedtexture").asString();
+        texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        lockedTexture = texture;
+
 
         // Initialize the sensors used to detect when things are being crushed.
         // Get the sensor information
@@ -222,12 +243,19 @@ public class DoorModel extends TileModel {
                         secondLowerRight.y = yValue;
                         break;
                     default:
-                        throw new UnsupportedOperationException(name + " is not a valid property for a door");
+                        if (name.contains("enemy")) {
+                            enemyIds.add((int) value);
+                        } else {
+                            throw new UnsupportedOperationException(name + " is not a valid property for a door");
+                        }
                 }
             }
             property = property.next();
         }
         setDrawScale(scale);
+
+        this.isLocked = isLocked;
+        this.enemyMap = enemyMap;
     }
 
     public boolean activatePhysics(World world) {
@@ -263,9 +291,23 @@ public class DoorModel extends TileModel {
         obsInRange.remove(ob);
     }
 
+    private void tryUnlockDoor() {
+        boolean allDead = true;
+        for (Integer id : enemyIds) {
+            if (!enemyMap.get(id).isRemoved()) {
+                allDead = false;
+                return;
+            }
+        }
+        if (allDead) {
+            isLocked = false;
+        }
+    }
     private void openDoor() {
-        isOpen = true;
-        body.getFixtureList().get(0).setSensor(true);
+        if (!isLocked) {
+            isOpen = true;
+            body.getFixtureList().get(0).setSensor(true);
+        }
     }
 
     private void closeDoor() {
@@ -275,17 +317,23 @@ public class DoorModel extends TileModel {
 
     public void update(float dt) {
         super.update(dt);
+        if (isLocked) {
+            tryUnlockDoor();
+        }
         if (obsInRange.size == 0 && isOpen) {
             closeDoor();
         } else if (obsInRange.size > 0 && !isOpen) {
             openDoor();
         }
-
     }
 
     public void draw(GameCanvas canvas) {
         if (!isOpen) {
-            super.draw(canvas);
+            if (!isLocked) {
+                super.draw(canvas);
+            } else {
+                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+            }
         }
     }
 

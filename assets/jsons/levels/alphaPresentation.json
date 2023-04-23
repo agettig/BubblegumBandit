@@ -603,11 +603,21 @@
                  "y":1664
                 }, 
                 {
-                 "gid":78,
+                 "gid":79,
                  "height":256,
-                 "id":188,
+                 "id":189,
                  "name":"",
                  "properties":[
+                        {
+                         "name":"enemy1",
+                         "type":"object",
+                         "value":154
+                        }, 
+                        {
+                         "name":"enemy2",
+                         "type":"object",
+                         "value":155
+                        }, 
                         {
                          "name":"leftx1",
                          "type":"int",
@@ -649,7 +659,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"door_v_locked",
                  "visible":true,
                  "width":64,
                  "x":3264,
@@ -832,7 +842,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":189,
+ "nextobjectid":190,
  "orientation":"orthogonal",
  "properties":[
         {
