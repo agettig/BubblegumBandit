@@ -581,7 +581,7 @@ public class LevelModel {
                     DoorModel door = new DoorModel();
                     door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"));
                     activate(door);
-                    door.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+                    door.setFilter(CATEGORY_EVENTTILE, MASK_DOOR_SENSOR);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));

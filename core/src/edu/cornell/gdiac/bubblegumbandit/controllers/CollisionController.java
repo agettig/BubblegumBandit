@@ -44,7 +44,7 @@ public class CollisionController implements ContactListener {
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
     public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
-    public static final short MASK_UNSTICK = ~CATEGORY_PLAYER;
+    public static final short MASK_DOOR_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -150,6 +150,7 @@ public class CollisionController implements ContactListener {
             resolveOrbCollision(obstacleA, obstacleB);
             checkRollingEnemyCollision(obstacleA, obstacleB);
             resolveCrusherCollision(obstacleA, fixA, obstacleB, fixB);
+            resolveDoorSensorCollision(obstacleA, fixA, obstacleB, fixB, true);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -196,6 +197,8 @@ public class CollisionController implements ContactListener {
             if (ob2 instanceof Gummable) {
                 ob2.endCollision(ob1);
             }
+
+            resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
 
             if (ob1.getName().equals("door") && avatar == bd2) {
                 updateCamera(ob1);
@@ -462,7 +465,7 @@ public class CollisionController implements ContactListener {
 
         // Check that obstacles are not null and not an enemy
         if (bd1 == null || bd2 == null) return;
-        if (bd1.getName().contains("enemy") || bd2.getName().equals("enemy")) return;
+        if (bd1.getName().contains("enemy") || bd2.getName().contains("enemy")) return;
 
         if (bd1.getName().equals("projectile")) {
             resolveProjectileCollision((ProjectileModel) bd1, bd2);
@@ -516,6 +519,43 @@ public class CollisionController implements ContactListener {
             }
             crusher.maxAbsFallVel = 0;
             crusher.didSmash = true;
+        }
+    }
+
+    /**
+     * Checks if there was a collision between a door sensor and an enemy or player.
+     * *
+     * @param bd1 The first Obstacle in the collision.
+     * @param fix1 the particular fixture of the first collision obstacle
+     * @param bd2 The second Obstacle in the collision.
+     * @param fix2 the particular fixture of the second collision obstacle
+     * @parma isBeginContact whether the collision is a begincontact event
+     */
+    private void resolveDoorSensorCollision(Obstacle bd1, Fixture fix1, Obstacle bd2, Fixture fix2, boolean isBeginContact) {
+
+        // Check that obstacles are not null and one is a door sensor
+        if (bd1 == null || bd2 == null) return;
+        DoorModel door;
+        Obstacle ob;
+
+        if (fix1.getUserData() instanceof DoorModel) {
+            door = (DoorModel) fix1.getUserData();
+            ob = bd2;
+        } else if (fix2.getUserData() instanceof DoorModel) {
+            door = (DoorModel) fix2.getUserData();
+            ob = bd1;
+        } else {
+            return;
+        }
+        if (ob.equals(levelModel.getBandit()) || ob.getName().contains("enemy")) {
+            if (ob.getName().contains("enemy")) {
+                System.out.println("Enemy triggering this");
+            }
+            if (isBeginContact) {
+                door.addObInRange(ob);
+            } else {
+                door.removeObInRange(ob);
+            }
         }
     }
 

@@ -121,7 +121,14 @@
   "door": {
     "debugcolor": "magenta",
     "debugopacity": 200,
-    "texture": "door"
+    "texture": "door",
+    "sensorsize": [
+      4,
+      2
+    ],
+    "sensorname": "door_sensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192
   },
   "shieldedmediumrobot": {
     "type": "projectile",
