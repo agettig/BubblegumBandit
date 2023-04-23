@@ -801,7 +801,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
@@ -986,11 +985,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-
-
         if (startButton == null || levelSelectButton == null
                 || settingsButton == null || exitButton == null) return false;
-// Flip to match graphics coordinates
+        // Flip to match graphics coordinates
 
         //Detect hovers on the start button
         float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();

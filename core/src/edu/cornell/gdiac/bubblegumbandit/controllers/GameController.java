@@ -36,6 +36,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -211,15 +212,6 @@ public class GameController implements Screen {
      */
     private LaserController laserController;
 
-    /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
 
     /**
      * The texture of the trajectory projectile
@@ -422,6 +414,7 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
+
     }
 
 
@@ -468,6 +461,19 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+    }
+
+    public void respawn(){
+        setComplete(false);
+        setFailure(false);
+        countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
+        level.endAlarms();
+
+        level.remakeOrb(directory, constantsJson);
+        bubblegumController.resetAmmo();
+        level.getBandit().respawnPlayer();
     }
 
     /**
@@ -517,21 +523,28 @@ public class GameController implements Screen {
         if (input.didExit()) {
             listener.exitScreen(this, EXIT_QUIT);
             return false;
-        } else if (countdown > 0) {
-            countdown--;
-        } else if (countdown == 0) {
-            reset();
+        }
+        else if (countdown > 0) {countdown--;}
+        else if (countdown == 0) {
+
+            if (orbCollected && !complete){
+                respawn();
+            }
+            else {
+                reset();
+            }
         }
 
-        if (orbCountdown > 0 && !complete) {
-            orbCountdown -= dt;
-        } else if (orbCollected && orbCountdown <= 0) {
-            level.getBandit().hitPlayer(level.getBandit().getHealth());
+        if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
+
+        else if (orbCollected && orbCountdown <= 0) {
+            level.getBandit().kill();
         }
 
         //Check for failure.
         if (!getFailure() && level.getBandit().getHealth() <= 0) {
             setFailure(true);
+            level.getBandit().kill();
             return false;
         }
         return true;
@@ -572,9 +585,15 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        float movement = inputResults.getHorizontal() * bandit.getForce();
-        bandit.setMovement(movement);
-        bandit.applyForce();
+        if(bandit.getHealth()>0) {
+            float movement = inputResults.getHorizontal() * bandit.getForce();
+            bandit.setMovement(movement);
+            bandit.applyForce();
+        } else {
+            bandit.setVX(0f);
+            if(bandit.isGrounded())bandit.setVY(0);
+        }
+
 
         float grav = level.getWorld().getGravity().y;
         if ((bandit.isGrounded() || !bandit.hasFlipped()) &&
@@ -596,7 +615,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 20 == 0) {
+            if (ticks % 60 == 0) {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }
@@ -606,7 +625,7 @@ public class GameController implements Screen {
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
+        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth()>0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -621,7 +640,7 @@ public class GameController implements Screen {
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick()) {
+        if (inputResults.didUnstick()&&bandit.getHealth()>0) {
             Unstickable unstickable = level.getAim().getSelected();
             if (unstickable != null) {
                 Obstacle unstickableOb = (Obstacle) unstickable;
