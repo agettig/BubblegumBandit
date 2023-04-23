@@ -249,17 +249,13 @@
             "file": "fonts/LucidaGrande.ttf",
             "size": 16
         },
-        "times": {
-            "file": "fonts/TimesRoman.ttf",
-            "size": 32
+        "codygoonRegular": {
+            "file": "fonts/CodygoonRegular.ttf",
+            "size": 36
         },
-        "codygoon": {
-            "file" : "fonts/Codygoon.ttf",
-            "size": 64
-        },
-        "project" : {
-            "file" : "fonts/ProjectSpace.ttf",
-            "size": 64
+        "projectSpace": {
+            "file": "fonts/ProjectSpace.ttf",
+            "size": 40
         }
     },
 	"soundfx": {
