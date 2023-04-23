@@ -190,15 +190,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         createIcons(directory);
 
-
         //music
-        AudioSource sample= directory.getEntry( "menu", AudioSource.class );
-//        AudioSource sample= directory.getEntry( "inGame", AudioSource.class );
-        AudioEngine engine = (AudioEngine)Gdx.audio;
-        music = engine.newMusicBuffer( false, 44100 );
-        music.setLooping(true);
-        music.addSource(sample);
-        music.play();
+        SoundController.playMusic("menu");
 
     }
 
@@ -285,7 +278,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         }
 //        if (sunfish.getX() > SPACE_WIDTH - camWidth){
 //            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
-//
 //        }
          //y bounds
         if (sunfish.getY() < camHeight) {

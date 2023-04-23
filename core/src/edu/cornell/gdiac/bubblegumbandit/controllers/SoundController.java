@@ -1,10 +1,13 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.Gdx;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.audio.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static edu.cornell.gdiac.backend.Effect.engine;
 
 public class SoundController {
     /**
@@ -38,6 +41,23 @@ public class SoundController {
     /**Hashmap holding sounds and corresponding string */
     private static HashMap<String, SoundEffect> sounds ;
 
+
+    // music
+
+    /** menu music: SpaceCruising */
+   private static AudioSource menu;
+
+    /** in-game music: BubbleGumBallad */
+    private static AudioSource game;
+
+   /** engine*/
+   private static AudioEngine engine;
+
+    /** A queue to play music */
+    private static MusicQueue musicPlayer;
+
+    /**Hashmap holding sounds and corresponding string */
+    private static HashMap<String, AudioSource> music ;
     public SoundController() {}
 
     public static void initialize(AssetDirectory directory) {
@@ -62,12 +82,31 @@ public class SoundController {
             put("robotSplat", robotSplatSound);
             put("collectItem", collectItemSound);
         }};
+
+       menu = directory.getEntry( "menu", AudioSource.class );
+       game = directory.getEntry( "inGame", AudioSource.class );
+
+        music = new HashMap<String, AudioSource>() {{
+            put("menu", menu);
+            put("game", game);
+        }};
+       engine = (AudioEngine) Gdx.audio;
+
+    }
+
+    public static void playMusic(String sound){
+        AudioSource sample = music.get(sound);
+        musicPlayer = engine.newMusicBuffer( false, 44100 );
+        musicPlayer.setLooping(true);
+        musicPlayer.addSource(sample);
+        musicPlayer.play();
     }
 
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
         return playSound(s, soundIds.get(s), volume);
     }
+
 
     /**
      * Method to ensure that a sound asset is only played once.
