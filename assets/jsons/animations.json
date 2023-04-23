@@ -24,7 +24,6 @@
       "strip": "bandit_death.death",
       "fps": 8
     }
-
   },
   "small_robot": {
     "patrol": {
@@ -32,8 +31,28 @@
       "fps": 6
     }
   },
+  "shielded_small_robot": {
+    "patrol": {
+      "strip": "shielded_small_robot_patrol.patrol",
+      "fps": 6
+    },
+    "unshielded_patrol": {
+      "strip": "small_robot_patrol.patrol",
+      "fps": 6
+    }
+  },
   "large_robot": {
     "patrol": {
+      "strip": "large_walk.patrol",
+      "fps": 4
+    }
+  },
+  "shielded_large_robot": {
+    "patrol": {
+      "strip": "shielded_large_walk.patrol",
+      "fps": 4
+    },
+    "unshielded_patrol": {
       "strip": "large_walk.patrol",
       "fps": 4
     }
@@ -48,12 +67,20 @@
       "fps": 8
     }
   },
+  "shielded_medium_robot": {
+    "patrol": {
+      "strip": "shielded_med_walk.patrol",
+      "fps": 8
+    },
+    "roll": {
+      "strip": "med_roll.attack",
+      "fps": 8
+    }
+  },
   "poof": {
     "poof": {
       "strip": "poof.poof",
       "fps": 16
     }
   }
-
-
 }

@@ -1340,12 +1340,14 @@ public class GameCanvas {
         float w = shape.getRadius() * sx;
         float h = shape.getRadius() * sy;
 
+        fovRender.flush();
         fovRender.setProjectionMatrix(camera.combined);
         fovRender.begin(ShapeRenderer.ShapeType.Line);
         local.applyTo(vertex);
         fovRender.setColor(color);
         fovRender.ellipse(x0 - w, y0 - h, 2 * w, 2 * h, 12);
         fovRender.end();
+        fovRender.flush();
     }
 
 
