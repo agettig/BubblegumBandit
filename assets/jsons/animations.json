@@ -11,6 +11,18 @@
     "fall": {
       "strip": "bandit_fall.fall",
       "fps": 2
+    },
+    "knock": {
+      "strip": "bandit_knock.knock",
+      "fps": 6
+    },
+    "back": {
+      "strip": "bandit_backpedal.back",
+      "fps": 6
+    },
+    "death": {
+      "strip": "bandit_death.death",
+      "fps": 8
     }
   },
   "small_robot": {
@@ -63,6 +75,12 @@
     "roll": {
       "strip": "med_roll.attack",
       "fps": 8
+    }
+  },
+  "poof": {
+    "poof": {
+      "strip": "poof.poof",
+      "fps": 16
     }
   }
 }
