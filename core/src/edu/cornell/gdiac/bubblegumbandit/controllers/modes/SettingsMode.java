@@ -367,7 +367,7 @@ public class SettingsMode implements Screen {
     private void addControlButtonListners() {
         moveLeftButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
+                if (checkedButton != null ) {
                     checkedButton.setChecked(false);
                 }
                 if (checkedButton == moveLeftButton) {
@@ -471,14 +471,16 @@ public class SettingsMode implements Screen {
         });
         shootGumButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
+
+                if(checkedButton!=shootGumButton) checkedButton = shootGumButton;
+                else {
+                    checkedButton.setText("LEFT CLICK");
+                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
                     checkedButton.setChecked(false);
-                }
-                if (checkedButton == shootGumButton) {
                     checkedButton = null;
-                } else {
-                    checkedButton = shootGumButton;
                 }
+
+
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -491,18 +493,18 @@ public class SettingsMode implements Screen {
         });
         unstickGumButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
+
+                if(checkedButton!=unstickGumButton) checkedButton = unstickGumButton;
+                else {
+                    checkedButton.setText("LEFT CLICK");
+                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
                     checkedButton.setChecked(false);
-                }
-                if (checkedButton == unstickGumButton) {
                     checkedButton = null;
-                } else {
-                    checkedButton = unstickGumButton;
                 }
+
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
                 hoverBooleans[buttonIndexMap.get(unstickGumButton)] = true;
             }
 
