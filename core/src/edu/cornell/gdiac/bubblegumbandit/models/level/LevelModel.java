@@ -31,7 +31,6 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
@@ -116,6 +115,11 @@ public class LevelModel {
      * All the objects in the world.
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
+
+    /**
+     * All the flippable objects in the world.
+     */
+    protected PooledList<Obstacle> flippableObjects = new PooledList<Obstacle>();
 
     private Array<AIController> enemyControllers;
 
@@ -214,6 +218,13 @@ public class LevelModel {
      */
     public ExitModel getExit() {
         return goalDoor;
+    }
+
+    /** Returns the flippable objects in the level.
+     * @return the flippable objects
+     */
+    public PooledList<Obstacle> getFlippables() {
+        return flippableObjects;
     }
 
     /**
@@ -456,6 +467,8 @@ public class LevelModel {
         int enemyCount = 0;
         Array<EnemyModel> newEnemies = new Array<>();
 
+        HashMap<Integer, EnemyModel> enemyIds = new HashMap<>();
+
         while (object != null) {
             JsonValue objTypeJson = object.get("type");
             String objType;
@@ -467,6 +480,7 @@ public class LevelModel {
                 int substringEnd = objType.lastIndexOf(".");
                 objType = objType.substring(substringStart, substringEnd);
             }
+            int objId = (object.getInt("id"));
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
 
@@ -506,6 +520,7 @@ public class LevelModel {
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
                     newEnemies.add(enemy);
+                    enemyIds.put(objId, enemy);
                     break;
                 case "shieldedsmallrobot":
                     enemyConstants = constants.get(objType);
@@ -521,6 +536,7 @@ public class LevelModel {
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "shieldedmediumrobot":
@@ -544,6 +560,7 @@ public class LevelModel {
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "orb":
@@ -557,15 +574,24 @@ public class LevelModel {
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
-                case "camera_v":
-                case "camera_h":
-                    CameraTileModel cam = new CameraTileModel();
-                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"), objType.equals("camera_h"));
-                    activate(cam);
-                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+                case "door_v_locked":
+                case "door_v":
+                case "door_h":
+                    DoorModel door = new DoorModel();
+                    boolean isLocked = objType.contains("locked");
+                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
+                    activate(door);
+                    door.setFilter(CATEGORY_EVENTTILE, MASK_DOOR_SENSOR);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
+                    break;
+                case "crushing_block":
+                    CrusherModel crush = new CrusherModel();
+                    crush.initialize(directory, scale, x, y, object, constants.get("crushing_block"));
+                    activate(crush);
+                    flippableObjects.add(crush);
+                    crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
@@ -658,6 +684,14 @@ public class LevelModel {
                 entry.remove();
             } else {
                 obj.update(dt);
+            }
+        }
+        iterator = flippableObjects.entryIterator();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obj = entry.getValue();
+            if (obj.isRemoved()) {
+                entry.remove();
             }
         }
         alarms.update();
@@ -973,7 +1007,7 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") && !ob.equals(bandit)) {
+                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("door") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -986,6 +1020,8 @@ public class LevelModel {
          */
         private final Obstacle[] lastCollision = new Obstacle[1];
 
+        private HashSet<java.lang.String> canUnstickThrough = new HashSet<>();
+
         /**
          * The raycast callback used for the unsticking raycast.
          * This has a different raycast so the origin can be within the player.
@@ -995,8 +1031,11 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") &&
+                if (!canUnstickThrough.contains(ob.getName()) &&
                         ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.equals(bandit)) {
+                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                        return -1;
+                    }
                     lastCollision[0] = ob;
                     return fraction;
                 }
@@ -1017,6 +1056,8 @@ public class LevelModel {
             directionCache = new Vector2();
             endCache = new Vector2();
             originCache = new Vector2();
+            canUnstickThrough.add("gumProjectile");
+            canUnstickThrough.add("door");
         }
 
         /**
