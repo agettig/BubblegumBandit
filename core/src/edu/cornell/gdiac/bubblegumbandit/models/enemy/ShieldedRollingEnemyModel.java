@@ -46,11 +46,11 @@ public class ShieldedRollingEnemyModel extends RollingEnemyModel implements Shie
     }
 
     public void setShieldedTexture() {
-        animationController.setAnimation("patrol");
+        animationController.setAnimation("patrol", true);
     }
 
     public void setUnshieldedTexture() {
-        animationController.setAnimation("roll");
+        animationController.setAnimation("roll", true);
     }
 
     /**

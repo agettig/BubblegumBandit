@@ -258,6 +258,10 @@ public class LevelModel {
         alarms.setAlarms(true);
     }
 
+    public void endAlarms(){
+        alarms.setAlarms(false);
+    }
+
     /**
      * Creates a new LevelModel
      * <p>
@@ -524,11 +528,7 @@ public class LevelModel {
                     enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                    enemyIds.put(objId, enemy);
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    newEnemies.add(enemy);
                     break;
                 case "mediumrobot":
                     enemyConstants = constants.get(objType);
@@ -545,23 +545,15 @@ public class LevelModel {
                     enemy = new ShieldedRollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                    enemyIds.put(objId, enemy);
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
-                break;
+                    newEnemies.add(enemy);
+                    break;
                 case "shieldedlargerobot":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new ShieldedLaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-                    enemyIds.put(objId, enemy);
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    newEnemies.add(enemy);
                     break;
                 case "large_robot":
                     enemyConstants = constants.get(objType);
@@ -748,6 +740,7 @@ public class LevelModel {
         }
 
         Set<Obstacle> postLaserDraw = new HashSet<>();
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
 
 
@@ -763,8 +756,7 @@ public class LevelModel {
 
 
 
-
-        aim.drawProjectileRay(canvas);
+        if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
 
 
 
@@ -790,7 +782,7 @@ public class LevelModel {
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .5f;
         final float lockedLaserScale = 1f;
-        final float firingLaserScale = 1.5f;
+        final float firingLaserScale = 1.2f;
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
 
@@ -826,25 +818,22 @@ public class LevelModel {
 
                 beam.setRegionWidth(2);
                 int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
-                if(enemy.getGummed()) numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
+                numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
                 dir.nor();
 
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
 
-
-
                     //Calculate the positions and angle of the charging laser.
-                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()/2): 0;
+                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()): -(enemy.getWidth());
                     float enemyOffsetY = enemy.getHeight()*10;
-
-                    float x = enemyPos.x * scale.x + (i * dir.x * beam.getRegionWidth());
-                    float y = enemyPos.y * scale.y + (i * dir.y * beam.getRegionWidth());
-
+                    float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
+                    float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
-                    if(enemy.getGummed()) enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+                    enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+                    if(enemy.getFaceRight()) enemyOffsetX *= -1;
 
                     canvas.draw(
                             beam,
@@ -852,7 +841,7 @@ public class LevelModel {
                             beam.getRegionWidth(),
                             beam.getRegionHeight(),
                             x + enemyOffsetX,
-                            y + enemyOffsetY* enemy.getYScale(),
+                            y + enemyOffsetY * enemy.getYScale(),
                             ang,
                             1f,
                             1 * laserThickness);
@@ -929,6 +918,14 @@ public class LevelModel {
      */
     public float getOrbCountdown() {
         return timer;
+    }
+
+    public void remakeOrb(AssetDirectory directory, JsonValue constants){
+        Collectible coll = new Collectible();
+        coll.initialize(directory, orbPostion.x, orbPostion.y, scale, constants.get("orb"));
+        activate(coll);
+        coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+        coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
     }
 
     public class AimModel {
@@ -1155,14 +1152,19 @@ public class LevelModel {
         }
 
         /**
-         * Draws the path of the projectile using the result of a raycast. Only works for shooting in a straight line (gravity scale of 0).
+         * Draws the path of the projectile using the result of a raycast.
+         * Only works for shooting in a straight line (gravity scale of 0).
          *
          * @param canvas The GameCanvas to draw the trajectory on.
          */
         public void drawProjectileRay(GameCanvas canvas) {
             for (int i = 0; i < range; i++) {
-                canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
-                        dotPos[2 * i + 1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
+                canvas.draw(trajectoryTexture, COLORS[i],
+                    trajectoryTexture.getRegionWidth() / 2f,
+                    trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
+                        dotPos[2 * i + 1] * scale.y,
+                    trajectoryTexture.getRegionWidth() * trajectoryScale,
+                    trajectoryTexture.getRegionHeight() * trajectoryScale);
             }
         }
     }
