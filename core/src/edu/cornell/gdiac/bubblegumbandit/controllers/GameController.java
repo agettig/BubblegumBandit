@@ -17,6 +17,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -443,6 +444,8 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+
+        SoundController.playMusic("game");
     }
 
     /**
