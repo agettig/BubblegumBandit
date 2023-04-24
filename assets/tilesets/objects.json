@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":14,
+ "tilecount":15,
  "tiledversion":"1.10.0",
  "tileheight":256,
  "tiles":[
@@ -117,6 +117,13 @@
          "imageheight":256,
          "imagewidth":64,
          "type":"door_v_locked"
+        }, 
+        {
+         "id":18,
+         "image":"..\/textures\/objects\/glass.png",
+         "imageheight":64,
+         "imagewidth":64,
+         "type":"glass"
         }],
  "tilewidth":256,
  "type":"tileset",

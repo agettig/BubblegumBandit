@@ -601,6 +601,13 @@ public class LevelModel {
                     flippableObjects.add(crush);
                     crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     break;
+                case "glass":
+                    GlassModel glass = new GlassModel();
+                    glass.initialize(directory, x, y, constants.get("glass"));
+                    activate(glass);
+                    glass.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    glass.setDrawScale(scale);
+                    break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
