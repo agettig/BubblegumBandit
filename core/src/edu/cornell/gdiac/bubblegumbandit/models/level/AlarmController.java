@@ -65,8 +65,8 @@ public class AlarmController {
     rays.setAmbientLight(0.95f);
     rays.setShadows(true);
     this.lights = new PointLight[locations.size];
-    this.onTexture = new TextureRegion(directory.getEntry("alarm_on", Texture.class));
-    this.offTexture = new TextureRegion(directory.getEntry("alarm_off", Texture.class));
+    this.onTexture = new TextureRegion(directory.getEntry("alarmOn", Texture.class));
+    this.offTexture = new TextureRegion(directory.getEntry("alarmOff", Texture.class));
     for(int i = 0; i<locations.size; i++) {
       lights[i] = new PointLight(rays, rayCount, inactive, INACTIVE_DIST, locations.get(i).x+.5f, locations.get(i).y+.5f);
     }

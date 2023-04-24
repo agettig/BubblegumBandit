@@ -76,11 +76,11 @@ public class HUDController {
     stage.addActor(table);
     table.setFillParent(true);
 
-    healthBar = new Image(directory.getEntry("health_bar", Texture.class));
-    healthFillText = directory.getEntry("health_fill", Texture.class);
-    healthIcon = new Image(directory.getEntry("health_icon", Texture.class));
-    bubbleIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
-    reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+    healthBar = new Image(directory.getEntry("healthBar", Texture.class));
+    healthFillText = directory.getEntry("healthFill", Texture.class);
+    healthIcon = new Image(directory.getEntry("healthIcon", Texture.class));
+    bubbleIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
+    reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
     starIcon1 = new Image(directory.getEntry("star", Texture.class));
     starIcon2 = new Image(directory.getEntry("star", Texture.class));
     starIcon3 = new Image(directory.getEntry("star", Texture.class));
@@ -100,11 +100,11 @@ public class HUDController {
 
     table.row();
     for (int i = 0; i < 6; i++) {
-      Image emptyGum = new Image(directory.getEntry("empty_gum", Texture.class));
+      Image emptyGum = new Image(directory.getEntry("emptyGum", Texture.class));
       emptyGum.setPosition(32 + i*50, stage.getHeight() - 103);
       stage.addActor(emptyGum);
 
-      Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+      Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
       reloadGumIcon.setPosition(32 + i*50, stage.getHeight() - 103);
       gumCount[i] = reloadGumIcon;
       stage.addActor(reloadGumIcon);
@@ -124,8 +124,8 @@ public class HUDController {
 
 
     for (int i = 0; i < 6; i++) {
-      Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
-      Image emptyGumIcon = new Image(directory.getEntry("empty_gum", Texture.class));
+      Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
+      Image emptyGumIcon = new Image(directory.getEntry("emptyGum", Texture.class));
       emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
       reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
 
