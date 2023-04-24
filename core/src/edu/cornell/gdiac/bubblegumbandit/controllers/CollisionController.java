@@ -463,9 +463,11 @@ public class CollisionController implements ContactListener {
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
             if (gummable.getGummed()) { // && !ob2.equals(levelModel.getBandit())
-                if (ob1.getName().contains("enemy") && ob2.equals(levelModel.getBandit())) {
+                // TODO: Once naming standardized, don't need to convert to lowercase
+                if (ob1.getName().toLowerCase().contains("enemy") && ob2.equals(levelModel.getBandit())) {
                     return;
                 }
+                System.out.println(ob1.getName());
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("enemySplat", 1f);
                 ob2.setStuck(true);
@@ -474,9 +476,11 @@ public class CollisionController implements ContactListener {
         else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
             if (gummable.getGummed()) { // && !ob1.equals(levelModel.getBandit())
-                if (ob2.getName().contains("enemy") && ob1.equals(levelModel.getBandit())) {
+                // TODO: Once naming standardized, don't need to convert to lowercase
+                if (ob2.getName().toLowerCase().contains("enemy") && ob1.equals(levelModel.getBandit())) {
                     return;
                 }
+                System.out.println(ob2.getName());
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("enemySplat", 1f);
                 ob1.setStuck(true);
