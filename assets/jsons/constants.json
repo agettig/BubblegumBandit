@@ -26,7 +26,8 @@
     "bottomsensorname": "dudeGroundSensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
-    "topsensorname": "dudeTopSensor"
+    "topsensorname": "dudeTopSensor",
+    "deadtexture" : "bandit_dead"
   },
   "walls": {
     "bodytype": "static",
@@ -67,8 +68,8 @@
     "topsensorname": "crushing_top_sensor"
   },
   "gumProjectile": {
-    "starting_gum": 5,
-    "max_gum": 25,
+    "starting_gum": 6,
+    "max_gum": 6,
     "offsetX": 0.6,
     "offsetY": 0.5,
     "speed": 25.0,
@@ -333,7 +334,7 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 7.0,
+    "speed": 10.0,
     "density": 10.0,
     "texture": "bullet"
   },

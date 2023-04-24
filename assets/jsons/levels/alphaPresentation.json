@@ -212,19 +212,7 @@
                  "width":64,
                  "x":1088,
                  "y":1664
-                }, 
-                {
-                 "gid":65,
-                 "height":25,
-                 "id":153,
-                 "name":"",
-                 "rotation":0,
-                 "type":"floatinggum",
-                 "visible":true,
-                 "width":25,
-                 "x":1664,
-                 "y":1536
-                }, 
+                },
                 {
                  "gid":64,
                  "height":65,
@@ -284,19 +272,7 @@
                  "width":43,
                  "x":3136,
                  "y":2432
-                }, 
-                {
-                 "gid":65,
-                 "height":25,
-                 "id":159,
-                 "name":"",
-                 "rotation":0,
-                 "type":"floatinggum",
-                 "visible":true,
-                 "width":25,
-                 "x":3712,
-                 "y":2304
-                }, 
+                },
                 {
                  "gid":74,
                  "height":186,

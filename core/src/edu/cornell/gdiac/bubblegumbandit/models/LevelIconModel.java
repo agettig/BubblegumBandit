@@ -17,10 +17,10 @@ public class LevelIconModel {
     private int level;
 
     /** x position of the texture */
-    private float x;
+    public float x;
 
     /** y position of the texture */
-    private float y;
+    public float y;
 
     /** color to tint the level texture, determined by press state */
     private Color tint;
@@ -56,14 +56,21 @@ public class LevelIconModel {
     public void setPressState(int value) {
 
         if (value == 1){
-            tint = Color.LIGHT_GRAY;
+            pressState = 1;
+            tint = new Color(.38f, .78f, .81f, 1f);
         }
         else if (value == 2){
-            tint = Color.GRAY;
+            pressState = 2;
+            tint = new Color(.18f, .58f, .61f, 1);
         }
         else{
+            pressState = 0;
             tint = Color.WHITE;
         }
+    }
+
+    public int getState() {
+        return pressState;
     }
 
     /** returns true if cursor is in bounds of the texture */

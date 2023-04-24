@@ -1,14 +1,18 @@
 {
     "textures": {
-
         "health_bar": "textures/UI/health_bar.png",
         "health_fill": "textures/UI/health_fill.png",
         "health_icon": "textures/UI/UI_heart.png",
         "bubblegum_icon": "textures/UI/bubble_icon.png",
-        "sunfish" : "textures/UI/sunfish.png",
-        "ship1" : "textures/UI/level1.png",
+        "empty_gum": "textures/UI/empty_gum.png",
         "minimap_background" : "textures/UI/minimap_background.png",
         "minimap_tile" : "textures/UI/square.png",
+
+        "sunfish" : "textures/level_select/sunfish.png",
+        "ship1" : "textures/level_select/level1.png",
+        "ship2" : "textures/level_select/level2.png",
+        "fire" : "textures/level_select/fire.png",
+        "boost" : "textures/level_select/boost.png",
 
 
         "terrain": {
@@ -16,6 +20,11 @@
         },
         "background": {
             "file": "textures/environment/background.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "space_bg": {
+            "file": "textures/environment/space_sample.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -66,6 +75,56 @@
             }
         },
         "bandit_guide": "textures/bandit/doubleArrow.png",
+        "bandit_knock": {
+            "file": "textures/bandit/bandit_knockback.png",
+            "wrap": false,
+            "sprites": {
+                "knock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+
+        },
+        "bandit_backpedal": {
+            "file": "textures/bandit/bandit_backpedal.png",
+            "wrap": false,
+            "sprites": {
+                "back": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+
+        },
+        "bandit_death": {
+            "file": "textures/bandit/bandit_death.png",
+            "wrap": false,
+            "sprites": {
+                "death": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
+        "bandit_dead" : "textures/bandit/bandit_dead.png",
+
+        "poof": {
+            "file": "textures/bandit/poof.png",
+            "wrap": false,
+            "sprites": {
+                "poof": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
 
         "smallrobotoutline": "textures/small_enemy/small_enemyWhite.png",
         "bullet": "textures/small_enemy/bullet.png",
@@ -199,9 +258,13 @@
             "file": "fonts/LucidaGrande.ttf",
             "size": 16
         },
-        "times": {
-            "file": "fonts/TimesRoman.ttf",
-            "size": 32
+        "codygoonRegular": {
+            "file": "fonts/CodygoonRegular.ttf",
+            "size": 36
+        },
+        "projectSpace": {
+            "file": "fonts/ProjectSpace.ttf",
+            "size": 40
         }
     },
 	"soundfx": {

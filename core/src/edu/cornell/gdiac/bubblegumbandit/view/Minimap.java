@@ -9,10 +9,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-
 
 public class Minimap {
 
