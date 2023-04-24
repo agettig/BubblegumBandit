@@ -481,8 +481,6 @@ public enum EnemyState implements State<AIController> {
     }
 
     protected void talk(AIController aiController, String msg) {
-        //GdxAI.getLogger().info(aiController.getEnemy().getName(), msg);
+        GdxAI.getLogger().info(aiController.getEnemy().getName(), msg);
     }
-
-
 }
