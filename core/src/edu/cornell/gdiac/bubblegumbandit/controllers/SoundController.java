@@ -50,6 +50,9 @@ public class SoundController {
     /** in-game music: BubbleGumBallad */
     private static AudioSource game;
 
+    /** alarm music: escape! */
+    private static AudioSource escape;
+
    /** engine*/
    private static AudioEngine engine;
 
@@ -85,10 +88,12 @@ public class SoundController {
 
        menu = directory.getEntry( "menu", AudioSource.class );
        game = directory.getEntry( "inGame", AudioSource.class );
+       escape = directory.getEntry( "escape", AudioSource.class );
 
         music = new HashMap<String, AudioSource>() {{
             put("menu", menu);
             put("game", game);
+            put("escape", escape);
         }};
        engine = (AudioEngine) Gdx.audio;
        musicPlayer = engine.newMusicBuffer( false, 44100 );

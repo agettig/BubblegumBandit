@@ -537,6 +537,7 @@ public class GameController implements Screen {
             orbCollected = true;
             orbCountdown = level.getOrbCountdown();
             level.startAlarms();
+            SoundController.playMusic("escape");
         }
 
         PlayerController inputResults = PlayerController.getInstance();
