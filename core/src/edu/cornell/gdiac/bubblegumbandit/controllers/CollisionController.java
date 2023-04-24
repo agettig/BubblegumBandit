@@ -27,9 +27,9 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_GUM = 0x0008;
     public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_PROJECTILE = 0x0010;
-    public static final short CATEGORY_EVENTTILE = 0x0040;
+    public static final short CATEGORY_EXIT = 0x0040;
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
-    public static final short CATEGORY_UNSTICK = 0x0100;
+    public static final short CATEGORY_DOOR = 0x0100;
 
 
     public static final short MASK_PLAYER = -1;
@@ -42,9 +42,10 @@ public class CollisionController implements ContactListener {
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY);
 
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
-    public static final short MASK_EVENTTILE = CATEGORY_PLAYER;
+    public static final short MASK_EXIT = CATEGORY_PLAYER;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_DOOR_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
+    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -145,7 +146,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
-            resolveGummableGumCollision(obstacleA, obstacleB);
+            resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
             resolveStarCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
             checkRollingEnemyCollision(obstacleA, obstacleB);
@@ -321,6 +322,12 @@ public class CollisionController implements ContactListener {
             if (bodyB instanceof Gummable) {
                 gummable = (Gummable) bodyB;
             }
+            if (bodyB instanceof DoorModel) {
+                DoorModel door = (DoorModel) bodyB;
+                if (door.isOpen()) {
+                    return;
+                }
+            }
         };
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
@@ -330,6 +337,12 @@ public class CollisionController implements ContactListener {
             }
             if (bodyA instanceof Gummable) {
                 gummable = (Gummable) bodyA;
+            }
+            if (bodyA instanceof DoorModel) {
+                DoorModel door = (DoorModel) bodyA;
+                if (door.isOpen()) {
+                    return;
+                }
             }
         };
         if (gum != null && gum.getName().equals("gumProjectile")) {
@@ -358,8 +371,10 @@ public class CollisionController implements ContactListener {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
-                    for (Obstacle ob : gummable.getCollisions()) {
-                        bubblegumController.createGummableJoint(gummable, ob);
+                    if (!(gummable instanceof DoorModel)) {
+                        for (Obstacle ob : gummable.getCollisions()) {
+                            bubblegumController.createGummableJoint(gummable, ob);
+                        }
                     }
                 }
                 else {
@@ -432,9 +447,14 @@ public class CollisionController implements ContactListener {
      * @param ob1
      * @param ob2
      */
-    public void resolveGummableGumCollision(Obstacle ob1, Obstacle ob2) {
+    public void resolveGummableGumCollision(Obstacle ob1, Obstacle ob2, Fixture fix1, Fixture fix2) {
         if (ob1 == null || ob2 == null) return;
         if (ob1.isRemoved() || ob2.isRemoved()) return;
+        if (ob1 instanceof DoorModel || ob2 instanceof DoorModel) return;
+        if (fix1.getUserData() instanceof DoorModel || fix2.getUserData() instanceof DoorModel) {
+            return;
+        }
+
 
         Gummable gummable;
 

@@ -230,6 +230,9 @@ public class BubblegumController {
     public void removeGummable(Gummable gummable) {
         gummable.setGummed(false);
 
+        if (stuckToGummable.get(gummable) == null) { // Don't know why this is happening.
+            return;
+        }
         for (Joint j : stuckToGummable.get(gummable)) {
             gummableJointsToRemove.addLast(j);
         }
