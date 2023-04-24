@@ -693,8 +693,11 @@ public class LevelModel {
     public void update(float dt) {
         // Garbage collect the deleted objects.
         for (AIController controller : enemyControllers) {
+            // TODO: Add custom state for dead enemies
 //            adjustForDrift(controller.getEnemy());
-            controller.getEnemyStateMachine().update();
+            if (!controller.getEnemy().isRemoved()) {
+                controller.getEnemyStateMachine().update();
+            }
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
