@@ -59,7 +59,7 @@
     "rotaterate": 0.08,
     "gravityscale": 1.5,
     "sensorsize": [
-      1.96,
+      1.94,
       0.05
     ],
     "bottomsensorname": "crushing_bottom_sensor",
