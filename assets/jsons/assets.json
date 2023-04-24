@@ -4,16 +4,25 @@
         "healthFill": "textures/UI/healthFill.png",
         "healthIcon": "textures/UI/UIHeart.png",
         "bubblegumIcon": "textures/UI/bubbleIcon.png",
-        "sunfish" : "textures/UI/sunfish.png",
-        "ship1" : "textures/UI/level1.png",
+        "emptyGum": "textures/UI/emptyGum.png",
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
+        "sunfish" : "textures/levelSelect/sunfish.png",
+        "ship1" : "textures/levelSelect/level1.png",
+        "ship2" : "textures/levelSelect/level2.png",
+        "fire" : "textures/levelSelect/fire.png",
+        "boost" : "textures/levelSelect/boost.png",
 
         "terrain": {
             "file": "textures/environment/tileset.png"
         },
         "background": {
             "file": "textures/environment/background.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "space_bg": {
+            "file": "textures/environment/space_sample.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -63,12 +72,74 @@
                 }
             }
         },
+        "bandit_guide": "textures/bandit/doubleArrow.png",
+        "bandit_knock": {
+            "file": "textures/bandit/bandit_knockback.png",
+            "wrap": false,
+            "sprites": {
+                "knock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+
+        },
+        "bandit_backpedal": {
+            "file": "textures/bandit/bandit_backpedal.png",
+            "wrap": false,
+            "sprites": {
+                "back": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+
+        },
+        "bandit_death": {
+            "file": "textures/bandit/bandit_death.png",
+            "wrap": false,
+            "sprites": {
+                "death": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
+        "banditDead" : "textures/bandit/bandit_dead.png",
+
+        "poof": {
+            "file": "textures/bandit/poof.png",
+            "wrap": false,
+            "sprites": {
+                "poof": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
 
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
         "smallEnemyPatrol":  {
             "file": "textures/smallEnemy/smallEnemyPatrol.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "shielded_small_robot_patrol":  {
+            "file": "textures/smallEnemy/shielded_small_robot_patrol.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -103,6 +174,17 @@
                 }
             }
         },
+        "shielded_med_walk":  {
+            "file": "textures/mediumEnemy/shielded_med_walk.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
+        },
 
 
         "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
@@ -111,6 +193,17 @@
         "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
         "largeWalk":  {
             "file": "textures/largeEnemy/largeAnim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "shielded_large_walk":  {
+            "file": "textures/largeEnemy/shielded_large_anim.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -142,21 +235,20 @@
         "medGum": "textures/gum/medGum.png",
         "smallGumOutline": "textures/gum/smallGumOutline.png",
         "largeGumOutline": "textures/gum/largeGumOutline.png",
-        "medGumOutline": "textures/gum/medGumOutline.png"
-
-    },
+        "medGumOutline": "textures/gum/medGumOutline.png",
+        "crushing_block": "textures/objects/crushing_block.png",
+        "crushing_block_gummed": "textures/objects/crushing_block_gummed.png",
+        "crushing_block_outline": "textures/objects/crushing_block_outline.png",
+        "door":  "textures/objects/door_unlocked.png",
+        "locked_door":  "textures/objects/door_locked.png"},
     "fonts": {
-        "display": {
-            "file": 	"fonts/RetroGame.ttf",
-            "size": 	64
+        "codygoonRegular": {
+            "file" : "fonts/Codygoon.ttf",
+            "size": 36
         },
-        "lucida": {
-            "file": "fonts/LucidaGrande.ttf",
-            "size": 16
-        },
-        "times": {
-            "file": "fonts/TimesRoman.ttf",
-            "size": 32
+        "projectSpace" : {
+            "file" : "fonts/ProjectSpace.ttf",
+            "size": 40
         }
     },
 	"soundfx": {
@@ -167,10 +259,11 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-
-		"level1" : "jsons/levels/post.json",
-        "level2":"jsons/levels/alpha.json",
+		"level1" : "jsons/levels/alphaPresentation2.json",
         "constants": "jsons/constants.json",
-        "animations" : "jsons/animations.json"
+        "animations" : "jsons/animations.json",
+        "supports" : "tilesets/supports.json",
+        "terrain" : "tilesets/terrain.json",
+        "objects" : "tilesets/objects.json"
     }
 }

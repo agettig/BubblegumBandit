@@ -177,19 +177,19 @@
          "id":2,
          "name":"Objects",
          "objects":[
-           {
-             "gid":50,
-             "height":113,
-             "id":8,
-             "name":"",
-             "rotation":0,
-             "type":"bandit",
-             "visible":true,
-             "width":64,
-             "x":2304,
-             "y":2496
-           },
-           {
+                {
+                 "gid":50,
+                 "height":113,
+                 "id":8,
+                 "name":"",
+                 "rotation":0,
+                 "type":"bandit",
+                 "visible":true,
+                 "width":64,
+                 "x":2304,
+                 "y":2496
+                }, 
+                {
                  "gid":62,
                  "height":186,
                  "id":1,
@@ -260,7 +260,7 @@
                  "width":144,
                  "x":2048,
                  "y":2496
-                },
+                }, 
                 {
                  "gid":52,
                  "height":65,
@@ -1582,8 +1582,8 @@
  "tileheight":64,
  "tilesets":[
         {
-         "columns":0,
          "firstgid":1,
+<<<<<<< HEAD
          "grid":
             {
              "height":1,
@@ -1646,192 +1646,21 @@
                  "type":"cameraH"
                 }],
          "tilewidth":64
+=======
+          "source":"..\/..\/tilesets\/board.tsx"
         }, 
         {
-         "columns":11,
-         "firstgid":6,
-         "image":"..\/..\/Tiled\/tilesets\/terrain\/tileset.png",
-         "imageheight":256,
-         "imagewidth":704,
-         "margin":0,
-         "name":"terrain",
-         "spacing":0,
-         "tilecount":44,
-         "tileheight":64,
-         "tiles":[
-                {
-                 "id":0,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":1,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":2,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":3,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":4,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":5,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":6,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":7,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":8,
-                 "type":"terrain"
-                },
-           {
-             "id":9,
-             "type":"terrain"
-           },
-           {
-             "id":10,
-             "type":"terrain"
-           },
-           {
-                 "id":11,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":12,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":13,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":14,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":15,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":16,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":17,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":18,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":19,
-                 "type":"terrain"
-                },
-           {
-             "id":20,
-             "type":"terrain"
-           },
-           {
-             "id":21,
-             "type":"terrain"
-           },
-           {
-                 "id":22,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":23,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":24,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":25,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":26,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":27,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":28,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":29,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":30,
-                 "type":"terrain"
-                },
-           {
-             "id":31,
-             "type":"terrain"
-           },
-           {
-             "id":32,
-             "type":"terrain"
-           },
-           {
-                 "id":33,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":34,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":35,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":36,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":37,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":38,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":39,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":40,
-                 "type":"terrain"
-                }, 
-                {
-                 "id":41,
-                 "type":"terrain"
-                }],
-         "tilewidth":64
+          "firstgid":4,
+          "source":"..\/..\/tilesets\/camera.tsx"
+>>>>>>> main
         }, 
         {
-         "columns":0,
+          "firstgid":6,
+          "source":"..\/..\/tilesets\/terrain.json"
+        }, 
+        {
          "firstgid":50,
+<<<<<<< HEAD
          "grid":
             {
              "height":1,
@@ -1933,69 +1762,13 @@
                  "type":"chair"
                 }],
          "tilewidth":144
+=======
+          "source":"..\/..\/tilesets\/objects.json"
+>>>>>>> main
         }, 
         {
-         "columns":4,
          "firstgid":65,
-         "image":"..\/..\/Tiled\/tilesets\/supports.png",
-         "imageheight":193,
-         "imagewidth":256,
-         "margin":0,
-         "name":"supports",
-         "spacing":0,
-         "tilecount":12,
-         "tileheight":64,
-         "tiles":[
-                {
-                 "id":0,
-                 "type":"supports"
-                }, 
-                {
-                 "id":1,
-                 "type":"supports"
-                }, 
-                {
-                 "id":2,
-                 "type":"supports"
-                }, 
-                {
-                 "id":3,
-                 "type":"supports"
-                }, 
-                {
-                 "id":4,
-                 "type":"supports"
-                }, 
-                {
-                 "id":5,
-                 "type":"supports"
-                }, 
-                {
-                 "id":6,
-                 "type":"supports"
-                }, 
-                {
-                 "id":7,
-                 "type":"supports"
-                }, 
-                {
-                 "id":8,
-                 "type":"supports"
-                }, 
-                {
-                 "id":9,
-                 "type":"supports"
-                }, 
-                {
-                 "id":10,
-                 "type":"supports"
-                }, 
-                {
-                 "id":11,
-                 "type":"supports"
-                }],
-         "tilewidth":64,
-         "transparentcolor":"#ff00ff"
+          "source":"..\/..\/tilesets\/supports.json"
         }],
  "tilewidth":64,
  "type":"map",

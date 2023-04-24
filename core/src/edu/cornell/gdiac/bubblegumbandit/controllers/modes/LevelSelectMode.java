@@ -28,6 +28,8 @@ import edu.cornell.gdiac.util.Controllers;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.XBoxController;
 
+import javax.xml.parsers.SAXParser;
+
 /**
  * Class that provides the level select screen for the state of the game.
  *
@@ -42,7 +44,9 @@ import edu.cornell.gdiac.util.XBoxController;
  * loading screen.
  */
 public class LevelSelectMode implements Screen, InputProcessor, ControllerListener {
-    // There are TWO asset managers.  One to load the loading screen.  The other to load the assets
+
+    // technical attributes
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -58,59 +62,66 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     private JsonValue constantsJson;
 
-    /** Background Space texture */
-    private Texture background;
-
-    /** The bandit's ship, The Sunfish, that follows the players cursor */
-    private SunfishModel sunfish;
-
-    /** level icon for level 1 */
-    private LevelIconModel level1;
-
-    /** array of all level icons */
-    private Array<LevelIconModel> levels;
-
-    /**
-     * The Box2D world
-     */
-    protected World world;
-
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 800;
     /** Standard window height (for scaling) */
     private static int STANDARD_HEIGHT = 700;
-    /** Ratio of the bar width to the screen */
-    private static float BAR_WIDTH_RATIO  = 0.66f;
-    /** Ration of the bar height to the screen */
-    private static float BAR_HEIGHT_RATIO = 0.25f;
+    /** Scaling factor for when the student changes the resolution. */
+    private float scale;
 
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    /** The width of the progress bar */
-    private int width;
-    /** The y-coordinate of the center of the progress bar */
-    private int centerY;
-    /** The x-coordinate of the center of the progress bar */
-    private int centerX;
-    /** The height of the canvas window (necessary since sprite origin != screen origin) */
-    private int heightY;
-    /** Scaling factor for when the student changes the resolution. */
-    private float scale;
+    // level select specific attributes
 
+    /**
+     * The Box2D world
+     */
+    protected World world;
+
+    /** Background Space texture */
+    private TextureRegion background;
+
+    /** The bandit's ship, The Sunfish, that follows the players cursor */
+    private SunfishModel sunfish;
+
+    // level icon attributes
+
+    /** array of all level icons */
+    private Array<LevelIconModel> levels;
 
     /** Whether this player mode is still active */
     private boolean active;
-
 
     /** whether the player has chosen a level to play */
     private boolean ready;
 
     /** the level chosen by the player */
     private int selectedLevel;
+
+    /** the gap between level icons */
+    private final static float LEVEL_GAP = 500;
+
+    /** the gap between level icons and the bounds of space */
+    private final static float SPACE_GAP = 800;
+
+    //space boundaries
+    /** the width of the sunfish movement bounds */
+    private final static float SPACE_WIDTH = 5000;
+    /** height of sunfish movement bounds */
+    private final static float SPACE_HEIGHT = 5000;
+
+    //the camera dimensions
+    private float camWidth;
+    private float camHeight;
+
+    /** Camera zoom out */
+    private final static float ZOOM = 1.5f;
+
+
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -146,9 +157,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         this.directory = directory;
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
-        displayFont = directory.getEntry("display", BitmapFont.class);
-
-        SoundController.initialize(directory);
+        displayFont = directory.getEntry("project", BitmapFont.class);
 
         constantsJson = directory.getEntry("constants", JsonValue.class);
 
@@ -156,21 +165,27 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         world = new World(new Vector2(0, 0), false);
 
-        sunfish = new SunfishModel(new TextureRegion (directory.getEntry("sunfish", Texture.class)), 500, 500);
+        TextureRegion sunfish_texture = new TextureRegion (directory.getEntry("sunfish", Texture.class));
+        TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
+        TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
+
+        sunfish = new SunfishModel(sunfish_texture, fire, boost, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
         sunfish.activatePhysics(world);
 
-        createIcons(directory);
+        background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
 
+        createIcons(directory);
 
     }
 
     private void createIcons(AssetDirectory directory){
 
         TextureRegion ship1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
-        level1 = new LevelIconModel(ship1, 1, 100, 500);
+        TextureRegion ship2 = new TextureRegion(directory.getEntry("ship2", Texture.class));
 
         levels = new Array<>();
-        levels.add(level1);
+        levels.add(new LevelIconModel(ship1, 1, 100, SPACE_HEIGHT - SPACE_GAP));
+        levels.add(new LevelIconModel(ship2, 2, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - SPACE_GAP));
     }
 
     /**
@@ -185,7 +200,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         this.canvas = canvas;
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
-        canvas.getCamera().setZoom(1);
+        canvas.getCamera().setZoom(ZOOM);
+
+        camWidth = canvas.getCamera().viewportWidth;
+        camHeight = canvas.getCamera().viewportHeight;
     }
 
     /**
@@ -195,6 +213,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         canvas = null;
         sunfish = null;
         world = null;
+        levels = null;
     }
 
     /**
@@ -209,10 +228,51 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void update(float dt) {
         world.step(dt, 8, 3);
 
-        sunfish.update(dt);
+        Vector2 mousePos = canvas.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+
         for (LevelIconModel level : levels){
+
+            if (level.getState() != 2) {
+                if (level.onIcon(mousePos.x, mousePos.y)) {
+                    level.setPressState(1);
+                } else {
+                    level.setPressState(0);
+                }
+            }
+
             level.update();
         }
+
+        sunfish.setMovement(mousePos);
+        sunfish.update(dt);
+
+//        for (LevelIconModel level : levels){
+//            level.update();
+//        }
+
+
+        //move camera, while keeping view in bounds
+        canvas.getCamera().setTarget(sunfish.getPosition());
+//        System.out.println(sunfish.getPosition());
+
+         //x bounds
+        if (sunfish.getX() < camWidth) {
+            canvas.getCamera().setTargetX(camWidth);
+        }
+//        if (sunfish.getX() > SPACE_WIDTH - camWidth){
+//            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
+//
+//        }
+         //y bounds
+        if (sunfish.getY() < camHeight) {
+            canvas.getCamera().setTargetY(camHeight);
+
+        }
+        if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
+            canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
+        }
+
+        canvas.getCamera().update(dt);
     }
 
     /** returns the level chosen by the player */
@@ -230,6 +290,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void draw() {
         canvas.clear();
         canvas.begin();
+
+        drawBackground(canvas);
 
         for (LevelIconModel level : levels){
             level.draw(canvas, displayFont);
@@ -274,57 +336,20 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         float sx = ((float)width)/STANDARD_WIDTH;
         float sy = ((float)height)/STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
-
-        this.width = (int)(BAR_WIDTH_RATIO*width);
-        centerY = (int)(BAR_HEIGHT_RATIO*height);
-        centerX = width/2;
-        heightY = height;
     }
 
     /**
-     * Called when the Screen is paused.
+     * Draws a repeating background, and crops off any overhangs outside the level
+     * to maintain resolution and aspect ratio.
      *
-     * This is usually when it's not active or visible on screen. An Application is
-     * also paused before it is destroyed.
+     * @param canvas the current canvas
      */
-    public void pause() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * Called when the Screen is resumed from a paused state.
-     *
-     * This is usually when it regains focus.
-     */
-    public void resume() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * Called when this screen becomes the current screen for a Game.
-     */
-    public void show() {
-        // Useless if called in outside animation loop
-        active = true;
-    }
-
-    /**
-     * Called when this screen is no longer the current screen for a Game.
-     */
-    public void hide() {
-        // Useless if called in outside animation loop
-        active = false;
-    }
-
-    /**
-     * Sets the ScreenListener for this mode
-     *
-     * The ScreenListener will respond to requests to quit.
-     */
-    public void setScreenListener(ScreenListener listener) {
-        this.listener = listener;
+    private void drawBackground(GameCanvas canvas) {
+        for (int i = 0; i < SPACE_WIDTH; i += background.getRegionWidth()) {
+            for (int j = 0; j < SPACE_HEIGHT; j += background.getRegionHeight()) {
+                canvas.draw(background, i, j);
+            }
+        }
     }
 
     // PROCESSING PLAYER INPUT
@@ -343,11 +368,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         if (active){
-
-            Vector2 screenCords = new Vector2(screenX, screenY);
-            Vector2 target = canvas.unproject(screenCords);
-
-
+            Vector2 target = canvas.unproject(new Vector2(screenX, screenY));
 
             for (LevelIconModel level : levels){
                 if (level.onIcon(target.x, target.y)){
@@ -374,22 +395,18 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
         if (active) {
-            Vector2 screenCords = new Vector2(screenX, screenY);
-            Vector2 target = canvas.unproject(screenCords);
+            Vector2 target = canvas.unproject(new Vector2(screenX, screenY));
 
             for (LevelIconModel level : levels){
 
-                if (level.onIcon(target.x, target.y)){
+                if (level.onIcon(target.x, target.y) && level.getState() == 2){
                     ready = true;
                     selectedLevel = level.getLevel();
                 }
                 else{
                     level.setPressState(0);
                 }
-
             }
-
-
         }
         return true;
     }
@@ -403,15 +420,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean mouseMoved(int screenX, int screenY) {
-
-        if (active) {
-            Vector2 screenCords = new Vector2(screenX, screenY);
-            Vector2 target = canvas.unproject(screenCords);
-
-            sunfish.setMovement(target);
-        }
         return true;
     }
+
+
 
     /**
      * Called when a button on the Controller was pressed.
@@ -425,6 +437,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean buttonDown (Controller controller, int buttonCode) {
+
         return true;
     }
 
@@ -451,7 +464,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.SPACE){
+            sunfish.setBoosting(true);
+        }
         return true;
+
     }
 
     /**
@@ -471,9 +488,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.SPACE){
+            sunfish.setBoosting(false);
+        }
         return true;
     }
-
 
 
     /**
@@ -530,4 +549,50 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return true;
     }
 
+
+    /**
+     * Called when the Screen is paused.
+     *
+     * This is usually when it's not active or visible on screen. An Application is
+     * also paused before it is destroyed.
+     */
+    public void pause() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Called when the Screen is resumed from a paused state.
+     *
+     * This is usually when it regains focus.
+     */
+    public void resume() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Called when this screen becomes the current screen for a Game.
+     */
+    public void show() {
+        // Useless if called in outside animation loop
+        active = true;
+    }
+
+    /**
+     * Called when this screen is no longer the current screen for a Game.
+     */
+    public void hide() {
+        // Useless if called in outside animation loop
+        active = false;
+    }
+
+    /**
+     * Sets the ScreenListener for this mode
+     *
+     * The ScreenListener will respond to requests to quit.
+     */
+    public void setScreenListener(ScreenListener listener) {
+        this.listener = listener;
+    }
 }

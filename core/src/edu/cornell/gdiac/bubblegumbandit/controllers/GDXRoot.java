@@ -16,8 +16,10 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LevelSelectMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LoadingMode;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
@@ -43,15 +45,17 @@ public class GDXRoot extends Game implements ScreenListener {
 
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameController controller;
-	
+
+	private SettingsMode settingsMode;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 */
 	public GDXRoot() {}
 
-	/** 
+	/**
 	 * Called when the Application is first created.
-	 * 
+	 *
 	 * This is method immediately loads assets for the loading screen, and prepares
 	 * the asynchronous loader for all other assets.
 	 */
@@ -60,7 +64,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
 
 		levels = new LevelSelectMode();
-		
+		settingsMode = new SettingsMode();
+		settingsMode.setViewport(canvas.getUIViewport());
 
 		// Initialize the three game worlds
 		controller = new GameController();
@@ -68,8 +73,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		setScreen(loading);
 	}
 
-	/** 
-	 * Called when the Application is destroyed. 
+	/**
+	 * Called when the Application is destroyed.
 	 *
 	 * This is preceded by a call to pause().
 	 */
@@ -80,7 +85,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		canvas.dispose();
 		canvas = null;
-	
+
 		// Unload all of the resources
 		if (directory != null) {
 			directory.unloadAssets();
@@ -89,23 +94,23 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		super.dispose();
 	}
-	
+
 	/**
-	 * Called when the Application is resized. 
+	 * Called when the Application is resized.
 	 *
-	 * This can happen at any point during a non-paused state but will never happen 
+	 * This can happen at any point during a non-paused state but will never happen
 	 * before a call to create().
 	 *
 	 * @param width  The new width in pixels
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(),
-				Gdx.graphics.getBackBufferHeight());
+		Gdx.gl.glViewport(0, 0,width,
+				height);
 		canvas.resize();
 		super.resize(width,height);
 	}
-	
+
 	/**
 	 * The given screen has made a request to exit its player mode.
 	 *
@@ -126,9 +131,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			levels.dispose();
 			levels = null;
-		}
-
-		else if (screen == loading && exitCode == 1) {
+		} else if (screen == loading && exitCode == 1) {
 			directory = loading.getAssets();
 			setScreen(controller);
 			directory = loading.getAssets();
@@ -136,10 +139,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.reset();
-			loading.dispose();
-			loading = null;
-		}
-		else if(screen == loading && exitCode == 6){
+		} else if(screen == loading && exitCode == 6){
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			levels.gatherAssets(directory);
@@ -148,11 +148,17 @@ public class GDXRoot extends Game implements ScreenListener {
 			levels.setScreenListener(this);
 			setScreen(levels);
 
-			loading.dispose();
-			loading = null;
-		}
+		} else if (screen == loading && exitCode == 7) {
+			settingsMode.setScreenListener(this);
+			BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
+			BitmapFont projectSpace = loading.getAssets().getEntry("projectSpace", BitmapFont.class);
+			settingsMode.initialize(codygoonRegular, projectSpace);
+			setScreen(settingsMode);
+		} else if (screen == settingsMode) {
+			loading.setScreenListener(this);
+			setScreen(loading);
 
-		else if (exitCode == GameController.EXIT_QUIT) {
+		} else if (exitCode == GameController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();
 		}

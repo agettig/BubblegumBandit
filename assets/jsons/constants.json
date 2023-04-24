@@ -26,7 +26,8 @@
     "bottomSensorName": "dudeGroundSensor",
     "sensorColor": "red",
     "sensorOpacity": 192,
-    "topSensorName": "dudeTopSensor"
+    "topSensorName": "dudeTopSensor",
+    "deadTexture" : "banditDead"
   },
   "walls": {
     "bodyType": "static",
@@ -46,8 +47,29 @@
     "debugColor": "yellow",
     "debugOpacity": 200
   },
+  "crushing_block": {
+    "density": 0.4,
+    "friction": 0.2,
+    "restitution": 0.0,
+    "texture": "crushing_block",
+    "gummedtexture": "crushing_block_gummed",
+    "outlinetexture": "crushing_block_outline",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "rotaterate": 0.08,
+    "gravityscale": 1.5,
+    "sensorsize": [
+      1.98,
+      0.05
+    ],
+    "bottomsensorname": "crushing_bottom_sensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "topsensorname": "crushing_top_sensor"
+  },
   "gumProjectile": {
-    "startingGum": 5,
+    "startingGum": 6,
+    "maxGum": 6,
     "offsetX": 0.6,
     "offsetY": 0.5,
     "speed": 25.0,
@@ -97,9 +119,46 @@
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
-  "cameraTile": {
-    "debugColor": "magenta",
-    "debugOpacity": 200
+  "door": {
+    "debugcolor": "magenta",
+    "debugopacity": 200,
+    "texture": "door",
+    "sensorsize": [
+      4,
+      2
+    ],
+    "sensorname": "door_sensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "lockedtexture": "locked_door"
+  },
+  "shieldedMediumRobot": {
+    "type": "projectile",
+    "size": [
+      1.6,
+      1.6
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxSpeed": 12.0,
+    "animations" : "shielded_medium_robot",
+    "gumTexture": "med_gum",
+    "outline": "med_gum_outline",
+    "texture": "med_robot",
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorColor": "yellow",
+    "sensorOpacity": 192,
+    "visionRadius": 3.0,
+    "sensorName": "listeningsensor",
+    "listeningRadius": 7,
+    "wanderSpeed": 3,
+    "chaseSpeed": 4,
+    "pursueSpeed": 5,
+    "rollingAttack": 8
   },
   "mediumEnemy": {
     "type": "projectile",
@@ -157,6 +216,34 @@
     "chaseSpeed": 4,
     "pursueSpeed": 5
   },
+  "shieldedSmallRobot": {
+    "type": "projectile",
+    "size": [
+      0.5,
+      1.0
+    ],
+    "density": 0.5,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 2.0,
+    "maxSpeed": 5.0,
+    "animations": "shieldedSmallEnemy",
+    "texture": "smallEnemy",
+    "outline": "smallGumOutline",
+    "gummedTexture": "gummedEnemy",
+    "gumTexture": "smallGum",
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorColor": "yellow",
+    "sensorOpacity": 192,
+    "visionRadius": 3.0,
+    "sensorName": "listeningSensor",
+    "listeningRadius": 7,
+    "wanderSpeed": 3,
+    "chaseSpeed": 4,
+    "pursueSpeed": 5
+  },
   "largeEnemy": {
     "type": "moving",
     "size": [
@@ -170,6 +257,33 @@
     "damping": 10.0,
     "maxSpeed": 5.0,
     "animations": "largeEnemy",
+    "texture": "largeEnemy",
+    "gumTexture": "largeGum",
+    "outline": "largeGumOutline",
+    "debugColor": "white",
+    "debugOpacity": 192,
+    "sensorColor": "yellow",
+    "sensorOpacity": 192,
+    "visionRadius": 3.0,
+    "sensorName": "listeningSensor",
+    "listeningRadius": 7,
+    "wanderSpeed": 2,
+    "chaseSpeed": 3,
+    "pursueSpeed": 4
+  },
+  "shieldedLargeEnemy": {
+    "type": "moving",
+    "size": [
+      1.5,
+      2.8
+    ],
+    "density": 1.0,
+    "friction": 2.0,
+    "restitution": 0.0,
+    "force": 10.0,
+    "damping": 10.0,
+    "maxSpeed": 5.0,
+    "animations": "shieledLargeEnemy",
     "texture": "largeEnemy",
     "gumTexture": "largeGum",
     "outline": "largeGumOutline",
@@ -200,7 +314,7 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 7.0,
+    "speed": 10.0,
     "density": 10.0,
     "texture": "bullet"
   },

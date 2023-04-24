@@ -88,18 +88,9 @@ public class RollingEnemyModel extends EnemyModel {
      * */
     public void update(float delta) {
 
-        // update yScale
-        if (!isFlipped && yScale < 1) {
-            if (yScale != -1 || !stuck) {
-                yScale += 0.1f;
-            }
-        } else if (isFlipped && yScale > -1) {
-            if (yScale != 1 || !stuck) {
-                yScale -= 0.1f;
-            }
-        }
-        updateRayCasts();
 
+        updateYScale();
+        updateRayCasts();
 
         // update attack state
         if (fired() && cooldownTime <= 0) {
@@ -116,10 +107,10 @@ public class RollingEnemyModel extends EnemyModel {
             }
         }
         if (isRolling){
-            animationController.setAnimation("roll");
+            animationController.setAnimation("roll", true);
         }
         else{
-            animationController.setAnimation("patrol");
+            animationController.setAnimation("patrol", true);
         }
 
         cooldownTime--;
@@ -138,6 +129,18 @@ public class RollingEnemyModel extends EnemyModel {
             }
         } else {
             updateMovement(nextAction);
+        }
+    }
+
+    private void updateYScale(){
+        if (!isFlipped && yScale < 1) {
+            if (yScale != -1 || !stuck) {
+                yScale += 0.1f;
+            }
+        } else if (isFlipped && yScale > -1) {
+            if (yScale != 1 || !stuck) {
+                yScale -= 0.1f;
+            }
         }
     }
 

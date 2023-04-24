@@ -33,6 +33,8 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
 import org.w3c.dom.Text;
@@ -306,6 +308,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         return pressState == 6;
     }
 
+    public boolean switchSettings(){
+        return pressState == 7;
+    }
+
     /**
      * Returns true if the player clicked the quit button.
      *
@@ -397,7 +403,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         // Start loading the real assets
         assets = new AssetDirectory(file);
         assets.loadAssets();
+
+        int levelCount = 2; //grab from where?
+        if(!SaveData.saveExists())  {
+            SaveData.makeData(levelCount, false);
+        }
+            //is this a VM thing?
+
         active = true;
+
+
     }
 
     /**
@@ -422,6 +437,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             assets.update(budget);
             this.progress = assets.getProgress();
             if (progress >= 1.0f) {
+                SoundController.getInstance().initialize(assets);
                 this.progress = 1.0f;
                 hoverPointer = internal.getEntry("hoverPointer", Texture.class);
                 startButton = internal.getEntry("startButton", Texture.class);
@@ -679,7 +695,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 listener.exitScreen(this, 6);
             }
 
-
+            if (switchSettings() && listener != null){
+                listener.exitScreen(this, 7);
+            }
             // If the player hits the quit button
             if (shouldQuit()) {
                 listener.exitScreen(this, GameController.EXIT_QUIT);
@@ -737,6 +755,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     public void show() {
         // Useless if called in outside animation loop
         active = true;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**
@@ -745,6 +764,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     public void hide() {
         // Useless if called in outside animation loop
         active = false;
+        pressState = 0;
     }
 
     /**
@@ -780,7 +800,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
-
 
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
@@ -966,11 +985,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-
-
         if (startButton == null || levelSelectButton == null
                 || settingsButton == null || exitButton == null) return false;
-// Flip to match graphics coordinates
+        // Flip to match graphics coordinates
 
         //Detect hovers on the start button
         float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();
