@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":14,
+ "tilecount":16,
  "tiledversion":"1.10.0",
  "tileheight":256,
  "tiles":[
@@ -106,17 +106,31 @@
         }, 
         {
          "id":16,
-         "image":"..\/textures\/objects\/door_unlocked.png",
+         "image":"..\/textures\/objects\/doorUnlocked.png",
          "imageheight":256,
          "imagewidth":64,
          "type":"door_v"
         }, 
         {
          "id":17,
-         "image":"..\/textures\/objects\/door_locked.png",
+         "image":"..\/textures\/objects\/doorLocked.png",
          "imageheight":256,
          "imagewidth":64,
          "type":"door_v_locked"
+        }, 
+        {
+         "id":18,
+         "image":"..\/textures\/objects\/glass.png",
+         "imageheight":64,
+         "imagewidth":64,
+         "type":"glass"
+        }, 
+        {
+         "id":19,
+         "image":"..\/textures\/objects\/hazard.png",
+         "imageheight":64,
+         "imagewidth":64,
+         "type":"hazard"
         }],
  "tilewidth":256,
  "type":"tileset",

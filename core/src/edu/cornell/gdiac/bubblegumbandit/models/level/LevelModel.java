@@ -589,7 +589,6 @@ public class LevelModel {
                     boolean isLocked = objType.contains("locked");
                     door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
                     activate(door);
-                    door.setFilter(CATEGORY_EVENTTILE, MASK_DOOR_SENSOR);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
@@ -600,6 +599,20 @@ public class LevelModel {
                     activate(crush);
                     flippableObjects.add(crush);
                     crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    break;
+                case "glass":
+                    SpecialTileModel glass = new SpecialTileModel();
+                    glass.initialize(directory, x, y, constants.get("glass"), "glass");
+                    activate(glass);
+                    glass.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    glass.setDrawScale(scale);
+                    break;
+                case "hazard":
+                    SpecialTileModel hazard = new SpecialTileModel();
+                    hazard.initialize(directory, x, y, constants.get("hazard"), "hazard");
+                    activate(hazard);
+                    hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    hazard.setDrawScale(scale);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
@@ -645,7 +658,7 @@ public class LevelModel {
         bandit.setOrbPostion(orbPostion);
 
         activate(goalDoor);
-        goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+        goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
 
         for (EnemyModel e : newEnemies) {
             activate(e);
@@ -716,8 +729,11 @@ public class LevelModel {
     public void update(float dt) {
         // Garbage collect the deleted objects.
         for (AIController controller : enemyControllers) {
+            // TODO: Add custom state for dead enemies
 //            adjustForDrift(controller.getEnemy());
-            controller.getEnemyStateMachine().update();
+            if (!controller.getEnemy().isRemoved()) {
+                controller.getEnemyStateMachine().update();
+            }
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
@@ -1080,6 +1096,9 @@ public class LevelModel {
                     if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
+                    if (fixture.getUserData() instanceof DoorModel) {
+                        return -1;
+                    }
                     lastCollision[0] = ob;
                     return fraction;
                 }
@@ -1101,7 +1120,7 @@ public class LevelModel {
             endCache = new Vector2();
             originCache = new Vector2();
             canUnstickThrough.add("gumProjectile");
-            canUnstickThrough.add("door");
+//            canUnstickThrough.add("door");
         }
 
         /**

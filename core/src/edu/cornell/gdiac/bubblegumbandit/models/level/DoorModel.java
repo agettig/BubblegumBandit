@@ -1,10 +1,14 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_DOOR;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_DOOR_SENSOR;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -14,13 +18,15 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-public class DoorModel extends TileModel {
+public class DoorModel extends TileModel implements Gummable {
 
     /** Whether this is a horizontal camera tile or a vertical camera tile. */
     private boolean isHorizontal;
@@ -105,11 +111,23 @@ public class DoorModel extends TileModel {
     /** The obstacles in the range of the door. */
     private final ObjectSet<Obstacle> obsInRange;
 
+    /** Whether the player has passed through the door. */
+    public boolean playerPassed;
+
+    /** Whether the player is in range of the door. */
+    public boolean playerInRange;
+
     /** Whether the door is locked */
     private boolean isLocked;
 
     /** The texture for the locked door. */
     private TextureRegion lockedTexture;
+
+    /** The texture for a gummed door. */
+    private TextureRegion gummedTexture;
+
+    /** The texture for the outline of the door */
+    private TextureRegion outlineTexture;
 
     /** The ids of the enemies required to unlock the door */
     private ObjectSet<Integer> enemyIds;
@@ -127,8 +145,15 @@ public class DoorModel extends TileModel {
         secondUpperLeft = new Vector2();
         secondLowerRight = new Vector2();
         isOpen = false;
+        playerPassed = false;
+        playerInRange = false;
         obsInRange = new ObjectSet<>();
         enemyIds = new ObjectSet<>();
+        collidedObs = new ObjectSet<>();
+    }
+
+    public boolean isOpen() {
+        return isOpen;
     }
 
     /** Initializes the camera tile model.
@@ -174,10 +199,17 @@ public class DoorModel extends TileModel {
         setTexture(texture);
 
 
-        key = constants.get("lockedtexture").asString();
+        key = constants.get("lockedTexture").asString();
         texture = new TextureRegion(directory.getEntry(key, Texture.class));
         lockedTexture = texture;
 
+        key = constants.get("gummedTexture").asString();
+        texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        gummedTexture = texture;
+
+        key = constants.get("outlineTexture").asString();
+        texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        outlineTexture = texture;
 
         // Initialize the sensors used to detect when things are being crushed.
         // Get the sensor information
@@ -258,6 +290,7 @@ public class DoorModel extends TileModel {
         this.enemyMap = enemyMap;
     }
 
+    /** Activates physics and sets up filters */
     public boolean activatePhysics(World world) {
         // create the box from our superclass
         if (!super.activatePhysics(world)) {
@@ -270,6 +303,11 @@ public class DoorModel extends TileModel {
         sensorDef.shape = sensorShape;
         sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
+
+        setFilter(CATEGORY_DOOR, MASK_DOOR_SENSOR); // Sets everything's filter, including sensor
+        Filter filter = body.getFixtureList().get(0).getFilterData();
+        filter.maskBits = CollisionController.MASK_DOOR;
+        body.getFixtureList().get(0).setFilterData(filter);
         return true;
     }
 
@@ -294,9 +332,9 @@ public class DoorModel extends TileModel {
     private void tryUnlockDoor() {
         boolean allDead = true;
         for (Integer id : enemyIds) {
-            if (!enemyMap.get(id).isRemoved()) {
+            EnemyModel cur = enemyMap.get(id);
+            if (cur == null || !cur.isRemoved()) {
                 allDead = false;
-                return;
             }
         }
         if (allDead) {
@@ -304,15 +342,17 @@ public class DoorModel extends TileModel {
         }
     }
     private void openDoor() {
-        if (!isLocked) {
+        if (!isLocked && !gummed) {
             isOpen = true;
             body.getFixtureList().get(0).setSensor(true);
         }
     }
 
     private void closeDoor() {
-        isOpen = false;
-        body.getFixtureList().get(0).setSensor(false);
+        if (!gummed) {
+            isOpen = false;
+            body.getFixtureList().get(0).setSensor(false);
+        }
     }
 
     public void update(float dt) {
@@ -320,16 +360,26 @@ public class DoorModel extends TileModel {
         if (isLocked) {
             tryUnlockDoor();
         }
-        if (obsInRange.size == 0 && isOpen) {
-            closeDoor();
-        } else if (obsInRange.size > 0 && !isOpen) {
-            openDoor();
+        if (playerPassed) {
+            if (obsInRange.size == 0 && isOpen) {
+                closeDoor();
+            } else if (obsInRange.size > 0 && !isOpen) {
+                openDoor();
+            }
+        } else {
+            if (!playerInRange && isOpen) {
+                closeDoor();
+            } else if (playerInRange && !isOpen) {
+                openDoor();
+            }
         }
     }
 
     public void draw(GameCanvas canvas) {
         if (!isOpen) {
-            if (!isLocked) {
+            if (gummed) {
+                canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+            } else if (!isLocked) {
                 super.draw(canvas);
             } else {
                 canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
@@ -337,4 +387,10 @@ public class DoorModel extends TileModel {
         }
     }
 
+    @Override
+    public void drawWithOutline(GameCanvas canvas) {
+        canvas.draw(outlineTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1.1f, 1.1f);
+        canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+
+    }
 }

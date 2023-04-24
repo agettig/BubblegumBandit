@@ -77,7 +77,7 @@ public class CrusherModel extends BoxObstacle implements Gummable{
     public void initialize(AssetDirectory directory, Vector2 scale, float x, float y, JsonValue objectJson, JsonValue constants) {
         setName("crushing_block");
         setPosition(x,y);
-        float width = objectJson.getFloat("width") / scale.x;
+        float width = objectJson.getFloat("width") * .98f / scale.x; // Make it a little smaller so it can slot in 4 block gaps
         float height = objectJson.getFloat("height") / scale.y;
         setDimension(width, height);
 
