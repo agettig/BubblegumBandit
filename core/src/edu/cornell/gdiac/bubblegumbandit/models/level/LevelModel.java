@@ -99,6 +99,10 @@ public class LevelModel {
     /** Enemies to spawn after the orb gets picked up. */
     private HashSet<EnemyModel> postOrbEnemies;
 
+    public HashSet<EnemyModel> getPostOrbEnemies() {
+        return postOrbEnemies;
+    }
+
     /** Decision graph for Enemies when gravity is normal. */
     private TiledGraph tiledGraphGravityDown;
 
@@ -696,14 +700,15 @@ public class LevelModel {
      * up the orb.
      * */
     public void spawnPostOrbEnemies(){
-        System.out.println("Spawning");
         for(EnemyModel e : postOrbEnemies){
             activate(e);
             e.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
             enemyControllers.add(new AIController(e, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
             enemyCount++;
+            if (world.getGravity().y > 0){
+                e.flipGravity();
+            }
         }
-        postOrbEnemies.clear();
     }
 
     public void dispose() {
