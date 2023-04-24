@@ -1052,6 +1052,9 @@ public class LevelModel {
                     if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
+                    if (fixture.getUserData() instanceof DoorModel) {
+                        return -1;
+                    }
                     lastCollision[0] = ob;
                     return fraction;
                 }

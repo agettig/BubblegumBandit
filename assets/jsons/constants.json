@@ -124,7 +124,7 @@
     "debugopacity": 200,
     "texture": "door",
     "sensorsize": [
-      4,
+      5,
       2
     ],
     "sensorname": "door_sensor",
