@@ -173,7 +173,6 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
             maxAbsFallVel = getVY();
         }
         if (Math.abs(getVY()) > 0.5f) {
-            System.out.println("No longer smash");
             didSmash = false;
         }
     }
