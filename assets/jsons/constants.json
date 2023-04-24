@@ -129,7 +129,9 @@
     "sensorname": "door_sensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
-    "lockedtexture": "locked_door"
+    "lockedTexture": "lockedDoor",
+    "gummedTexture": "gummedDoor",
+    "outlineTexture": "outlineDoor"
   },
   "glass": {
     "bodytype": "static",

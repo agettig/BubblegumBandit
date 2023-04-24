@@ -589,7 +589,6 @@ public class LevelModel {
                     boolean isLocked = objType.contains("locked");
                     door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
                     activate(door);
-                    door.setFilter(CATEGORY_EVENTTILE, MASK_DOOR_SENSOR);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
@@ -615,7 +614,6 @@ public class LevelModel {
                     hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     hazard.setDrawScale(scale);
                     break;
-
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
@@ -634,7 +632,7 @@ public class LevelModel {
         bandit.setOrbPostion(orbPostion);
 
         activate(goalDoor);
-        goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+        goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
 
         for (EnemyModel e : newEnemies) {
             activate(e);
@@ -1075,7 +1073,7 @@ public class LevelModel {
             endCache = new Vector2();
             originCache = new Vector2();
             canUnstickThrough.add("gumProjectile");
-            canUnstickThrough.add("door");
+//            canUnstickThrough.add("door");
         }
 
         /**
