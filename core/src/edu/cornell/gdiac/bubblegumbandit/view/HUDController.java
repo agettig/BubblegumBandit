@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -101,14 +102,17 @@ public class HUDController {
     table.row();
     for (int i = 0; i < 6; i++) {
       Image emptyGum = new Image(directory.getEntry("empty_gum", Texture.class));
-      emptyGum.setPosition(32 + i*50, stage.getHeight() - 103);
+      emptyGum.setPosition(32 + i*50, stage.getHeight() - 105);
       stage.addActor(emptyGum);
 
       Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
-      reloadGumIcon.setPosition(32 + i*50, stage.getHeight() - 103);
+      reloadGumIcon.setPosition(32 + i*50, stage.getHeight() - 105);
       gumCount[i] = reloadGumIcon;
       stage.addActor(reloadGumIcon);
     }
+//    Actor blank = new Actor();
+//    blank.setHeight(64);
+    table.add(new Actor()).padTop(50);
 
     table.row();
     table.add(starIcon1);
@@ -139,7 +143,8 @@ public class HUDController {
 
     fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
     fpsLabel.setFontScale(0.5f);
-    table.add(fpsLabel).padLeft(10);
+    table.row();
+    table.add(fpsLabel);
 
     table.padLeft(30).padTop(60);
   }

@@ -303,6 +303,9 @@ public class BanditModel extends CapsuleObstacle {
         isShooting = value;
     }
 
+    public void setStuck(boolean value) {stuck = value; isKnockback = false; }
+
+
     /**
      * Returns the current yScale of the player.
      *
