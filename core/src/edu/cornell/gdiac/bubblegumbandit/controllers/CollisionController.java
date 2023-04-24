@@ -134,10 +134,10 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
-            if (obstacleA instanceof Gummable) {
+            if (obstacleA instanceof Gummable && !(obstacleB instanceof DoorModel)) {
                 obstacleA.startCollision(obstacleB);
             }
-            if (obstacleB instanceof Gummable) {
+            if (obstacleB instanceof Gummable && !(obstacleA instanceof DoorModel)) {
                 obstacleB.startCollision(obstacleA);
             }
 
