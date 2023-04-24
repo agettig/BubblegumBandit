@@ -194,9 +194,6 @@ public class EnemyStateMachine<E, S extends State<E>> implements StateMachine<E,
             return true;
         }
 
-//        System.out.println(telegram.message);
-//        System.out.println(telegram.receiver);
-//        System.out.println(telegram.sender);
 
         return false;
     }

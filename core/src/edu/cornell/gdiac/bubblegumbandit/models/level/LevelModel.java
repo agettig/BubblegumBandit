@@ -130,7 +130,8 @@ public class LevelModel {
     private TiledGraph tiledGraphGravityDown;
     private TiledGraph tiledGraphGravityUp;
 
-    private ArrayList<String> enemyObjectNames;
+    /** EnemyModels to spawn after the orb gets picked up. */
+    private HashSet<EnemyModel> postOrbEnemies;
 
     /**
      * The width of the level.
@@ -294,6 +295,7 @@ public class LevelModel {
         JsonValue tileLayer = null;
         JsonValue objects = null;
         JsonValue supports = null;
+        JsonValue postOrb = null;
 
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -313,6 +315,9 @@ public class LevelModel {
                     break;
                 case "Supports":
                     supports = layer;
+                    break;
+                case "PostOrb":
+                    postOrb = layer;
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");
@@ -344,6 +349,7 @@ public class LevelModel {
             property = property.next();
         }
 
+        // TODO remove?
         //initialize dynamic background elements
 //        JsonValue backJV =levelFormat.get("backgroundObj");
 //
@@ -503,7 +509,6 @@ public class LevelModel {
                     break;
 
                 case "bandit":
-
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);
@@ -513,7 +518,7 @@ public class LevelModel {
                     goalDoor.initialize(directory, x, y, constants.get(objType));
                     goalDoor.setDrawScale(scale);
                     break;
-                case "smallrobot":
+                case "smallEnemy":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
@@ -528,9 +533,10 @@ public class LevelModel {
                     enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
-                case "mediumrobot":
+                case "mediumEnemy":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
@@ -545,6 +551,7 @@ public class LevelModel {
                     enemy = new ShieldedRollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "shieldedlargerobot":
@@ -553,9 +560,10 @@ public class LevelModel {
                     enemy = new ShieldedLaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
-                case "large_robot":
+                case "largeEnemy":
                     enemyConstants = constants.get(objType);
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
@@ -567,7 +575,7 @@ public class LevelModel {
                     orbPlaced = true;
                     orbPostion = new Vector2(x,y);
                 case "star":
-                case "floatinggum":
+                case "floatingGum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
@@ -598,6 +606,32 @@ public class LevelModel {
             }
             object = object.next();
         }
+
+        while (postOrb != null){
+            String objType = postOrb.get("type").asString();
+            float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
+            float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
+
+
+            switch (objType) {
+                case "smallEnemy":
+                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "mediumEnemy":
+                    enemy = new RollingEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "largeEnemy":
+                    enemy = new LaserEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(objType + " is not a valid post orb object");
+            }
+            postOrb = postOrb.next();
+        }
+
         if (goalDoor == null) {
             throw new RuntimeException("Level missing exit");
         }
@@ -625,6 +659,16 @@ public class LevelModel {
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
         alarms = new AlarmController(alarmPos, directory, world);
+    }
+
+    /**
+     * Spawns all EnemyModels that should drop in after the Bandit picks
+     * up the orb.
+     *
+     * @param enemyData JSON file containing data of Enemies to spawn
+     * */
+    public void spawnPostOrbEnemies(JsonValue enemyData){
+
     }
 
     public void dispose() {

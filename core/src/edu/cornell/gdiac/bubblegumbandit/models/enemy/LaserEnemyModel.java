@@ -89,7 +89,7 @@ public class LaserEnemyModel extends EnemyModel{
     public void initialize(AssetDirectory directory, float x, float y,
                            JsonValue constantsJson){
         super.initialize(directory, x, y, constantsJson);
-        setName("Laser Enemy");
+        setName("laserEnemy");
         setPhase(LASER_PHASE.INACTIVE);
     }
 
