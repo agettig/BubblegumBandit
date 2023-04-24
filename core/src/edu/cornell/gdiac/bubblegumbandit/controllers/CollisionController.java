@@ -467,7 +467,6 @@ public class CollisionController implements ContactListener {
                 if (ob1.getName().toLowerCase().contains("enemy") && ob2.equals(levelModel.getBandit())) {
                     return;
                 }
-                System.out.println(ob1.getName());
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("enemySplat", 1f);
                 ob2.setStuck(true);
@@ -480,7 +479,6 @@ public class CollisionController implements ContactListener {
                 if (ob2.getName().toLowerCase().contains("enemy") && ob1.equals(levelModel.getBandit())) {
                     return;
                 }
-                System.out.println(ob2.getName());
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("enemySplat", 1f);
                 ob1.setStuck(true);
@@ -532,6 +530,8 @@ public class CollisionController implements ContactListener {
         } else {
             return;
         }
+
+        BanditModel bandit = levelModel.getBandit();
         if (crushed.getName().contains("enemy")) {
             // Check if enemy is beneath crusher and stopped (if it's stopped, it's pinched).
             // If so, trigger its deletion.
@@ -540,24 +540,29 @@ public class CollisionController implements ContactListener {
             if (Math.abs(crushed.getVY()) < 0.001f) {
                 crushed.markRemoved(true);
             }
-        } else if (crushed.equals(levelModel.getBandit())) {
+        } else if (crushed.equals(bandit)) {
             if (Math.abs(crushed.getVY()) < 0.001f) {
-                // Flip gravity again and make the bandit take damage.
-                levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE);
-                shouldFlipGravity = true;
+                // Block must be pushing on bandit.
+                if ((bandit.getPosition().y > crusher.getPosition().y) == (levelGrav > 0)) {
+                    // Flip gravity again and make the bandit take damage.
+                    levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE);
+                    shouldFlipGravity = true;
+                }
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
                 // Screen shake cause block hit the floor
-            if (!crusher.didSmash) {
-                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
-            }
             if (crushed.getName().equals("glass") && !crusher.didSmash) {
                 crushed.markRemoved(true);
-            } else {
-                crusher.maxAbsFallVel = 0;
-                crusher.didSmash = true;
+                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
             }
-
+            else if (!crusher.didSmash) {
+                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
+                float hw = crusher.getWidth() / 2;
+                if (crushed.getX() < crusher.getX() + hw & crushed.getX() > crusher.getX() - hw) {
+                    crusher.maxAbsFallVel = 0;
+                    crusher.didSmash = true;
+                }
+            }
         }
     }
 
