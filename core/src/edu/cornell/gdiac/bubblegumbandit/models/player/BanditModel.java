@@ -546,27 +546,27 @@ public class BanditModel extends CapsuleObstacle {
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
-        String deadKey = constantsJson.get("deadtexture").asString();
+        String deadKey = constantsJson.get("deadTexture").asString();
         deadText = new TextureRegion(directory.getEntry(deadKey, Texture.class));
 
 
         // Get the sensor information
         Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
-        float[] sSize = constantsJson.get("sensorsize").asFloatArray();
+        float[] sSize = constantsJson.get("sensorSize").asFloatArray();
         bottomSensorShape = new PolygonShape();
         bottomSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
 
         // Reflection is best way to convert name to color
         try {
-            String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
+            String cname = constantsJson.get("sensorColor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             bottomSensorColor = new Color((Color) field.get(null));
         } catch (Exception e) {
             bottomSensorColor = null; // Not defined
         }
-        opacity = constantsJson.get("sensoropacity").asInt();
+        opacity = constantsJson.get("sensorOpacity").asInt();
         bottomSensorColor.mul(opacity / 255.0f);
-        bottomSensorName = constantsJson.get("bottomsensorname").asString();
+        bottomSensorName = constantsJson.get("bottomSensorName").asString();
 
         sensorCenter = new Vector2(0, getHeight() / 2);
         topSensorShape = new PolygonShape();
@@ -574,15 +574,15 @@ public class BanditModel extends CapsuleObstacle {
 
         // Reflection is best way to convert name to color
         try {
-            String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
+            String cname = constantsJson.get("sensorColor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             topSensorColor = new Color((Color) field.get(null));
         } catch (Exception e) {
             topSensorColor = null; // Not defined
         }
-        opacity = constantsJson.get("sensoropacity").asInt();
+        opacity = constantsJson.get("sensorOpacity").asInt();
         topSensorColor.mul(opacity / 255.0f);
-        topSensorName = constantsJson.get("topsensorname").asString();
+        topSensorName = constantsJson.get("topSensorName").asString();
     }
 
     /**

@@ -381,12 +381,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         statusBar = internal.getEntry("progress", Texture.class);
 
         // Break up the status bar texture into regions
-        statusBkgLeft = internal.getEntry("progress.backleft", TextureRegion.class);
-        statusBkgRight = internal.getEntry("progress.backright", TextureRegion.class);
+        statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
+        statusBkgRight = internal.getEntry("progress.backRight", TextureRegion.class);
         statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
 
-        statusFrgLeft = internal.getEntry("progress.foreleft", TextureRegion.class);
-        statusFrgRight = internal.getEntry("progress.foreright", TextureRegion.class);
+        statusFrgLeft = internal.getEntry("progress.foreLeft", TextureRegion.class);
+        statusFrgRight = internal.getEntry("progress.foreRight", TextureRegion.class);
         statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class);
 
         // No progress so far.
