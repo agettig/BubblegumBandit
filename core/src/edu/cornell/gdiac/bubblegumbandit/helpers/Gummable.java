@@ -24,6 +24,4 @@ public interface Gummable extends Unstickable {
     public void setStuck(boolean value);
 
     public boolean getStuck();
-
-    public TileModel getTile();
 }
