@@ -222,7 +222,8 @@
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",
-        "inGame": "sounds/music/bgBallad.ogg"
+        "inGame": "sounds/music/bubblegumBallad.ogg",
+        "escape": "sounds/music/escape.ogg"
 
     },
 	"jsons" : {
