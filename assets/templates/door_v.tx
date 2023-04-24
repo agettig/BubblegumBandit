@@ -3,10 +3,10 @@
  <tileset firstgid="1" source="../tilesets/objects.json"/>
  <object gid="17" width="64" height="256">
   <properties>
-   <property name="leftx1" type="int" value="-1"/>
-   <property name="leftx2" type="int" value="-1"/>
-   <property name="lefty1" type="int" value="-1"/>
-   <property name="lefty2" type="int" value="-1"/>
+   <property name="leftx1" type="int" value="18"/>
+   <property name="leftx2" type="int" value="34"/>
+   <property name="lefty1" type="int" value="30"/>
+   <property name="lefty2" type="int" value="40"/>
    <property name="rightx1" type="int" value="-1"/>
    <property name="rightx2" type="int" value="-1"/>
    <property name="righty1" type="int" value="-1"/>
