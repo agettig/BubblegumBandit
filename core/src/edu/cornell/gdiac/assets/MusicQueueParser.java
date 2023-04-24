@@ -43,7 +43,7 @@ public class MusicQueueParser implements AssetParser<MusicQueue> {
      */
     public void reset(JsonValue directory) {
         root = directory;
-        root = root.getChild( "soundtrack" );
+        root = root.getChild( "musicqueue" );
     }
 
     /**
@@ -58,7 +58,7 @@ public class MusicQueueParser implements AssetParser<MusicQueue> {
     /**
      * Processes the next available music buffer, loading it into the asset manager
      *
-     * The parser converts JSON entries into {@link MusicQueueLoader.MusicBufferParameters}
+     * The parser converts JSON entries into {@link MusicQueueLoader.MusicQueueParameters}
      * values of the same name. The file will be the contents of the file entry.  The 
      * key will be the name of the font object.
      *

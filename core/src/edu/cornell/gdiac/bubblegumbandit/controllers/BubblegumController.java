@@ -29,6 +29,9 @@ public class BubblegumController {
     /**Amount of active gum. */
     private static int activeGum;
 
+    /**Maximum allowed gum for the level*/
+    private int maxGum;
+
     /**The map of stuck Bubblegum obstacles to their joints. */
     private static ObjectMap<GumModel, ObjectSet<GumJointPair>> stuckBubblegum;
 
@@ -87,7 +90,8 @@ public class BubblegumController {
 
     /** Initialize bubblegumController stats */
     public void initialize(AssetDirectory directory, JsonValue json) {
-        gumAmmo = json.get("starting_gum").asInt();
+        gumAmmo = json.get("startingGum").asInt();
+        maxGum = json.get("maxGum").asInt();
         startingGum = gumAmmo;
         String key = json.get("stuckTexture").asString();
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -124,6 +128,9 @@ public class BubblegumController {
     public void fireGum() {
         gumAmmo -= 1;
     }
+
+    /** Check if player already holds max gum*/
+    public boolean atMaxGum() {return gumAmmo == maxGum;}
 
     /** increases amount of ammo by ammo */
     public void addAmmo(int ammo) {
@@ -223,6 +230,9 @@ public class BubblegumController {
     public void removeGummable(Gummable gummable) {
         gummable.setGummed(false);
 
+        if (stuckToGummable.get(gummable) == null) { // Don't know why this is happening.
+            return;
+        }
         for (Joint j : stuckToGummable.get(gummable)) {
             gummableJointsToRemove.addLast(j);
         }
@@ -350,9 +360,11 @@ public class BubblegumController {
             SoundController.playSound("gumSplat", 0.5f);
         }
         for (int i = 0; i < gummableAssemblyQueue.size; i++) {
-            Joint joint = level.getWorld().createJoint(gummableAssemblyQueue.removeFirst());
+            WeldJointDef def = gummableAssemblyQueue.removeFirst();
+            if(def.bodyB == null || def.bodyA == null) return;
+            Joint joint = level.getWorld().createJoint(def);
             addToGummableMap(joint);
-            SoundController.playSound("robotSplat", 1f);
+            SoundController.playSound("enemySplat", 1f);
         }
         for (int i = 0; i < gumJointsToRemove.size; i++) {
             GumJointPair gumJoint = gumJointsToRemove.removeFirst();
@@ -361,7 +373,7 @@ public class BubblegumController {
                 Obstacle ob1 = (Obstacle) gumJoint.getJoint().getBodyA().getUserData();
                 ob1.setStuck(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob1.flippedGravity();
+                    ob1.flipGravity();
                 }
             }
             catch (Exception ignored) {
@@ -371,7 +383,7 @@ public class BubblegumController {
                 ob2.setStuck(false);
 
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob2.flippedGravity();
+                    ob2.flipGravity();
                 }
             }
             catch (Exception ignored) {
@@ -381,12 +393,12 @@ public class BubblegumController {
         }
         for (int i = 0; i < gummableJointsToRemove.size; i++) {
             Joint j = gummableJointsToRemove.removeFirst();
-            System.out.println(j);
             try {
                 Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
                 ob1.setStuck(false);
+                ob1.setGummed(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob1.flippedGravity();
+                    ob1.flipGravity();
                 }
             } catch (Exception ignored) {
 
@@ -394,8 +406,9 @@ public class BubblegumController {
             try {
                 Obstacle ob2 = (Obstacle) j.getBodyB().getUserData();
                 ob2.setStuck(false);
+                ob2.setGummed(false);
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob2.flippedGravity();
+                    ob2.flipGravity();
                 }
             } catch (Exception ignored) {
 

@@ -1,21 +1,46 @@
 {
     "textures": {
-        "earth": {
-            "file":	 "textures/texture_draft.png",
-            "wrapU": "repeated",
-            "wrapV": "repeated"
-        },
+        "healthBar": "textures/UI/healthBar.png",
+        "healthFill": "textures/UI/healthFill.png",
+        "healthIcon": "textures/UI/UIHeart.png",
+        "bubblegumIcon": "textures/UI/bubbleIcon.png",
+        "emptyGum": "textures/UI/emptyGum.png",
+        "minimapBackground" : "textures/UI/minimapBackground.png",
+        "minimapTile" : "textures/UI/square.png",
+        "sunfish" : "textures/levelSelect/sunfish.png",
+        "ship1" : "textures/levelSelect/level1.png",
+        "ship2" : "textures/levelSelect/level2.png",
+        "fire" : "textures/levelSelect/fire.png",
+        "boost" : "textures/levelSelect/boost.png",
+
         "terrain": {
-            "file": "textures/tileset.png"
+            "file": "textures/environment/tileset.png"
         },
         "background": {
-            "file": "textures/background.png",
+            "file": "textures/environment/background.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "dude": "textures/bandit.png",
-        "bandit_run":  {
-            "file": "textures/bandit_run.png",
+        "space_bg": {
+            "file": "textures/environment/space_sample.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "exit": "textures/environment/shipDoor.png",
+        "alarmOn": "textures/environment/alarmOn.png",
+        "alarmOff": "textures/environment/alarmOff.png",
+        "orb": "textures/environment/orb.png",
+        "box": "textures/environment/box.png",
+        "powerCell": "textures/environment/powerCellB.png",
+        "chair": "textures/environment/chair.png",
+        "frame": "textures/environment/frameB.png",
+        "star": "textures/environment/star.png",
+        "supports": "textures/environment/supports.png",
+
+        "trajectoryProjectile": "textures/bandit/trajectory.png",
+        "bandit": "textures/bandit/bandit.png",
+        "banditRun":  {
+            "file": "textures/bandit/banditRun.png",
             "wrap": false,
             "sprites": {
                 "run": {
@@ -25,8 +50,8 @@
                 }
             }
         },
-        "bandit_idle":  {
-            "file": "textures/bandit_idle.png",
+        "banditIdle":  {
+            "file": "textures/bandit/banditIdle.png",
             "wrap": false,
             "sprites": {
                 "idle": {
@@ -36,8 +61,8 @@
                 }
             }
         },
-        "bandit_fall":  {
-            "file": "textures/bandit_fall.png",
+        "banditFall":  {
+            "file": "textures/bandit/banditFall.png",
             "wrap": false,
             "sprites": {
                 "fall": {
@@ -47,8 +72,63 @@
                 }
             }
         },
-        "small_robot_patrol":  {
-            "file": "textures/small_robot_patrol.png",
+        "bandit_guide": "textures/bandit/doubleArrow.png",
+        "bandit_knock": {
+            "file": "textures/bandit/bandit_knockback.png",
+            "wrap": false,
+            "sprites": {
+                "knock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+
+        },
+        "bandit_backpedal": {
+            "file": "textures/bandit/bandit_backpedal.png",
+            "wrap": false,
+            "sprites": {
+                "back": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+
+        },
+        "bandit_death": {
+            "file": "textures/bandit/bandit_death.png",
+            "wrap": false,
+            "sprites": {
+                "death": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
+        "banditDead" : "textures/bandit/bandit_dead.png",
+
+        "poof": {
+            "file": "textures/bandit/poof.png",
+            "wrap": false,
+            "sprites": {
+                "poof": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+
+        },
+
+        "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
+        "bullet": "textures/smallEnemy/bullet.png",
+        "smallEnemy": "textures/smallEnemy/smallEnemy.png",
+        "smallEnemyPatrol":  {
+            "file": "textures/smallEnemy/smallEnemyPatrol.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -58,8 +138,8 @@
                 }
             }
         },
-        "large_walk":  {
-            "file": "textures/large_anim.png",
+        "shielded_small_robot_patrol":  {
+            "file": "textures/smallEnemy/shielded_small_robot_patrol.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -69,8 +149,11 @@
                 }
             }
         },
-        "med_walk":  {
-            "file": "textures/med_walk.png",
+
+        "medOutline": "textures/mediumEnemy/medWhite.png",
+        "medEnemy": "textures/mediumEnemy/mediumEnemy.png",
+        "medWalk":  {
+            "file": "textures/mediumEnemy/medWalk.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -80,8 +163,8 @@
                 }
             }
         },
-        "med_roll":  {
-            "file": "textures/med_roll.png",
+        "medRoll":  {
+            "file": "textures/mediumEnemy/medRoll.png",
             "wrap": false,
             "sprites": {
                 "attack": {
@@ -91,56 +174,77 @@
                 }
             }
         },
-        "small_robot": "textures/small_enemy.png",
-        "large_robot": "textures/large_robot.png",
-        "med_robot": "textures/medium_enemy.png",
-        "goal": "textures/goaldoor.png",
-        "bandit": "textures/bandit.png",
-        "smallrobot": "textures/small_enemy.png",
-        "largerobot": "textures/large_robot.png",
-        "mediumrobot": "textures/rollingrobot.png",
-        "exit": "textures/shipdoor.png",
-        "gumProjectile": "textures/gum.png",
-        "floatinggum": "textures/gum.png",
-        "trajectoryProjectile": "textures/trajectory.png",
-        "gum": "textures/stuck_gum.png",
-        "topRightGum": "textures/topRightGum.png",
-        "bottomRightGum": "textures/bottomRightGum.png",
-        "bottomLeftGum": "textures/bottomLeftGum.png",
-        "topLeftGum": "textures/topLeftGum.png",
-        "rotatedGum": "textures/rotated_gum.png",
-        "health_bar": "textures/health_bar.png",
-        "health_fill": "textures/health_fill.png",
-        "health_icon": "textures/UI_heart.png",
-        "bubblegum_icon": "textures/bubble_icon.png",
-        "floatingGum": "textures/gum.png",
-        "bullet": "textures/bullet.png",
-        "minimap_background" : "textures/square.png",
-        "minimap_tile" : "textures/Blank_Square.svg.png"
-        "alarm_on": "textures/alarm_on.png",
-        "alarm_off": "textures/alarm_off.png",
-        "gummed_robot": "textures/tinted_small_enemy.png",
-        "orb": "textures/orb.png",
-        "box": "textures/box.png",
-        "powercell": "textures/powercellb.png",
-        "chair": "textures/chair.png",
-        "frame": "textures/frameb.png",
-        "stuckOutline": "textures/stuck_gumWhite.png",
-        "topRightOutline": "textures/topRightGumWhite.png",
-        "bottomRightOutline": "textures/bottomRightGumWhite.png",
-        "bottomLeftOutline": "textures/bottomLeftGumWhite.png",
-        "topLeftOutline": "textures/topLeftGumWhite.png",
-        "rotatedOutline": "textures/rotated_gumWhite.png",
-        "smallrobotoutline": "textures/small_enemyWhite.png",
-        "small_gum": "textures/small_gum.png",
-        "large_gum": "textures/large_gum.png",
-        "star": "textures/star.png",
-        "sunfish" : "textures/sunfish.png",
-        "ship1" : "textures/level1.png",
-        "laserBeam": "textures/red_laser.png",
-        "laserBeamEnd": "textures/red_laser_end.png",
-        "large_robotoutline": "textures/large_robotWhite.png",
-        "med_outline": "textures/med_white.png"
+        "shielded_med_walk":  {
+            "file": "textures/mediumEnemy/shielded_med_walk.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
+        },
+
+
+        "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
+        "largeEnemy": "textures/largeEnemy/largeEnemy.png",
+        "laserBeam": "textures/largeEnemy/laserBeam.png",
+        "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
+        "largeWalk":  {
+            "file": "textures/largeEnemy/largeAnim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "shielded_large_walk":  {
+            "file": "textures/largeEnemy/shielded_large_anim.png",
+            "wrap": false,
+            "sprites": {
+                "patrol": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+
+
+
+        "gumProjectile": "textures/gum/gum.png",
+        "floatingGum": "textures/gum/gum.png",
+        "splatGum": "textures/gum/splatGum.png",
+        "topRightGum": "textures/gum/topRightGum.png",
+        "bottomRightGum": "textures/gum/bottomRightGum.png",
+        "bottomLeftGum": "textures/gum/bottomLeftGum.png",
+        "topLeftGum": "textures/gum/topLeftGum.png",
+        "rotatedGum": "textures/gum/rotatedGum.png",
+        "stuckOutline": "textures/gum/splatGumOutline.png",
+        "topRightOutline": "textures/gum/topRightGumOutline.png",
+        "bottomRightOutline": "textures/gum/bottomRightGumOutline.png",
+        "bottomLeftOutline": "textures/gum/bottomLeftGumOutline.png",
+        "topLeftOutline": "textures/gum/topLeftGumOutline.png",
+        "rotatedOutline": "textures/gum/rotatedGumOutline.png",
+        "smallGum": "textures/gum/smallGum.png",
+        "largeGum": "textures/gum/largeGum.png",
+        "medGum": "textures/gum/medGum.png",
+        "smallGumOutline": "textures/gum/smallGumOutline.png",
+        "largeGumOutline": "textures/gum/largeGumOutline.png",
+        "medGumOutline": "textures/gum/medGumOutline.png",
+        "crushing_block": "textures/objects/crushing_block.png",
+        "crushing_block_gummed": "textures/objects/crushing_block_gummed.png",
+        "crushing_block_outline": "textures/objects/crushing_block_outline.png",
+        "door":  "textures/objects/doorUnlocked.png",
+        "lockedDoor":  "textures/objects/doorLocked.png",
+        "gummedDoor": "textures/objects/doorGummed.png",
+        "outlineDoor": "textures/objects/doorOutline.png",
+        "glass":  "textures/objects/glass.png",
+        "hazard": "textures/objects/hazard.png"
     },
     "fonts": {
         "display": {
@@ -151,22 +255,35 @@
             "file": "fonts/LucidaGrande.ttf",
             "size": 16
         },
-        "times": {
-            "file": "fonts/TimesRoman.ttf",
-            "size": 32
+        "codygoonRegular": {
+            "file" : "fonts/Codygoon.ttf",
+            "size": 36
+        },
+        "projectSpace" : {
+            "file" : "fonts/ProjectSpace.ttf",
+            "size": 40
         }
     },
 	"soundfx": {
   		"jump" : "sounds/jump.mp3",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
-        "robotSplat": "sounds/splatRobot.wav",
+        "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav"
 	},
+    "samples": {
+        "menu": "sounds/music/spaceCruising.ogg",
+        "inGame": "sounds/music/bubblegumBallad.ogg",
+        "escape": "sounds/music/escape.ogg"
+
+    },
 	"jsons" : {
-		"level1" : "jsons/test.json",
-        "level2":"jsons/alpha.json",
+		"level1" : "jsons/levels/betaPostOrb.json",
+        "level2":"jsons/levels/alphaPresentation.json",
         "constants": "jsons/constants.json",
-        "animations" : "jsons/animations.json"
+        "animations" : "jsons/animations.json",
+        "supports" : "tilesets/supports.json",
+        "terrain" : "tilesets/terrain.json",
+        "objects" : "tilesets/objects.json"
     }
 }
