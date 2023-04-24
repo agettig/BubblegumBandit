@@ -306,7 +306,6 @@ public class CollisionController implements ContactListener {
         if (bodyA == null || bodyB == null) return;
         // Gum should destroy projectiles, but not become sticky gum.
         if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
-        if (bodyA.getName().equals("unstickProjectile") || bodyB.getName().equals("unstickProjectile")) return;
         if (bodyA.isRemoved() || bodyB.isRemoved()) return;
         if (bodyA.getName().equals("gumProjectile") && bodyB.equals(levelModel.getBandit())) return;
         if (bodyB.getName().equals("gumProjectile") && bodyA.equals(levelModel.getBandit())) return;
@@ -330,7 +329,8 @@ public class CollisionController implements ContactListener {
                     return;
                 }
             }
-        };
+        }
+
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
@@ -346,7 +346,8 @@ public class CollisionController implements ContactListener {
                     return;
                 }
             }
-        };
+        }
+
         if (gum != null && gum.getName().equals("gumProjectile")) {
             // Do this once gum is turning from a projectile to sticky
             gum.setVX(0);
@@ -374,6 +375,9 @@ public class CollisionController implements ContactListener {
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
                     if (!(gummable instanceof DoorModel)) {
+                        if (gummable.getCollisions().size > 0){
+                            gummable.setStuck(true);
+                        }
                         for (Obstacle ob : gummable.getCollisions()) {
                             bubblegumController.createGummableJoint(gummable, ob);
                         }
@@ -392,6 +396,8 @@ public class CollisionController implements ContactListener {
                 // Make bandit stuck
                 levelModel.getBandit().setStuck(true);
             }
+
+            // creates joint between gum and object
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
@@ -463,23 +469,25 @@ public class CollisionController implements ContactListener {
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
             if (gummable.getGummed()) { // && !ob2.equals(levelModel.getBandit())
-                if (ob1.getName().contains("enemy") && ob2.equals(levelModel.getBandit())) {
+                // TODO: Once naming standardized, don't need to convert to lowercase
+                if (ob1.getName().toLowerCase().contains("enemy") && ob2.equals(levelModel.getBandit())) {
                     return;
                 }
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("enemySplat", 1f);
-                ob2.setStuck(true);
+                ob1.setStuck(true);
             }
         }
         else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
             if (gummable.getGummed()) { // && !ob1.equals(levelModel.getBandit())
-                if (ob2.getName().contains("enemy") && ob1.equals(levelModel.getBandit())) {
+                // TODO: Once naming standardized, don't need to convert to lowercase
+                if (ob2.getName().toLowerCase().contains("enemy") && ob1.equals(levelModel.getBandit())) {
                     return;
                 }
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("enemySplat", 1f);
-                ob1.setStuck(true);
+                ob2.setStuck(true);
             }
         }
     }
@@ -528,6 +536,8 @@ public class CollisionController implements ContactListener {
         } else {
             return;
         }
+
+        BanditModel bandit = levelModel.getBandit();
         if (crushed.getName().contains("enemy")) {
             // Check if enemy is beneath crusher and stopped (if it's stopped, it's pinched).
             // If so, trigger its deletion.
@@ -536,24 +546,29 @@ public class CollisionController implements ContactListener {
             if (Math.abs(crushed.getVY()) < 0.001f) {
                 crushed.markRemoved(true);
             }
-        } else if (crushed.equals(levelModel.getBandit())) {
+        } else if (crushed.equals(bandit)) {
             if (Math.abs(crushed.getVY()) < 0.001f) {
-                // Flip gravity again and make the bandit take damage.
-                levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE);
-                shouldFlipGravity = true;
+                // Block must be pushing on bandit.
+                if ((bandit.getPosition().y > crusher.getPosition().y) == (levelGrav > 0)) {
+                    // Flip gravity again and make the bandit take damage.
+                    levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE);
+                    shouldFlipGravity = true;
+                }
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
                 // Screen shake cause block hit the floor
-            if (!crusher.didSmash) {
-                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
-            }
             if (crushed.getName().equals("glass") && !crusher.didSmash) {
                 crushed.markRemoved(true);
-            } else {
-                crusher.maxAbsFallVel = 0;
-                crusher.didSmash = true;
+                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
             }
-
+            else if (!crusher.didSmash) {
+                camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
+                float hw = crusher.getWidth() / 2;
+                if (crushed.getX() < crusher.getX() + hw & crushed.getX() > crusher.getX() - hw) {
+                    crusher.maxAbsFallVel = 0;
+                    crusher.didSmash = true;
+                }
+            }
         }
     }
 

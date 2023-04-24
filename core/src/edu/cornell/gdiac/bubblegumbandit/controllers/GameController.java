@@ -17,6 +17,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -64,6 +65,9 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  * singleton asset manager to manage the various assets.
  */
 public class GameController implements Screen {
+
+    // TODO move this
+    private final int RELOAD_RATE = 30;
     // ASSETS
     /**
      * Need an ongoing reference to the asset directory
@@ -461,6 +465,8 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+
+        SoundController.playMusic("game");
     }
 
     public void respawn(){
@@ -582,6 +588,7 @@ public class GameController implements Screen {
             orbCollected = true;
             orbCountdown = level.getOrbCountdown();
             level.startAlarms();
+            SoundController.playMusic("escape");
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -625,7 +632,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 60 == 0) {
+            if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }

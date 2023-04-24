@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.audio.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.LevelIconModel;
@@ -121,6 +122,17 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Camera zoom out */
     private final static float ZOOM = 1.5f;
 
+    // music
+
+    /** music to play */
+    AudioSource[] samples;
+
+    /** A queue to play music */
+    MusicQueue music;
+
+    /** An effect filter to apply */
+    EffectFilter filter;
+
 
 
     /**
@@ -175,6 +187,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
 
         createIcons(directory);
+
+        //music
+        SoundController.playMusic("menu");
 
     }
 
@@ -261,7 +276,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         }
 //        if (sunfish.getX() > SPACE_WIDTH - camWidth){
 //            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
-//
 //        }
          //y bounds
         if (sunfish.getY() < camHeight) {
@@ -464,9 +478,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.SPACE){
+        if (!active) return true;
+
+        if (keycode == Input.Keys.SPACE) {
             sunfish.setBoosting(true);
         }
+
         return true;
 
     }
@@ -488,6 +505,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyUp(int keycode) {
+        if (!active) return true;
+
         if (keycode == Input.Keys.SPACE){
             sunfish.setBoosting(false);
         }
