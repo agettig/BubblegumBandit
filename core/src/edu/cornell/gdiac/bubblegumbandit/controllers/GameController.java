@@ -119,13 +119,11 @@ public class GameController implements Screen {
      */
     private long gumSplatId = -3;
     /**
-     * The sound when robot is hit with gume.  We only want to play once.
+     * The sound when enemy is hit with gume.  We only want to play once.
      */
-    private SoundEffect robotSplatSound;
-    /**
-     * Id for robot splat sound
-     */
-    private long robotSplatId = -4;
+    private SoundEffect enemySplatSound;
+    /** Id for enemy splat sound */
+    private long enemySplatId = -4;
     /**
      * The sound when an item is collected.  We only want to play once.
      */
@@ -138,7 +136,7 @@ public class GameController implements Screen {
     /**
      * Array holding all sounds
      */
-    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound, collectItemSound};
+    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, enemySplatSound, collectItemSound};
 
     /**
      * Exit code for quitting the game
@@ -243,9 +241,11 @@ public class GameController implements Screen {
      */
     private boolean orbCollected;
 
-    /**
-     * Countdown timer after collecting the orb.
-     */
+    /** true if Enemies that should spawn after the orb gets picked up
+     * have been created*/
+    private boolean spawnedPostOrbEnemies;
+
+    /** Countdown timer after collecting the orb. */
     private float orbCountdown;
 
     /**Tick counter for gum reloading*/
@@ -411,7 +411,7 @@ public class GameController implements Screen {
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
-        stuckGum = new TextureRegion(directory.getEntry("splat_gum", Texture.class));
+        stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
     }
@@ -651,13 +651,13 @@ public class GameController implements Screen {
                 if (unstickableOb.getName().equals("stickyGum")) {
                     // Unstick it
                     bubblegumController.removeGum((GumModel) unstickable);
-                    SoundController.playSound("robotSplat", 1f); // Temp sound
+                    SoundController.playSound("enemySplat", 1f); // Temp sound
                 } else if (unstickableOb instanceof Gummable) {
                     Gummable gummable = (Gummable) unstickableOb;
                     if (gummable.getGummed()) {
                         // Ungum it
                         bubblegumController.removeGummable(gummable);
-                        SoundController.playSound("robotSplat", 1f); // Temp sound
+                        SoundController.playSound("enemySplat", 1f); // Temp sound
 
                     }
                 }
@@ -721,22 +721,15 @@ public class GameController implements Screen {
         }
         canvas.getCamera().update(dt);
 
+        //Check to create post-orb enemies
+        if(orbCollected && !spawnedPostOrbEnemies){
+            level.spawnPostOrbEnemies(levelFormat);
+            spawnedPostOrbEnemies = true;
+        }
+
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);
-
-        // TODO add to collision controller
-        // TODO have attack action for rolling robot
-//        if (collisionController.getRollingCollision()) {
-//            bandit.hitPlayer(0.5f);
-//            if (collisionController.getLeftRolling()) {
-//                bandit.getBody().applyForce(30f, 1f, bandit.getX(), bandit.getY(), true);
-//            }
-//            else {
-//                bandit.getBody().applyForce(-30f, 1f, bandit.getX(), bandit.getY(), true);
-//            }
-//            collisionController.resetRollingCollision();
-//        }
     }
 
 
