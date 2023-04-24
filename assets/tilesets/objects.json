@@ -106,14 +106,14 @@
         }, 
         {
          "id":16,
-         "image":"..\/textures\/objects\/door_unlocked.png",
+         "image":"..\/textures\/objects\/doorUnlocked.png",
          "imageheight":256,
          "imagewidth":64,
          "type":"door_v"
         }, 
         {
          "id":17,
-         "image":"..\/textures\/objects\/door_locked.png",
+         "image":"..\/textures\/objects\/doorLocked.png",
          "imageheight":256,
          "imagewidth":64,
          "type":"door_v_locked"
