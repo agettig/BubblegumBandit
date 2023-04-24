@@ -163,7 +163,7 @@ public class AIController implements Telegraph {
 
     public void flipEnemy(){
         if (!enemy.getStuck() /*&& !enemy.getGummed()*/) {
-            enemy.flippedGravity();
+            enemy.flipGravity();
         }
     }
 

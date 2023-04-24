@@ -58,9 +58,9 @@ public class GumModel extends WheelObstacle implements Unstickable {
         obstacles.add(o);
     }
 
-    public boolean onTile() {return onTile;}
+    public boolean getOnTile() {return onTile;}
 
-    public void onTile(boolean value) {onTile = value;}
+    public void setOnTile(boolean value) {onTile = value;}
 
     /**
      * Checks if gum is at obstacle capacity and sets collision filter
@@ -79,8 +79,10 @@ public class GumModel extends WheelObstacle implements Unstickable {
 
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null) {
-            canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),OUTLINE_SIZE,OUTLINE_SIZE);
+            canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
+        } else {
+            super.draw(canvas);
         }
-        super.draw(canvas);
+
     }
 }

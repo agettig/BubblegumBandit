@@ -78,7 +78,7 @@ public class LaserController {
         lasers =  new HashSet<>();
         bodiesToIgnore = new ArrayList<>();
         bodiesToIgnore.add("Laser Enemy");
-        bodiesToIgnore.add("cameratile");
+        bodiesToIgnore.add("door");
         bodiesToIgnore.add("exit");
         bodiesToIgnore.add("gumProjectile");
         enemiesToRemove = new HashSet<>();
@@ -193,9 +193,9 @@ public class LaserController {
      * @param ignores All names of bodies that the raycast should ignore.
      * */
     private Vector2 shootRaycastAt(World world,
-                                 final LaserEnemyModel enemy,
-                                 Vector2 target,
-                                 final ArrayList<String> ignores){
+                                   final LaserEnemyModel enemy,
+                                   Vector2 target,
+                                   final ArrayList<String> ignores){
 
         //The point at which our raycast will "hit."
         final Vector2 intersect = new Vector2();
@@ -253,8 +253,8 @@ public class LaserController {
      * @param ignores All names of bodies that the raycast should ignore.
      * */
     private Vector2 shootRaycastTowards(World world,
-                                   final LaserEnemyModel enemy,
-                                   final ArrayList<String> ignores){
+                                        final LaserEnemyModel enemy,
+                                        final ArrayList<String> ignores){
 
         //The point at which our raycast will "hit."
         final Vector2 intersect = new Vector2();

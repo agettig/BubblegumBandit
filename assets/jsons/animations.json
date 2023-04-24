@@ -1,38 +1,86 @@
 {
   "bandit": {
     "run": {
-      "strip": "bandit_run.run",
+      "strip": "banditRun.run",
       "fps": 6
     },
     "idle": {
-      "strip": "bandit_idle.idle",
+      "strip": "banditIdle.idle",
       "fps": 2
     },
     "fall": {
-      "strip": "bandit_fall.fall",
+      "strip": "banditFall.fall",
       "fps": 2
+    },
+    "knock": {
+      "strip": "bandit_knock.knock",
+      "fps": 6
+    },
+    "back": {
+      "strip": "bandit_backpedal.back",
+      "fps": 6
+    },
+    "death": {
+      "strip": "bandit_death.death",
+      "fps": 8
     }
   },
-  "small_robot": {
+  "smallEnemy": {
     "patrol": {
+      "strip": "smallEnemyPatrol.patrol",
+      "fps": 6
+    }
+  },
+  "shielded_small_robot": {
+    "patrol": {
+      "strip": "shielded_small_robot_patrol.patrol",
+      "fps": 6
+    },
+    "unshielded_patrol": {
       "strip": "small_robot_patrol.patrol",
       "fps": 6
     }
   },
-  "large_robot": {
+  "largeEnemy": {
     "patrol": {
+      "strip": "largeWalk.patrol",
+      "fps": 4
+    }
+  },
+  "shielded_large_robot": {
+    "patrol": {
+      "strip": "shielded_large_walk.patrol",
+      "fps": 4
+    },
+    "unshielded_patrol": {
       "strip": "large_walk.patrol",
       "fps": 4
     }
   },
-  "medium_robot": {
+  "mediumEnemy": {
     "patrol": {
-      "strip": "med_walk.patrol",
+      "strip": "medWalk.patrol",
       "fps": 8
     },
     "roll": {
-      "strip": "med_roll.attack",
+      "strip": "medRoll.attack",
       "fps": 8
+    }
+  },
+  "shielded_medium_robot": {
+    "patrol": {
+      "strip": "shielded_med_walk.patrol",
+      "fps": 8
+    },
+    "roll": {
+      "strip": "medRoll.attack",
+      "fps": 8
+    }
+  },
+  "poof": {
+    "poof": {
+      "strip": "poof.poof",
+      "fps": 16
     }
   }
 }

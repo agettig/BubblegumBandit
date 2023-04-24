@@ -17,6 +17,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -29,6 +30,8 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -62,6 +65,9 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  * singleton asset manager to manage the various assets.
  */
 public class GameController implements Screen {
+
+    // TODO move this
+    private final int RELOAD_RATE = 30;
     // ASSETS
     /**
      * Need an ongoing reference to the asset directory
@@ -81,7 +87,9 @@ public class GameController implements Screen {
      */
     private JsonValue constantsJson;
 
-    /** The JSON defining the tileset */
+    /**
+     * The JSON defining the tileset
+     */
     private JsonValue tilesetJson;
 
     private HUDController hud;
@@ -93,36 +101,46 @@ public class GameController implements Screen {
      */
     private SoundEffect jumpSound;
 
-    /**Id for jump. */
+    /**
+     * Id for jump.
+     */
     private long jumpId = -1;
 
     /**
      * The small enemy shooting sound.  We only want to play once.
      */
     private SoundEffect smallEnemyShootingSound;
-    /** Id for small enemy shooting */
+    /**
+     * Id for small enemy shooting
+     */
     private long smallEnemyShootingId = -2;
     /**
      * The gum splat sound.  We only want to play once.
      */
     private SoundEffect gumSplatSound;
-    /** Id for gum splat sound */
+    /**
+     * Id for gum splat sound
+     */
     private long gumSplatId = -3;
     /**
-     * The sound when robot is hit with gume.  We only want to play once.
+     * The sound when enemy is hit with gume.  We only want to play once.
      */
-    private SoundEffect robotSplatSound;
-    /** Id for robot splat sound */
-    private long robotSplatId = -4;
+    private SoundEffect enemySplatSound;
+    /** Id for enemy splat sound */
+    private long enemySplatId = -4;
     /**
      * The sound when an item is collected.  We only want to play once.
      */
     private SoundEffect collectItemSound;
-    /** Id for collectible item sound */
+    /**
+     * Id for collectible item sound
+     */
     private long collectItemId = -4;
 
-    /**Array holding all sounds */
-    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, robotSplatSound, collectItemSound};
+    /**
+     * Array holding all sounds
+     */
+    private SoundEffect[] soundEffects = new SoundEffect[]{jumpSound, smallEnemyShootingSound, gumSplatSound, enemySplatSound, collectItemSound};
 
     /**
      * Exit code for quitting the game
@@ -186,21 +204,16 @@ public class GameController implements Screen {
     private BubblegumController bubblegumController;
 
 
-    /** A collection of the active projectiles on screen */
+    /**
+     * A collection of the active projectiles on screen
+     */
     private ProjectileController projectileController;
 
-    /** Reference to LaserController instance */
+    /**
+     * Reference to LaserController instance
+     */
     private LaserController laserController;
 
-    /**
-     * Gum gravity scale when creating gum
-     */
-    private float gumGravity;
-
-    /**
-     * Gum speed when creating gum
-     */
-    private float gumSpeed;
 
     /**
      * The texture of the trajectory projectile
@@ -217,20 +230,33 @@ public class GameController implements Screen {
 
     private TextureRegion stuckGum;
 
-    /** The gravity control mode for the player controller */
-    private boolean gravityToggle = true;
-
-    /** The number of the current level. */
+    /**
+     * The number of the current level.
+     */
     private int levelNum;
 
-    /** The number of levels in the game. */
+    /**
+     * The number of levels in the game.
+     */
     private final int NUM_LEVELS = 2;
 
-    /** Whether the orb has been collected. */
+    /**
+     * Whether the orb has been collected.
+     */
     private boolean orbCollected;
+
+    /** true if Enemies that should spawn after the orb gets picked up
+     * have been created*/
+    private boolean spawnedPostOrbEnemies;
 
     /** Countdown timer after collecting the orb. */
     private float orbCountdown;
+
+    /**Tick counter for gum reloading*/
+    private long ticks;
+    /**Whether the player is reloading gum */
+    private boolean reloadingGum;
+
 
     /**
      * Returns true if the level is completed.
@@ -264,7 +290,9 @@ public class GameController implements Screen {
      *
      * @return true if the level is failed.
      */
-    public boolean getFailure() {return failed;}
+    public boolean getFailure() {
+        return failed;
+    }
 
     /**
      * Sets whether the level is failed.
@@ -321,7 +349,7 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/crosshair2.png"));
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
 // Set hotspot to the middle of it (0,0 would be the top-left corner)
         int xHotspot = 16, yHotspot = 16;
         Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
@@ -330,12 +358,14 @@ public class GameController implements Screen {
 
 
         //Technicals
+        ticks = 0;
         complete = false;
         failed = false;
         active = false;
         countdown = -1;
         orbCountdown = -1;
         levelNum = 1;
+        reloadingGum = false;
         setComplete(false);
         setFailure(false);
 
@@ -374,7 +404,6 @@ public class GameController implements Screen {
         directory.finishLoading();
         displayFont = directory.getEntry("display", BitmapFont.class);
 
-        SoundController.initialize(directory);
 
         // This represents the level but does not BUILD it
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -386,14 +415,16 @@ public class GameController implements Screen {
         trajectoryProjectile = new TextureRegion(directory.getEntry("trajectoryProjectile", Texture.class));
         laserBeam = new TextureRegion(directory.getEntry("laserBeam", Texture.class));
         laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
-        stuckGum = new TextureRegion(directory.getEntry("gum", Texture.class));
+        stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
     }
 
 
-    /** sets the level loaded by the game controller, set by level select */
-    public void setLevelNum (int num){
+    /**
+     * sets the level loaded by the game controller, set by level select
+     */
+    public void setLevelNum(int num) {
         levelNum = num;
     }
 
@@ -418,6 +449,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
+        spawnedPostOrbEnemies = false;
         bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
@@ -433,6 +465,24 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+
+        SoundController.playMusic("game");
+    }
+
+    public void respawn(){
+        setComplete(false);
+        setFailure(false);
+        countdown = -1;
+        orbCountdown = -1;
+        orbCollected = false;
+        level.endAlarms();
+        for (EnemyModel enemy: level.getPostOrbEnemies()){
+            enemy.markRemoved(true);
+        }
+        level.remakeOrb(directory, constantsJson);
+        bubblegumController.resetAmmo();
+        spawnedPostOrbEnemies = false;
+        level.getBandit().respawnPlayer();
     }
 
     /**
@@ -449,15 +499,20 @@ public class GameController implements Screen {
 
         PlayerController input = PlayerController.getInstance();
         input.readInput();
-        if (listener == null) {return true;}
+        if (listener == null) {
+            return true;
+        }
 
         // Toggle debug and handle resets.
-        if (input.didDebug()) {level.setDebug(!level.getDebug());}
-        if (input.didReset()) {reset();}
+        if (input.didDebug()) {
+            level.setDebug(!level.getDebug());
+        }
+        if (input.didReset()) {
+            reset();
+        }
         if (input.didCameraSwap()) {
             canvas.getCamera().toggleDebug();
         }
-        if (input.didControlsSwap()) { gravityToggle = !gravityToggle; }
         if (input.didAdvance()) {
             levelNum++;
             if (levelNum > NUM_LEVELS) {
@@ -480,18 +535,27 @@ public class GameController implements Screen {
         }
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
+
+            // TODO fix with post orb enemies
+//            if (orbCollected && !complete){
+//                respawn();
+//            }
+//            else {
+//                reset();
+//            }
             reset();
         }
 
         if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
 
         else if (orbCollected && orbCountdown <= 0) {
-            level.getBandit().hitPlayer(level.getBandit().getHealth());
+            level.getBandit().kill();
         }
 
         //Check for failure.
         if (!getFailure() && level.getBandit().getHealth() <= 0) {
             setFailure(true);
+            level.getBandit().kill();
             return false;
         }
         return true;
@@ -508,8 +572,12 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        ticks++;
         if(collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
+            SaveData.setStatus(levelNum-1, level.getBandit().getNumStars());
+            SaveData.unlock(levelNum);
+
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;
             }
@@ -520,6 +588,7 @@ public class GameController implements Screen {
             orbCollected = true;
             orbCountdown = level.getOrbCountdown();
             level.startAlarms();
+            SoundController.playMusic("escape");
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -528,15 +597,22 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        float movement = inputResults.getHorizontal() * bandit.getForce();
-        bandit.setMovement(movement);
-        bandit.applyForce();
+        if(bandit.getHealth()>0) {
+            float movement = inputResults.getHorizontal() * bandit.getForce();
+            bandit.setMovement(movement);
+            bandit.applyForce();
+        } else {
+            bandit.setVX(0f);
+            if(bandit.isGrounded())bandit.setVY(0);
+        }
+
 
         float grav =  level.getWorld().getGravity().y;
-        if ((bandit.isGrounded() || !bandit.hasFlipped()) && ((gravityToggle && PlayerController.getInstance().getGravityUp()) ||
-                (!gravityToggle && PlayerController.getInstance().getGravityUp() && grav < 0) ||
-                (!gravityToggle && PlayerController.getInstance().getGravityDown() && grav > 0))
-        ) {
+        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) &&
+               ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
+                (PlayerController.getInstance().getGravityDown() && grav > 0));
+        shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
+        if (shouldFlip) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = SoundController.playSound("jump", 0.25f);
@@ -550,10 +626,23 @@ public class GameController implements Screen {
             if (level.getBackgroundObjects() != null) {
                 for (BackObjModel o : level.getBackgroundObjects()) o.flip();
             }
+            for (Obstacle flippable : level.getFlippables()) {
+                flippable.flipGravity();
+            }
+        }
+
+        if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            if (ticks % RELOAD_RATE == 0) {
+                bubblegumController.addAmmo(1);
+                reloadingGum = true;
+            }
+        }
+        else {
+            reloadingGum = false;
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0) {
+        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth()>0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -568,20 +657,20 @@ public class GameController implements Screen {
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick()) {
+        if (inputResults.didUnstick()&&bandit.getHealth()>0) {
             Unstickable unstickable = level.getAim().getSelected();
             if (unstickable != null) {
                 Obstacle unstickableOb = (Obstacle) unstickable;
                 if (unstickableOb.getName().equals("stickyGum")) {
                     // Unstick it
                     bubblegumController.removeGum((GumModel) unstickable);
-                    SoundController.playSound("robotSplat", 1f); // Temp sound
+                    SoundController.playSound("enemySplat", 1f); // Temp sound
                 } else if (unstickableOb instanceof Gummable) {
                     Gummable gummable = (Gummable) unstickableOb;
                     if (gummable.getGummed()) {
                         // Ungum it
                         bubblegumController.removeGummable(gummable);
-                        SoundController.playSound("robotSplat", 1f); // Temp sound
+                        SoundController.playSound("enemySplat", 1f); // Temp sound
 
                     }
                 }
@@ -589,40 +678,48 @@ public class GameController implements Screen {
         }
 
         level.update(dt);
-        for (AIController controller: level.aiControllers()){
+        for (AIController controller : level.aiControllers()) {
 
             EnemyModel enemy = controller.getEnemy();
+            // TODO: Make separate state for dead enemies
+            if (enemy.isRemoved()) { continue; }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
             boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
 
-            if(isProjectileEnemy){
-                if (controller.getEnemy().fired()){
+            if (isProjectileEnemy) {
+                if (controller.getEnemy().fired()) {
                     ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
                     smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                     level.activate(newProj);
                     newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-                }
-                else{
+                } else {
                     controller.coolDown(true);
                 }
-            }
-            else if(isLaserEnemy){
+            } else if (isLaserEnemy) {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
-                if(laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
-                else{
+                if (laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
+                else {
                     boolean sameSide = false;
-                    if(enemy.getFaceRight() && enemy.getX() < bandit.getX()) sameSide = true;
-                    if(!enemy.getFaceRight() && enemy.getX() > bandit.getX()) sameSide = true;
+                    if (enemy.getFaceRight() && enemy.getX() < bandit.getX())
+                        sameSide = true;
+                    if (!enemy.getFaceRight() && enemy.getX() > bandit.getX())
+                        sameSide = true;
                     boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
-                    if(canFire) laserController.fireLaser(controller);
+                    if(canFire) {
+                        if (enemy instanceof Shield) {
+                            ((Shield) enemy).isShielded(false);
+                        }
+                        laserController.fireLaser(controller);
+                    }
                 }
             }
 
 
         }
         projectileController.update();
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
         level.getAim().update(canvas, dt);
-        laserController.updateLasers(dt,level.getWorld(), level.getBandit());
+        laserController.updateLasers(dt, level.getWorld(), level.getBandit());
 
         // Update the camera
         GameCamera cam = canvas.getCamera();
@@ -630,28 +727,22 @@ public class GameController implements Screen {
         if (!cam.isFixedX()) {
             cam.setTargetX(bandit.getCameraTarget().x);
             cam.setSecondaryTargetX(target.x);
-        } if (!cam.isFixedY()) {
+        }
+        if (!cam.isFixedY()) {
             cam.setTargetY(bandit.getCameraTarget().y);
             cam.setSecondaryTargetY(target.y);
         }
         canvas.getCamera().update(dt);
 
+        //Check to create post-orb enemies
+        if(orbCollected && !spawnedPostOrbEnemies){
+            level.spawnPostOrbEnemies();
+            spawnedPostOrbEnemies = true;
+        }
+
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);
-
-        // TODO add to collision controller
-        // TODO have attack action for rolling robot
-//        if (collisionController.getRollingCollision()) {
-//            bandit.hitPlayer(0.5f);
-//            if (collisionController.getLeftRolling()) {
-//                bandit.getBody().applyForce(30f, 1f, bandit.getX(), bandit.getY(), true);
-//            }
-//            else {
-//                bandit.getBody().applyForce(-30f, 1f, bandit.getX(), bandit.getY(), true);
-//            }
-//            collisionController.resetRollingCollision();
-//        }
     }
 
 
@@ -666,30 +757,15 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
-        canvas.clear();
         level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
 
-        if(!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
+        if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug());
+        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
 
         Vector2 banditPosition = level.getBandit().getPosition();
-        ArrayList<Vector2> enemyPositions = new ArrayList<>();
-        for(AIController enemyController : level.aiControllers()) {
-            if(enemyController != null){
-                if(enemyController.getEnemy() != null){
-                    Vector2 enemyPos = enemyController.getEnemy().getPosition();
-                    float enemyX = Math.round(enemyPos.x);
-                    float enemyY = Math.round(enemyPos.y);
-                    Vector2 roundedEnemyPos = new Vector2(enemyX, enemyY);
-                    enemyPositions.add(roundedEnemyPos);
-                }
-            }
-        }
 
-         minimap.draw(canvas.getCamera().viewportWidth, canvas.getHeight(), banditPosition, enemyPositions, levelFormat);
-
-
+        minimap.draw(banditPosition);
 
         // Final message
         if (complete && !failed) {
@@ -780,43 +856,6 @@ public class GameController implements Screen {
         this.listener = listener;
     }
 
- /**
-     * Method to ensure that a sound asset is only played once.
-     * <p>
-     * Every time you play a sound asset, it makes a new instance of that sound.
-     * If you play the sounds to close together, you will have overlapping copies.
-     * To prevent that, you must stop the sound before you play it again.  That
-     * is the purpose of this method.  It stops the current instance playing (if
-     * any) and then returns the id of the new instance for tracking.
-     *
-     * @param sound   The sound asset to play
-     * @param soundId The previously playing sound instance
-     * @return the new sound instance for this asset.
-     */
-    public static long playSound(SoundEffect sound, long soundId) {
-        return playSound(sound, soundId, 1.0f);
-    }
-
-    /**
-     * Method to ensure that a sound asset is only played once.
-     * <p>
-     * Every time you play a sound asset, it makes a new instance of that sound.
-     * If you play the sounds to close together, you will have overlapping copies.
-     * To prevent that, you must stop the sound before you play it again.  That
-     * is the purpose of this method.  It stops the current instance playing (if
-     * any) and then returns the id of the new instance for tracking.
-     *
-     * @param sound   The sound asset to play
-     * @param soundId The previously playing sound instance
-     * @param volume  The sound volume
-     * @return the new sound instance for this asset.
-     */
-    public static long playSound(SoundEffect sound, long soundId, float volume) {
-        if (soundId != -1 && sound.isPlaying(soundId)) {
-            sound.stop(soundId);
-        }
-        return sound.play(volume);
-    }
 
     public void setGravity(float gravity) {
         float g = gravity;
