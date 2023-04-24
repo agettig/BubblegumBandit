@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":15,
+ "tilecount":16,
  "tiledversion":"1.10.0",
  "tileheight":256,
  "tiles":[
@@ -124,6 +124,13 @@
          "imageheight":64,
          "imagewidth":64,
          "type":"glass"
+        }, 
+        {
+         "id":19,
+         "image":"..\/textures\/objects\/hazard.png",
+         "imageheight":64,
+         "imagewidth":64,
+         "type":"hazard"
         }],
  "tilewidth":256,
  "type":"tileset",
