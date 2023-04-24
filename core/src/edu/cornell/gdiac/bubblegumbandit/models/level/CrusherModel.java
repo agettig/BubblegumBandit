@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 /**
  * A class representing a tile on the screen
  **/
-public class CrusherModel extends BoxObstacle{
+public class CrusherModel extends BoxObstacle implements Gummable{
 
     public static final float traumaAmt = 0.5f;
 

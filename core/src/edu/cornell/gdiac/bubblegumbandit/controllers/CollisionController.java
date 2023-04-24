@@ -141,13 +141,6 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA);
             }
 
-            if (obstacleB instanceof EnemyModel && obstacleA instanceof TileModel) {
-                ((EnemyModel) obstacleB).setTile((TileModel) obstacleA);
-            }
-            if (obstacleA instanceof EnemyModel && obstacleB instanceof TileModel) {
-                ((EnemyModel) obstacleA).setTile((TileModel) obstacleB);
-            }
-
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
@@ -360,19 +353,22 @@ public class CollisionController implements ContactListener {
                         return;
                     }
                 }
-                if (!gum.onTile()) {
+                if (!gum.getOnTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
-                    if(gummable.getCollisions().size > 0){
-                        bubblegumController.createGummableJoint(gummable, gummable.getTile());
+                    for (Obstacle ob : gummable.getCollisions()) {
+                        bubblegumController.createGummableJoint(gummable, ob);
                     }
+                }
+                else {
+                    gummable.setStuck(true);
                 }
             }
             else if (body instanceof TileModel) {
                 tile = (TileModel) body;
                 orientation = checkGumPosition(gum, tile);
-                gum.onTile(true);
+                gum.setOnTile(true);
             }
             else if (body.equals(levelModel.getBandit())) {
                 // Make bandit stuck

@@ -299,13 +299,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public CircleShape getSensorShape() {
         return sensorShape;
     }
-    public TileModel getTile() {
-        return tile;
-    }
-    public void setTile(TileModel tile) {
-        this.tile = tile;
-
-    }
 
     public void update(float delta) {
         if (!isFlipped && yScale < 1) {
@@ -391,7 +384,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             }
             if (stuck || gummed){
                 drawn = gummedTexture;
-
             }
 
             // TODO: Fix rolling robots so don't have to do this
