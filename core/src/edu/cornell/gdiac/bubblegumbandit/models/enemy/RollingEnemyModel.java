@@ -107,10 +107,10 @@ public class RollingEnemyModel extends EnemyModel {
             }
         }
         if (isRolling){
-            animationController.setAnimation("roll");
+            animationController.setAnimation("roll", true);
         }
         else{
-            animationController.setAnimation("patrol");
+            animationController.setAnimation("patrol", true);
         }
 
         cooldownTime--;

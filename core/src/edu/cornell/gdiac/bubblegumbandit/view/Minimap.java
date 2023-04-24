@@ -2,23 +2,16 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
-import jdk.javadoc.internal.doclets.toolkit.taglets.UserTaglet;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_TERRAIN;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_TERRAIN;
 
 
 public class Minimap {
@@ -56,11 +49,33 @@ public class Minimap {
     /**(X, Y) scale of the Minimap when it is in its smaller form. */
     private Vector2 condensedScale;
 
+    /** Position of the Minimap background when fully condensed.*/
+    private Vector2 condensedPosition;
+
+    /** Position of the Minimap background when fully expanded.*/
+    private Vector2 expandedPosition;
+
+    /** Most recent position of the Minimap.*/
+    private Vector2 currentPosition;
+
+    /** Most recent size of the Minimap.*/
+    private Vector2 currentSize;
+
+    /** Size of the Minimap background when fully condensed.*/
+    private Vector2 condensedSize;
+
+    /** Size of the Minimap background when fully expanded.*/
+    private Vector2 expandedSize;
+
     /**(X, Y) scale of the Minimap when it is in its larger form. */
     private Vector2 expandedScale;
 
+    /**Current (X, Y) scale of the Minimap, somewhere in-between the
+     * condensed and expanded scales. */
+    private Vector2 currentScale;
+
     /** The positions of the tiles */
-    private ArrayList<Vector2> floorPositions;
+    private HashSet<Vector2> floorPositions;
 
     /** true if the Minimap is expanded.*/
     private boolean expanded;
@@ -68,12 +83,20 @@ public class Minimap {
     /** Image drawn as a Bandit tile during the previous pass. */
     private Image prevBanditTile;
 
-    /** How far we are moving between minimap states. */
-    private float lerpProgress = 0f;
+    /** Bandit's position during the previous draw pass. */
+    private Vector2 prevBanditPosition;
 
-    /** true if we're toggling and moving between states. */
-    private boolean toggling = false;
+    /** Floors to draw when the Minimap is expanded.*/
+    private Set<Vector2> expandedFloors;
 
+    /** Tiles that were visible in the previous draw pass.*/
+    private Set<Vector2> prevVisibleTiles;
+
+    /** How quickly the Minimap changes states.*/
+    private final float TRANSITION_SPEED = 15f;
+
+    /** true if the Minimap has been initialized.*/
+    private boolean initialized;
 
     /** Initializes the minimap for a given level.
      *
@@ -84,7 +107,7 @@ public class Minimap {
      */
     public void initialize(AssetDirectory directory, JsonValue levelFormat, int physicsWidth, int physicsHeight) {
         //Make the Minimap's background and map tiles.
-        setScales();
+        initialized = false;
         minimapTable = new Table();
         minimapTable.align(Align.bottomRight);
         minimapTable.setFillParent(true);
@@ -100,12 +123,12 @@ public class Minimap {
         assert physicsHeight >= 0;
 
         //Set fields.
+        setScales();
         width = physicsWidth;
         height = physicsHeight;
         makeMinimapTiles(directory);
 
         //Find all positions of floors/platforms.
-        floorPositions = new ArrayList<>();
         JsonValue layer = levelFormat.get("layers").child();
         JsonValue tileLayer = null;
         while (layer != null) {
@@ -117,162 +140,23 @@ public class Minimap {
         }
         int[] worldData = tileLayer.get("data").asIntArray();
 
-
-        // Iterate over each tile in the world and create if it exists
+        floorPositions = new HashSet<>();
+        prevBanditPosition = new Vector2();
+        expandedFloors = new HashSet<>();
+        prevVisibleTiles = new HashSet<>();
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
             if (tileVal != 0) {
-                float x = (i % width) + 1f;
-                expandedTilesLong = Math.max(expandedTilesLong, (int)x);
+                float x = i % width;
+                expandedTilesLong = Math.max(expandedTilesLong, (int)x + 1);
                 float y = height - (i / width) - 1f;
-                expandedTilesTall = Math.max(expandedTilesTall, (int)y);
-                floorPositions.add(new Vector2(x, y));
+                expandedTilesTall = Math.max(expandedTilesTall, (int)y + 1);
+                Vector2 floorPos = new Vector2(x, y);
+                floorPositions.add(floorPos);
+                expandedFloors.add(floorPos);
             }
         }
-    }
-
-    /**Sets the scales and sizes that the Minimap will use to draw its
-     * tiles. */
-    private void setScales(){
-        condensedScale = new Vector2(.22f, .25f);
-        expandedScale = new Vector2(condensedScale.x * 3.5f, condensedScale.y * 3.5f);
-
-    }
-
-    /** Updates the minimap with a time value to help it with transitions
-     * between the condensed and expanded state. */
-    public void updateMinimap(float dt) {
-        if (expanded)expand();
-        else condense();
-    }
-
-    /**
-     * Draws the Minimap.
-     *
-     * @param banditPosition Tile position of the Bandit.
-     * */
-    public void draw(Vector2 banditPosition){
-
-        //The number of tiles we need to draw varies based on our status.
-        int tilesLong = expanded ? expandedTilesLong : CONDENSED_TILES_LONG;
-        int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
-
-        //The bounds of our map depends on our minimap status.
-        int topLeftX = expanded ? (width - tilesLong) / 2 :
-                Math.round(banditPosition.x) - tilesLong / 2;
-        int topLeftY = expanded ? (height - tilesTall) / 2 :
-                Math.round(banditPosition.y) - tilesTall / 2;
-        int bottomRightX = topLeftX + tilesLong;
-        int bottomRightY = topLeftY + tilesTall;
-
-        //Our condensed minimap needs tighter bounds.
-        if (!expanded) {
-            if (topLeftX < 0) {
-                bottomRightX -= topLeftX;
-                topLeftX = 0;
-            }
-            if (topLeftY < 0) {
-                bottomRightY -= topLeftY;
-                topLeftY = 0;
-            }
-            if (bottomRightX > width) {
-                topLeftX -= (bottomRightX - width);
-                bottomRightX = width;
-            }
-            if (bottomRightY > height) {
-                topLeftY -= (bottomRightY - height);
-                bottomRightY = height;
-            }
-        }
-
-        // Gather Tiles to draw. This loop doesn't really matter much when
-        // the minimap is expanded.
-        if (prevBanditTile != null) prevBanditTile.setColor(0, 0, 0, 0);
-        Set<Vector2> validFloors = new HashSet<>();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                if (x >= topLeftX && x < bottomRightX && y >= topLeftY && y < bottomRightY) {
-                    Vector2 floorPos = new Vector2(x, y);
-                    if (floorPositions.contains(floorPos)) {
-                        validFloors.add(floorPos);
-                    }
-                }
-                Image tile = minimapTiles[x][y];
-                if (tile != null && !validFloors.contains(new Vector2(x, y))) {
-                    tile.setSize(0, 0);
-                    tile.setColor(0, 0, 0, 0);
-                }
-            }
-        }
-
-        for (Vector2 floorPos : validFloors) {
-            int x = (int) floorPos.x;
-            int y = (int) floorPos.y;
-            int minimapX = x - topLeftX;
-            int minimapY = y - topLeftY;
-            Image tile = minimapTiles[x][y];
-            setMinimapTilePosition(tile, minimapX, minimapY);
-            drawAsPlatformTile(tile);
-        }
-
-        // Draw the Bandit's Tile.
-        int banditX = (int) banditPosition.x + 1;
-        int banditY = (int) banditPosition.y;
-        int minimapBanditX = banditX - topLeftX;
-        int minimapBanditY = banditY - topLeftY;
-        Image banditTile = minimapTiles[banditX][banditY];
-        setMinimapTilePosition(banditTile, minimapBanditX, minimapBanditY);
-        drawAsBanditTile(banditTile);
-        prevBanditTile = banditTile;
-
-        // Draw the background.
-        minimapStage.draw();
-    }
-
-
-
-    /**Sets the Minimap's size and position to meet expanded standards. */
-    private void expand() {
-        setMinimapSizeAndPosition(expandedScale);
-    }
-
-    /**Sets the Minimap's size and position to meet condensed standards. */
-    private void condense(){
-        setMinimapSizeAndPosition(condensedScale);
-    }
-
-
-    /**
-     * Sets minimap's background and size to be compliant with
-     * some (X, Y) scale.
-     *
-     * @param scale The scale to apply to the minimap.
-     */
-    private void setMinimapSizeAndPosition(Vector2 scale) {
-        // Set the background's size.
-        float mapLength = scale.x * minimapStage.getWidth();
-        float mapHeight = scale.y * minimapStage.getHeight();
-        minimapBackground.setSize(mapLength, mapHeight);
-
-        // Set the background's position.
-        float xOffset;
-        float yOffset;
-        if (scale.equals(expandedScale)) {
-            xOffset = (minimapStage.getWidth() - mapLength) / 2;
-            yOffset = (minimapStage.getHeight() - mapHeight) / 2;
-        } else {
-            xOffset = minimapStage.getWidth() - mapLength - 30;
-            yOffset = minimapStage.getHeight() - mapHeight - 30;
-        }
-        minimapBackground.setPosition(xOffset, yOffset);
-    }
-
-
-    /**Expands the minimap if it is condensed. Condenses the minimap
-     * if it is expanded.*/
-    public void toggleMinimap() {
-        expanded = !expanded;
-        toggling = true;
+        initialized = true;
     }
 
     /**
@@ -292,6 +176,197 @@ public class Minimap {
                 minimapTiles[x][y].setColor(new Color(0, 0, 0, 0));
             }
         }
+    }
+
+    /**Sets the scales and sizes that the Minimap will use to draw its
+     * tiles. */
+    private void setScales(){
+        condensedScale = new Vector2(.22f, .25f);
+        expandedScale = new Vector2(condensedScale.x * 3.5f, condensedScale.y * 3.5f);
+        currentScale = new Vector2();
+
+        float condensedMapLength = condensedScale.x * minimapStage.getWidth();
+        float condensedMapHeight = condensedScale.y * minimapStage.getHeight();
+        condensedSize = new Vector2(condensedMapLength, condensedMapHeight);
+
+        float expandedMapLength = expandedScale.x * minimapStage.getWidth();
+        float expandedMapHeight = expandedScale.y * minimapStage.getHeight();
+        expandedSize = new Vector2(expandedMapLength, expandedMapHeight);
+
+        float condensedXOffset = minimapStage.getWidth() - condensedMapLength - 30;
+        float condensedYOffset = minimapStage.getHeight() - condensedMapHeight - 30;
+        condensedPosition = new Vector2(condensedXOffset, condensedYOffset);
+
+        float expandedXOffset = (minimapStage.getWidth() - expandedMapLength) / 2;
+        float expandedYOffset = (minimapStage.getHeight() - expandedMapHeight) / 2;
+        expandedPosition = new Vector2(expandedXOffset, expandedYOffset);
+
+        currentPosition = new Vector2(minimapBackground.getX(), minimapBackground.getY());
+        currentSize = new Vector2(minimapBackground.getWidth(), minimapBackground.getHeight());
+    }
+
+
+    /**
+     * Draws the Minimap.
+     *
+     * @param banditPosition Tile position of the Bandit.
+     * */
+    public void draw(Vector2 banditPosition){
+
+        if(!initialized) return;
+
+        //Make our collection.
+        Set<Vector2> validFloors;
+        if(expanded) validFloors = expandedFloors;
+        else validFloors = new HashSet<>();
+
+        //Math calculations.
+        int tilesLong = expanded ? expandedTilesLong : CONDENSED_TILES_LONG;
+        int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
+        int topLeftX = expanded ? (width - tilesLong) / 2 :
+                Math.round(banditPosition.x) - tilesLong / 2;
+        int middleY = height / 2;
+        int topLeftY = expanded ? middleY - tilesTall / 2 :
+                Math.round(banditPosition.y) - tilesTall / 2;
+        int bottomRightX = topLeftX + tilesLong;
+        int bottomRightY = topLeftY + tilesTall;
+        if (!expanded) {
+            topLeftX = Math.max(topLeftX, 0);
+            topLeftY = Math.max(topLeftY, 0);
+            bottomRightX = Math.min(bottomRightX, width);
+            bottomRightY = Math.min(bottomRightY, height);
+        }
+
+        //Bandit positional optimization: only if the Bandit moved.
+        if (!expanded && !banditPosition.equals(prevBanditPosition)) {
+            validFloors = condensedFloors(topLeftX, topLeftY, bottomRightX, bottomRightY);
+            prevBanditPosition.set(banditPosition);
+        }
+
+        //Visibility optimization -- don't redraw already visible Tiles.
+        if (prevBanditTile != null) prevBanditTile.setColor(0, 0, 0, 0);
+        for (Vector2 prevVisibleTile : prevVisibleTiles) {
+            Image tile = minimapTiles[(int) prevVisibleTile.x][(int) prevVisibleTile.y];
+            tile.setSize(0, 0);
+            tile.setColor(0, 0, 0, 0);
+        }
+        prevVisibleTiles.clear();
+
+        //Draw the floor Tiles
+        for (int x = topLeftX; x < bottomRightX; x++) {
+            for (int y = topLeftY; y < bottomRightY; y++) {
+                Vector2 floorPos = new Vector2(x, y);
+                if (floorPositions.contains(floorPos)) {
+                    validFloors.add(floorPos);
+                }
+                Image tile = minimapTiles[x][y];
+                if (validFloors.contains(floorPos)) {
+                    int minimapX = x - topLeftX;
+                    int minimapY = y - topLeftY;
+                    setMinimapTilePosition(tile, minimapX, minimapY);
+                    drawAsPlatformTile(tile);
+                    prevVisibleTiles.add(floorPos);
+                } else {
+                    tile.setSize(0, 0);
+                    tile.setColor(0, 0, 0, 0);
+                }
+            }
+        }
+
+        //Draw the Bandit
+        int banditX = (int) banditPosition.x + 1;
+        int banditY = (int) banditPosition.y;
+        int minimapBanditX = banditX - topLeftX;
+        int minimapBanditY = banditY - topLeftY;
+        Image banditTile = minimapTiles[banditX][banditY];
+        setMinimapTilePosition(banditTile, minimapBanditX, minimapBanditY);
+        drawAsBanditTile(banditTile);
+        prevBanditTile = banditTile;
+
+        //Draw the background
+        minimapStage.draw();
+    }
+
+    /** Returns a Set of Vector2 positions that represent Tiles to draw when
+     * the Minimap is condensed.
+     *
+     * @return  Set of Vector2 positions that represent Tiles to draw when
+     *          the Minimap is condensed.*/
+    private Set<Vector2> condensedFloors(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY) {
+        Set<Vector2> validFloors = new HashSet<>();
+        for (int x = topLeftX; x < bottomRightX; x++) {
+            for (int y = topLeftY; y < bottomRightY; y++) {
+                Vector2 floorPos = new Vector2(x, y);
+                if (floorPositions.contains(floorPos)) {
+                    validFloors.add(floorPos);
+                }
+            }
+        }
+        return validFloors;
+    }
+
+
+    /**
+     * Sets minimap's position and size to be compliant with its
+     * current state.
+     */
+    private void setMinimapSizeAndPosition(boolean smoothTransition) {
+        if(smoothTransition){
+            minimapBackground.setSize(currentSize.x, currentSize.y);
+            minimapBackground.setPosition(currentPosition.x, currentPosition.y);
+        }
+        else{
+            if(expanded) minimapBackground.setSize(expandedSize.x, expandedSize.y);
+            else minimapBackground.setSize(condensedSize.x, condensedSize.y);
+
+            // Set the background's position.
+            if(expanded) minimapBackground.setPosition(expandedPosition.x, expandedPosition.y);
+            else minimapBackground.setPosition(condensedPosition.x, condensedPosition.y);
+        }
+    }
+
+    /**
+     * Sets the position of an (x, y) Tile in the minimap such that it is
+     * centered on top of the Minimap background and in line with its
+     * fellow Tiles.
+     *
+     * @param tileImage The Tile to modify.
+     * @param xPos the X Minimap coordinate of the Tile to modify.
+     * @param yPos the Y Minimap coordinate of the Tile to modify.
+     * */
+    private void setMinimapTilePosition(Image tileImage, int xPos, int yPos){
+
+        //Get Minimap background info.
+        float backgroundX = minimapBackground.getX();
+        float backgroundY = minimapBackground.getY();
+        float backgroundW = minimapBackground.getWidth();
+        float backgroundH = minimapBackground.getHeight();
+
+        float condensedTileSize = 5;
+        int tilesLong = expanded ? expandedTilesLong : CONDENSED_TILES_LONG;
+        int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
+
+        // Calculate tile size to fit within the background when expanded
+        float expandedTileSizeW = backgroundW / tilesLong;
+        float expandedTileSizeH = backgroundH / tilesTall;
+        float expandedTileSize = Math.min(expandedTileSizeW, expandedTileSizeH);
+
+        float tileSize = expanded ? expandedTileSize : condensedTileSize;
+
+        //Calculate offsets and positions for centering.
+        float totalTileW = tileSize * tilesLong;
+        float totalTileH = tileSize * tilesTall;
+        float offsetX = (backgroundW - totalTileW) / 2;
+        float offsetY = (backgroundH - totalTileH) / 2;
+        float tileX = backgroundX + offsetX + (xPos * tileSize);
+        float tileY = backgroundY + offsetY + (yPos * tileSize);
+        if(expanded) tileY -= 60;
+        if(expanded) tileX -= 20;
+
+
+        //Set the Tile's position and size.
+        tileImage.setPosition(tileX, tileY);
+        tileImage.setSize(tileSize + 1, tileSize + 1);
     }
 
 
@@ -315,40 +390,73 @@ public class Minimap {
         banditImage.setColor(Color.PINK);
     }
 
-    /**
-     * Sets the position of an (x, y) Tile in the minimap such that it is
-     * centered on top of the Minimap background and in line with its
-     * fellow Tiles.
-     *
-     * @param tileImage The Tile to modify.
-     * @param xPos the X Minimap coordinate of the Tile to modify.
-     * @param yPos the Y Minimap coordinate of the Tile to modify.
-     * */
-    private void setMinimapTilePosition(Image tileImage, int xPos, int yPos){
-
-        //Get Minimap background info.
-        float backgroundX = minimapBackground.getX();
-        float backgroundY = minimapBackground.getY();
-        float backgroundW = minimapBackground.getWidth();
-        float backgroundH = minimapBackground.getHeight();
-
-        float condensedTileSize = 5;
-        float expandedTileSize = 10;
-        float tileSize = expanded ? expandedTileSize : condensedTileSize;
-        int tilesLong = expanded ? expandedTilesLong : CONDENSED_TILES_LONG;
-        int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
-
-        //Calculate offsets and positions for centering.
-        float totalTileW = tileSize * tilesLong;
-        float totalTileH = tileSize * tilesTall;
-        float offsetX = (backgroundW - totalTileW) / 2;
-        float offsetY = (backgroundH - totalTileH) / 2;
-        float tileX = backgroundX + offsetX + (xPos * tileSize);
-        float tileY = backgroundY + offsetY + (yPos * tileSize);
-
-        //Set the Tile's position and size.
-        tileImage.setPosition(tileX, tileY);
-        tileImage.setSize(tileSize + 1, tileSize + 1);
+    /**Sets the Minimap's size and position to meet expanded standards. */
+    private void expand() {
+        expanded = true;
+        currentScale.set(expandedScale);
     }
 
+    /**Sets the Minimap's size and position to meet condensed standards. */
+    private void condense(){
+        expanded = false;
+        currentScale.set(condensedScale);
+    }
+
+
+    /** Updates the minimap with a time value to help it with transitions
+     * between the condensed and expanded state.
+     *
+     * @param dt The Delta Time value
+     * @param holdingMapKey true if the player is holding down the key
+     *                      to expand the Minimap
+     * */
+    public void updateMinimap(float dt, boolean holdingMapKey) {
+        //Start of game
+        if(!expanded && !holdingMapKey) condense();
+
+        //Swapping
+        if(holdingMapKey && !expanded){
+            expand();
+        }
+        if(!holdingMapKey && expanded){
+            condense();
+        }
+
+        //Linear Interpolation Logic
+        if (expanded) {
+            currentSize.x = MathUtils.lerp(
+                    currentSize.x,
+                    expandedSize.x,
+                    TRANSITION_SPEED * dt);
+            currentSize.y = MathUtils.lerp(currentSize.y,
+                    expandedSize.y,
+                    TRANSITION_SPEED * dt);
+            currentPosition.x = MathUtils.lerp(
+                    currentPosition.x,
+                    expandedPosition.x,
+                    TRANSITION_SPEED * dt);
+            currentPosition.y = MathUtils.lerp(
+                    currentPosition.y,
+                    expandedPosition.y,
+                    TRANSITION_SPEED * dt);
+        } else {
+            currentSize.x = MathUtils.lerp(
+                    currentSize.x,
+                    condensedSize.x,
+                    TRANSITION_SPEED * dt);
+            currentSize.y = MathUtils.lerp(
+                    currentSize.y,
+                    condensedSize.y,
+                    TRANSITION_SPEED * dt);
+            currentPosition.x = MathUtils.lerp(
+                    currentPosition.x,
+                    condensedPosition.x,
+                    TRANSITION_SPEED * dt);
+            currentPosition.y = MathUtils.lerp(
+                    currentPosition.y,
+                    condensedPosition.y,
+                    TRANSITION_SPEED * dt);
+        }
+        setMinimapSizeAndPosition(true);
+    }
 }

@@ -49,6 +49,8 @@ public class PlayerController{
     }
 
     // Fields to manage buttons
+    /**Whether the gum reload button was pressed */
+    private boolean reloadPressed;
     /** Whether the reset button was pressed. */
     private boolean resetPressed;
     private boolean resetPrevious;
@@ -81,8 +83,8 @@ public class PlayerController{
     private boolean exitPressed;
     private boolean exitPrevious;
 
+    /** Whether the minimap button was pressed.*/
     private boolean minimapPressed;
-
     private  boolean minimapPrevious;
 
     /** How much did we move horizontally? */
@@ -220,7 +222,9 @@ public class PlayerController{
         return resetPressed && !resetPrevious;
     }
 
-    public boolean didExpandMinimap() {return minimapPressed && !minimapPrevious;}
+    public boolean didExpandMinimap() {return minimapPressed;}
+
+    public boolean didReload() {return reloadPressed;}
 
     /**
      * Returns true if the player wants to go to the next level.
@@ -392,6 +396,7 @@ public class PlayerController{
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
         nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
         prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
+        reloadPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_4) && !primePressed && !Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A);
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
