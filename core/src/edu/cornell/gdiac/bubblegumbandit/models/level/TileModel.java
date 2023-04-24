@@ -15,8 +15,6 @@ import java.lang.reflect.Field;
  * A class representing a tile on the screen
  **/
 public class TileModel extends BoxObstacle {
-    /** The texture of this tile */
-    private TextureRegion tileTexture;
     /** Whether the tile has an open corner */
     private boolean hasCorner;
     /** Whether the tile has a corner in the top right */
@@ -33,7 +31,6 @@ public class TileModel extends BoxObstacle {
      */
     public TileModel() {
         super(0,0,1,1);
-        tileTexture = null;
         hasCorner = false;
         topRight = false;
         topLeft = false;

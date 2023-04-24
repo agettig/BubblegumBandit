@@ -234,24 +234,22 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         setDensity(constantsJson.get("density").asFloat());
         setFriction(constantsJson.get("friction").asFloat());
         setRestitution(constantsJson.get("restitution").asFloat());
-//        setForce(constantsJson.get("force").asFloat());
         setDamping(constantsJson.get("damping").asFloat());
-//        setMaxSpeed(constantsJson.get("maxspeed").asFloat());
-        WANDER_SPEED = constantsJson.get("wanderspeed").asFloat();
-        CHASE_SPEED = constantsJson.get("chasespeed").asFloat();
-        PURSUE_SPEED = constantsJson.get("pursuespeed").asFloat();
+        WANDER_SPEED = constantsJson.get("wanderSpeed").asFloat();
+        CHASE_SPEED = constantsJson.get("chaseSpeed").asFloat();
+        PURSUE_SPEED = constantsJson.get("pursueSpeed").asFloat();
         speed = WANDER_SPEED;
 
         // Reflection is best way to convert name to color
         Color debugColor;
         try {
-            String cname = constantsJson.get("debugcolor").asString().toUpperCase();
+            String cname = constantsJson.get("debugColor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             debugColor = new Color((Color) field.get(null));
         } catch (Exception e) {
             debugColor = null; // Not defined
         }
-        int opacity = constantsJson.get("debugopacity").asInt();
+        int opacity = constantsJson.get("debugOpacity").asInt();
         assert debugColor != null;
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
@@ -271,7 +269,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         }
 
         // Get the sensor information
-        int listeningRadius = constantsJson.get("listeningradius").asInt();
+        int listeningRadius = constantsJson.get("listeningRadius").asInt();
 
         sensorShape = new CircleShape();
         sensorShape.setRadius(listeningRadius);
@@ -284,15 +282,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
         // Reflection is best way to convert name to color
         try {
-            String cname = constantsJson.get("sensorcolor").asString().toUpperCase();
+            String cname = constantsJson.get("sensorColor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
             sensorColor = new Color((Color)field.get(null));
         } catch (Exception e) {
             sensorColor = null; // Not defined
         }
-        opacity = constantsJson.get("sensoropacity").asInt();
+        opacity = constantsJson.get("sensorOpacity").asInt();
         sensorColor.mul(opacity/255.0f);
-        sensorName = constantsJson.get("sensorname").asString();
+        sensorName = constantsJson.get("sensorName").asString();
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
 
@@ -300,13 +298,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     public CircleShape getSensorShape() {
         return sensorShape;
-    }
-    public TileModel getTile() {
-        return tile;
-    }
-    public void setTile(TileModel tile) {
-        this.tile = tile;
-
     }
 
     public void update(float delta) {
@@ -393,12 +384,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             }
             if (stuck || gummed){
                 drawn = gummedTexture;
-
             }
 
             // TODO: Fix rolling robots so don't have to do this
             float y = getY() * drawScale.y;
-            if (getName().equals("rollingrobot")) {
+            if (getName().equals("rollingRobot")) {
                 y += 10*yScale;
             }
 
@@ -411,17 +401,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
                         y, getAngle(), 1, yScale);
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                        y, getAngle(), effect, yScale);
+                    y, getAngle(), effect, yScale);
             }
-//            vision.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-//            sensing.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
-//            attacking.draw(canvas, getX(), getY(), drawScale.x, drawScale.y);
+//
         }
     }
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
             float y = getY() * drawScale.y;
-            if (getName().equals("rollingrobot")) {
+            if (getName().equals("rollingRobot")) {
                 y += 10*yScale;
             }
             float effect = faceRight ? 1.0f : -1.0f;
@@ -485,7 +473,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
      * grounded).
      */
     public void flippedGravity() {
-        if (!(gummed || stuck)) isFlipped = !isFlipped;
+        if(gummed) System.out.println("gummed");
+        if (!(getGummed() || getStuck())) isFlipped = !isFlipped;
     }
 
 

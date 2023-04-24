@@ -2,6 +2,7 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import edu.cornell.gdiac.bubblegumbandit.helpers.CameraShake;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 public class GameCamera  extends OrthographicCamera {
@@ -27,6 +28,9 @@ public class GameCamera  extends OrthographicCamera {
 
     /** The speed to carry out the smoothstep. */
     private final float smoothstepSpeed = 400f;
+
+    /** Helper class used to manage screen shake. */
+    private final CameraShake shake = new CameraShake();
 
     // CAMERA FIELDS
     /** The target the camera is focused on. */
@@ -56,9 +60,8 @@ public class GameCamera  extends OrthographicCamera {
     /** The current yClamp of the camera */
     private float curYClamp;
 
-    public GameCamera() {
-        super();
-    }
+    /** The base position of the camera before screen shake. */
+    private Vector2 basePos;
 
     /** Constructs a new GameCamera, using the given viewport width and height. For pixel perfect 2D rendering just supply
      * the screen size, for other unit scales (e.g. meters for box2d) proceed accordingly. The camera will show the region
@@ -74,6 +77,7 @@ public class GameCamera  extends OrthographicCamera {
         targetZoom = 1f;
         isCameraDebug = false;
         curYClamp = targetYClamp;
+        basePos = new Vector2();
     }
 
     /** Toggles the debug mode of the camera. */
@@ -230,6 +234,27 @@ public class GameCamera  extends OrthographicCamera {
         levelHeight = height;
     }
 
+    /** Apply screen shake trauma if the obstacle causing it is on screen.
+     * Use positive trauma for the camera to move up at first (good for gravity facing up)
+     * and negative trauma for the camera to move down at first (something falling down).
+     *
+     * @param xPos the pixel x position of the obstacle causing the trauma.
+     * @param yPos the pixel y position of the obstacle causing the trauma.
+     * @param trauma the amount of trauma to apply.*/
+    public void addTrauma(float xPos, float yPos, float trauma) {
+        float halfHeight = (viewportHeight * zoom) / 2;
+        float lowerYBound = basePos.y - halfHeight;
+        float upperYBound = basePos.y + halfHeight;
+        float halfWidth = (viewportWidth * zoom) / 2;
+        float lowerXBound = basePos.x - halfWidth;
+        float upperXBound = basePos.x + halfWidth;
+
+
+        if (yPos >= lowerYBound && yPos <= upperYBound && xPos >= lowerXBound && xPos <= upperXBound) {
+            shake.addTrauma(trauma);
+        }
+    }
+
     /**
      * Updates this camera.
      */
@@ -242,8 +267,8 @@ public class GameCamera  extends OrthographicCamera {
      */
     public void update(boolean updateFrustum, float dt) {
         if (isCameraDebug) {
-            position.x = levelWidth / 2;
-            position.y = levelHeight / 2;
+            basePos.x = levelWidth / 2;
+            basePos.y = levelHeight / 2;
             float aspectRatio = viewportWidth / viewportHeight;
             if ((levelWidth / levelHeight) > aspectRatio) {
                 // width is the limiting factor
@@ -266,8 +291,8 @@ public class GameCamera  extends OrthographicCamera {
             newTargetY = target.y * (1 - secondaryWeight) + secondaryTarget.y * secondaryWeight;
         }
 
-        position.x += (newTargetX - position.x) * xSpeed * dt;
-        position.y += (newTargetY - position.y) * ySpeed * dt;
+        basePos.x += (newTargetX - basePos.x) * xSpeed * dt;
+        basePos.y += (newTargetY - basePos.y) * ySpeed * dt;
 
         // Adjust y clamp
         if (!isFixedY) {
@@ -276,14 +301,22 @@ public class GameCamera  extends OrthographicCamera {
 
         // Cap how far offscreen
         float maxDistY = viewportHeight * curYClamp;
-        if (position.y - target.y > maxDistY) {
-            position.y = target.y + maxDistY;
-        } else if (target.y - position.y > maxDistY) {
-            position.y = target.y - maxDistY;
+        if (basePos.y - target.y > maxDistY) {
+            basePos.y = target.y + maxDistY;
+        } else if (target.y - basePos.y > maxDistY) {
+            basePos.y = target.y - maxDistY;
         }
 
         // Adjust zoom
         zoom += (targetZoom - zoom) * zoomSpeed * dt;
+
+        // Apply screen shake
+        rotate(-shake.getAngle()); // Undo last rotation
+        shake.update(dt, viewportWidth * zoom, viewportHeight * zoom);
+        position.x = basePos.x + shake.getOffsetX();
+        position.y = basePos.y + shake.getOffsetY();
+        rotate(shake.getAngle());
+
         super.update(updateFrustum);
     }
 

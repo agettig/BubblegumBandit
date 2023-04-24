@@ -6,14 +6,18 @@ public class FlippingObject {
      /**
      * The scale of this object (for flipping when gravity swaps)
      */
-    private float scale;
+    private float scale = 1f;
 
     /** The rate at which the object rotates to its reflected position */
-    private static final float ROTATE_RATE = 0.15f;
+    private float rotateRate = 0.15f;
 
     public FlippingObject() {
         scale = 1f;
     }
+
+    /** Constructs a FlippingObject with the given rotation rate.
+     * Tip: Make slower objects have a slower rotation rate. */
+    public FlippingObject(float rotateRate) { super(); this.rotateRate = rotateRate; }
 
     /** rotate the object by ROTATE_RATE when it is initially being affected by a gravity switch *
      *
@@ -21,9 +25,9 @@ public class FlippingObject {
      */
     public void updateYScale(boolean isFlipped) {
         if (scale < 1f && !isFlipped) {
-            scale += ROTATE_RATE;
+            scale += rotateRate;
         } else if (scale > -1f && isFlipped) {
-            scale -= ROTATE_RATE;
+            scale -= rotateRate;
         }
 
         if (scale > 1f) scale = 1f;
