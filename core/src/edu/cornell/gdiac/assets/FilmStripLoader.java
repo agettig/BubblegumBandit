@@ -20,7 +20,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import edu.cornell.gdiac.util.FilmStrip;
+import edu.cornell.gdiac.util.*;
 
 /**
  * This class is an {@link AssetLoader} to load {@link edu.cornell.gdiac.util.FilmStrip} assets.

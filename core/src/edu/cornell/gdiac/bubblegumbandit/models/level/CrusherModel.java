@@ -18,13 +18,14 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 
 /**
  * A class representing a tile on the screen
  **/
-public class CrusherModel extends BoxObstacle implements Gummable{
+public class CrusherModel extends CapsuleObstacle implements Gummable{
 
     public static final float traumaAmt = 0.5f;
 
@@ -56,7 +57,7 @@ public class CrusherModel extends BoxObstacle implements Gummable{
      * Create a new TileModel with degenerate settings
      */
     public CrusherModel() {
-        super(0,0,1,1);
+        super(0,0,4,2);
         collidedObs = new ObjectSet<>();
         maxAbsFallVel = 0;
     }
@@ -75,6 +76,7 @@ public class CrusherModel extends BoxObstacle implements Gummable{
      * @param constants the JSON subtree defining the constants for the object
      */
     public void initialize(AssetDirectory directory, Vector2 scale, float x, float y, JsonValue objectJson, JsonValue constants) {
+
         setName("crushing_block");
         setPosition(x,y);
         float width = objectJson.getFloat("width") * .98f / scale.x; // Make it a little smaller so it can slot in 4 block gaps
@@ -169,6 +171,9 @@ public class CrusherModel extends BoxObstacle implements Gummable{
             maxAbsFallVel = getVY();
         } else if (getVY() < maxAbsFallVel && getVY() < 0) {
             maxAbsFallVel = getVY();
+        }
+        if (Math.abs(getVY()) > 0.5f) {
+            didSmash = false;
         }
     }
 
