@@ -58,9 +58,9 @@ public class GumModel extends WheelObstacle implements Unstickable {
         obstacles.add(o);
     }
 
-    public boolean onTile() {return onTile;}
+    public boolean getOnTile() {return onTile;}
 
-    public void onTile(boolean value) {onTile = value;}
+    public void setOnTile(boolean value) {onTile = value;}
 
     /**
      * Checks if gum is at obstacle capacity and sets collision filter
