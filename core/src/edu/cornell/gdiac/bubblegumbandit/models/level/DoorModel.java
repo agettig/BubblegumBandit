@@ -105,6 +105,12 @@ public class DoorModel extends TileModel {
     /** The obstacles in the range of the door. */
     private final ObjectSet<Obstacle> obsInRange;
 
+    /** Whether the player has passed through the door. */
+    public boolean playerPassed;
+
+    /** Whether the player is in range of the door. */
+    public boolean playerInRange;
+
     /** Whether the door is locked */
     private boolean isLocked;
 
@@ -127,6 +133,8 @@ public class DoorModel extends TileModel {
         secondUpperLeft = new Vector2();
         secondLowerRight = new Vector2();
         isOpen = false;
+        playerPassed = false;
+        playerInRange = false;
         obsInRange = new ObjectSet<>();
         enemyIds = new ObjectSet<>();
     }
@@ -320,10 +328,18 @@ public class DoorModel extends TileModel {
         if (isLocked) {
             tryUnlockDoor();
         }
-        if (obsInRange.size == 0 && isOpen) {
-            closeDoor();
-        } else if (obsInRange.size > 0 && !isOpen) {
-            openDoor();
+        if (playerPassed) {
+            if (obsInRange.size == 0 && isOpen) {
+                closeDoor();
+            } else if (obsInRange.size > 0 && !isOpen) {
+                openDoor();
+            }
+        } else {
+            if (!playerInRange && isOpen) {
+                closeDoor();
+            } else if (playerInRange && !isOpen) {
+                openDoor();
+            }
         }
     }
 
