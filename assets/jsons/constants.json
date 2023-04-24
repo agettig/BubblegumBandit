@@ -58,7 +58,7 @@
     "rotaterate": 0.08,
     "gravityscale": 1.5,
     "sensorsize": [
-      1.98,
+      1.96,
       0.05
     ],
     "bottomsensorname": "crushing_bottom_sensor",
@@ -130,6 +130,15 @@
     "sensorcolor": "red",
     "sensoropacity": 192,
     "lockedtexture": "locked_door"
+  },
+  "glass": {
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "texture": "glass",
+    "debugcolor": "yellow",
+    "debugopacity": 200
   },
   "shieldedmediumrobot": {
     "type": "projectile",

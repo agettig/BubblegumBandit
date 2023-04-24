@@ -513,7 +513,10 @@ public class CollisionController implements ContactListener {
                 shouldFlipGravity = true;
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
-            // Screen shake cause block hit the floor
+                // Screen shake cause block hit the floor
+            if (crushed instanceof GlassModel) {
+                crushed.markRemoved(true);
+            }
             if (!crusher.didSmash) {
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
             }
