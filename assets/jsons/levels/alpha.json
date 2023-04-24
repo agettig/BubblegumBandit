@@ -1555,6 +1555,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":74,
          "id":4,
+         "locked":true,
          "name":"BoardGravityDown",
          "opacity":1,
          "type":"tilelayer",
@@ -1564,7 +1565,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":86,
+ "nextobjectid":87,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -1578,28 +1579,28 @@
          "value":30
         }],
  "renderorder":"right-down",
- "tiledversion":"1.10.0",
+ "tiledversion":"1.10.1",
  "tileheight":64,
  "tilesets":[
         {
          "firstgid":1,
-          "source":"..\/..\/tilesets\/board.tsx"
+         "source":"..\/..\/tilesets\/board.tsx"
         }, 
         {
-          "firstgid":4,
-          "source":"..\/..\/tilesets\/camera.tsx"
+         "firstgid":4,
+         "source":"..\/..\/tilesets\/camera.tsx"
         }, 
         {
-          "firstgid":6,
-          "source":"..\/..\/tilesets\/terrain.json"
+         "firstgid":6,
+         "source":"..\/..\/tilesets\/terrain.json"
         }, 
         {
          "firstgid":50,
-          "source":"..\/..\/tilesets\/objects.json"
+         "source":"..\/..\/tilesets\/objects.json"
         }, 
         {
          "firstgid":65,
-          "source":"..\/..\/tilesets\/supports.json"
+         "source":"..\/..\/tilesets\/supports.json"
         }],
  "tilewidth":64,
  "type":"map",
