@@ -306,7 +306,6 @@ public class CollisionController implements ContactListener {
         if (bodyA == null || bodyB == null) return;
         // Gum should destroy projectiles, but not become sticky gum.
         if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
-        if (bodyA.getName().equals("unstickProjectile") || bodyB.getName().equals("unstickProjectile")) return;
         if (bodyA.isRemoved() || bodyB.isRemoved()) return;
         if (bodyA.getName().equals("gumProjectile") && bodyB.equals(levelModel.getBandit())) return;
         if (bodyB.getName().equals("gumProjectile") && bodyA.equals(levelModel.getBandit())) return;
@@ -330,7 +329,8 @@ public class CollisionController implements ContactListener {
                     return;
                 }
             }
-        };
+        }
+
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
@@ -346,7 +346,8 @@ public class CollisionController implements ContactListener {
                     return;
                 }
             }
-        };
+        }
+
         if (gum != null && gum.getName().equals("gumProjectile")) {
             // Do this once gum is turning from a projectile to sticky
             gum.setVX(0);
@@ -374,6 +375,9 @@ public class CollisionController implements ContactListener {
                     gummable.setGummed(true);
                     gummable.endCollision(gum);
                     if (!(gummable instanceof DoorModel)) {
+                        if (gummable.getCollisions().size > 0){
+                            gummable.setStuck(true);
+                        }
                         for (Obstacle ob : gummable.getCollisions()) {
                             bubblegumController.createGummableJoint(gummable, ob);
                         }
@@ -392,6 +396,8 @@ public class CollisionController implements ContactListener {
                 // Make bandit stuck
                 levelModel.getBandit().setStuck(true);
             }
+
+            // creates joint between gum and object
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
@@ -468,7 +474,7 @@ public class CollisionController implements ContactListener {
                 }
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("enemySplat", 1f);
-                ob2.setStuck(true);
+                ob1.setStuck(true);
             }
         }
         else if (ob2 instanceof Gummable) {
@@ -479,7 +485,7 @@ public class CollisionController implements ContactListener {
                 }
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("enemySplat", 1f);
-                ob1.setStuck(true);
+                ob2.setStuck(true);
             }
         }
     }

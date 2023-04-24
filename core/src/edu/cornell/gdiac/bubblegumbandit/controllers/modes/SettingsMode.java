@@ -299,7 +299,6 @@ public class SettingsMode implements Screen {
 
         backButtonSettings.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("clicked");
                 backButtonClicked = true;
             }
 
