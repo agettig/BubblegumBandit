@@ -16,6 +16,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.util.Controllers;
 import edu.cornell.gdiac.util.XBoxController;
 
@@ -113,6 +114,8 @@ public class PlayerController{
     /** If gum was collected */
     private boolean collect;
 
+    private static int[] keyBindings;
+
     /** An X-Box controller (if it is connected) */
     XBoxController xbox;
 
@@ -175,6 +178,13 @@ public class PlayerController{
      */
     public boolean didPrimary() {
         return primePressed && !primePrevious;
+    }
+
+    /**
+     *
+     * */
+    public static void changeControls(int[] v){
+        keyBindings = v;
     }
 
     /**
@@ -296,6 +306,8 @@ public class PlayerController{
         }
         crosshair = new Vector2();
         crosscache = new Vector2();
+        keyBindings = SaveData.getKeyBindings();
+        //change + fetch keyBindings from save data
     }
 
     /**
@@ -379,46 +391,50 @@ public class PlayerController{
      */
     private void readKeyboard( boolean secondary) {
         // Give priority to gamepad results
-        resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+        /*the key bindings are as follows:
+        0: left
+        1: right
+        2: grav up
+        3: grav down
+        4: minimap
+        5: reload (and you can't be moving at the time? why doesn't it just stop you from moving?)
+        6: shoot
+        7: unstick
 
+        */
+        // TODO remove
+        resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_4));
         debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_1));
         primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP)) ||
                 (Gdx.input.isKeyPressed(Input.Keys.W) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
         secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
-        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
-        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
-        exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-        gravityUp = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
-        gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.S) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
+        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
+        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
         collect = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.C));
         cameraPressed = (secondary && cameraPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_2));
         controlTogglePressed = (secondary && controlTogglePressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_3));
-        nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_0));
-        prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.NUM_9));
-        reloadPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_4) && !primePressed && !Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A);
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(keyBindings[1])) {
             horizontal += 1.0f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(keyBindings[0])) {
             horizontal -= 1.0f;
         }
+        reloadPressed = Gdx.input.isKeyPressed(keyBindings[5]) && !primePressed && !Gdx.input.isKeyPressed(
+            keyBindings[1]) && !Gdx.input.isKeyPressed(keyBindings[0]);
 
 
-        vertical = (secondary ? vertical : 0.0f);
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            vertical += 1.0f;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            vertical -= 1.0f;
-        }
+        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(keyBindings[4]));
+        exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+        gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(keyBindings[2]));
+        gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(keyBindings[3]));
+
 
         // Mouse results
-        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(Input.Buttons.LEFT));
-        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(Input.Buttons.RIGHT));
+        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(keyBindings[6]));
+        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(keyBindings[7]));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }
