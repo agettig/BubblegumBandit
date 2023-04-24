@@ -157,7 +157,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         this.directory = directory;
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
-        displayFont = directory.getEntry("project", BitmapFont.class);
+        displayFont = directory.getEntry("projectSpace", BitmapFont.class);
 
         constantsJson = directory.getEntry("constants", JsonValue.class);
 
