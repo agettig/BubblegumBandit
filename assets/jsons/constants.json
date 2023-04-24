@@ -47,8 +47,28 @@
     "debugColor": "yellow",
     "debugOpacity": 200
   },
+  "crushing_block": {
+    "density": 0.4,
+    "friction": 0.2,
+    "restitution": 0.0,
+    "texture": "crushing_block",
+    "gummedtexture": "crushing_block_gummed",
+    "outlinetexture": "crushing_block_outline",
+    "debugcolor": "yellow",
+    "debugopacity": 200,
+    "rotaterate": 0.08,
+    "gravityscale": 1.5,
+    "sensorsize": [
+      1.98,
+      0.05
+    ],
+    "bottomsensorname": "crushing_bottom_sensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "topsensorname": "crushing_top_sensor"
+  },
   "gumProjectile": {
-    "startingGum": 5,
+    "startingGum": 6,
     "maxGum": 6,
     "offsetX": 0.6,
     "offsetY": 0.5,
@@ -99,9 +119,18 @@
     "bobAmount":  0.1,
     "bobSpeed": 3
   },
-  "cameraTile": {
-    "debugColor": "magenta",
-    "debugOpacity": 200
+  "door": {
+    "debugcolor": "magenta",
+    "debugopacity": 200,
+    "texture": "door",
+    "sensorsize": [
+      4,
+      2
+    ],
+    "sensorname": "door_sensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "lockedtexture": "locked_door"
   },
   "shieldedMediumRobot": {
     "type": "projectile",
