@@ -372,7 +372,7 @@ public class BubblegumController {
                 Obstacle ob1 = (Obstacle) gumJoint.getJoint().getBodyA().getUserData();
                 ob1.setStuck(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob1.flippedGravity();
+                    ob1.flipGravity();
                 }
             }
             catch (Exception ignored) {
@@ -382,7 +382,7 @@ public class BubblegumController {
                 ob2.setStuck(false);
 
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob2.flippedGravity();
+                    ob2.flipGravity();
                 }
             }
             catch (Exception ignored) {
@@ -397,7 +397,7 @@ public class BubblegumController {
                 ob1.setStuck(false);
                 ob1.setGummed(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob1.flippedGravity();
+                    ob1.flipGravity();
                 }
             } catch (Exception ignored) {
 
@@ -407,7 +407,7 @@ public class BubblegumController {
                 ob2.setStuck(false);
                 ob2.setGummed(false);
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
-                    ob2.flippedGravity();
+                    ob2.flipGravity();
                 }
             } catch (Exception ignored) {
 

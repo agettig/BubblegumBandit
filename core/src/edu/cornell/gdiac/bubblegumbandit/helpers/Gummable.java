@@ -6,7 +6,7 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 /** This is an interface that lets anything be gummable. All of these methods are implemented in Obstacle except
  * setGummedTexture(), but Obstacle itself isn't Gummable. So to make something Gummable, all you have to
- * do is add "implements Gummable", initialize collidedObs, and then implement setGummedTexture. */
+ * do is add "implements Gummable" and initialize collidedObs. */
 public interface Gummable extends Unstickable {
 
     public void startCollision(Obstacle ob);
