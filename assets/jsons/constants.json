@@ -49,7 +49,7 @@
   },
   "crushing_block": {
     "density": 0.4,
-    "friction": 0.2,
+    "friction": 0.3,
     "restitution": 0.0,
     "texture": "crushing_block",
     "gummedtexture": "crushing_block_gummed",
@@ -59,7 +59,7 @@
     "rotaterate": 0.08,
     "gravityscale": 1.5,
     "sensorsize": [
-      1.98,
+      1.94,
       0.05
     ],
     "bottomsensorname": "crushing_bottom_sensor",
@@ -124,13 +124,33 @@
     "debugopacity": 200,
     "texture": "door",
     "sensorsize": [
-      4,
+      5,
       2
     ],
     "sensorname": "door_sensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
-    "lockedtexture": "locked_door"
+    "lockedTexture": "lockedDoor",
+    "gummedTexture": "gummedDoor",
+    "outlineTexture": "outlineDoor"
+  },
+  "glass": {
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "texture": "glass",
+    "debugcolor": "yellow",
+    "debugopacity": 200
+  },
+  "hazard": {
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.4,
+    "restitution": 0.0,
+    "texture": "hazard",
+    "debugcolor": "yellow",
+    "debugopacity": 200
   },
   "shieldedMediumRobot": {
     "type": "projectile",
@@ -145,9 +165,9 @@
     "damping": 10.0,
     "maxSpeed": 12.0,
     "animations" : "shielded_medium_robot",
-    "gumTexture": "med_gum",
-    "outline": "med_gum_outline",
-    "texture": "med_robot",
+    "gumTexture": "medGum",
+    "outline": "medGumOutline",
+    "texture": "medEnemy",
     "debugColor": "white",
     "debugOpacity": 192,
     "sensorColor": "yellow",
@@ -158,7 +178,7 @@
     "wanderSpeed": 3,
     "chaseSpeed": 4,
     "pursueSpeed": 5,
-    "rollingAttack": 8
+    "mediumAttack": 8
   },
   "mediumEnemy": {
     "type": "projectile",
@@ -186,7 +206,7 @@
     "wanderSpeed": 3,
     "chaseSpeed": 4,
     "pursueSpeed": 5,
-    "mediumAttack": 4
+    "mediumAttack": 8
   },
   "smallEnemy": {
     "type": "projectile",

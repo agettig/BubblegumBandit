@@ -668,6 +668,8 @@ public class GameController implements Screen {
         for (AIController controller : level.aiControllers()) {
 
             EnemyModel enemy = controller.getEnemy();
+            // TODO: Make separate state for dead enemies
+            if (enemy.isRemoved()) { continue; }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
             boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
 

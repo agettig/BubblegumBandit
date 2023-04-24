@@ -239,8 +239,13 @@
         "crushing_block": "textures/objects/crushing_block.png",
         "crushing_block_gummed": "textures/objects/crushing_block_gummed.png",
         "crushing_block_outline": "textures/objects/crushing_block_outline.png",
-        "door":  "textures/objects/door_unlocked.png",
-        "locked_door":  "textures/objects/door_locked.png"},
+        "door":  "textures/objects/doorUnlocked.png",
+        "lockedDoor":  "textures/objects/doorLocked.png",
+        "gummedDoor": "textures/objects/doorGummed.png",
+        "outlineDoor": "textures/objects/doorOutline.png",
+        "glass":  "textures/objects/glass.png",
+        "hazard": "textures/objects/hazard.png"
+    },
     "fonts": {
         "display": {
             "file": 	"fonts/RetroGame.ttf",
@@ -267,7 +272,8 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/levels/alphaPresentation2.json",
+		"level1" : "jsons/levels/betaPlatformAndCrush.json",
+        "level2":"jsons/levels/alphaPresentation.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",

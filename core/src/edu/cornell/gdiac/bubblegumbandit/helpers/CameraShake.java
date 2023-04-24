@@ -7,8 +7,7 @@ public class CameraShake {
     // Shake constants
 
     /** The max camera offset from screen shake */
-    // TODO: Make dependent on resolution (percentage of screen)
-    private final float MAX_OFFSET = 40;
+    private final float MAX_OFFSET_PERCENT = .05f;
 
     /** Changes the frequency of the damped harmonic motion */
     private final float DT_FACTOR = 20;
@@ -58,8 +57,9 @@ public class CameraShake {
         }
     }
 
-    public void update(float dt) {
-        offsetY = (float) (Math.sin(time) * trauma * MAX_OFFSET);
+    public void update(float dt, float viewportWidth, float viewportHeight) {
+        float maxOffset = MAX_OFFSET_PERCENT * viewportHeight;
+        offsetY = (float) (Math.sin(time) * trauma * maxOffset);
 
         // Reduce trauma
         if (trauma > 0) {

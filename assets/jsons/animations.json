@@ -73,7 +73,7 @@
       "fps": 8
     },
     "roll": {
-      "strip": "med_roll.attack",
+      "strip": "medRoll.attack",
       "fps": 8
     }
   },

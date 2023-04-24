@@ -312,7 +312,7 @@ public class GameCamera  extends OrthographicCamera {
 
         // Apply screen shake
         rotate(-shake.getAngle()); // Undo last rotation
-        shake.update(dt);
+        shake.update(dt, viewportWidth * zoom, viewportHeight * zoom);
         position.x = basePos.x + shake.getOffsetX();
         position.y = basePos.y + shake.getOffsetY();
         rotate(shake.getAngle());
