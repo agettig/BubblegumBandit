@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -63,11 +64,12 @@ public class HUDController {
 
   private Image[] gumCount = new Image[6];
   private Image[] reloadGumCount = new Image[6];
+  private Image[] emptyGumCount = new Image[6];
 
 
   public HUDController(AssetDirectory directory) {
 
-    font = directory.getEntry("display", BitmapFont.class);
+    font = directory.getEntry("codygoonRegular", BitmapFont.class);
     stage = new Stage();
 
     table = new Table();
@@ -75,11 +77,11 @@ public class HUDController {
     stage.addActor(table);
     table.setFillParent(true);
 
-    healthBar = new Image(directory.getEntry("health_bar", Texture.class));
-    healthFillText = directory.getEntry("health_fill", Texture.class);
-    healthIcon = new Image(directory.getEntry("health_icon", Texture.class));
-    bubbleIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
-    reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+    healthBar = new Image(directory.getEntry("healthBar", Texture.class));
+    healthFillText = directory.getEntry("healthFill", Texture.class);
+    healthIcon = new Image(directory.getEntry("healthIcon", Texture.class));
+    bubbleIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
+    reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
     starIcon1 = new Image(directory.getEntry("star", Texture.class));
     starIcon2 = new Image(directory.getEntry("star", Texture.class));
     starIcon3 = new Image(directory.getEntry("star", Texture.class));
@@ -99,15 +101,18 @@ public class HUDController {
 
     table.row();
     for (int i = 0; i < 6; i++) {
-      Image emptyGum = new Image(directory.getEntry("empty_gum", Texture.class));
+      Image emptyGum = new Image(directory.getEntry("emptyGum", Texture.class));
       emptyGum.setPosition(32 + i*50, stage.getHeight() - 103);
       stage.addActor(emptyGum);
 
-      Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+      Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
       reloadGumIcon.setPosition(32 + i*50, stage.getHeight() - 103);
       gumCount[i] = reloadGumIcon;
       stage.addActor(reloadGumIcon);
     }
+//    Actor blank = new Actor();
+//    blank.setHeight(64);
+    table.add(new Actor()).padTop(50);
 
     table.row();
     table.add(starIcon1);
@@ -123,16 +128,23 @@ public class HUDController {
 
 
     for (int i = 0; i < 6; i++) {
-      Image reloadGumIcon = new Image(directory.getEntry("bubblegum_icon", Texture.class));
+      Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
+      Image emptyGumIcon = new Image(directory.getEntry("emptyGum", Texture.class));
+      emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
       reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
+
+      emptyGumCount[i] = emptyGumIcon;
       reloadGumCount[i] = reloadGumIcon;
+      emptyGumIcon.setVisible(false);
       reloadGumIcon.setVisible(false);
+      stage.addActor(emptyGumIcon);
       stage.addActor(reloadGumIcon);
     }
 
     fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
     fpsLabel.setFontScale(0.5f);
-    table.add(fpsLabel).padLeft(10);
+    table.row();
+    table.add(fpsLabel);
 
     table.padLeft(30).padTop(60);
   }
@@ -199,6 +211,10 @@ public class HUDController {
     }
 
     if (reloadingGum) {
+      for (int i = 0; i < 6; i++) {
+        Image emptyGumImage = emptyGumCount[i];
+        emptyGumImage.setVisible(true);
+      }
       for (int i = 0; i < currentAmmo; i++) {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(true);
@@ -208,6 +224,10 @@ public class HUDController {
       for (int i = 0; i < reloadGumCount.length; i++) {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(false);
+      }
+      for (int i = 0; i < 6; i++) {
+        Image emptyGumImage = emptyGumCount[i];
+        emptyGumImage.setVisible(false);
       }
     }
 

@@ -27,12 +27,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.LaserController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
@@ -118,6 +116,11 @@ public class LevelModel {
      */
     protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
 
+    /**
+     * All the flippable objects in the world.
+     */
+    protected PooledList<Obstacle> flippableObjects = new PooledList<Obstacle>();
+
     private Array<AIController> enemyControllers;
 
     public Array<AIController> aiControllers() {
@@ -127,7 +130,8 @@ public class LevelModel {
     private TiledGraph tiledGraphGravityDown;
     private TiledGraph tiledGraphGravityUp;
 
-    private ArrayList<String> enemyObjectNames;
+    /** EnemyModels to spawn after the orb gets picked up. */
+    private HashSet<EnemyModel> postOrbEnemies;
 
     /**
      * The width of the level.
@@ -217,6 +221,13 @@ public class LevelModel {
         return goalDoor;
     }
 
+    /** Returns the flippable objects in the level.
+     * @return the flippable objects
+     */
+    public PooledList<Obstacle> getFlippables() {
+        return flippableObjects;
+    }
+
     /**
      * Returns whether this level is currently in debug node
      * <p>
@@ -246,6 +257,10 @@ public class LevelModel {
      */
     public void startAlarms() {
         alarms.setAlarms(true);
+    }
+
+    public void endAlarms(){
+        alarms.setAlarms(false);
     }
 
     /**
@@ -280,6 +295,7 @@ public class LevelModel {
         JsonValue tileLayer = null;
         JsonValue objects = null;
         JsonValue supports = null;
+        JsonValue postOrb = null;
 
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -299,6 +315,9 @@ public class LevelModel {
                     break;
                 case "Supports":
                     supports = layer;
+                    break;
+                case "PostOrb":
+                    postOrb = layer;
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");
@@ -330,6 +349,7 @@ public class LevelModel {
             property = property.next();
         }
 
+        // TODO remove?
         //initialize dynamic background elements
 //        JsonValue backJV =levelFormat.get("backgroundObj");
 //
@@ -453,6 +473,8 @@ public class LevelModel {
         int enemyCount = 0;
         Array<EnemyModel> newEnemies = new Array<>();
 
+        HashMap<Integer, EnemyModel> enemyIds = new HashMap<>();
+
         while (object != null) {
             JsonValue objTypeJson = object.get("type");
             String objType;
@@ -464,6 +486,7 @@ public class LevelModel {
                 int substringEnd = objType.lastIndexOf(".");
                 objType = objType.substring(substringStart, substringEnd);
             }
+            int objId = (object.getInt("id"));
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
 
@@ -486,7 +509,6 @@ public class LevelModel {
                     break;
 
                 case "bandit":
-
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
                     bandit.setDrawScale(scale);
@@ -496,13 +518,14 @@ public class LevelModel {
                     goalDoor.initialize(directory, x, y, constants.get(objType));
                     goalDoor.setDrawScale(scale);
                     break;
-                case "smallrobot":
+                case "smallEnemy":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
                     newEnemies.add(enemy);
+                    enemyIds.put(objId, enemy);
                     break;
                 case "shieldedsmallrobot":
                     enemyConstants = constants.get(objType);
@@ -510,18 +533,16 @@ public class LevelModel {
                     enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    enemyIds.put(objId, enemy);
+                    newEnemies.add(enemy);
                     break;
-                case "mediumrobot":
+                case "mediumEnemy":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "shieldedmediumrobot":
@@ -530,57 +551,100 @@ public class LevelModel {
                     enemy = new ShieldedRollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
-                break;
+                    enemyIds.put(objId, enemy);
+                    newEnemies.add(enemy);
+                    break;
                 case "shieldedlargerobot":
                     enemyConstants = constants.get(objType);
                     x = (float) ((int) x + .5);
                     enemy = new ShieldedLaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    activate(enemy);
-                    enemy.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
-
-                    enemyControllers.add(new AIController(enemy, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
-                    enemyCount++;
+                    enemyIds.put(objId, enemy);
+                    newEnemies.add(enemy);
                     break;
-                case "large_robot":
+                case "largeEnemy":
                     enemyConstants = constants.get(objType);
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "orb":
                     orbPlaced = true;
                     orbPostion = new Vector2(x,y);
                 case "star":
-                case "floatinggum":
+                case "floatingGum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
-                case "camera_v":
-                case "camera_h":
-                    CameraTileModel cam = new CameraTileModel();
-                    cam.initialize(x, y, scale, levelHeight, object, constants.get("cameratile"), objType.equals("camera_h"));
-                    activate(cam);
-                    cam.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+                case "door_v_locked":
+                case "door_v":
+                case "door_h":
+                    DoorModel door = new DoorModel();
+                    boolean isLocked = objType.contains("locked");
+                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
+                    activate(door);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(x, y));
+                    break;
+                case "crushing_block":
+                    CrusherModel crush = new CrusherModel();
+                    crush.initialize(directory, scale, x, y, object, constants.get("crushing_block"));
+                    activate(crush);
+                    flippableObjects.add(crush);
+                    crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    break;
+                case "glass":
+                    SpecialTileModel glass = new SpecialTileModel();
+                    glass.initialize(directory, x, y, constants.get("glass"), "glass");
+                    activate(glass);
+                    glass.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    glass.setDrawScale(scale);
+                    break;
+                case "hazard":
+                    SpecialTileModel hazard = new SpecialTileModel();
+                    hazard.initialize(directory, x, y, constants.get("hazard"), "hazard");
+                    activate(hazard);
+                    hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    hazard.setDrawScale(scale);
                     break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
             object = object.next();
         }
+
+        while (postOrb != null){
+            String objType = postOrb.get("type").asString();
+            float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
+            float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
+
+
+            switch (objType) {
+                case "smallEnemy":
+                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "mediumEnemy":
+                    enemy = new RollingEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "largeEnemy":
+                    enemy = new LaserEnemyModel(world, enemyCount);
+                    postOrbEnemies.add(enemy);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(objType + " is not a valid post orb object");
+            }
+            postOrb = postOrb.next();
+        }
+
         if (goalDoor == null) {
             throw new RuntimeException("Level missing exit");
         }
@@ -594,7 +658,7 @@ public class LevelModel {
         bandit.setOrbPostion(orbPostion);
 
         activate(goalDoor);
-        goalDoor.setFilter(CATEGORY_EVENTTILE, MASK_EVENTTILE);
+        goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
 
         for (EnemyModel e : newEnemies) {
             activate(e);
@@ -608,6 +672,16 @@ public class LevelModel {
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
         alarms = new AlarmController(alarmPos, directory, world);
+    }
+
+    /**
+     * Spawns all EnemyModels that should drop in after the Bandit picks
+     * up the orb.
+     *
+     * @param enemyData JSON file containing data of Enemies to spawn
+     * */
+    public void spawnPostOrbEnemies(JsonValue enemyData){
+
     }
 
     public void dispose() {
@@ -655,8 +729,11 @@ public class LevelModel {
     public void update(float dt) {
         // Garbage collect the deleted objects.
         for (AIController controller : enemyControllers) {
+            // TODO: Add custom state for dead enemies
 //            adjustForDrift(controller.getEnemy());
-            controller.getEnemyStateMachine().update();
+            if (!controller.getEnemy().isRemoved()) {
+                controller.getEnemyStateMachine().update();
+            }
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
@@ -667,6 +744,14 @@ public class LevelModel {
                 entry.remove();
             } else {
                 obj.update(dt);
+            }
+        }
+        iterator = flippableObjects.entryIterator();
+        while (iterator.hasNext()) {
+            PooledList<Obstacle>.Entry entry = iterator.next();
+            Obstacle obj = entry.getValue();
+            if (obj.isRemoved()) {
+                entry.remove();
             }
         }
         alarms.update();
@@ -714,6 +799,11 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
+        Set<Obstacle> postLaserDraw = new HashSet<>();
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
+
+
+
         for (Obstacle obj : objects) {
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
@@ -726,8 +816,7 @@ public class LevelModel {
 
 
 
-
-        aim.drawProjectileRay(canvas);
+        if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
 
 
 
@@ -795,8 +884,6 @@ public class LevelModel {
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
 
-
-
                     //Calculate the positions and angle of the charging laser.
                     float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()): -(enemy.getWidth());
                     float enemyOffsetY = enemy.getHeight()*10;
@@ -805,14 +892,8 @@ public class LevelModel {
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
-
-                    if(!enemy.getFaceRight() && !enemy.getGummed() && !enemy.getStuck()) enemyOffsetX -= (enemy.getWidth()/3)*scale.x;
-                    if(enemy.getFaceRight() && !enemy.getGummed() && !enemy.getStuck()) enemyOffsetX += (enemy.getWidth()/3)*scale.x;
-
-                    if(!enemy.getStuck() && enemy.getGummed() && enemy.getFaceRight()) enemyOffsetX += (enemy.getWidth()/2) * scale.x;
-                    if(!enemy.getStuck() && enemy.getGummed() && !enemy.getFaceRight()) enemyOffsetX -= (enemy.getWidth()/2) * scale.x;
-
-
+                    enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
+                    if(enemy.getFaceRight()) enemyOffsetX *= -1;
 
                     canvas.draw(
                             beam,
@@ -899,6 +980,14 @@ public class LevelModel {
         return timer;
     }
 
+    public void remakeOrb(AssetDirectory directory, JsonValue constants){
+        Collectible coll = new Collectible();
+        coll.initialize(directory, orbPostion.x, orbPostion.y, scale, constants.get("orb"));
+        activate(coll);
+        coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+        coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
+    }
+
     public class AimModel {
 
         /**
@@ -978,7 +1067,7 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") && !ob.equals(bandit)) {
+                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("door") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -991,6 +1080,8 @@ public class LevelModel {
          */
         private final Obstacle[] lastCollision = new Obstacle[1];
 
+        private HashSet<java.lang.String> canUnstickThrough = new HashSet<>();
+
         /**
          * The raycast callback used for the unsticking raycast.
          * This has a different raycast so the origin can be within the player.
@@ -1000,8 +1091,14 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("cameratile") &&
+                if (!canUnstickThrough.contains(ob.getName()) &&
                         ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.equals(bandit)) {
+                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                        return -1;
+                    }
+                    if (fixture.getUserData() instanceof DoorModel) {
+                        return -1;
+                    }
                     lastCollision[0] = ob;
                     return fraction;
                 }
@@ -1022,6 +1119,8 @@ public class LevelModel {
             directionCache = new Vector2();
             endCache = new Vector2();
             originCache = new Vector2();
+            canUnstickThrough.add("gumProjectile");
+//            canUnstickThrough.add("door");
         }
 
         /**
@@ -1116,14 +1215,19 @@ public class LevelModel {
         }
 
         /**
-         * Draws the path of the projectile using the result of a raycast. Only works for shooting in a straight line (gravity scale of 0).
+         * Draws the path of the projectile using the result of a raycast.
+         * Only works for shooting in a straight line (gravity scale of 0).
          *
          * @param canvas The GameCanvas to draw the trajectory on.
          */
         public void drawProjectileRay(GameCanvas canvas) {
             for (int i = 0; i < range; i++) {
-                canvas.draw(trajectoryTexture, COLORS[i], trajectoryTexture.getRegionWidth() / 2f, trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
-                        dotPos[2 * i + 1] * scale.y, trajectoryTexture.getRegionWidth() * trajectoryScale, trajectoryTexture.getRegionHeight() * trajectoryScale);
+                canvas.draw(trajectoryTexture, COLORS[i],
+                    trajectoryTexture.getRegionWidth() / 2f,
+                    trajectoryTexture.getRegionHeight() / 2f, dotPos[2 * i] * scale.x,
+                        dotPos[2 * i + 1] * scale.y,
+                    trajectoryTexture.getRegionWidth() * trajectoryScale,
+                    trajectoryTexture.getRegionHeight() * trajectoryScale);
             }
         }
     }

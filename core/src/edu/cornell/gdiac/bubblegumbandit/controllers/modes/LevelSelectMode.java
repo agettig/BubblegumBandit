@@ -169,9 +169,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         this.directory = directory;
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
-        displayFont = directory.getEntry("project", BitmapFont.class);
-
-        SoundController.initialize(directory);
+        displayFont = directory.getEntry("projectSpace", BitmapFont.class);
 
         constantsJson = directory.getEntry("constants", JsonValue.class);
 
@@ -480,9 +478,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.SPACE){
+        if (!active) return true;
+
+        if (keycode == Input.Keys.SPACE) {
             sunfish.setBoosting(true);
         }
+
         return true;
 
     }
@@ -504,6 +505,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean keyUp(int keycode) {
+        if (!active) return true;
+
         if (keycode == Input.Keys.SPACE){
             sunfish.setBoosting(false);
         }

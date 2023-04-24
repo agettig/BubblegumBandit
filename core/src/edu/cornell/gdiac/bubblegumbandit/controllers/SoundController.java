@@ -4,12 +4,13 @@ import com.badlogic.gdx.Gdx;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.*;
 
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import java.util.HashMap;
-import java.util.Map;
 
 import static edu.cornell.gdiac.backend.Effect.engine;
 
 public class SoundController {
+
     /**
      * The jump sound.  We only want to play once.
      */
@@ -25,9 +26,9 @@ public class SoundController {
     private static SoundEffect gumSplatSound;
 
     /**
-     * The sound when robot is hit with gume.  We only want to play once.
+     * The sound when enemy is hit with gume.  We only want to play once.
      */
-    private static SoundEffect robotSplatSound;
+    private static SoundEffect enemySplatSound;
 
     /**
      * The sound when an item is collected.  We only want to play once.
@@ -40,6 +41,13 @@ public class SoundController {
 
     /**Hashmap holding sounds and corresponding string */
     private static HashMap<String, SoundEffect> sounds ;
+
+    private static SoundController controller;
+
+    private static float musicVolume;
+
+    private static float soundEffectsVolume;
+
 
 
     // music
@@ -63,18 +71,36 @@ public class SoundController {
     private static HashMap<String, AudioSource> music ;
     public SoundController() {}
 
-    public static void initialize(AssetDirectory directory) {
+
+    /**
+     * Return the singleton instance of the input controller
+     *
+     * @return the singleton instance of the input controller
+     */
+    public static SoundController getInstance() {
+        if (controller == null) {
+            controller = new SoundController();
+        }
+        return controller;
+    }
+
+    public void initialize(AssetDirectory directory){
+       // musicVolume = .5f;
+       // soundEffectsVolume = 1f;
+        musicVolume = SaveData.getMusicVolume();
+        soundEffectsVolume = SaveData.getSFXVolume();
+        //get from save data
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
         gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);
-        robotSplatSound = directory.getEntry("robotSplat", SoundEffect.class);
+        enemySplatSound = directory.getEntry("enemySplat", SoundEffect.class);
         collectItemSound = directory.getEntry("collectItem", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
             put(smallEnemyShootingSound, -2);
             put(gumSplatSound, -3);
-            put(robotSplatSound, -4);
+            put(enemySplatSound, -4);
             put(collectItemSound, -5);
         }};
 
@@ -82,7 +108,7 @@ public class SoundController {
             put("jump", jumpSound);
             put("smallEnemyShooting", smallEnemyShootingSound);
             put("gumSplat", gumSplatSound);
-            put("robotSplat", robotSplatSound);
+            put("enemySplat", enemySplatSound);
             put("collectItem", collectItemSound);
         }};
 
@@ -109,7 +135,8 @@ public class SoundController {
 
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
-        return playSound(s, soundIds.get(s), volume);
+        int soundId = soundIds.get(s);
+        return playSound(s,soundId, volume * soundEffectsVolume);
     }
 
 
@@ -164,6 +191,14 @@ public class SoundController {
                 key.stop(soundIds.get(key));
             }
         }
+    }
+
+    public void setMusicVolume(float volume){
+        musicVolume = volume;
+    }
+
+    public void setEffectsVolume(float volume){
+        soundEffectsVolume = volume;
     }
 
 }

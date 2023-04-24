@@ -34,6 +34,7 @@ import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
 import org.w3c.dom.Text;
@@ -307,6 +308,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         return pressState == 6;
     }
 
+    public boolean switchSettings(){
+        return pressState == 7;
+    }
+
     /**
      * Returns true if the player clicked the quit button.
      *
@@ -376,12 +381,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         statusBar = internal.getEntry("progress", Texture.class);
 
         // Break up the status bar texture into regions
-        statusBkgLeft = internal.getEntry("progress.backleft", TextureRegion.class);
-        statusBkgRight = internal.getEntry("progress.backright", TextureRegion.class);
+        statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
+        statusBkgRight = internal.getEntry("progress.backRight", TextureRegion.class);
         statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
 
-        statusFrgLeft = internal.getEntry("progress.foreleft", TextureRegion.class);
-        statusFrgRight = internal.getEntry("progress.foreright", TextureRegion.class);
+        statusFrgLeft = internal.getEntry("progress.foreLeft", TextureRegion.class);
+        statusFrgRight = internal.getEntry("progress.foreRight", TextureRegion.class);
         statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class);
 
         // No progress so far.
@@ -432,6 +437,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             assets.update(budget);
             this.progress = assets.getProgress();
             if (progress >= 1.0f) {
+                SoundController.getInstance().initialize(assets);
                 this.progress = 1.0f;
                 hoverPointer = internal.getEntry("hoverPointer", Texture.class);
                 startButton = internal.getEntry("startButton", Texture.class);
@@ -440,7 +446,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 exitButton = internal.getEntry("exitButton", Texture.class);
             }
         }
-//        System.out.println("width: " + canvas.getWidth() + ", height: " + canvas.getHeight());
         resize(canvas.getWidth(), canvas.getHeight());
     }
 
@@ -690,7 +695,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 listener.exitScreen(this, 6);
             }
 
-
+            if (switchSettings() && listener != null){
+                listener.exitScreen(this, 7);
+            }
             // If the player hits the quit button
             if (shouldQuit()) {
                 listener.exitScreen(this, GameController.EXIT_QUIT);
@@ -748,6 +755,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     public void show() {
         // Useless if called in outside animation loop
         active = true;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**
@@ -756,6 +764,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     public void hide() {
         // Useless if called in outside animation loop
         active = false;
+        pressState = 0;
     }
 
     /**

@@ -195,7 +195,7 @@
                  "id":1,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":3712,
@@ -219,7 +219,7 @@
                  "id":4,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":3200,
@@ -231,7 +231,7 @@
                  "id":5,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":4160,
@@ -243,7 +243,7 @@
                  "id":6,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":3712,
@@ -267,7 +267,7 @@
                  "id":9,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":2688,
@@ -279,7 +279,7 @@
                  "id":10,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":3776,
@@ -291,7 +291,7 @@
                  "id":11,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":4096,
@@ -303,7 +303,7 @@
                  "id":12,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":3840,
@@ -327,7 +327,7 @@
                  "id":14,
                  "name":"",
                  "rotation":0,
-                 "type":"mediumrobot",
+                 "type":"mediumEnemy",
                  "visible":true,
                  "width":117,
                  "x":384,
@@ -351,7 +351,7 @@
                  "id":16,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":960,
@@ -363,7 +363,7 @@
                  "id":17,
                  "name":"",
                  "rotation":0,
-                 "type":"mediumrobot",
+                 "type":"mediumEnemy",
                  "visible":true,
                  "width":117,
                  "x":2496,
@@ -375,7 +375,7 @@
                  "id":19,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":1344,
@@ -387,7 +387,7 @@
                  "id":20,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":2752,
@@ -411,7 +411,7 @@
                  "id":22,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":5376,
@@ -423,7 +423,7 @@
                  "id":23,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":4736,
@@ -435,7 +435,7 @@
                  "id":24,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":3712,
@@ -447,7 +447,7 @@
                  "id":25,
                  "name":"",
                  "rotation":0,
-                 "type":"mediumrobot",
+                 "type":"mediumEnemy",
                  "visible":true,
                  "width":117,
                  "x":4032,
@@ -459,7 +459,7 @@
                  "id":26,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":1024,
@@ -471,7 +471,7 @@
                  "id":28,
                  "name":"",
                  "rotation":0,
-                 "type":"mediumrobot",
+                 "type":"mediumEnemy",
                  "visible":true,
                  "width":117,
                  "x":3328,
@@ -483,7 +483,7 @@
                  "id":29,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":3712,
@@ -495,7 +495,7 @@
                  "id":30,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":4303.37,
@@ -507,7 +507,7 @@
                  "id":31,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":1587.74,
@@ -519,7 +519,7 @@
                  "id":32,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":1486.66,
@@ -531,7 +531,7 @@
                  "id":33,
                  "name":"",
                  "rotation":0,
-                 "type":"smallrobot",
+                 "type":"smallEnemy",
                  "visible":true,
                  "width":43,
                  "x":2048,
@@ -543,7 +543,7 @@
                  "id":34,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":3164.56,
@@ -555,7 +555,7 @@
                  "id":35,
                  "name":"",
                  "rotation":0,
-                 "type":"floatinggum",
+                 "type":"floatingGum",
                  "visible":true,
                  "width":25,
                  "x":4970.49,
@@ -960,7 +960,7 @@
                          "value":43
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":2,
                  "x":2417.8,
@@ -993,7 +993,7 @@
                          "value":43
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":2,
                  "x":3017,
@@ -1026,7 +1026,7 @@
                          "value":43
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":192,
                  "x":2624,
@@ -1049,7 +1049,7 @@
                          "value":58
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":64,
                  "x":2304,
@@ -1072,7 +1072,7 @@
                          "value":58
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":64,
                  "x":1279.48,
@@ -1084,7 +1084,7 @@
                  "id":74,
                  "name":"",
                  "rotation":0,
-                 "type":"large_robot",
+                 "type":"largeEnemy",
                  "visible":true,
                  "width":134,
                  "x":1408,
@@ -1117,7 +1117,7 @@
                          "value":46
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":256,
                  "x":1024,
@@ -1150,7 +1150,7 @@
                          "value":46
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":256,
                  "x":1472,
@@ -1183,7 +1183,7 @@
                          "value":26
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":128,
                  "x":2432,
@@ -1216,7 +1216,7 @@
                          "value":58
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":64,
                  "x":3456,
@@ -1249,7 +1249,7 @@
                          "value":58
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":64,
                  "x":3456,
@@ -1282,7 +1282,7 @@
                          "value":58
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":192,
                  "x":4352,
@@ -1315,7 +1315,7 @@
                          "value":21
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":128,
                  "x":4096,
@@ -1348,7 +1348,7 @@
                          "value":25
                         }],
                  "rotation":0,
-                 "type":"camera_v",
+                 "type":"cameraV",
                  "visible":true,
                  "width":192,
                  "x":4928,
@@ -1381,7 +1381,7 @@
                          "value":25
                         }],
                  "rotation":0,
-                 "type":"camera_h",
+                 "type":"cameraH",
                  "visible":true,
                  "width":2,
                  "x":4635,
@@ -1583,11 +1583,76 @@
  "tilesets":[
         {
          "firstgid":1,
+<<<<<<< HEAD
+         "grid":
+            {
+             "height":1,
+             "orientation":"orthogonal",
+             "width":1
+            },
+         "margin":0,
+         "name":"board",
+         "spacing":0,
+         "tilecount":3,
+         "tileheight":64,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/Tiled\/tilesets\/board\/boardCeiling.png",
+                 "imageheight":64,
+                 "imagewidth":64
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/Tiled\/tilesets\/board\/boardClimb.png",
+                 "imageheight":64,
+                 "imagewidth":64
+                }, 
+                {
+                 "id":2,
+                 "image":"..\/..\/Tiled\/tilesets\/board\/boardFloor.png",
+                 "imageheight":64,
+                 "imagewidth":64
+                }],
+         "tilewidth":64
+        }, 
+        {
+         "columns":0,
+         "firstgid":4,
+         "grid":
+            {
+             "height":1,
+             "orientation":"orthogonal",
+             "width":1
+            },
+         "margin":0,
+         "name":"camera",
+         "spacing":0,
+         "tilecount":2,
+         "tileheight":64,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/cameraV.png",
+                 "imageheight":64,
+                 "imagewidth":64,
+                 "type":"cameraV"
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/cameraH.png",
+                 "imageheight":64,
+                 "imagewidth":64,
+                 "type":"cameraH"
+                }],
+         "tilewidth":64
+=======
           "source":"..\/..\/tilesets\/board.tsx"
         }, 
         {
           "firstgid":4,
           "source":"..\/..\/tilesets\/camera.tsx"
+>>>>>>> main
         }, 
         {
           "firstgid":6,
@@ -1595,7 +1660,111 @@
         }, 
         {
          "firstgid":50,
+<<<<<<< HEAD
+         "grid":
+            {
+             "height":1,
+             "orientation":"orthogonal",
+             "width":1
+            },
+         "margin":0,
+         "name":"objects",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":186,
+         "tiles":[
+                {
+                 "id":0,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/bandit.png",
+                 "imageheight":113,
+                 "imagewidth":64,
+                 "type":"bandit"
+                }, 
+                {
+                 "id":1,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/mediumEnemy.png",
+                 "imageheight":129,
+                 "imagewidth":117,
+                 "type":"mediumEnemy"
+                }, 
+                {
+                 "id":2,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/smallEnemy.png",
+                 "imageheight":65,
+                 "imagewidth":43,
+                 "type":"smallEnemy"
+                }, 
+                {
+                 "id":3,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/gum.png",
+                 "imageheight":25,
+                 "imagewidth":25,
+                 "type":"floatingGum"
+                }, 
+                {
+                 "height":64,
+                 "id":4,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/textureDraft.png",
+                 "imageheight":267,
+                 "imagewidth":268,
+                 "type":"earth",
+                 "width":64,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "id":5,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/shipDoor.png",
+                 "imageheight":176,
+                 "imagewidth":144,
+                 "type":"exit"
+                }, 
+                {
+                 "id":9,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/orb.png",
+                 "imageheight":40,
+                 "imagewidth":40,
+                 "type":"orb"
+                }, 
+                {
+                 "id":10,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/alarm.png",
+                 "imageheight":43,
+                 "imagewidth":44,
+                 "type":"alarm"
+                }, 
+                {
+                 "id":11,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/star.png",
+                 "imageheight":48,
+                 "imagewidth":48,
+                 "type":"star"
+                }, 
+                {
+                 "id":12,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/largeEnemy.png",
+                 "imageheight":186,
+                 "imagewidth":134,
+                 "type":"largeEnemy"
+                }, 
+                {
+                 "id":13,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/box.png",
+                 "imageheight":65,
+                 "imagewidth":65,
+                 "type":"box"
+                }, 
+                {
+                 "id":14,
+                 "image":"..\/..\/Tiled\/tilesets\/map\/chair.png",
+                 "imageheight":90,
+                 "imagewidth":65,
+                 "type":"chair"
+                }],
+         "tilewidth":144
+=======
           "source":"..\/..\/tilesets\/objects.json"
+>>>>>>> main
         }, 
         {
          "firstgid":65,

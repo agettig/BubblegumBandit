@@ -16,9 +16,9 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":11,
+ "tilecount":16,
  "tiledversion":"1.10.0",
- "tileheight":186,
+ "tileheight":256,
  "tiles":[
         {
          "id":0,
@@ -29,17 +29,17 @@
         }, 
         {
          "id":1,
-         "image":"..\/textures\/medium_enemy\/medium_enemy.png",
+         "image":"..\/textures\/mediumEnemy\/mediumEnemy.png",
          "imageheight":126,
          "imagewidth":109,
-         "type":"mediumrobot"
+         "type":"mediumEnemy"
         }, 
         {
          "id":2,
-         "image":"..\/textures\/small_enemy\/small_enemy.png",
+         "image":"..\/textures\/smallEnemy\/smallEnemy.png",
          "imageheight":65,
          "imagewidth":43,
-         "type":"smallrobot"
+         "type":"smallEnemy"
         }, 
         {
          "id":3,
@@ -64,7 +64,7 @@
         }, 
         {
          "id":10,
-         "image":"..\/textures\/environment\/alarm_off.png",
+         "image":"..\/textures\/environment\/alarmOff.png",
          "imageheight":43,
          "imagewidth":44,
          "type":"alarm"
@@ -78,10 +78,10 @@
         }, 
         {
          "id":12,
-         "image":"..\/textures\/large_enemy\/large_robot.png",
+         "image":"..\/textures\/largeEnemy\/largeEnemy.png",
          "imageheight":186,
          "imagewidth":134,
-         "type":"large_robot"
+         "type":"largeEnemy"
         }, 
         {
          "id":13,
@@ -96,8 +96,43 @@
          "imageheight":90,
          "imagewidth":65,
          "type":"chair"
+        }, 
+        {
+         "id":15,
+         "image":"..\/textures\/objects\/crushing_block.png",
+         "imageheight":128,
+         "imagewidth":256,
+         "type":"crushing_block"
+        }, 
+        {
+         "id":16,
+         "image":"..\/textures\/objects\/doorUnlocked.png",
+         "imageheight":256,
+         "imagewidth":64,
+         "type":"door_v"
+        }, 
+        {
+         "id":17,
+         "image":"..\/textures\/objects\/doorLocked.png",
+         "imageheight":256,
+         "imagewidth":64,
+         "type":"door_v_locked"
+        }, 
+        {
+         "id":18,
+         "image":"..\/textures\/objects\/glass.png",
+         "imageheight":64,
+         "imagewidth":64,
+         "type":"glass"
+        }, 
+        {
+         "id":19,
+         "image":"..\/textures\/objects\/hazard.png",
+         "imageheight":64,
+         "imagewidth":64,
+         "type":"hazard"
         }],
- "tilewidth":144,
+ "tilewidth":256,
  "type":"tileset",
  "version":"1.10"
 }
