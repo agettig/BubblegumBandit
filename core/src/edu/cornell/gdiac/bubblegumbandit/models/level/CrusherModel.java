@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 /**
  * A class representing a tile on the screen
  **/
-public class CrusherModel extends BoxObstacle implements Gummable {
+public class CrusherModel extends BoxObstacle{
 
     public static final float traumaAmt = 0.5f;
 
@@ -204,7 +204,7 @@ public class CrusherModel extends BoxObstacle implements Gummable {
 //        canvas.drawPhysics(topSensorShape, sensorColor, topSensorPos.x * drawScale.x, topSensorPos.y * drawScale.y);
     }
 
-    @Override
+
     public void drawWithOutline(GameCanvas canvas) {
         canvas.draw(outlineTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1.1f, flippingObject.getScale()*1.1f);
         canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, flippingObject.getScale());
