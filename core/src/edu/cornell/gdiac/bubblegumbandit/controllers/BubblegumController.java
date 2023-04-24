@@ -90,8 +90,8 @@ public class BubblegumController {
 
     /** Initialize bubblegumController stats */
     public void initialize(AssetDirectory directory, JsonValue json) {
-        gumAmmo = json.get("starting_gum").asInt();
-        maxGum = json.get("max_gum").asInt();
+        gumAmmo = json.get("startingGum").asInt();
+        maxGum = json.get("maxGum").asInt();
         startingGum = gumAmmo;
         String key = json.get("stuckTexture").asString();
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -107,12 +107,12 @@ public class BubblegumController {
         topLeftGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
 
         // Set outline textures
-        stuckOutline = new TextureRegion(directory.getEntry("stuck_outline", Texture.class));
-        rotatedOutline = new TextureRegion(directory.getEntry("rotated_outline", Texture.class));
-        topLeftOutline = new TextureRegion(directory.getEntry("top_left_outline", Texture.class));
-        topRightOutline = new TextureRegion(directory.getEntry("top_right_outline", Texture.class));
-        bottomLeftOutline = new TextureRegion(directory.getEntry("bottom_left_outline", Texture.class));
-        bottomRightOutline = new TextureRegion(directory.getEntry("bottom_right_outline", Texture.class));
+        stuckOutline = new TextureRegion(directory.getEntry("stuckOutline", Texture.class));
+        rotatedOutline = new TextureRegion(directory.getEntry("rotatedOutline", Texture.class));
+        topLeftOutline = new TextureRegion(directory.getEntry("topLeftOutline", Texture.class));
+        topRightOutline = new TextureRegion(directory.getEntry("topRightOutline", Texture.class));
+        bottomLeftOutline = new TextureRegion(directory.getEntry("bottomLeftOutline", Texture.class));
+        bottomRightOutline = new TextureRegion(directory.getEntry("bottomRightOutline", Texture.class));
 
     }
 
@@ -230,6 +230,8 @@ public class BubblegumController {
     public void removeGummable(Gummable gummable) {
         gummable.setGummed(false);
 
+
+        if(!stuckToGummable.containsKey(gummable)) return;
         for (Joint j : stuckToGummable.get(gummable)) {
             gummableJointsToRemove.addLast(j);
         }
@@ -357,9 +359,11 @@ public class BubblegumController {
             SoundController.playSound("gumSplat", 0.5f);
         }
         for (int i = 0; i < gummableAssemblyQueue.size; i++) {
-            Joint joint = level.getWorld().createJoint(gummableAssemblyQueue.removeFirst());
+            WeldJointDef def = gummableAssemblyQueue.removeFirst();
+            if(def.bodyB == null || def.bodyA == null) return;
+            Joint joint = level.getWorld().createJoint(def);
             addToGummableMap(joint);
-            SoundController.playSound("robotSplat", 1f);
+            SoundController.playSound("enemySplat", 1f);
         }
         for (int i = 0; i < gumJointsToRemove.size; i++) {
             GumJointPair gumJoint = gumJointsToRemove.removeFirst();
@@ -390,6 +394,7 @@ public class BubblegumController {
             Joint j = gummableJointsToRemove.removeFirst();
             try {
                 Obstacle ob1 = (Obstacle) j.getBodyA().getUserData();
+                ob1.setStuck(false);
                 ob1.setGummed(false);
                 if (ob1.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob1.flipGravity();
@@ -400,6 +405,7 @@ public class BubblegumController {
             try {
                 Obstacle ob2 = (Obstacle) j.getBodyB().getUserData();
                 ob2.setStuck(false);
+                ob2.setGummed(false);
                 if (ob2.isFlipped() == level.getWorld().getGravity().y < 0) {
                     ob2.flipGravity();
                 }
