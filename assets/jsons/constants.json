@@ -48,7 +48,7 @@
   },
   "crushing_block": {
     "density": 0.4,
-    "friction": 0.2,
+    "friction": 0.3,
     "restitution": 0.0,
     "texture": "crushing_block",
     "gummedtexture": "crushing_block_gummed",
