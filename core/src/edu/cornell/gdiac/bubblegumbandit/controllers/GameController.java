@@ -445,6 +445,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
+        spawnedPostOrbEnemies = false;
         bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
@@ -723,7 +724,7 @@ public class GameController implements Screen {
 
         //Check to create post-orb enemies
         if(orbCollected && !spawnedPostOrbEnemies){
-            level.spawnPostOrbEnemies(levelFormat);
+            level.spawnPostOrbEnemies();
             spawnedPostOrbEnemies = true;
         }
 
