@@ -7,8 +7,11 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShieldedRollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -114,7 +117,6 @@ public class CollisionController implements ContactListener {
         try {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
-
 
             if (obstacleA instanceof Gummable) {
                 obstacleA.startCollision(obstacleB);
@@ -295,6 +297,9 @@ public class CollisionController implements ContactListener {
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
+            if (bodyB instanceof Shield) {
+                if (((Shield) bodyB).isShielded()) {gum.markRemoved(true); return;}
+            }
             if (bodyB instanceof Gummable) {
                 gummable = (Gummable) bodyB;
             }
@@ -302,6 +307,9 @@ public class CollisionController implements ContactListener {
         if (isGumObstacle(bodyB)) {
             gum = (GumModel) bodyB;
             body = bodyA;
+            if (bodyA instanceof Shield) {
+                if (((Shield) bodyA).isShielded()) {gum.markRemoved(true); return;}
+            }
             if (bodyA instanceof Gummable) {
                 gummable = (Gummable) bodyA;
             }
@@ -321,6 +329,13 @@ public class CollisionController implements ContactListener {
         int orientation = 0;
         if (gum != null && gum.canAddObstacle(body)){
             if (gummable != null) {
+                if (gummable instanceof LaserEnemyModel) {
+                    if (!((LaserEnemyModel) gummable).shouldStick()) {
+                        gum.markRemoved(true);
+                        ((LaserEnemyModel) gummable).addGumHit();
+                        return;
+                    }
+                }
                 if (!gum.onTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
@@ -448,10 +463,25 @@ public class CollisionController implements ContactListener {
     private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
-            levelModel.getBandit().hitPlayer(p.getDamage());
+            applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f);
         }
         p.destroy();
     }
+
+    private void applyKnockback(Obstacle other, BanditModel bandit,
+                                boolean yImpact, float damage, float impact) {
+        boolean left = (other.getX() < bandit.getX());
+        boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
+        bandit.hitPlayer(damage);
+        bandit.setKnockback(true);
+        if(yImpact) bandit.getBody().applyLinearImpulse(left ? impact : -impact,
+            knockbackUp ? impact : -impact, bandit.getX(), bandit.getY(), true);
+        else {
+            bandit.getBody().applyLinearImpulse(left ? impact : -impact,
+               0, bandit.getX(), bandit.getY(), true);
+        }
+    }
+
 
     /**
      * Checks if there was an rolling enemy collision in the Box2D world.

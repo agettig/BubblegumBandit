@@ -33,6 +33,7 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.*;
 import org.w3c.dom.Text;
@@ -397,7 +398,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         // Start loading the real assets
         assets = new AssetDirectory(file);
         assets.loadAssets();
+
+        int levelCount = 2; //grab from where?
+        if(!SaveData.saveExists())  {
+            SaveData.makeData(levelCount, false);
+        }
+            //is this a VM thing?
+
         active = true;
+
+
     }
 
     /**
@@ -781,7 +791,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
@@ -966,11 +975,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-
-
         if (startButton == null || levelSelectButton == null
                 || settingsButton == null || exitButton == null) return false;
-// Flip to match graphics coordinates
+        // Flip to match graphics coordinates
 
         //Detect hovers on the start button
         float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();

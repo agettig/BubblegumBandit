@@ -104,7 +104,7 @@ public class CameraTileModel extends TileModel {
      * @param objectJson the json value representing the camera tile
      * @param constants the json value representing the constants of the camera tile
      */
-    public void initialize(float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants) {
+    public void initialize(float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal) {
         // make the body fixture into a sensor
         setName("cameraTile");
         setPosition(x,y);

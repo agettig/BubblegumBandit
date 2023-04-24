@@ -4,8 +4,8 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector2;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel.*;
@@ -25,6 +25,11 @@ public enum EnemyState implements State<AIController> {
             if (aiController.getEnemyStateMachine().getTicks() > 120) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(true);
+            }
+
             // set next action to no action
             aiController.getEnemy().setNextAction(CONTROL_NO_ACTION);
         }
@@ -50,6 +55,15 @@ public enum EnemyState implements State<AIController> {
                 aiController.getEnemyStateMachine().changeState(CHASE);
             }
             setAction(aiController);
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(true);
+                if (aiController.getEnemy() instanceof LaserEnemyModel) {
+                    if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
+                        ((Shield) aiController.getEnemy()).isShielded(false);
+                    }
+                }
+            }
         }
 
         public void setAction(AIController aiController) {
@@ -121,6 +135,16 @@ public enum EnemyState implements State<AIController> {
             if (!aiController.enemyHeardBandit()) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(true);
+                if (aiController.getEnemy() instanceof LaserEnemyModel) {
+                    if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
+                        ((Shield) aiController.getEnemy()).isShielded(false);
+                    }
+                }
+            }
+
             // update action
             setAction(aiController);
         }
@@ -172,6 +196,10 @@ public enum EnemyState implements State<AIController> {
             // set state to wander if enemy can not hear bandit
             if (!aiController.enemyHeardBandit()) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
+            }
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(false);
             }
 
             // if can move find next move
@@ -311,6 +339,10 @@ public enum EnemyState implements State<AIController> {
                 move = aiController.getEnemyStateMachine().getNextMove(
                         (int) banditModel.getX(),
                         (int) banditModel.getY());
+            }
+
+            if (aiController.getEnemy() instanceof Shield) {
+                ((Shield) aiController.getEnemy()).isShielded(false);
             }
 
             // determine if enemy can shoot
