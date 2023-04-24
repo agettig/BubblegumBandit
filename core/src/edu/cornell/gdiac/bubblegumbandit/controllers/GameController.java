@@ -64,6 +64,9 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  * singleton asset manager to manage the various assets.
  */
 public class GameController implements Screen {
+
+    // TODO move this
+    private final int RELOAD_RATE = 30;
     // ASSETS
     /**
      * Need an ongoing reference to the asset directory
@@ -619,7 +622,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
-            if (ticks % 60 == 0) {
+            if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }
