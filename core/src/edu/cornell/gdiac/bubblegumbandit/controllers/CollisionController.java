@@ -228,6 +228,7 @@ public class CollisionController implements ContactListener {
      * @param ob the door */
     private void updateCamera(Obstacle ob) {
         DoorModel door = (DoorModel) ob;
+        door.playerPassed = true;
         BanditModel avatar = levelModel.getBandit();
 
         Vector2 ul;
@@ -439,7 +440,10 @@ public class CollisionController implements ContactListener {
 
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
-            if (gummable.getGummed() && !ob2.equals(levelModel.getBandit())) {
+            if (gummable.getGummed()) { // && !ob2.equals(levelModel.getBandit())
+                if (ob1.getName().contains("enemy") && ob2.equals(levelModel.getBandit())) {
+                    return;
+                }
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("robotSplat", 1f);
                 ob2.setStuck(true);
@@ -447,7 +451,10 @@ public class CollisionController implements ContactListener {
         }
         else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
-            if (gummable.getGummed() && !ob1.equals(levelModel.getBandit())) {
+            if (gummable.getGummed()) { // && !ob1.equals(levelModel.getBandit())
+                if (ob2.getName().contains("enemy") && ob1.equals(levelModel.getBandit())) {
+                    return;
+                }
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("robotSplat", 1f);
                 ob1.setStuck(true);
@@ -590,6 +597,13 @@ public class CollisionController implements ContactListener {
                 door.addObInRange(ob);
             } else {
                 door.removeObInRange(ob);
+            }
+        }
+        if (ob.equals(levelModel.getBandit())) {
+            if (isBeginContact) {
+                door.playerInRange = true;
+            } else {
+                door.playerInRange = false;
             }
         }
     }
