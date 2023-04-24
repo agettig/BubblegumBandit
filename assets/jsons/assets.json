@@ -275,8 +275,8 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/levels/alphaPresentation.json",
-        "level2":"jsons/levels/alpha.json",
+		"level1" : "jsons/levels/betaPlatformAndCrush.json",
+        "level2":"jsons/levels/alphaPresentation.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",

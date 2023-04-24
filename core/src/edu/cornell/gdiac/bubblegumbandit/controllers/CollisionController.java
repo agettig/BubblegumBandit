@@ -45,7 +45,7 @@ public class CollisionController implements ContactListener {
     public static final short MASK_EXIT = CATEGORY_PLAYER;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_DOOR_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
-    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM;
+    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -578,6 +578,7 @@ public class CollisionController implements ContactListener {
         // Bandit on top or below hazard
         if ((bandit.getPosition().x <= (hazard.getX() + .5f)) && (bandit.getPosition().x >= (hazard.getX() - .5f))) {
             shouldFlipGravity = true;
+
         } else { // Bandit colliding on side of hazard
             // Apply knockback
             bandit.setKnockback(true);

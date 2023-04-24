@@ -332,9 +332,9 @@ public class DoorModel extends TileModel implements Gummable {
     private void tryUnlockDoor() {
         boolean allDead = true;
         for (Integer id : enemyIds) {
-            if (!enemyMap.get(id).isRemoved()) {
+            EnemyModel cur = enemyMap.get(id);
+            if (cur == null || !cur.isRemoved()) {
                 allDead = false;
-                return;
             }
         }
         if (allDead) {
