@@ -602,12 +602,20 @@ public class LevelModel {
                     crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     break;
                 case "glass":
-                    GlassModel glass = new GlassModel();
-                    glass.initialize(directory, x, y, constants.get("glass"));
+                    SpecialTileModel glass = new SpecialTileModel();
+                    glass.initialize(directory, x, y, constants.get("glass"), "glass");
                     activate(glass);
                     glass.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     glass.setDrawScale(scale);
                     break;
+                case "hazard":
+                    SpecialTileModel hazard = new SpecialTileModel();
+                    hazard.initialize(directory, x, y, constants.get("hazard"), "hazard");
+                    activate(hazard);
+                    hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    hazard.setDrawScale(scale);
+                    break;
+
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }

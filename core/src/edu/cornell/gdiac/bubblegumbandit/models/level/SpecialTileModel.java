@@ -7,16 +7,15 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import java.lang.reflect.Field;
 
 /**
  * A class representing a glass tile on the screen
  **/
-public class GlassModel extends TileModel {
+public class SpecialTileModel extends TileModel {
 
-    public void initialize(AssetDirectory directory, float x, float y, JsonValue constants) {
-        setName("glass");
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constants, String name) {
+        setName(name);
 
         setPosition(x,y);
         setDimension(1, 1);
@@ -42,6 +41,10 @@ public class GlassModel extends TileModel {
         String key = constants.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
+    }
+
+    public void draw(GameCanvas canvas) {
+        canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
     }
 
 }

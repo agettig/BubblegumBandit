@@ -151,6 +151,7 @@ public class CollisionController implements ContactListener {
             checkRollingEnemyCollision(obstacleA, obstacleB);
             resolveCrusherCollision(obstacleA, fixA, obstacleB, fixB);
             resolveDoorSensorCollision(obstacleA, fixA, obstacleB, fixB, true);
+            resolveHazardCollision(obstacleA, obstacleB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -514,7 +515,7 @@ public class CollisionController implements ContactListener {
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
                 // Screen shake cause block hit the floor
-            if (crushed instanceof GlassModel) {
+            if (crushed.getName().equals("glass")) {
                 crushed.markRemoved(true);
             }
             if (!crusher.didSmash) {
@@ -522,6 +523,40 @@ public class CollisionController implements ContactListener {
             }
             crusher.maxAbsFallVel = 0;
             crusher.didSmash = true;
+        }
+    }
+
+    /**
+     * Checks if there was a collision between a hazard and the player.
+     * *
+     * @param bd1 The first Obstacle in the collision.
+     * @param bd2 The second Obstacle in the collision.
+     */
+    private void resolveHazardCollision(Obstacle bd1, Obstacle bd2) {
+
+        // Check that obstacles are not null and one is a crusher sensor
+        if (bd1 == null || bd2 == null) return;
+        SpecialTileModel hazard;
+        BanditModel bandit = levelModel.getBandit();
+
+        if (bd1.getName().equals("hazard") && bd2.equals(bandit)) {
+            hazard = (SpecialTileModel) bd1;
+        } else if (bd2.getName().equals("hazard") && bd1.equals(bandit)) {
+            hazard = (SpecialTileModel) bd2;
+        } else {
+            return;
+        }
+
+        levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE);
+        // Bandit on top or below hazard
+        if ((bandit.getPosition().x <= (hazard.getX() + .5f)) && (bandit.getPosition().x >= (hazard.getX() - .5f))) {
+            shouldFlipGravity = true;
+        } else { // Bandit colliding on side of hazard
+            // Apply knockback
+            bandit.setKnockback(true);
+            boolean gravityDown = levelModel.getWorld().getGravity().y < 0;
+            boolean leftOfHazard = bandit.getPosition().x < hazard.getX();
+            bandit.getBody().applyLinearImpulse(leftOfHazard ? -3f : 3f, gravityDown ? 2f : -2f, bandit.getX(), bandit.getY(), true);
         }
     }
 
