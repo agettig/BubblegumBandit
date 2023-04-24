@@ -146,6 +146,15 @@ public class BanditModel extends CapsuleObstacle {
 
     private boolean isKnockback;
 
+    /** Whether or  not the player was just hit and is in cooldown*/
+    private boolean inCooldown;
+
+    /** Returns whether or not the player is in cooldown*/
+    public boolean getCooldown() {return inCooldown; }
+
+    /** Sets the players cooldwon status*/
+    public void setCooldown(boolean inCooldown) {
+        this.inCooldown = inCooldown; }
 
     /**
      * Returns the camera target for the player.
@@ -623,10 +632,17 @@ public class BanditModel extends CapsuleObstacle {
     public void update(float dt) {
         ticks++;
 
-        if (ticks % 10 == 0) {
-            healPlayer((float)0.25);
+        if (inCooldown) {
+            if (ticks % 300 == 0) {
+                setCooldown(false);
+            }
+        } else {
+            if (ticks % 10 == 0) {
+                healPlayer((float) 0.25);
+            }
         }
-        System.out.println(health);
+
+        System.out.println(inCooldown);
 
         if (isShooting()) {
             shootCooldown = shotLimit;
