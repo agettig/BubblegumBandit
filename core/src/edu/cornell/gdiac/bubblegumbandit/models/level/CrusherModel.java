@@ -80,7 +80,7 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
         setName("crushing_block");
         setPosition(x,y);
         float width = objectJson.getFloat("width") * .98f / scale.x; // Make it a little smaller so it can slot in 4 block gaps
-        float height = objectJson.getFloat("height") / scale.y;
+        float height = objectJson.getFloat("height") * .98f / scale.y;
         setDimension(width, height);
 
 

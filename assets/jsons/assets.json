@@ -272,7 +272,7 @@
         "collectItem": "sounds/collectItem.wav"
 	},
 	"jsons" : {
-		"level1" : "jsons/levels/betaPlatformAndCrush.json",
+		"level1" : "jsons/levels/betaMedium.json",
         "level2":"jsons/levels/alphaPresentation.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
