@@ -470,9 +470,12 @@ public class GameController implements Screen {
         orbCountdown = -1;
         orbCollected = false;
         level.endAlarms();
-
+        for (EnemyModel enemy: level.getPostOrbEnemies()){
+            enemy.markRemoved(true);
+        }
         level.remakeOrb(directory, constantsJson);
         bubblegumController.resetAmmo();
+        spawnedPostOrbEnemies = false;
         level.getBandit().respawnPlayer();
     }
 
@@ -527,12 +530,14 @@ public class GameController implements Screen {
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
 
-            if (orbCollected && !complete){
-                respawn();
-            }
-            else {
-                reset();
-            }
+            // TODO fix with post orb enemies
+//            if (orbCollected && !complete){
+//                respawn();
+//            }
+//            else {
+//                reset();
+//            }
+            reset();
         }
 
         if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
