@@ -278,7 +278,7 @@
 
     },
 	"jsons" : {
-		"level1" : "jsons/levels/betaPostOrb.json",
+		"level1" : "jsons/levels/betaHard.json",
         "level2":"jsons/levels/alphaPresentation.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
