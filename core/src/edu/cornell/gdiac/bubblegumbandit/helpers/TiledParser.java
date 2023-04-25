@@ -42,6 +42,7 @@ public class TiledParser {
             }
             if (!tilesetFileType.equals(".json")) { // Skip non-JSON tilesets (ex. board and camera tilesets).
                 levelTilesetJson = levelTilesetJson.next();
+                System.out.println("skipped "+levelTilesetJson.name);
                 continue;
             }
 
