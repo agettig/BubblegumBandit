@@ -81,7 +81,7 @@ public class AIController implements Telegraph {
     public AIController(EnemyModel enemy, BanditModel bandit, TiledGraph tiledGraphGravityUp, TiledGraph tiledGraphGravityDown) {
         this.tiledGraphGravityUp = tiledGraphGravityUp;
         this.enemy = enemy;
-        this.enemyfsm = new EnemyStateMachine(this, EnemyState.SPAWN, EnemyState.PERCEIVE, tiledGraphGravityUp, tiledGraphGravityDown);
+        this.enemyfsm = new EnemyStateMachine(this, EnemyState.WANDER, EnemyState.PERCEIVE, tiledGraphGravityUp, tiledGraphGravityDown);
         this.bandit = bandit;
         this.tiledGraphGravityDown = tiledGraphGravityDown;
         move = CONTROL_NO_ACTION;
