@@ -677,7 +677,7 @@ public class BanditModel extends CapsuleObstacle {
     public void update(float dt) {
         ticks++;
 
-        if (ticks % 10 == 0 && health>0) {
+        if (ticks % 3 == 0 && health>0) {
             healPlayer((float)0.25);
         }
 
