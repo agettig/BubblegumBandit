@@ -551,7 +551,7 @@ public class CollisionController implements ContactListener {
                 // Block must be pushing on bandit.
                 if ((bandit.getPosition().y > crusher.getPosition().y) == (levelGrav > 0)) {
                     // Flip gravity again and make the bandit take damage.
-                    levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE);
+                    levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE, false);
                     shouldFlipGravity = true;
                 }
             }
@@ -593,7 +593,7 @@ public class CollisionController implements ContactListener {
             return;
         }
 
-        levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE);
+        levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE, false);
         // Bandit on top or below hazard
         if ((bandit.getPosition().x <= (hazard.getX() + .5f)) && (bandit.getPosition().x >= (hazard.getX() - .5f))) {
             shouldFlipGravity = true;
@@ -665,7 +665,7 @@ public class CollisionController implements ContactListener {
                                 boolean yImpact, float damage, float impact) {
         boolean left = (other.getX() < bandit.getX());
         boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
-        bandit.hitPlayer(damage);
+        bandit.hitPlayer(damage, false);
         bandit.setKnockback(true);
         if(yImpact) bandit.getBody().applyLinearImpulse(left ? impact : -impact,
             knockbackUp ? impact : -impact, bandit.getX(), bandit.getY(), true);
@@ -692,7 +692,7 @@ public class CollisionController implements ContactListener {
             if (!bd1.getGummed() && !bd1.getStuck()) {
                 boolean leftMedium = (bd1.getX() < bd2.getX());
                 boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
-                bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage());
+                bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage(), false);
                 bandit.setKnockback(true);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
             }
@@ -700,7 +700,7 @@ public class CollisionController implements ContactListener {
             if (!bd2.getGummed() && !bd2.getStuck()) {
                 boolean leftMedium = (bd1.getX() > bd2.getX());
                 boolean knockBackUp = levelModel.getWorld().getGravity().y > 0;
-                bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage());
+                bandit.hitPlayer(((RollingEnemyModel)bd2).getDamage(), false);
                 bandit.setKnockback(true);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
             }
