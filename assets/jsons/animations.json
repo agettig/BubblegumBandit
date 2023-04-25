@@ -37,7 +37,7 @@
       "fps": 6
     },
     "unshielded_patrol": {
-      "strip": "small_robot_patrol.patrol",
+      "strip": "smallEnemyPatrol.patrol",
       "fps": 6
     }
   },
@@ -47,13 +47,13 @@
       "fps": 4
     }
   },
-  "shielded_large_robot": {
+  "shieledLargeEnemy": {
     "patrol": {
       "strip": "shielded_large_walk.patrol",
       "fps": 4
     },
     "unshielded_patrol": {
-      "strip": "large_walk.patrol",
+      "strip": "largeWalk.patrol",
       "fps": 4
     }
   },
