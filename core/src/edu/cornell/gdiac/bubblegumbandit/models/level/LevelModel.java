@@ -58,6 +58,9 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  */
 public class LevelModel {
 
+    // TODO Update this to something more sensible
+    public static final float UPDATE_DIST = 15f;
+
     /** How close to the center of the tile we need to be to stop drifting */
     private static final float DRIFT_TOLER = .2f;
 
@@ -329,7 +332,10 @@ public class LevelModel {
         }
 
         if (boardGravityDownLayer == null || boardGravityUpLayer == null || terrainLayer == null || objects == null) {
-            throw new RuntimeException("Missing layer data. Should have: BoardGravityDown, BoardGravityUp, Terrain, and Objects.");
+            throw new RuntimeException("Missing layer data. Should have: BoardGravityDown, BoardGravityUp, Terrain, PostOrb, and Objects.");
+        }
+        if (postOrb == null) {
+            throw new RuntimeException("Missing PostOrb layer.");
         }
 
         int[] worldData = terrainLayer.get("data").asIntArray();
@@ -758,8 +764,14 @@ public class LevelModel {
         for (AIController controller : enemyControllers) {
             // TODO: Add custom state for dead enemies
 //            adjustForDrift(controller.getEnemy());
-            if (!controller.getEnemy().isRemoved()) {
-                controller.getEnemyStateMachine().update();
+            EnemyModel enemy = controller.getEnemy();
+            if (!enemy.isRemoved()) {
+                float xDiff = (enemy.getX() - bandit.getX());
+                float yDiff = (enemy.getY() - bandit.getY());
+                double distFromPlayer = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
+                if (distFromPlayer < UPDATE_DIST) {
+                    controller.getEnemyStateMachine().update();
+                }
             }
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
