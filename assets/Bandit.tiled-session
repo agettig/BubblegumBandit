@@ -83,8 +83,10 @@
             "dynamicWrapping": false
         }
     },
+    "last.exportedFilePath": "/Users/ruikeliang/Desktop/BubblegumBandit/assets/jsons/levels",
     "map.fixedSize": false,
     "map.height": 60,
+    "map.lastUsedExportFilter": "All Files (*)",
     "map.width": 63,
     "openFiles": [
     ],
