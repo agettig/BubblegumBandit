@@ -34,6 +34,13 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     /** The JSON for game constants*/
     private JsonValue constantsJson;
 
+    /** Standard window size (for scaling) */
+    private static int STANDARD_WIDTH  = 800;
+    /** Standard window height (for scaling) */
+    private static int STANDARD_HEIGHT = 700;
+    /** Scaling factor for when the student changes the resolution. */
+    private float scale;
+
     /** The stage that contains all the pause elements */
     private Stage stage;
 
@@ -379,8 +386,21 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
             }
         }
     }
-    /** Called when the screen is resized*/
+
+    /**
+     * Called when the Screen is resized.
+     *
+     * This can happen at any point during a non-paused state but will never happen
+     * before a call to show().
+     *
+     * @param width  The new width in pixels
+     * @param height The new height in pixels
+     */
     public void resize(int width, int height) {
+        // Compute the drawing scale
+        float sx = ((float)width)/STANDARD_WIDTH;
+        float sy = ((float)height)/STANDARD_HEIGHT;
+        scale = (sx < sy ? sx : sy);
     }
 
     /**

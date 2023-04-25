@@ -1,0 +1,95 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "jsons/levels/TestLevel.json": {
+            "scale": 0.08451041666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 4792.308640453593,
+                "y": 2224.577838037718
+            }
+        },
+        "jsons/levels/TestLevel.json#board": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/TestLevel.json#objects": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/TestLevel.json#terrain": {
+            "scaleInDock": 1
+        },
+        "jsons/levels/alphaPresentation.json": {
+            "scale": 0.14085069444444445,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2875.385184272156,
+                "y": 2364.2055959571053
+            }
+        },
+        "jsons/levels/alphaPresentation2.json": {
+            "scale": 0.1763,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 3823.0289279636977,
+                "y": 2229.1548496880314
+            }
+        },
+        "jsons/levels/betaHard.json": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.2142,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 2787.1148459383758,
+                "y": 2184.8739495798322
+            }
+        },
+        "jsons/levels/betaPlatformAndCrush.json": {
+            "scale": 0.14085069444444445,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2875.385184272156,
+                "y": 2364.2055959571053
+            }
+        },
+        "jsons/levels/betaPostOrb.json": {
+            "scale": 0.164,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2512.1951219512193,
+                "y": 2170.731707317073
+            }
+        },
+        "tilesets/board.tsx": {
+            "dynamicWrapping": false
+        },
+        "tilesets/camera.tsx": {
+            "dynamicWrapping": true
+        },
+        "tilesets/objects.json": {
+            "dynamicWrapping": true
+        },
+        "tilesets/supports.json": {
+            "dynamicWrapping": false
+        },
+        "tilesets/terrain.json": {
+            "dynamicWrapping": false
+        }
+    },
+    "map.fixedSize": false,
+    "map.height": 60,
+    "map.width": 63,
+    "openFiles": [
+    ],
+    "project": "Bandit.tiled-project",
+    "recentFiles": [
+        "jsons/levels/betaHard.json"
+    ]
+}
