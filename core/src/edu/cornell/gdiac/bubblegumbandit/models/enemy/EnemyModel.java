@@ -388,7 +388,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
             // TODO: Fix rolling robots so don't have to do this
             float y = getY() * drawScale.y;
-            if (getName().equals("mediumEnemy")) {
+            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
                 y += 10*yScale;
             }
 
