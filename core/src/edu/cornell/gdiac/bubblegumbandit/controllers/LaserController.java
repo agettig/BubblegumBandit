@@ -175,7 +175,7 @@ public class LaserController {
                 enemy.setBeamIntersect(lockHitPoint);
 
                 //If we're hitting the bandit, take some damage.
-                if (enemy.isHittingBandit()) bandit.hitPlayer(TICK_DAMAGE);
+                if (enemy.isHittingBandit()) bandit.hitPlayer(TICK_DAMAGE, true);
             }
 
         }

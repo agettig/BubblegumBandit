@@ -388,7 +388,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
             // TODO: Fix rolling robots so don't have to do this
             float y = getY() * drawScale.y;
-            if (getName().equals("rollingRobot")) {
+            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
                 y += 10*yScale;
             }
 
@@ -409,7 +409,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
             float y = getY() * drawScale.y;
-            if (getName().equals("rollingRobot")) {
+            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
                 y += 10*yScale;
             }
             float effect = faceRight ? 1.0f : -1.0f;
