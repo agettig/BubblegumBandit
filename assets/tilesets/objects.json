@@ -18,7 +18,7 @@
  "spacing":0,
  "tilecount":16,
  "tiledversion":"1.10.0",
- "tileheight":256,
+ "tileheight":258,
  "tiles":[
         {
          "id":0,
@@ -99,23 +99,23 @@
         }, 
         {
          "id":15,
-         "image":"..\/textures\/objects\/crushing_block.png",
+         "image":"..\/textures\/objects\/crushingBlock.png",
          "imageheight":128,
-         "imagewidth":256,
+         "imagewidth":257,
          "type":"crushing_block"
         }, 
         {
          "id":16,
          "image":"..\/textures\/objects\/doorUnlocked.png",
-         "imageheight":256,
-         "imagewidth":64,
+         "imageheight":258,
+         "imagewidth":65,
          "type":"door_v"
         }, 
         {
          "id":17,
          "image":"..\/textures\/objects\/doorLocked.png",
-         "imageheight":256,
-         "imagewidth":64,
+         "imageheight":257,
+         "imagewidth":65,
          "type":"door_v_locked"
         }, 
         {
@@ -128,11 +128,11 @@
         {
          "id":19,
          "image":"..\/textures\/objects\/hazard.png",
-         "imageheight":64,
-         "imagewidth":64,
+         "imageheight":80,
+         "imagewidth":80,
          "type":"hazard"
         }],
- "tilewidth":256,
+ "tilewidth":257,
  "type":"tileset",
  "version":"1.10"
 }
