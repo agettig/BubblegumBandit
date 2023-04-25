@@ -236,15 +236,18 @@
         "smallGumOutline": "textures/gum/smallGumOutline.png",
         "largeGumOutline": "textures/gum/largeGumOutline.png",
         "medGumOutline": "textures/gum/medGumOutline.png",
-        "crushing_block": "textures/objects/crushing_block.png",
-        "crushing_block_gummed": "textures/objects/crushing_block_gummed.png",
-        "crushing_block_outline": "textures/objects/crushing_block_outline.png",
+
+
+        "crushingBlock": "textures/objects/crushingBlock.png",
+        "crushingBlockGum": "textures/gum/blockGum.png",
+        "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "door":  "textures/objects/doorUnlocked.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
         "gummedDoor": "textures/objects/doorGummed.png",
         "outlineDoor": "textures/objects/doorOutline.png",
         "glass":  "textures/objects/glass.png",
         "hazard": "textures/objects/hazard.png"
+
     },
     "fonts": {
         "display": {
