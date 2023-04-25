@@ -17,6 +17,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -448,6 +449,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
+        spawnedPostOrbEnemies = false;
         bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
@@ -463,6 +465,8 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+
+        SoundController.playMusic("game");
     }
 
     public void respawn(){
@@ -472,9 +476,12 @@ public class GameController implements Screen {
         orbCountdown = -1;
         orbCollected = false;
         level.endAlarms();
-
+        for (EnemyModel enemy: level.getPostOrbEnemies()){
+            enemy.markRemoved(true);
+        }
         level.remakeOrb(directory, constantsJson);
         bubblegumController.resetAmmo();
+        spawnedPostOrbEnemies = false;
         level.getBandit().respawnPlayer();
     }
 
@@ -529,12 +536,14 @@ public class GameController implements Screen {
         else if (countdown > 0) {countdown--;}
         else if (countdown == 0) {
 
-            if (orbCollected && !complete){
-                respawn();
-            }
-            else {
-                reset();
-            }
+            // TODO fix with post orb enemies
+//            if (orbCollected && !complete){
+//                respawn();
+//            }
+//            else {
+//                reset();
+//            }
+            reset();
         }
 
         if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
@@ -579,6 +588,7 @@ public class GameController implements Screen {
             orbCollected = true;
             orbCountdown = level.getOrbCountdown();
             level.startAlarms();
+            SoundController.playMusic("escape");
         }
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -726,7 +736,7 @@ public class GameController implements Screen {
 
         //Check to create post-orb enemies
         if(orbCollected && !spawnedPostOrbEnemies){
-            level.spawnPostOrbEnemies(levelFormat);
+            level.spawnPostOrbEnemies();
             spawnedPostOrbEnemies = true;
         }
 

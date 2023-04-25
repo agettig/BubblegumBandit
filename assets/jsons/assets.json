@@ -271,6 +271,12 @@
         "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav"
 	},
+    "samples": {
+        "menu": "sounds/music/spaceCruising.ogg",
+        "inGame": "sounds/music/bubblegumBallad.ogg",
+        "escape": "sounds/music/escape.ogg"
+
+    },
 	"jsons" : {
 		"level1" : "jsons/levels/betaMedium.json",
         "level2":"jsons/levels/alphaPresentation.json",

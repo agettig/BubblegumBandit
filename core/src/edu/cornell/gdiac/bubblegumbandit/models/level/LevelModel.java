@@ -58,210 +58,92 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.
  */
 public class LevelModel {
 
-    /**
-     * How close to the center of the tile we need to be to stop drifting
-     */
+    // TODO Update this to something more sensible
+    public static final float UPDATE_DIST = 15f;
+
+    /** How close to the center of the tile we need to be to stop drifting */
     private static final float DRIFT_TOLER = .2f;
-    /**
-     * How fast we drift to the tile center when paused
-     */
+
+    /** How fast we drift to the tile center when paused */
     private static final float DRIFT_SPEED = 0.325f;
 
-    /**
-     * The Box2D world
-     */
+    /** The Box2D world  */
     protected World world;
-    /**
-     * The boundary of the world
-     */
+
+    /** The boundary of the world */
     protected Rectangle bounds;
-    /**
-     * The world scale
-     */
+
+    /** The world scale  */
     protected Vector2 scale;
 
-    // Physics objects for the game
-    /**
-     * Reference to the character avatar
-     */
+    /** Reference to the character avatar  */
     private BanditModel bandit;
-    /**
-     * Reference to the goalDoor (for collision detection)
-     */
+
+    /** Reference to the goal door */
     private ExitModel goalDoor;
 
-    /**
-     * Whether or not the level is in debug more (showing off physics)
-     */
+    /** true if the level is in debug mode  */
     private boolean debug;
 
-    /**
-     * The full background of the level
-     */
+    /** The complete background of the level  */
     private Texture backgroundText;
 
-    /**
-     * The background of the level, cropped if necessary
-     */
+    /** The background of the level, cropped if necessary */
     private TextureRegion backgroundRegion;
 
-    /**
-     * The amount of time counted down after the orb is collected.
-     */
-    private float timer = 60;
 
-
-    /**
-     * All the objects in the world.
-     */
-    protected PooledList<Obstacle> objects = new PooledList<Obstacle>();
-
-    /**
-     * All the flippable objects in the world.
-     */
-    protected PooledList<Obstacle> flippableObjects = new PooledList<Obstacle>();
-
+    /** All AIControllers in the level. */
     private Array<AIController> enemyControllers;
 
-    public Array<AIController> aiControllers() {
-        return enemyControllers;
-    }
+    /** Number of Enemies in the level, including ones that
+     * spawn after the orb is collected.*/
+    int enemyCount;
 
-    private TiledGraph tiledGraphGravityDown;
-    private TiledGraph tiledGraphGravityUp;
-
-    /** EnemyModels to spawn after the orb gets picked up. */
+    /** Enemies to spawn after the orb gets picked up. */
     private HashSet<EnemyModel> postOrbEnemies;
 
-    /**
-     * The width of the level.
-     */
+    public HashSet<EnemyModel> getPostOrbEnemies() {
+        return postOrbEnemies;
+    }
+
+    /** Decision graph for Enemies when gravity is normal. */
+    private TiledGraph tiledGraphGravityDown;
+
+    /** Decision graph for Enemies when gravity is flipped. */
+    private TiledGraph tiledGraphGravityUp;
+
+    /** The width of the level. */
     private int levelWidth;
-    /**
-     * The height of the level.
-     */
+
+    /** The height of the level. */
     private int levelHeight;
 
-    /**
-     * Lighting system
-     */
+    /** The amount of time counted down after the orb is
+     *  collected. */
+    private float timer;
+
+    /** Reference to the AlarmController. */
     private AlarmController alarms;
 
-    /**
-     * Reference to the aim model
-     */
-    private AimModel aim;
+    /**  Reference to the aim model. */
+    private final AimModel aim;
 
-    /**
-     * Reference to background elements in the game
-     */
+    /** All background elements in the level.  */
     private Array<BackObjModel> backgroundObjects;
 
-    /**
-     * Reference to support tile objects
-     */
+    /** All support tile objects in the level.  */
     private Array<BackgroundTileModel> supportTiles;
 
-    private Vector2 orbPostion;
+    /** All objects in the world.  */
+    protected PooledList<Obstacle> objects = new PooledList<>();
 
-    /**
-     * Returns the aim in this level.
-     */
-    public AimModel getAim() {
-        return aim;
-    }
+    /** All flippable objects in the world. */
+    protected PooledList<Obstacle> flippableObjects = new PooledList<>();
 
-    ;
+    /** Position of the collectable orb. */
+    private Vector2 orbPosition;
 
 
-    /**
-     * Returns the bounding rectangle for the physics world
-     * <p>
-     * The size of the rectangle is in physics, coordinates, not screen coordinates
-     *
-     * @return the bounding rectangle for the physics world
-     */
-    public Rectangle getBounds() {
-        return bounds;
-    }
-
-    /**
-     * Returns the scaling factor to convert physics coordinates to screen coordinates
-     *
-     * @return the scaling factor to convert physics coordinates to screen coordinates
-     */
-    public Vector2 getScale() {
-        return scale;
-    }
-
-    /**
-     * Returns a reference to the Box2D World
-     *
-     * @return a reference to the Box2D World
-     */
-    public World getWorld() {
-        return world;
-    }
-
-    /**
-     * Returns a reference to the player avatar
-     *
-     * @return a reference to the player avatar
-     */
-    public BanditModel getBandit() {
-        return bandit;
-    }
-
-    /**
-     * Returns a reference to the exit door
-     *
-     * @return a reference to the exit door
-     */
-    public ExitModel getExit() {
-        return goalDoor;
-    }
-
-    /** Returns the flippable objects in the level.
-     * @return the flippable objects
-     */
-    public PooledList<Obstacle> getFlippables() {
-        return flippableObjects;
-    }
-
-    /**
-     * Returns whether this level is currently in debug node
-     * <p>
-     * If the level is in debug mode, then the physics bodies will all be drawn as
-     * wireframes onscreen
-     *
-     * @return whether this level is currently in debug node
-     */
-    public boolean getDebug() {
-        return debug;
-    }
-
-    /**
-     * Sets whether this level is currently in debug node
-     * <p>
-     * If the level is in debug mode, then the physics bodies will all be drawn as
-     * wireframes onscreen
-     *
-     * @param value whether this level is currently in debug node
-     */
-    public void setDebug(boolean value) {
-        debug = value;
-    }
-
-    /**
-     * Start the alarms in the level.
-     */
-    public void startAlarms() {
-        alarms.setAlarms(true);
-    }
-
-    public void endAlarms(){
-        alarms.setAlarms(false);
-    }
 
     /**
      * Creates a new LevelModel
@@ -277,9 +159,128 @@ public class LevelModel {
         aim = new AimModel();
     }
 
+    /**
+     * Returns this level's AimModel reference.
+     *
+     * @return the reference to this LevelModel's AimModel
+     *         reference.
+     */
+    public AimModel getAim() {
+        return aim;
+    }
 
     /**
-     * Lays out the game geography from the given JSON file
+     * Returns an Array of all AIControllers in this level.
+     *
+     * @return an Array of all AIControllers that exist in this
+     * level.
+     * */
+    public Array<AIController> aiControllers() {
+        return enemyControllers;
+    }
+
+    /**
+     * Returns the bounding rectangle for the physics world.
+     * <p>
+     * The size of the rectangle is in physics, coordinates,
+     * not screen coordinates.
+     *
+     * @return the bounding rectangle for the physics world.
+     */
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    /**
+     * Returns the scaling factor to convert physics
+     * coordinates to screen coordinates.
+     *
+     * @return the scaling factor to convert physics
+     *         coordinates to screen coordinates.
+     */
+    public Vector2 getScale() {
+        return scale;
+    }
+
+    /**
+     * Returns a reference to the Box2D World.
+     *
+     * @return a reference to the Box2D World.
+     */
+    public World getWorld() {
+        return world;
+    }
+
+    /**
+     * Returns a reference to the Bandit's avatar.
+     *
+     * @return a reference to the Bandit's avatar.
+     */
+    public BanditModel getBandit() {
+        return bandit;
+    }
+
+    /**
+     * Returns a reference to the exit door.
+     *
+     * @return a reference to the exit door.
+     */
+    public ExitModel getExit() {
+        return goalDoor;
+    }
+
+    /**
+     * Returns a PooledList of all flippable objects in this level.
+     *
+     * @return a PooledList of all flippable objects in this level.
+     */
+    public PooledList<Obstacle> getFlippables() {
+        return flippableObjects;
+    }
+
+    /**
+     * Returns true if this level is currently in debug mode.
+     * <p>
+     * If the level is in debug mode, then the physics bodies
+     * will all be drawn as wireframes onscreen.
+     *
+     * @return true if this level is currently in debug node;
+     *         otherwise, false.
+     */
+    public boolean getDebug() {
+        return debug;
+    }
+
+    /**
+     * Sets whether this level is currently in debug mode
+     * <p>
+     * If the level is in debug mode, then the physics bodies
+     * will all be drawn as wireframes onscreen.
+     *
+     * @param value whether this level is currently in debug mode.
+     */
+    public void setDebug(boolean value) {
+        debug = value;
+    }
+
+    /**
+     * Sets off every alarm in this level.
+     */
+    public void startAlarms() {
+        alarms.setAlarms(true);
+    }
+
+    /**
+     * Disables every alarm in this level.
+     */
+    public void endAlarms(){
+        alarms.setAlarms(false);
+    }
+
+    /**
+     * Lays out the game geography from the given JSON file. Spawns
+     * tiles, objects, boards, and other assets that should appear
+     * in a Bubblegum Bandit level.
      *
      * @param directory   the asset manager
      * @param levelFormat the JSON file defining the level
@@ -287,16 +288,21 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      */
     public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
+
+        //Initializations & Logic
         aim.initialize(directory, constants);
+        postOrbEnemies = new HashSet<>();
+        HashMap<Vector2, TileModel> tiles = new HashMap<>();
+        supportTiles = new Array<>();
+        enemyControllers = new Array<>();
+        backgroundObjects = new Array<>();
 
         JsonValue boardGravityDownLayer = null;
         JsonValue boardGravityUpLayer = null;
-
-        JsonValue tileLayer = null;
+        JsonValue terrainLayer = null;
         JsonValue objects = null;
         JsonValue supports = null;
         JsonValue postOrb = null;
-
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
             String layerName = layer.getString("name");
@@ -308,7 +314,7 @@ public class LevelModel {
                     boardGravityUpLayer = layer;
                     break;
                 case "Terrain":
-                    tileLayer = layer;
+                    terrainLayer = layer;
                     break;
                 case "Objects":
                     objects = layer.get("Objects");
@@ -317,7 +323,7 @@ public class LevelModel {
                     supports = layer;
                     break;
                 case "PostOrb":
-                    postOrb = layer;
+                    postOrb = layer.get("Objects");
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");
@@ -325,11 +331,14 @@ public class LevelModel {
             layer = layer.next();
         }
 
-        if (boardGravityDownLayer == null || boardGravityUpLayer == null || tileLayer == null || objects == null) {
-            throw new RuntimeException("Missing layer data. Should have: BoardGravityDown, BoardGravityUp, Terrain, and Objects.");
+        if (boardGravityDownLayer == null || boardGravityUpLayer == null || terrainLayer == null || objects == null) {
+            throw new RuntimeException("Missing layer data. Should have: BoardGravityDown, BoardGravityUp, Terrain, PostOrb, and Objects.");
+        }
+        if (postOrb == null) {
+            throw new RuntimeException("Missing PostOrb layer.");
         }
 
-        int[] worldData = tileLayer.get("data").asIntArray();
+        int[] worldData = terrainLayer.get("data").asIntArray();
         float gravity = 0;
 
         if (levelFormat.get("properties") == null) {
@@ -348,30 +357,6 @@ public class LevelModel {
             }
             property = property.next();
         }
-
-        // TODO remove?
-        //initialize dynamic background elements
-//        JsonValue backJV =levelFormat.get("backgroundObj");
-//
-//        int numObj = backJV.get("numObj").asInt();
-//        JsonValue info = backJV.get("objects").child();
-//
-//        backgroundObjects = new BackObjModel[numObj];
-//
-//        for (int i = 0; i < numObj; i ++){
-//            BackObjModel o = new BackObjModel();
-//            o.initialize(directory, backJV, info);
-//
-//            o.setDrawScale(scale);
-//            activate(o);
-//            o.setFilter(CATEGORY_BACK, MASK_BACK);
-//
-//            info = info.next();
-//
-//            backgroundObjects[i] = o;
-//        }
-
-        //------------------------------------------------
 
         float[] pSize = constants.get("physicsSize").asFloatArray();
 
@@ -394,10 +379,7 @@ public class LevelModel {
         backgroundText = directory.getEntry(key2, Texture.class);
         backgroundRegion = new TextureRegion(backgroundText);
 
-        HashMap<Vector2, TileModel> tiles = new HashMap<>();
-        supportTiles = new Array<>();
-        enemyControllers = new Array<>();
-        backgroundObjects = new Array<>();
+
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -470,7 +452,6 @@ public class LevelModel {
         JsonValue object = objects.child();
         JsonValue enemyConstants;
         EnemyModel enemy;
-        int enemyCount = 0;
         Array<EnemyModel> newEnemies = new Array<>();
 
         HashMap<Integer, EnemyModel> enemyIds = new HashMap<>();
@@ -492,13 +473,8 @@ public class LevelModel {
 
 
             switch (objType) {
-                case "box":
                 case "chair":
-
-                    //the gid is a huge negative integer when flipped horizontally.
-                    // add a specific attribute for this from Tiled?
                     boolean facingRight = (object.getInt("gid") > 0);
-
                     JsonValue bgoConstants = constants.get(objType);
                     BackObjModel o = new BackObjModel();
                     o.initialize(directory, x, y, facingRight, bgoConstants);
@@ -507,7 +483,6 @@ public class LevelModel {
                     o.setFilter(CATEGORY_BACK, MASK_BACK);
                     backgroundObjects.add(o);
                     break;
-
                 case "bandit":
                     bandit = new BanditModel(world);
                     bandit.initialize(directory, x, y, constants.get(objType));
@@ -573,7 +548,7 @@ public class LevelModel {
                     break;
                 case "orb":
                     orbPlaced = true;
-                    orbPostion = new Vector2(x,y);
+                    orbPosition = new Vector2(x,y);
                 case "star":
                 case "floatingGum":
                     Collectible coll = new Collectible();
@@ -620,23 +595,76 @@ public class LevelModel {
             object = object.next();
         }
 
+
+        postOrb = postOrb.child();
         while (postOrb != null){
-            String objType = postOrb.get("type").asString();
+            JsonValue objTypeJson = postOrb.get("type");
+            String objType;
+            if (objTypeJson != null) {
+                objType = postOrb.get("type").asString();
+            } else { // Template
+                objType = postOrb.get("template").asString();
+                int substringStart = objType.lastIndexOf("/") + 1;
+                int substringEnd = objType.lastIndexOf(".");
+                objType = objType.substring(substringStart, substringEnd);
+            }
+            int objId = (postOrb.getInt("id"));
             float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
 
 
             switch (objType) {
                 case "smallEnemy":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
                     postOrbEnemies.add(enemy);
+                    enemyIds.put(objId, enemy);
+                    break;
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
+                    newEnemies.add(enemy);
                     break;
                 case "mediumEnemy":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "shieldedmediumrobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedRollingEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
+                    postOrbEnemies.add(enemy);
+                    break;
+                case "shieldedlargerobot":
+                    enemyConstants = constants.get(objType);
+                    x = (float) ((int) x + .5);
+                    enemy = new ShieldedLaserEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
                 case "largeEnemy":
+                    enemyConstants = constants.get(objType);
                     enemy = new LaserEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.setDrawScale(scale);
+                    enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
                 default:
@@ -655,8 +683,7 @@ public class LevelModel {
             throw new RuntimeException("Level missing orb");
         }
 
-        bandit.setOrbPostion(orbPostion);
-
+        bandit.setOrbPostion(orbPosition);
         activate(goalDoor);
         goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
 
@@ -677,11 +704,17 @@ public class LevelModel {
     /**
      * Spawns all EnemyModels that should drop in after the Bandit picks
      * up the orb.
-     *
-     * @param enemyData JSON file containing data of Enemies to spawn
      * */
-    public void spawnPostOrbEnemies(JsonValue enemyData){
-
+    public void spawnPostOrbEnemies(){
+        for(EnemyModel e : postOrbEnemies){
+            activate(e);
+            e.setFilter(CATEGORY_ENEMY, MASK_ENEMY);
+            enemyControllers.add(new AIController(e, bandit, tiledGraphGravityUp, tiledGraphGravityDown));
+            enemyCount++;
+            if (world.getGravity().y > 0){
+                e.flipGravity();
+            }
+        }
     }
 
     public void dispose() {
@@ -731,8 +764,14 @@ public class LevelModel {
         for (AIController controller : enemyControllers) {
             // TODO: Add custom state for dead enemies
 //            adjustForDrift(controller.getEnemy());
-            if (!controller.getEnemy().isRemoved()) {
-                controller.getEnemyStateMachine().update();
+            EnemyModel enemy = controller.getEnemy();
+            if (!enemy.isRemoved()) {
+                float xDiff = (enemy.getX() - bandit.getX());
+                float yDiff = (enemy.getY() - bandit.getY());
+                double distFromPlayer = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
+                if (distFromPlayer < UPDATE_DIST) {
+                    controller.getEnemyStateMachine().update();
+                }
             }
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
@@ -982,7 +1021,7 @@ public class LevelModel {
 
     public void remakeOrb(AssetDirectory directory, JsonValue constants){
         Collectible coll = new Collectible();
-        coll.initialize(directory, orbPostion.x, orbPostion.y, scale, constants.get("orb"));
+        coll.initialize(directory, orbPosition.x, orbPosition.y, scale, constants.get("orb"));
         activate(coll);
         coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
         coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
