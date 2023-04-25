@@ -243,8 +243,8 @@ public class BanditModel extends CapsuleObstacle {
      *
      * @param damage The amount of damage done to the player
      */
-    public void hitPlayer(float damage) {
-        if (!inCooldown) {
+    public void hitPlayer(float damage, boolean laser) {
+        if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             setCooldown(true);
         }
