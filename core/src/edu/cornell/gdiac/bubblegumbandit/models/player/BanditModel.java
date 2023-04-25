@@ -179,7 +179,9 @@ public class BanditModel extends CapsuleObstacle {
 
     /** Sets the players cooldwon status*/
     public void setCooldown(boolean inCooldown) {
-        this.inCooldown = inCooldown; }
+        this.inCooldown = inCooldown;
+        ticks = 0;
+    }
 
     /**
      * Returns the camera target for the player.
@@ -242,7 +244,10 @@ public class BanditModel extends CapsuleObstacle {
      * @param damage The amount of damage done to the player
      */
     public void hitPlayer(float damage) {
-        health = Math.max(0, health - damage);
+        if (!inCooldown) {
+            health = Math.max(0, health - damage);
+            setCooldown(true);
+        }
     }
 
     /**
@@ -687,16 +692,14 @@ public class BanditModel extends CapsuleObstacle {
         ticks++;
 
         if (inCooldown) {
-            if (ticks % 300 == 0) {
+            if (ticks >= 60) {
                 setCooldown(false);
             }
         } else {
-            if (ticks % 10 == 0 && health  > 0) {
-                healPlayer((float) 0.25);
+            if (ticks % 3 == 0 && health>0) {
+                healPlayer((float)0.25);
             }
         }
-
-        System.out.println(inCooldown);
 
         if (isShooting()) {
             shootCooldown = shotLimit;

@@ -236,15 +236,18 @@
         "smallGumOutline": "textures/gum/smallGumOutline.png",
         "largeGumOutline": "textures/gum/largeGumOutline.png",
         "medGumOutline": "textures/gum/medGumOutline.png",
-        "crushing_block": "textures/objects/crushing_block.png",
-        "crushing_block_gummed": "textures/objects/crushing_block_gummed.png",
-        "crushing_block_outline": "textures/objects/crushing_block_outline.png",
+        "crushingBlockGum": "textures/gum/blockGum.png",
+        "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
+        "gummedDoor": "textures/gum/doorGum.png",
+        "outlineDoor": "textures/gum/doorGumOutline.png",
+
+
+        "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/doorUnlocked.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
-        "gummedDoor": "textures/objects/doorGummed.png",
-        "outlineDoor": "textures/objects/doorOutline.png",
         "glass":  "textures/objects/glass.png",
         "hazard": "textures/objects/hazard.png"
+
     },
     "fonts": {
         "display": {
@@ -278,8 +281,9 @@
 
     },
 	"jsons" : {
-		"level1" : "jsons/levels/betaHard.json",
-        "level2":"jsons/levels/alphaPresentation.json",
+		"level1" : "jsons/levels/betaEasy.json",
+        "level2":"jsons/levels/betaMedium.json",
+        "level3" : "jsons/levels/betaHard.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",

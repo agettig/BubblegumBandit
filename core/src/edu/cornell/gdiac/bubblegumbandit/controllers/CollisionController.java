@@ -657,7 +657,6 @@ public class CollisionController implements ContactListener {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
             applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f);
-            levelModel.getBandit().setCooldown(true);
         }
         p.destroy();
     }

@@ -80,7 +80,7 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
         setName("crushing_block");
         setPosition(x,y);
         float width = objectJson.getFloat("width") * .98f / scale.x; // Make it a little smaller so it can slot in 4 block gaps
-        float height = objectJson.getFloat("height") / scale.y;
+        float height = objectJson.getFloat("height") * .98f / scale.y;
         setDimension(width, height);
 
 
@@ -193,11 +193,9 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
      */
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            if (gummed) {
-                canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, flippingObject.getScale());
-            } else {
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, flippingObject.getScale());
-            }
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, flippingObject.getScale());
+            if(gummed)  canvas.draw(gummedTexture, Color.WHITE, 0f, 0f, getX()*drawScale.x+-gummedTexture.getRegionWidth()/2f, getY()*drawScale.y-texture.getRegionHeight()/2*flippingObject.getScale(), getAngle(), 1, flippingObject.getScale());
+
         }
     }
 
@@ -211,8 +209,11 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
 
 
     public void drawWithOutline(GameCanvas canvas) {
-        canvas.draw(outlineTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1.1f, flippingObject.getScale()*1.1f);
-        canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, flippingObject.getScale());
+        canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+            getY() * drawScale.y, getAngle(), 1, flippingObject.getScale());
+        canvas.draw(outlineTexture, Color.WHITE, 0f, 0f,
+            getX() * drawScale.x -5 -gummedTexture.getRegionWidth() / 2f,
+            getY() * drawScale.y - ((texture.getRegionHeight() / 2)+5) * flippingObject.getScale(),
+            getAngle(), 1, flippingObject.getScale());
     }
-
 }
