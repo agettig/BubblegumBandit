@@ -472,9 +472,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
      * Negates this EnemyModel's current "flipped" state (if it is
      * grounded).
      */
-    public void flippedGravity() {
-        if(gummed) System.out.println("gummed");
-        if (!(getGummed() || getStuck())) isFlipped = !isFlipped;
+    public void flipGravity() {
+        if (!(getStuck())) isFlipped = !isFlipped;
     }
 
 

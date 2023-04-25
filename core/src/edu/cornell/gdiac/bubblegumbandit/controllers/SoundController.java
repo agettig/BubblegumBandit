@@ -1,10 +1,13 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.Gdx;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.audio.SoundEffect;
+import edu.cornell.gdiac.audio.*;
 
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import java.util.HashMap;
+
+import static edu.cornell.gdiac.backend.Effect.engine;
 
 public class SoundController {
 
@@ -12,8 +15,6 @@ public class SoundController {
      * The jump sound.  We only want to play once.
      */
     private static SoundEffect jumpSound;
-
-
     /**
      * The small enemy shooting sound.  We only want to play once.
      */
@@ -48,6 +49,26 @@ public class SoundController {
     private static float soundEffectsVolume;
 
 
+
+    // music
+
+    /** menu music: SpaceCruising */
+   private static AudioSource menu;
+
+    /** in-game music: BubbleGumBallad */
+    private static AudioSource game;
+
+    /** alarm music: escape! */
+    private static AudioSource escape;
+
+   /** engine*/
+   private static AudioEngine engine;
+
+    /** A queue to play music */
+    private static MusicQueue musicPlayer;
+
+    /**Hashmap holding sounds and corresponding string */
+    private static HashMap<String, AudioSource> music ;
     public SoundController() {}
 
 
@@ -90,6 +111,26 @@ public class SoundController {
             put("enemySplat", enemySplatSound);
             put("collectItem", collectItemSound);
         }};
+
+       menu = directory.getEntry( "menu", AudioSource.class );
+       game = directory.getEntry( "inGame", AudioSource.class );
+       escape = directory.getEntry( "escape", AudioSource.class );
+
+        music = new HashMap<String, AudioSource>() {{
+            put("menu", menu);
+            put("game", game);
+            put("escape", escape);
+        }};
+       engine = (AudioEngine) Gdx.audio;
+       musicPlayer = engine.newMusicBuffer( false, 44100 );
+    }
+
+    public static void playMusic(String sound){
+        musicPlayer.clearSources();
+        AudioSource sample = music.get(sound);
+        musicPlayer.setLooping(true);
+        musicPlayer.addSource(sample);
+        musicPlayer.play();
     }
 
     public static long playSound(String sound, float volume) {
@@ -97,6 +138,7 @@ public class SoundController {
         int soundId = soundIds.get(s);
         return playSound(s,soundId, volume * soundEffectsVolume);
     }
+
 
     /**
      * Method to ensure that a sound asset is only played once.
