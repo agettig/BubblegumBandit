@@ -377,20 +377,30 @@ public class DoorModel extends TileModel implements Gummable {
 
     public void draw(GameCanvas canvas) {
         if (!isOpen) {
-            if (gummed) {
-                canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
-            } else if (!isLocked) {
-                super.draw(canvas);
+            if (!isLocked) {
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                    getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
             } else {
-                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                    getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
             }
+            if(gummed) canvas.draw(gummedTexture, Color.WHITE, 0f, .5f,
+                getX()*drawScale.x-gummedTexture.getRegionWidth()/2,
+                getY()*drawScale.y-gummedTexture.getRegionHeight()/2, getAngle(), 1, 1);
         }
     }
 
     @Override
     public void drawWithOutline(GameCanvas canvas) {
-        canvas.draw(outlineTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1.1f, 1.1f);
-        canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
-
+        if (!isLocked) {
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+        } else {
+            canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+        }
+        canvas.draw(outlineTexture, Color.WHITE, 0f, 0f,
+            getX()*drawScale.x-5-gummedTexture.getRegionWidth()/2,
+            getY()*drawScale.y-5-gummedTexture.getRegionHeight()/2, getAngle(), 1, 1);
     }
 }

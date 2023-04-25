@@ -236,15 +236,15 @@
         "smallGumOutline": "textures/gum/smallGumOutline.png",
         "largeGumOutline": "textures/gum/largeGumOutline.png",
         "medGumOutline": "textures/gum/medGumOutline.png",
+        "crushingBlockGum": "textures/gum/blockGum.png",
+        "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
+        "gummedDoor": "textures/gum/doorGum.png",
+        "outlineDoor": "textures/gum/doorGumOutline.png",
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
-        "crushingBlockGum": "textures/gum/blockGum.png",
-        "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "door":  "textures/objects/doorUnlocked.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
-        "gummedDoor": "textures/objects/doorGummed.png",
-        "outlineDoor": "textures/objects/doorOutline.png",
         "glass":  "textures/objects/glass.png",
         "hazard": "textures/objects/hazard.png"
 
