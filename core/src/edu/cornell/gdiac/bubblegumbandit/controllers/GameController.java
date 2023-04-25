@@ -126,7 +126,9 @@ public class GameController implements Screen {
      * The sound when enemy is hit with gume.  We only want to play once.
      */
     private SoundEffect enemySplatSound;
-    /** Id for enemy splat sound */
+    /**
+     * Id for enemy splat sound
+     */
     private long enemySplatId = -4;
     /**
      * The sound when an item is collected.  We only want to play once.
@@ -245,16 +247,24 @@ public class GameController implements Screen {
      */
     private boolean orbCollected;
 
-    /** true if Enemies that should spawn after the orb gets picked up
-     * have been created*/
+    /**
+     * true if Enemies that should spawn after the orb gets picked up
+     * have been created
+     */
     private boolean spawnedPostOrbEnemies;
 
-    /** Countdown timer after collecting the orb. */
+    /**
+     * Countdown timer after collecting the orb.
+     */
     private float orbCountdown;
 
-    /**Tick counter for gum reloading*/
+    /**
+     * Tick counter for gum reloading
+     */
     private long ticks;
-    /**Whether the player is reloading gum */
+    /**
+     * Whether the player is reloading gum
+     */
     private boolean reloadingGum;
 
 
@@ -469,14 +479,14 @@ public class GameController implements Screen {
         SoundController.playMusic("game");
     }
 
-    public void respawn(){
+    public void respawn() {
         setComplete(false);
         setFailure(false);
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
         level.endAlarms();
-        for (EnemyModel enemy: level.getPostOrbEnemies()){
+        for (EnemyModel enemy : level.getPostOrbEnemies()) {
             enemy.markRemoved(true);
         }
         level.remakeOrb(directory, constantsJson);
@@ -532,23 +542,25 @@ public class GameController implements Screen {
         if (input.didExit()) {
             listener.exitScreen(this, EXIT_QUIT);
             return false;
-        }
-        else if (countdown > 0) {countdown--;}
-        else if (countdown == 0) {
+        } else if (countdown > 0) {
+            countdown--;
+        } else if (countdown == 0) {
 
             // TODO fix with post orb enemies
-//            if (orbCollected && !complete){
-//                respawn();
-//            }
-//            else {
-//                reset();
-//            }
-            reset();
+            if (level.getPostOrbEnemies().size() == 0) {
+                if (orbCollected && !complete) {
+                    respawn();
+                } else {
+                    reset();
+                }
+            } else {
+                reset();
+            }
         }
 
-        if (orbCountdown > 0 && !complete) { orbCountdown -= dt; }
-
-        else if (orbCollected && orbCountdown <= 0) {
+        if (orbCountdown > 0 && !complete) {
+            orbCountdown -= dt;
+        } else if (orbCollected && orbCountdown <= 0) {
             level.getBandit().kill();
         }
 
@@ -573,9 +585,9 @@ public class GameController implements Screen {
      */
     public void update(float dt) {
         ticks++;
-        if(collisionController.isWinConditionMet() && !isComplete()) {
+        if (collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
-            SaveData.setStatus(levelNum-1, level.getBandit().getNumStars());
+            SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
             SaveData.unlock(levelNum);
 
             if (levelNum > NUM_LEVELS) {
@@ -597,20 +609,20 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        if(bandit.getHealth()>0) {
+        if (bandit.getHealth() > 0) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
         } else {
             bandit.setVX(0f);
-            if(bandit.isGrounded())bandit.setVY(0);
+            if (bandit.isGrounded()) bandit.setVY(0);
         }
 
 
-        float grav =  level.getWorld().getGravity().y;
+        float grav = level.getWorld().getGravity().y;
         boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) &&
-               ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
-                (PlayerController.getInstance().getGravityDown() && grav > 0));
+                ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
+                        (PlayerController.getInstance().getGravityDown() && grav > 0));
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip) {
             Vector2 currentGravity = level.getWorld().getGravity();
@@ -636,13 +648,12 @@ public class GameController implements Screen {
                 bubblegumController.addAmmo(1);
                 reloadingGum = true;
             }
-        }
-        else {
+        } else {
             reloadingGum = false;
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth()>0) {
+        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth() > 0) {
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -657,7 +668,7 @@ public class GameController implements Screen {
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         }
-        if (inputResults.didUnstick()&&bandit.getHealth()>0) {
+        if (inputResults.didUnstick() && bandit.getHealth() > 0) {
             Unstickable unstickable = level.getAim().getSelected();
             if (unstickable != null) {
                 Obstacle unstickableOb = (Obstacle) unstickable;
@@ -682,7 +693,9 @@ public class GameController implements Screen {
 
             EnemyModel enemy = controller.getEnemy();
             // TODO: Make separate state for dead enemies
-            if (enemy.isRemoved()) { continue; }
+            if (enemy.isRemoved()) {
+                continue;
+            }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
             boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
 
@@ -705,7 +718,7 @@ public class GameController implements Screen {
                     if (!enemy.getFaceRight() && enemy.getX() > bandit.getX())
                         sameSide = true;
                     boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
-                    if(canFire) {
+                    if (canFire) {
                         if (enemy instanceof Shield) {
                             ((Shield) enemy).isShielded(false);
                         }
@@ -735,7 +748,7 @@ public class GameController implements Screen {
         canvas.getCamera().update(dt);
 
         //Check to create post-orb enemies
-        if(orbCollected && !spawnedPostOrbEnemies){
+        if (orbCollected && !spawnedPostOrbEnemies) {
             level.spawnPostOrbEnemies();
             spawnedPostOrbEnemies = true;
         }
