@@ -179,7 +179,9 @@ public class BanditModel extends CapsuleObstacle {
 
     /** Sets the players cooldwon status*/
     public void setCooldown(boolean inCooldown) {
-        this.inCooldown = inCooldown; }
+        this.inCooldown = inCooldown;
+        ticks = 0;
+    }
 
     /**
      * Returns the camera target for the player.
@@ -687,7 +689,7 @@ public class BanditModel extends CapsuleObstacle {
         ticks++;
 
         if (inCooldown) {
-            if (ticks % 300 == 0) {
+            if (ticks % 60 == 0) {
                 setCooldown(false);
             }
         } else {
@@ -696,7 +698,6 @@ public class BanditModel extends CapsuleObstacle {
             }
         }
 
-        System.out.println(inCooldown);
 
         if (isShooting()) {
             shootCooldown = shotLimit;
