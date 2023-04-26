@@ -1,4 +1,12 @@
 { "compressionlevel":-1,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"json",
+         "target":"betaMedium.json"
+        }
+    },
  "height":64,
  "infinite":false,
  "layers":[
