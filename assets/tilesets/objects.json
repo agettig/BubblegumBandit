@@ -128,8 +128,8 @@
         {
          "id":19,
          "image":"..\/textures\/objects\/hazard.png",
-         "imageheight":80,
-         "imagewidth":80,
+         "imageheight":49,
+         "imagewidth":72,
          "type":"hazard"
         }],
  "tilewidth":257,
