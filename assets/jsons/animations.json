@@ -82,5 +82,23 @@
       "strip": "poof.poof",
       "fps": 16
     }
+  },
+  "gum": {
+    "splat": {
+      "strip": "gumSplatCycle.splat",
+      "fps": 16
+    }
+  },
+  "glass": {
+    "shatter": {
+      "strip": "glassShatter.shatter",
+      "fps": 16
+    }
+  },
+  "sparks": {
+    "sparks": {
+      "strip": "hazardSparks.sparks",
+      "fps": 16
+    }
   }
 }
