@@ -8,12 +8,12 @@
         }
     },
  "image":"..\/textures\/environment\/tileset.png",
- "imageheight":256,
+ "imageheight":320,
  "imagewidth":704,
  "margin":0,
  "name":"terrain",
  "spacing":0,
- "tilecount":44,
+ "tilecount":55,
  "tiledversion":"1.10.0",
  "tileheight":64,
  "tiles":[
@@ -191,6 +191,50 @@
         }, 
         {
          "id":43,
+         "type":"terrain"
+        }, 
+        {
+         "id":44,
+         "type":"terrain"
+        }, 
+        {
+         "id":45,
+         "type":"terrain"
+        }, 
+        {
+         "id":46,
+         "type":"terrain"
+        }, 
+        {
+         "id":47,
+         "type":"terrain"
+        }, 
+        {
+         "id":48,
+         "type":"terrain"
+        }, 
+        {
+         "id":49,
+         "type":"terrain"
+        }, 
+        {
+         "id":50,
+         "type":"terrain"
+        }, 
+        {
+         "id":51,
+         "type":"terrain"
+        }, 
+        {
+         "id":52,
+         "type":"terrain"
+        }, 
+        {
+         "id":53,
+         "type":"terrain"
+        }, 
+        {
+         "id":54,
          "type":"terrain"
         }],
  "tilewidth":64,

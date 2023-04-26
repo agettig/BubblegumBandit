@@ -56,6 +56,7 @@ public class TiledParser {
             if (tilesetJson.get("image") != null) { // Tileset represents one image (texture atlas)
                 Texture t = directory.getEntry(tile.get("type").asString(), Texture.class);
                 int imgWidth = tilesetJson.getInt("imagewidth");
+                System.out.println("Image width: " + imgWidth);
                 int tileWidth = tilesetJson.getInt("tilewidth");
                 int tileHeight = tilesetJson.getInt("tileheight");
                 int offsetX = 0;
@@ -68,6 +69,7 @@ public class TiledParser {
                         offsetX = 0;
                         offsetY += tileHeight;
                     }
+                    System.out.println("Texture id: " + tile.getInt("id") + " texture x: " + offsetX + " texture y: " + offsetY);
                     tile = tile.next();
                 }
             } else { // Tileset represents multiple images = multiple textures
