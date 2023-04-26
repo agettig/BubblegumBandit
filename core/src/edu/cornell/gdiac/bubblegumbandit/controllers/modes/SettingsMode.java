@@ -729,6 +729,8 @@ public class SettingsMode implements Screen {
         active = false;
         checkedButton = null;
         SaveData.setKeyBindings(values);
+        SoundController.setEffectsVolume(soundEffectsSlider.getValue());
+        SoundController.setMusicVolume(musicSlider.getValue());
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
         //add to save data

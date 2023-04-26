@@ -83,6 +83,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     private TextureRegion gummedTexture;
 
+    private TextureRegion squishedGum;
+    private TextureRegion squishedGumOutline;
+
     private CircleShape sensorShape;
     /** The name of the sensor for detection purposes */
 
@@ -91,7 +94,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     /** The color to paint the sensor in debug mode */
     private TextureRegion gummed_robot;
 
-    private TextureRegion ungummedTexture;
+
 
     /** Texture of the gum overlay when gummed */
     private TextureRegion gumTexture;
@@ -254,11 +257,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
 
+        squishedGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
+        squishedGumOutline = new TextureRegion(directory.getEntry("stuckOutline", Texture.class));
+
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
-        ungummedTexture = texture;
+
         gummedTexture = texture;
+
         key = constantsJson.get("outline").asString();
         outline = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
@@ -392,13 +399,20 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
                 y += 10*yScale;
             }
 
-
             //if gum, overlay with gumTexture
             if (gummed) {
+
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), effect, yScale);
-                canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+                if(getVY()==0) {
+                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), 1, yScale);
+                } else {
+                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y,
+                        getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
+                        y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
+                }
+
             } else {
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
                     y, getAngle(), effect, yScale);
@@ -415,9 +429,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             float effect = faceRight ? 1.0f : -1.0f;
             canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                     y, getAngle(), effect, yScale);
-            if (gummed) {
+            if (getVY()==0) {
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()* drawScale.x-5,
                     y-5*yScale, getAngle(), 1, yScale);
+            } else {
+                canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
+                    getX() * drawScale.x+(gummedTexture.getRegionWidth()
+                        -squishedGum.getRegionWidth())/2f-5f,
+                    y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
+
             }
         }
     }

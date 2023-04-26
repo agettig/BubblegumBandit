@@ -44,6 +44,11 @@ public class SpecialTileModel extends TileModel {
     }
 
     public void draw(GameCanvas canvas) {
+        if(getName().equals("hazard")) {
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                (getX())*drawScale.x,
+                (getY())*drawScale.y ,getAngle(), 1, 1);
+        } else
         canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
     }
 

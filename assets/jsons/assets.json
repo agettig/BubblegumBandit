@@ -240,13 +240,48 @@
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
+        "gumSplatCycle":{
+            "file": "textures/gum/splatCycle.png",
+            "wrap": false,
+            "sprites": {
+                "splat": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/doorUnlocked.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
         "glass":  "textures/objects/glass.png",
-        "hazard": "textures/objects/hazard.png"
+        "glassShatter":  {
+            "file": "textures/objects/glassShatter.png",
+            "wrap": false,
+            "sprites": {
+                "shatter": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+        },
+        "hazard": "textures/objects/hazard.png",
+        "hazardSparks": {
+            "file": "textures/objects/sparks.png",
+            "wrap": false,
+            "sprites": {
+                "sparks": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        }
+
 
     },
     "fonts": {
@@ -281,7 +316,7 @@
 
     },
 	"jsons" : {
-		"level1" : "jsons/levels/test.json",
+		"level1" : "jsons/levels/betaEasy.json",
         "level2":"jsons/levels/betaMedium.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
