@@ -121,6 +121,12 @@ public class Minimap {
         minimapTable.add(minimapBackground);
         minimapBackground.setSize(0, 0);
         minimapBackground.setColor(new Color(0,0,0,.3f));
+
+        // These calls are necessary based on how Math.max() is called, if the previous level had
+        // a bigger minimap the values will not update and the game will crash
+        expandedTilesTall = 0;
+        expandedTilesLong = 0;
+
         assert levelFormat != null;
         assert physicsWidth >= 0;
         assert physicsHeight >= 0;
