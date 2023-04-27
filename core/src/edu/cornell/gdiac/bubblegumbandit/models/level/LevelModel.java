@@ -757,6 +757,7 @@ public class LevelModel {
         for (Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
+        icons.clear();
         objects.clear();
         if (world != null) {
             world.dispose();
