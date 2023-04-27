@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,6 +22,8 @@ import org.w3c.dom.ls.LSOutput;
 import javax.swing.plaf.IconUIResource;
 import java.util.ArrayList;
 import java.util.Vector;
+
+import static java.lang.String.valueOf;
 
 public class ShipBackground {
 
@@ -60,7 +63,7 @@ public class ShipBackground {
     private float[] vertices;
 
     //ids for corner tiles, determine the vertices of the polygon
-    private IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27});
+    private IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27, 11});
 
     private PolygonRegion spaceReg;
     private PolygonRegion shipReg;
@@ -72,6 +75,14 @@ public class ShipBackground {
     private Fixture[] geoms;
 
     private PolygonObstacle interior;
+
+    /**
+     * The font for debugging
+     */
+    protected BitmapFont debugFont;
+
+
+    private Vector2 centroid;
 
     public ShipBackground(TextureRegion bg, TextureRegion space_bg) {
         ship_bg = bg;
@@ -127,6 +138,8 @@ public class ShipBackground {
         }
         createPolygons();
 
+        debugFont = directory.getEntry("display", BitmapFont.class);
+
     }
 
     public void createPolygons(){
@@ -159,7 +172,7 @@ public class ShipBackground {
         //sort vectors in cornerPositions in a clockwise order using polar coordinates
         float centerX = x_offset + ((x_max - x_offset)/2);
         float centerY = y_offset + ((y_max - y_offset)/2);
-        Vector2 centroid = new Vector2(centerX, centerY);
+        centroid = new Vector2(centerX, centerY);
 
         //angles of rotations of all corner positions relative to the centroid
 //        OrderedMap<Float, Vector2> cwPositions = new OrderedMap<>();
@@ -191,33 +204,21 @@ public class ShipBackground {
 //        }
 
         vertices = new float[cwPositions.length * 2];
-        for (int i = 0; i < cwPositions.length; i++){
+        for (int i = 0; i < vertices.length; i += 2){
 //            System.out.println(cwPositions[i].angle);
-            vertices[i] = ((cwPositions[i].coordinates).x - x_offset) * 64;
-            vertices[i + 1] = ((cwPositions[i].coordinates).y - y_offset) * 64;
+            vertices[i] = ((cwPositions[i/2].coordinates).x - x_offset) * 64;
+            vertices[i + 1] = ((cwPositions[i/2].coordinates).y - y_offset) * 64;
             System.out.println(vertices[i] + ", " + vertices[i + 1] );
         }
 
 //        vertices = sortVertices();
 
-//        ShortArray array  = TRIANGULATOR.computeTriangles(vertices);
-//        trimColinear(vertices,array);
+        ShortArray array  = TRIANGULATOR.computeTriangles(vertices);
+        trimColinear(vertices,array);
 //        short[] triangles = new short[array.items.length];
 //        System.arraycopy(array.items, 0, triangles, 0, triangles.length);
 
-        shipReg = new PolygonRegion(ship_bg,
-                vertices,
-
-        new short[]{
-                1,2, 4,       // Two triangles using vertex indices.
-//                0, 2, 3,          // Take care of the counter-clockwise direction.
-//                0, 3, 4,
-//                0, 4, 5,
-//                0, 5, 6,
-//                0, 6, 7
-        });
-
-
+        shipReg = new PolygonRegion(ship_bg, vertices,array.toArray() );
 
 
     }
@@ -259,6 +260,13 @@ public class ShipBackground {
 
         canvas.draw(spaceReg, 0,0);
         canvas.draw(shipReg, x_offset * 64, y_offset * 64);
+//        canvas.draw(shipReg, 0, 0);
+
+        for (int i = 0; i < vertices.length; i += 2){
+            canvas.drawText( valueOf(i/2) , debugFont, vertices[i] + x_offset * 64, vertices[i+1] + y_offset * 64);
+        }
+
+        canvas.drawText("X", debugFont, centroid.x * 64, centroid.y * 64);
 
 //        interior.draw(canvas);
 
@@ -296,12 +304,12 @@ public class ShipBackground {
                 return 1;
             }
             //this.angle == v.angle
-//            if (this.distance > v.distance){
-//                return -1;
-//            }
-//            if (this.distance < v.distance){
-//                return  1;
-//            }
+            if (this.distance > v.distance){
+                return -1;
+            }
+            if (this.distance < v.distance){
+                return  1;
+            }
             return 0;
 
         }
