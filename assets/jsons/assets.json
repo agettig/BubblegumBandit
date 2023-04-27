@@ -310,6 +310,9 @@
         "projectSpace" : {
             "file" : "fonts/ProjectSpace.ttf",
             "size": 40
+        }, "sedgwickAve" : {
+            "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
+            "size": 50
         }
     },
 	"soundfx": {
