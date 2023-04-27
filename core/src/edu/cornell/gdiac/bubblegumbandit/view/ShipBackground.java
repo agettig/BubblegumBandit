@@ -25,9 +25,16 @@ import java.util.Vector;
 
 import static java.lang.String.valueOf;
 
+
+/**
+ * ShipBackground creates the background of the current level.
+ *
+ * ShipBackground requires that the json file of the given level contains the layer "Corners" to draw the background.
+ * Otherwise, no background will be drawn.
+ */
 public class ShipBackground {
 
-    /** An earclipping triangular to make sure we work with convex shapes */
+    /** An ear-clipping triangular to make sure we work with convex shapes */
     private static final EarClippingTriangulator TRIANGULATOR = new EarClippingTriangulator();
 
     /**Width of the level */
@@ -39,12 +46,12 @@ public class ShipBackground {
     /**
      * The background of the ship, cropped if necessary
      */
-    private TextureRegion ship_bg;
+    private final TextureRegion shipBg;
 
     /**
      * The space background of the level, cropped if necessary
      */
-    private TextureRegion space_bg;
+    private final TextureRegion spaceBg;
 
     /** The positions of the tiles */
     private ArrayList<Vector2> cornerPositions;
@@ -60,36 +67,34 @@ public class ShipBackground {
     /** largest y coordinate, used to find centroid */
     private float y_max;
 
+    /** A list of the x and y positions of each vertex in the ship's polygon */
     private float[] vertices;
 
-    //ids for corner tiles, determine the vertices of the polygon
-    private IntArray cornerIds = new IntArray(new int[] {25, 21, 22, 27, 11, 10});
-
+    /** Polygon representing space */
     private PolygonRegion spaceReg;
+    /** Polygon representing the spaceship */
     private PolygonRegion shipReg;
 
-    /** Shape information for this physics object */
-    protected PolygonShape[] shapes;
-
-    /** A cache value for the fixtures (for resizing) */
-    private Fixture[] geoms;
-
-    private PolygonObstacle interior;
-
     /**
-     * The font for debugging
+     * Font used in debugging
      */
     protected BitmapFont debugFont;
 
-
+    /** the center of the polygon region, used to sort the vertices*/
     private Vector2 centroid;
 
-    public ShipBackground(TextureRegion bg, TextureRegion space_bg) {
-        ship_bg = bg;
-        this.space_bg = space_bg;
+    /**
+     * Initializes the textures of the background
+     *
+     * @param shipBg TextureRegion of the spaceship
+     * @param spaceBg TextureRegion of space
+     */
+    public ShipBackground(TextureRegion shipBg, TextureRegion spaceBg) {
+        this.shipBg = shipBg;
+        this.spaceBg = spaceBg;
     }
 
-    /** Resets all variables to their inital values */
+    /** Resets all variables to their initial values */
     public void reset(){
         y_max = 0;
         x_max = 0;
@@ -97,7 +102,7 @@ public class ShipBackground {
         spaceReg = null;
     }
 
-    /** Initializes the minimap for a given level.
+    /** Initializes the background for a given level.
      *
      * @param directory The asset directory.
      * @param levelFormat the current level.
@@ -106,8 +111,8 @@ public class ShipBackground {
      */
     public void initialize(AssetDirectory directory, JsonValue levelFormat, int physicsWidth, int physicsHeight) {
 
-//        //Make the Minimap's background and map tiles.
-//        //Set fields.
+        //Make the Minimap's background and map tiles.
+        //Set fields.
         width = physicsWidth;
         height = physicsHeight;
         x_offset = width;
@@ -156,22 +161,11 @@ public class ShipBackground {
 
     }
 
+    /** Creates the polygons representing space and the spaceship. */
     public void createPolygons(){
 
-//        PolygonRegion polyReg = new PolygonRegion(new TextureRegion(textureSolid),
-//                new float[] {      // Four vertices
-//                        0, 0,            // Vertex 0         3--2
-//                        100, 0,          // Vertex 1         | /|
-//                        100, 100,        // Vertex 2         |/ |
-//                        0, 100           // Vertex 3         0--1
-//                }, new short[] {
-//                0, 1, 2,         // Two triangles using vertex indices.
-//                0, 2, 3          // Take care of the counter-clockwise direction.
-//        });
-
-
         //space polygon is just a large rectangle
-        spaceReg = new PolygonRegion(space_bg,
+        spaceReg = new PolygonRegion(spaceBg,
                 new float[] {      // Four vertices
                         0, 0,            // Vertex 0         3--2
                         width*64, 0,          // Vertex 1         | /|
@@ -183,18 +177,33 @@ public class ShipBackground {
         });
 
         //create ship polygon
-        //sort vectors in cornerPositions in a clockwise order using polar coordinates
+        //sort vectors in cornerPositions in a clockwise order using polar coordinates relative to a central point
+        sortVertices();
+
+        //create triangles
+        ShortArray array  = TRIANGULATOR.computeTriangles(vertices);
+        trimColinear(vertices,array);
+
+        shipReg = new PolygonRegion(shipBg, vertices,array.toArray() );
 
 
+    }
+
+    /**
+     *  Using the list of vertices in CornerPositions,
+     *  sorts the vertices in a clockwise order relative to a central position within the polygon.
+     *  Using this sorted list, creates a list of floats representing each of the vertices that is compatible with
+     *  PolygonRegion.
+     *
+     *  The final list is stored in vertices
+      */
+    private void sortVertices(){
         //centroid is the middle x and y position
-
         float centerX = x_offset + ((x_max - x_offset)/2);
         float centerY = y_offset + ((y_max - y_offset)/2);
         centroid = new Vector2(centerX, centerY);
 
-
         //angles of rotations of all corner positions relative to the centroid
-//        OrderedMap<Float, Vector2> cwPositions = new OrderedMap<>();
         Vertex[] cwPositions = new Vertex[cornerPositions.size()];
         for (int i = 0; i < cwPositions.length; i++){
             Vector2 point = cornerPositions.get(i);
@@ -215,37 +224,14 @@ public class ShipBackground {
         }
 
         // change corner positions into a list of vertices compatible with PolygonRegion
-//        vertices = new float[(cornerPositions.size()) * 2];
-//        for (int i = 0; i < vertices.length; i+=2){
-//            vertices[i] = (cornerPositions.get(i/2).x - x_offset) * 64;
-//            vertices[i + 1] = (cornerPositions.get(i/2).y - y_offset) * 64;
-//            System.out.println(vertices[i] + ", " + vertices[i + 1] );
-//        }
-
         vertices = new float[cwPositions.length * 2];
         for (int i = 0; i < vertices.length; i += 2){
 //            System.out.println(cwPositions[i].angle);
             vertices[i] = ((cwPositions[i/2].coordinates).x - x_offset) * 64;
             vertices[i + 1] = ((cwPositions[i/2].coordinates).y - y_offset) * 64;
-            System.out.println(vertices[i] + ", " + vertices[i + 1] );
+//            System.out.println(vertices[i] + ", " + vertices[i + 1] );
         }
-
-//        vertices = sortVertices();
-
-        ShortArray array  = TRIANGULATOR.computeTriangles(vertices);
-        trimColinear(vertices,array);
-//        short[] triangles = new short[array.items.length];
-//        System.arraycopy(array.items, 0, triangles, 0, triangles.length);
-
-        shipReg = new PolygonRegion(ship_bg, vertices,array.toArray() );
-
-
     }
-
-
-
-    /** returns a list of vertices in a clockwise order
-
 
     /**
      * Removes colinear vertices from the given triangulation.
@@ -274,33 +260,43 @@ public class ShipBackground {
     }
 
 
+    /** Draws the repeating space background and the cropped ship background */
     public void draw(GameCanvas canvas){
+
+        if (spaceReg == null || shipReg == null) return;
         canvas.begin();
 
-        if (spaceReg != null && shipReg != null) {
+        canvas.draw(spaceReg, 0, 0);
+        canvas.draw(shipReg, x_offset * 64, y_offset * 64);
 
-            canvas.draw(spaceReg, 0, 0);
-            canvas.draw(shipReg, x_offset * 64, y_offset * 64);
-//        canvas.draw(shipReg, 0, 0);
-
-            for (int i = 0; i < vertices.length; i += 2) {
-                canvas.drawText(valueOf(i / 2), debugFont, vertices[i] + x_offset * 64, vertices[i + 1] + y_offset * 64);
-            }
-
-            canvas.drawText("X", debugFont, centroid.x * 64, centroid.y * 64);
-        }
-
-//        interior.draw(canvas);
+//        drawDebug(canvas);
 
         canvas.end();
 
 
     }
 
+    /** Draws the number associated to each vertex and marks the centroid with an 'X' */
+    private void drawDebug(GameCanvas canvas){
+        for (int i = 0; i < vertices.length; i += 2) {
+        canvas.drawText(valueOf(i / 2), debugFont, vertices[i] + x_offset * 64, vertices[i + 1] + y_offset * 64);
+        }
+        canvas.drawText("X", debugFont, centroid.x * 64, centroid.y * 64);
+    }
+
+
+    /**
+     * A Vertex represents a vertex of the ship's polygon.
+     */
     private class Vertex{
 
+        /** position of the vertex */
         public Vector2 coordinates;
+
+        /** Angle of rotation relative to the centroid, in degrees */
         public float angle;
+
+        /** Distance away from the centroid */
         public float distance;
 
         public Vertex(Vector2 coordinates, Vector2 centroid){
@@ -310,13 +306,16 @@ public class ShipBackground {
             this.distance = 0;//coordinates.dst(centroid);
         }
 
-        /** return
-         * 0 = equal
-         * -1 = this vertex is less than
-         * 1 = this vertuex is greater than
+        /**
+         * Compares the angle and distance of the current Vertex to the given Vertex.
+         * Returns a value of 0, 1, or -1:
          *
-         * @param v
-         * @return
+         *  0 = vertices are equal
+         *  -1 = this vertex is less than the given vertex
+         *  1 = this vertex is greater than the given vertex
+         *
+         * @param v The given vertex
+         * @return A value of 0, 1, or -1
          */
         public int compareTo(Vertex v){
             if (this.angle < v.angle){
