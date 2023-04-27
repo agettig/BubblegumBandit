@@ -97,9 +97,6 @@ public class LevelModel {
     private TextureRegion backgroundRegion;
 
 
-    private ShipBackground shipBackground;
-
-
     /** All AIControllers in the level. */
     private Array<AIController> enemyControllers;
 
@@ -158,6 +155,8 @@ public class LevelModel {
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
 
+    /** Draws the background of the ship cropped to the boundaries of the level */
+//    private ShipBackground shipBackground;
 
 
     /**
@@ -340,6 +339,8 @@ public class LevelModel {
                     break;
                 case "PostOrb":
                     postOrb = layer.get("Objects");
+                    break;
+                case "Corners":
                     break;
                 default:
                     throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");

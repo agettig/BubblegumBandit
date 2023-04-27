@@ -111,7 +111,7 @@ public class ShipBackground {
         JsonValue tileLayer = null;
         while (layer != null) {
             String layerName = layer.getString("name");
-            if ("Terrain".equals(layerName)) {
+            if ("Corners".equals(layerName)) {
                 tileLayer = layer;
             }
             layer = layer.next();
@@ -123,7 +123,8 @@ public class ShipBackground {
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
-            if (cornerIds.contains(tileVal)) {
+//            if (cornerIds.contains(tileVal)) {
+            if (tileVal != 0) {
 
                 float x = (i % width) + 1f;
                 float y = height - (i / width) - 1f;
@@ -170,9 +171,14 @@ public class ShipBackground {
 
         //create ship polygon
         //sort vectors in cornerPositions in a clockwise order using polar coordinates
+
+
+        //centroid is the middle x and y position
+
         float centerX = x_offset + ((x_max - x_offset)/2);
         float centerY = y_offset + ((y_max - y_offset)/2);
         centroid = new Vector2(centerX, centerY);
+
 
         //angles of rotations of all corner positions relative to the centroid
 //        OrderedMap<Float, Vector2> cwPositions = new OrderedMap<>();
