@@ -7,11 +7,21 @@
         "emptyGum": "textures/UI/emptyGum.png",
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
+
         "sunfish" : "textures/levelSelect/sunfish.png",
         "ship1" : "textures/levelSelect/level1.png",
         "ship2" : "textures/levelSelect/level2.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
+
+        "mapIcon" : "textures/tutorial/mapIcon.png",
+        "shootIcon" : "textures/tutorial/gumIcon.png",
+        "reloadIcon" : "textures/tutorial/reloadIcon.png",
+        "leftIcon" : "textures/tutorial/leftIcon.png",
+        "rightIcon" : "textures/tutorial/rightIcon.png",
+        "unstickIcon" : "textures/tutorial/unstickIcon.png",
+        "upIcon" : "textures/tutorial/upIcon.png",
+        "downIcon" : "textures/tutorial/downIcon.png",
 
         "terrain": {
             "file": "textures/environment/tileset.png"

@@ -148,6 +148,9 @@ public class LevelModel {
     /** Position of the collectable orb. */
     private Vector2 orbPosition;
 
+    /** Holds all tutorial wall decor. */
+    private Array<TutorialIcon> icons;
+
 
 
     /**
@@ -162,6 +165,7 @@ public class LevelModel {
         scale = new Vector2(1, 1);
         debug = false;
         aim = new AimModel();
+        icons = new Array<>();
     }
 
     /**
@@ -478,8 +482,17 @@ public class LevelModel {
 
 
             switch (objType) {
+                case "tutorial": {
+                    int keyCode = object.get("properties").get(0).getInt("value");
+                    if(keyCode>7) {
+                        System.err.println("Invalid keycode "+keyCode+" accessed by tutorial icon.");
+                        break;
+                    }
+                    icons.add(new TutorialIcon(directory, x, y, keyCode, scale));
+                    break;
+                }
                 case "chair":
-                    boolean facingRight = (object.getInt("gid") > 0);
+                    boolean facingRight = (object.getInt("gid") > 0); //??
                     JsonValue bgoConstants = constants.get(objType);
                     BackObjModel o = new BackObjModel();
                     o.initialize(directory, x, y, facingRight, bgoConstants);
@@ -856,6 +869,7 @@ public class LevelModel {
         }
 
         alarms.drawAlarms(canvas, scale);
+        for(TutorialIcon icon: icons) icon.draw(canvas);
 
         for(BackgroundTileModel tile: supportTiles) {
             tile.draw(canvas);
