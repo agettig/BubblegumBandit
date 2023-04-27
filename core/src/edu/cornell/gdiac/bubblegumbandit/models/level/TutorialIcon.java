@@ -1,13 +1,16 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+
 
 public class TutorialIcon {
   private TextureRegion icon;
@@ -17,10 +20,12 @@ public class TutorialIcon {
   private static float margin = 10f;
   protected BitmapFont font;
   private Vector2 scale;
+  private float textOffset = 4f;
+  private Color bubblePink = new Color(246f/255f, 148f/255f, 139f/255f, 1);
 
 
   public TutorialIcon(AssetDirectory directory, float x, float y, int keyCode, Vector2 scale) {
-    this.font = directory.getEntry("projectSpace", BitmapFont.class);
+    this.font = directory.getEntry("sedgwickAve", BitmapFont.class);
     this.x = x;
     this.y = y;
     this.keyCode = keyCode;
@@ -74,7 +79,12 @@ public class TutorialIcon {
 
   public void draw(GameCanvas canvas) {
     canvas.draw(icon, x* scale.x, y*scale.y);
-    canvas.drawText(getKeyText(), font, x*scale.x, y*scale.y-margin);
+    canvas.drawText(getKeyText(),  font, Color.WHITE,
+        x*scale.x-textOffset,
+        y*scale.y-margin, icon.getRegionWidth(), Align.center, true);
+    canvas.drawText(getKeyText(),  font, bubblePink,
+        x*scale.x,
+        y*scale.y-margin, icon.getRegionWidth(), Align.center, true);
 
   }
 
