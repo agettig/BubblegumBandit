@@ -248,7 +248,7 @@
     "force": 10.0,
     "damping": 2.0,
     "maxSpeed": 5.0,
-    "animations": "shieldedSmallEnemy",
+    "animations": "shielded_small_robot",
     "texture": "smallEnemy",
     "outline": "smallGumOutline",
     "gummedTexture": "gummedEnemy",
@@ -291,7 +291,7 @@
     "chaseSpeed": 3,
     "pursueSpeed": 4
   },
-  "shieldedLargeEnemy": {
+  "shieldedlargerobot": {
     "type": "moving",
     "size": [
       1.5,
