@@ -7,11 +7,21 @@
         "emptyGum": "textures/UI/emptyGum.png",
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
+
         "sunfish" : "textures/levelSelect/sunfish.png",
         "ship1" : "textures/levelSelect/level1.png",
         "ship2" : "textures/levelSelect/level2.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
+
+        "mapIcon" : "textures/tutorial/mapIcon.png",
+        "shootIcon" : "textures/tutorial/gumIcon.png",
+        "reloadIcon" : "textures/tutorial/reloadIcon.png",
+        "leftIcon" : "textures/tutorial/leftIcon.png",
+        "rightIcon" : "textures/tutorial/rightIcon.png",
+        "unstickIcon" : "textures/tutorial/unstickIcon.png",
+        "upIcon" : "textures/tutorial/upIcon.png",
+        "downIcon" : "textures/tutorial/downIcon.png",
 
         "terrain": {
             "file": "textures/environment/tileset.png"
@@ -240,13 +250,48 @@
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
+        "gumSplatCycle":{
+            "file": "textures/gum/splatCycle.png",
+            "wrap": false,
+            "sprites": {
+                "splat": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/doorUnlocked.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
         "glass":  "textures/objects/glass.png",
-        "hazard": "textures/objects/hazard.png"
+        "glassShatter":  {
+            "file": "textures/objects/glassShatter.png",
+            "wrap": false,
+            "sprites": {
+                "shatter": {
+                    "size": 3,
+                    "rows": 1,
+                    "cols": 3
+                }
+            }
+        },
+        "hazard": "textures/objects/hazard.png",
+        "hazardSparks": {
+            "file": "textures/objects/sparks.png",
+            "wrap": false,
+            "sprites": {
+                "sparks": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        }
+
 
     },
     "fonts": {
@@ -281,9 +326,15 @@
 
     },
 	"jsons" : {
-		    "level1" : "jsons/levels/betaEasy.json",
-        "level2":"jsons/levels/betaLevel6.json",
-        "level3" : "jsons/levels/alpha.json",
+        "level1" : "jsons/levels/placeholder.json",
+        "level2":"jsons/levels/placeholder.json",
+        "level3" : "jsons/levels/level3.json",
+        "level4": "jsons/levels/level4.json",
+        "level5" : "jsons/levels/placeholder.json",
+        "level6":"jsons/levels/betaLevel6.json",
+        "level7" : "jsons/levels/level7.json",
+        "level8": "jsons/levels/level8.json",
+        "level9": "jsons/levels/placeholder.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",
