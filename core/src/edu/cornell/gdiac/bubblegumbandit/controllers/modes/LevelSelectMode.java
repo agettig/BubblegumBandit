@@ -613,6 +613,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     public void hide() {
         // Useless if called in outside animation loop
         active = false;
+        ready = false;
+        for (LevelIconModel level: levels){
+            level.setPressState(0);
+        }
     }
 
     /**
