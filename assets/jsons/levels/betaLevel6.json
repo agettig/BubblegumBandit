@@ -115,7 +115,7 @@
                  "id":367,
                  "name":"",
                  "rotation":0,
-                 "type":"largeEnemy",
+                 "type":"shieldedlargerobot",
                  "visible":true,
                  "width":134,
                  "x":1856,

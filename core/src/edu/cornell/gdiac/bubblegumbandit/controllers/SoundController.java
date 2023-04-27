@@ -130,7 +130,9 @@ public class SoundController {
         AudioSource sample = music.get(sound);
         musicPlayer.setLooping(true);
         musicPlayer.addSource(sample);
+        musicPlayer.setVolume(musicVolume);
         musicPlayer.play();
+
     }
 
     public static long playSound(String sound, float volume) {
@@ -154,7 +156,7 @@ public class SoundController {
      * @return the new sound instance for this asset.
      */
     public static long playSound(SoundEffect sound, long soundId) {
-        return playSound(sound, soundId, 1.0f);
+        return playSound(sound, soundId, soundEffectsVolume);
     }
 
     /**
@@ -193,12 +195,15 @@ public class SoundController {
         }
     }
 
-    public void setMusicVolume(float volume){
+    public static void setMusicVolume(float volume)
+    {
         musicVolume = volume;
+        musicPlayer.setVolume(volume);
     }
 
-    public void setEffectsVolume(float volume){
-        soundEffectsVolume = volume;
+    public static void setEffectsVolume(float volume){
+
+      soundEffectsVolume = volume;
     }
 
 }

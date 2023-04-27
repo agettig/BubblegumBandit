@@ -27,6 +27,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
@@ -106,6 +107,10 @@ public class LevelModel {
         return postOrbEnemies;
     }
 
+    //private EffectController gumEffectController;
+    private EffectController glassEffectController;
+    private EffectController sparkEffectController;
+
     /** Decision graph for Enemies when gravity is normal. */
     private TiledGraph tiledGraphGravityDown;
 
@@ -143,6 +148,9 @@ public class LevelModel {
     /** Position of the collectable orb. */
     private Vector2 orbPosition;
 
+    /** Holds all tutorial wall decor. */
+    private Array<TutorialIcon> icons;
+
 
 
     /**
@@ -157,6 +165,7 @@ public class LevelModel {
         scale = new Vector2(1, 1);
         debug = false;
         aim = new AimModel();
+        icons = new Array<>();
     }
 
     /**
@@ -473,8 +482,17 @@ public class LevelModel {
 
 
             switch (objType) {
+                case "tutorial": {
+                    int keyCode = object.get("properties").get(0).getInt("value");
+                    if(keyCode>7) {
+                        System.err.println("Invalid keycode "+keyCode+" accessed by tutorial icon.");
+                        break;
+                    }
+                    icons.add(new TutorialIcon(directory, x, y, keyCode, scale));
+                    break;
+                }
                 case "chair":
-                    boolean facingRight = (object.getInt("gid") > 0);
+                    boolean facingRight = (object.getInt("gid") > 0); //??
                     JsonValue bgoConstants = constants.get(objType);
                     BackObjModel o = new BackObjModel();
                     o.initialize(directory, x, y, facingRight, bgoConstants);
@@ -699,6 +717,24 @@ public class LevelModel {
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
         alarms = new AlarmController(alarmPos, directory, world);
+        //gumEffectController = new EffectController("gum",
+        //    "splat", directory, true, true, 1);
+        glassEffectController = new EffectController("glass", "shatter",
+            directory, true, true, 0);
+        sparkEffectController = new EffectController("sparks", "sparks",
+            directory, true, true, 0);
+
+    }
+
+    //public void makeGumSplat(float x, float y){
+    //    gumEffectController.makeEffect(x, y, scale, false);
+    //}
+
+    public void makeShatter(float x, float y){
+        glassEffectController.makeEffect(x, y, scale, false);
+    }
+    public void makeSpark(float x, float y){
+        sparkEffectController.makeEffect(x, y, scale, false);
     }
 
     /**
@@ -833,6 +869,7 @@ public class LevelModel {
         }
 
         alarms.drawAlarms(canvas, scale);
+        for(TutorialIcon icon: icons) icon.draw(canvas);
 
         for(BackgroundTileModel tile: supportTiles) {
             tile.draw(canvas);
@@ -856,6 +893,9 @@ public class LevelModel {
 
 
         if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
+       // gumEffectController.draw(canvas);
+        glassEffectController.draw(canvas);
+        sparkEffectController.draw(canvas);
 
 
 

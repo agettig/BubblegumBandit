@@ -391,18 +391,20 @@ public class CollisionController implements ContactListener {
                 tile = (TileModel) body;
                 orientation = checkGumPosition(gum, tile);
                 gum.setOnTile(true);
+               // levelModel.makeGumSplat(gum.getX(), gum.getY());
             }
             else if (body.equals(levelModel.getBandit())) {
                 // Make bandit stuck
                 levelModel.getBandit().setStuck(true);
             }
-
             // creates joint between gum and object
             WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
             GumJointPair pair = new GumJointPair(gum, weldJointDef);
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
             gum.setCollisionFilters();
+
+
         }
     }
 
@@ -559,6 +561,7 @@ public class CollisionController implements ContactListener {
                 // Screen shake cause block hit the floor
             if (crushed.getName().equals("glass") && !crusher.didSmash) {
                 crushed.markRemoved(true);
+                levelModel.makeShatter(crushed.getX(), crushed.getY());
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
             }
             else if (!crusher.didSmash) {
@@ -594,6 +597,7 @@ public class CollisionController implements ContactListener {
         }
 
         levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE, false);
+        levelModel.makeSpark(hazard.getX(), hazard.getY());
         // Bandit on top or below hazard
         if ((bandit.getPosition().x <= (hazard.getX() + .5f)) && (bandit.getPosition().x >= (hazard.getX() - .5f))) {
             shouldFlipGravity = true;

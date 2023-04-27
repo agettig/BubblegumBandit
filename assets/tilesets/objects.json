@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":16,
+ "tilecount":17,
  "tiledversion":"1.10.0",
  "tileheight":258,
  "tiles":[
@@ -128,9 +128,27 @@
         {
          "id":19,
          "image":"..\/textures\/objects\/hazard.png",
-         "imageheight":80,
-         "imagewidth":80,
+         "imageheight":49,
+         "imagewidth":72,
          "type":"hazard"
+        }, 
+        {
+         "id":20,
+         "image":"..\/textures\/tutorial\/rightIcon.png",
+         "imageheight":73,
+         "imagewidth":94,
+         "properties":[
+                {
+                 "name":"keyCode",
+                 "type":"string",
+                 "value":"1"
+                }, 
+                {
+                 "name":"text",
+                 "type":"string",
+                 "value":"move right"
+                }],
+         "type":"tutorial"
         }],
  "tilewidth":257,
  "type":"tileset",
