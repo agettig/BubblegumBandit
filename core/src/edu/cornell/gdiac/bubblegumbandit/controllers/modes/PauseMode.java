@@ -304,9 +304,8 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         resize(canvas.getWidth(), canvas.getHeight());
 
         // We need these files loaded immediately
-        internal = new AssetDirectory("jsons/pause.json");
-        internal.loadAssets();
-        internal.finishLoading();
+//        internal.loadAssets();
+//        internal.finishLoading();
 
         //We need these NOW!
         resumeButton = null;
@@ -316,7 +315,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         quitButton = null;
         pointer = null;
 
-        background = internal.getEntry("background", Texture.class);
+//        background = internal.getEntry("background", Texture.class);
 
         // No progress so far.
         progress = 0;
@@ -329,24 +328,6 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
             controller.addListener(this);
         }
 
-        pauseTable.row();
-        pauseTable.add(resumeButton).pad(0, 100, 0, 0);
-        pauseTable.row();
-        pauseTable.add(restartButton).pad(0, 100, 0, 0);
-        pauseTable.row();
-        pauseTable.add(levelSelectButton).pad(0, 100, 0, 0);
-        pauseTable.row();
-        pauseTable.add(settingsButton).pad(0, 100, 0, 0);
-        pauseTable.row();
-        pauseTable.add(quitButton).pad(0, 100, 0, 0);
-        pauseTable.row();
-
-        for (Cell cell : pauseTable.getCells()) {
-            cell.align(Align.left);
-        }
-        pauseTable.columnDefaults(1).setActorWidth(400);
-        pauseTable.columnDefaults(1).fillX();
-
 
         active = true;
 
@@ -357,8 +338,9 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
      * Called when this screen should release all resources.
      */
     public void dispose() {
-        internal.unloadAssets();
-        internal.dispose();
+//        internal.unloadAssets();
+//        internal.dispose();
+        active = false;
     }
 
     public void makePauseTable() {
