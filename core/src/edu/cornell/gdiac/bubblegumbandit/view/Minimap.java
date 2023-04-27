@@ -98,7 +98,9 @@ public class Minimap {
     /** true if the Minimap has been initialized.*/
     private boolean initialized;
 
+    /** How many draw passes we've done since the last reset. */
     private  int draws;
+
 
     /** Initializes the minimap for a given level.
      *
@@ -157,14 +159,14 @@ public class Minimap {
             int tileVal = worldData[i];
             if (tileVal != 0) {
                 float x = i % width;
-                expandedTilesLong = Math.max(expandedTilesLong, (int)x + 1);
                 float y = height - (i / width) - 1f;
-                expandedTilesTall = Math.max(expandedTilesTall, (int)y + 1);
                 Vector2 floorPos = new Vector2(x, y);
                 floorPositions.add(floorPos);
                 expandedFloors.add(floorPos);
             }
         }
+        expandedTilesLong = physicsWidth;
+        expandedTilesTall = physicsHeight;
         initialized = true;
     }
 
@@ -346,7 +348,7 @@ public class Minimap {
         float backgroundW = minimapBackground.getWidth();
         float backgroundH = minimapBackground.getHeight();
 
-        float condensedTileSize = 5;
+        float condensedTileSize = 6;
         int tilesLong = expanded ? expandedTilesLong : CONDENSED_TILES_LONG;
         int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
 
@@ -357,6 +359,7 @@ public class Minimap {
 
         float tileSize = expanded ? expandedTileSize : condensedTileSize;
 
+
         //Calculate offsets and positions for centering.
         float totalTileW = tileSize * tilesLong;
         float totalTileH = tileSize * tilesTall;
@@ -364,12 +367,15 @@ public class Minimap {
         float offsetY = (backgroundH - totalTileH) / 2;
         float tileX = backgroundX + offsetX + (xPos * tileSize);
         float tileY = backgroundY + offsetY + (yPos * tileSize);
-        if(expanded) tileY -= 60;
+
+        //System.out.println("long: " + expandedTilesLong);
+        //System.out.println("tall: " + expandedTilesLong);
+
 
 
         //Set the Tile's position and size.
         tileImage.setPosition(tileX, tileY);
-        tileImage.setSize(tileSize + 1, tileSize + 1);
+        tileImage.setSize(tileSize, tileSize);
     }
 
 
