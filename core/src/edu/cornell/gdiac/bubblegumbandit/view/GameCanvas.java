@@ -997,6 +997,16 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y);
     }
 
+    public void drawText(String text, BitmapFont font, Color color,
+                         float x, float y, float w, int halign, boolean wrap) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+        GlyphLayout layout = new GlyphLayout(font, text, color, w, halign, wrap);
+        font.draw(spriteBatch, layout, x, y);
+    }
+
     /**
      * Draws text centered on the screen.
      *
