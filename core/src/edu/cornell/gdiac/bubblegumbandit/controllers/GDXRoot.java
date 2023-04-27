@@ -15,12 +15,14 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.*;
-import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LoadingMode;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.util.*;
-import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.util.ScreenListener;
 
 /**
  * Root class for a LibGDX.  
@@ -38,6 +40,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+
+	private PauseMode pause;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
 	private GameController controller;
 	
@@ -55,6 +59,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
+		pause = new PauseMode(canvas);
+		pause.setScreenListener(this);
 		
 		// Initialize the three game worlds
 		controller = new GameController();

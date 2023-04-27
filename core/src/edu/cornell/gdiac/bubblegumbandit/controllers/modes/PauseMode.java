@@ -8,7 +8,6 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -297,11 +296,9 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
      * Constructor for making a Pause Mode
      *
      * @param canvas The game canvas to draw to
-     * @param millis The loading budget in milliseconds
      */
-    public PauseMode(GameCanvas canvas, int millis) {
+    public PauseMode(GameCanvas canvas) {
         this.canvas = canvas;
-        budget = millis;
 
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(), canvas.getHeight());
@@ -320,7 +317,6 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         pointer = null;
 
         background = internal.getEntry("background", Texture.class);
-        background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
         // No progress so far.
         progress = 0;
@@ -492,12 +488,12 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
 
         int spacing = 15;
-        stage.getBatch().draw(pointer,
-                resumeButton.getX() + resumeButton.getWidth() + spacing,
-                resumeButton.getY() + resumeButton.getWidth() + spacing,
-                pointer.getRegionHeight()/2,
-                pointer.getRegionWidth(),
-                pointer.getRegionHeight(), 1, 1, 180);
+//        stage.getBatch().draw(pointer,
+//                resumeButton.getX() + resumeButton.getWidth() + spacing,
+//                resumeButton.getY() + resumeButton.getWidth() + spacing,
+//                pointer.getRegionHeight()/2,
+//                pointer.getRegionWidth(),
+//                pointer.getRegionHeight(), 1, 1, 180);
         stage.getBatch().draw(pointer,
                 resumeButton.getX() - pointer.getRegionWidth() - spacing,
                 resumeButton.getY(),
@@ -506,12 +502,12 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
                 pointer.getRegionWidth(),
                 pointer.getRegionHeight(), 1, 1, 0);
 
-        stage.getBatch().draw(pointer,
-                restartButton.getX() + restartButton.getWidth() + spacing,
-                restartButton.getY() + restartButton.getWidth() + spacing,
-                pointer.getRegionHeight()/2,
-                pointer.getRegionWidth(),
-                pointer.getRegionHeight(), 1, 1, 180);
+//        stage.getBatch().draw(pointer,
+//                restartButton.getX() + restartButton.getWidth() + spacing,
+//                restartButton.getY() + restartButton.getWidth() + spacing,
+//                pointer.getRegionHeight()/2,
+//                pointer.getRegionWidth(),
+//                pointer.getRegionHeight(), 1, 1, 180);
         stage.getBatch().draw(pointer,
                 restartButton.getX() - pointer.getRegionWidth() - spacing,
                 restartButton.getY(),
@@ -520,12 +516,12 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
                 pointer.getRegionWidth(),
                 pointer.getRegionHeight(), 1, 1, 0);
 
-        stage.getBatch().draw(pointer,
-                levelSelectButton.getX() + levelSelectButton.getWidth() + spacing,
-                levelSelectButton.getY() + levelSelectButton.getWidth() + spacing,
-                pointer.getRegionHeight()/2,
-                pointer.getRegionWidth(),
-                pointer.getRegionHeight(), 1, 1, 180);
+//        stage.getBatch().draw(pointer,
+//                levelSelectButton.getX() + levelSelectButton.getWidth() + spacing,
+//                levelSelectButton.getY() + levelSelectButton.getWidth() + spacing,
+//                pointer.getRegionHeight()/2,
+//                pointer.getRegionWidth(),
+//                pointer.getRegionHeight(), 1, 1, 180);
         stage.getBatch().draw(pointer,
                 levelSelectButton.getX() - pointer.getRegionWidth() - spacing,
                 levelSelectButton.getY(),
@@ -534,12 +530,12 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
                 pointer.getRegionWidth(),
                 pointer.getRegionHeight(), 1, 1, 0);
 
-        stage.getBatch().draw(pointer,
-                settingsButton.getX() + settingsButton.getWidth() + spacing,
-                settingsButton.getY() + settingsButton.getWidth() + spacing,
-                pointer.getRegionHeight()/2,
-                pointer.getRegionWidth(),
-                pointer.getRegionHeight(), 1, 1, 180);
+//        stage.getBatch().draw(pointer,
+//                settingsButton.getX() + settingsButton.getWidth() + spacing,
+//                settingsButton.getY() + settingsButton.getWidth() + spacing,
+//                pointer.getRegionHeight()/2,
+//                pointer.getRegionWidth(),
+//                pointer.getRegionHeight(), 1, 1, 180);
         stage.getBatch().draw(pointer,
                 settingsButton.getX() - pointer.getRegionWidth() - spacing,
                 settingsButton.getY(),
@@ -548,12 +544,12 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
                 pointer.getRegionWidth(),
                 pointer.getRegionHeight(), 1, 1, 0);
 
-        stage.getBatch().draw(pointer,
-                quitButton.getX() + quitButton.getWidth() + spacing,
-                quitButton.getY() + quitButton.getWidth() + spacing,
-                pointer.getRegionHeight()/2,
-                pointer.getRegionWidth(),
-                pointer.getRegionHeight(), 1, 1, 180);
+//        stage.getBatch().draw(pointer,
+//                quitButton.getX() + quitButton.getWidth() + spacing,
+//                quitButton.getY() + quitButton.getWidth() + spacing,
+//                pointer.getRegionHeight()/2,
+//                pointer.getRegionWidth(),
+//                pointer.getRegionHeight(), 1, 1, 180);
         stage.getBatch().draw(pointer,
                 quitButton.getX() - pointer.getRegionWidth() - spacing,
                 quitButton.getY(),
@@ -585,15 +581,15 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
             }
 
             if (isRestart() && listener != null) {
-                listener.exitScreen(this, 2)
+                listener.exitScreen(this, 2);
             }
 
             if (isLevelSelect() && listener != null) {
-                listener.exitScreen(this, 8);
+                listener.exitScreen(this, 3);
             }
 
             if (switchSettings() && listener != null){
-                listener.exitScreen(this, 9);
+                listener.exitScreen(this, 4);
             }
             // If the player hits the quit button
             if (shouldQuit()) {
@@ -652,6 +648,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     public void show() {
         // Useless if called in outside animation loop
         active = true;
+        pressState = 0;
         Gdx.input.setInputProcessor(this);
     }
 
@@ -696,7 +693,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
 
         // if loading has not started
         if (resumeButton == null || restartButton == null
-                || levelSelectButton == null || settingsButton == null) return false;
+                || levelSelectButton == null || settingsButton == null || quitButton == null) return false;
 
         //Detect clicks on the start button
         float rectWidth = scale * BUTTON_SCALE * resumeButton.getWidth();
@@ -740,6 +737,16 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         bottomY = settingsY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 4;
+        }
+
+        rectWidth = scale * BUTTON_SCALE * quitButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * quitButton.getHeight();
+        leftX = quitX - rectWidth / 2.0f;
+        rightX = quitX + rectWidth / 2.0f;
+        topY = quitY - rectHeight / 2.0f;
+        bottomY = quitY + rectHeight / 2.0f;
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
+            pressState = 5;
         }
 
         return false;
@@ -789,27 +796,27 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         return true;
     }
 
-    /**
-     * Called when a button on the Controller was pressed.
-     * <p>
-     * The buttonCode is controller specific. This listener only supports the start
-     * button on an X-Box controller.  This outcome of this method is identical to
-     * pressing (but not releasing) the play button.
-     *
-     * @param controller The game controller
-     * @param buttonCode The button pressed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean buttonDown(Controller controller, int buttonCode) {
-        if (pressState == 0) {
-            ControllerMapping mapping = controller.getMapping();
-            if (mapping != null && buttonCode == mapping.buttonStart) {
-                pressState = 1;
-                return false;
-            }
-        }
-        return true;
-    }
+//    /**
+//     * Called when a button on the Controller was pressed.
+//     * <p>
+//     * The buttonCode is controller specific. This listener only supports the start
+//     * button on an X-Box controller.  This outcome of this method is identical to
+//     * pressing (but not releasing) the play button.
+//     *
+//     * @param controller The game controller
+//     * @param buttonCode The button pressed
+//     * @return whether to hand the event to other listeners.
+//     */
+//    public boolean buttonDown(Controller controller, int buttonCode) {
+//        if (pressState == 0) {
+//            ControllerMapping mapping = controller.getMapping();
+//            if (mapping != null && buttonCode == mapping.buttonStart) {
+//                pressState = 1;
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * Called when a button on the Controller was released.
@@ -880,7 +887,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         float pixelY = pixelMouse.y;
 
         if (resumeButton == null || restartButton == null
-                || levelSelectButton == null || settingsButton == null) return false;
+                || levelSelectButton == null || settingsButton == null || quitButton == null) return false;
         // Flip to match graphics coordinates
 
         //Detect hovers on the start button
@@ -918,6 +925,15 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         topY = settingsY - rectHeight / 2.0f;
         bottomY = settingsY + rectHeight / 2.0f;
         hoveringSettings = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
+
+        //Detect hovers on the exit button
+        rectWidth = scale * BUTTON_SCALE * quitButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * quitButton.getHeight();
+        leftX = quitX - rectWidth / 2.0f;
+        rightX = quitX + rectWidth / 2.0f;
+        topY = quitY - rectHeight / 2.0f;
+        bottomY = quitY + rectHeight / 2.0f;
+        hoveringQuit = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         return true;
     }
@@ -961,6 +977,11 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
      * @param controller The game controller
      */
     public void disconnected(Controller controller) {
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+        return false;
     }
 
     /**

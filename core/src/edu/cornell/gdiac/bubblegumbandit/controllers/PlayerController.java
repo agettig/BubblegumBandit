@@ -79,6 +79,12 @@ public class PlayerController{
 
     /** Whether the exit button was pressed. */
     private boolean exitPressed;
+
+    /** Whether the settings button was pressed*/
+    private boolean settingsPressed;
+
+    private boolean settingsPrevious;
+
     private boolean exitPrevious;
 
     /** How much did we move horizontally? */
@@ -207,6 +213,11 @@ public class PlayerController{
         return Gdx.input.getY();
     }
 
+    /** Returns true if the settings button was pressed*/
+    public boolean isSettings() {
+        return settingsPressed && !settingsPrevious;
+    }
+
     /**
      * Returns true if the reset button was pressed.
      *
@@ -306,6 +317,7 @@ public class PlayerController{
         resetPrevious  = resetPressed;
         debugPrevious  = debugPressed;
         exitPrevious = exitPressed;
+        settingsPrevious = settingsPressed;
         nextPrevious = nextPressed;
         prevPrevious = prevPressed;
         cameraPrevious = cameraPressed;
@@ -375,6 +387,7 @@ public class PlayerController{
         secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
         prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
         nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
+        settingsPressed = (secondary && settingsPressed) || (Gdx.input.isKeyPressed(Input.Keys.S));
         exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         gravityUp = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.W) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));
         gravityDown = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.S) || (Gdx.input.isKeyPressed(Input.Keys.SPACE)));

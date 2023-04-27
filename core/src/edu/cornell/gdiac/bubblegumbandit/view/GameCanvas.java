@@ -17,17 +17,21 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.view;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.*;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import javax.swing.ViewportLayout;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -609,6 +613,7 @@ public class GameCanvas {
         draw(holder, tint, ox, oy, transform);
     }
 
+
     /**
      * Draws the tinted texture region (filmstrip) at the given position.
      * <p>
@@ -638,6 +643,7 @@ public class GameCanvas {
         spriteBatch.setColor(Color.WHITE);
         spriteBatch.draw(region, x, y);
     }
+
 
     /**
      * Draws the tinted texture at the given position.
