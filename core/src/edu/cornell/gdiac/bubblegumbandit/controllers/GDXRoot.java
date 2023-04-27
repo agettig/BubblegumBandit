@@ -160,7 +160,8 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (exitCode == GameController.EXIT_QUIT) {
 			// We quit the main application
-			Gdx.app.exit();
+			loading.setScreenListener(this);
+			setScreen(loading);
 		}
 
 	}

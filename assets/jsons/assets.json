@@ -329,15 +329,15 @@
 
     },
 	"jsons" : {
-        "level1" : "jsons/levels/placeholder.json",
-        "level2":"jsons/levels/placeholder.json",
+        "level1" : "jsons/levels/level1.json",
+        "level2":"jsons/levels/level2.json",
         "level3" : "jsons/levels/level3.json",
         "level4": "jsons/levels/level4.json",
         "level5" : "jsons/levels/level5.json",
         "level6":"jsons/levels/level6.json",
         "level7" : "jsons/levels/level7.json",
         "level8": "jsons/levels/level8.json",
-        "level9": "jsons/levels/placeholder.json",
+        "level9": "jsons/levels/old/betaMedium.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",
