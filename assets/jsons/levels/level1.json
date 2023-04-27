@@ -207,6 +207,98 @@
                  "width":44,
                  "x":2489.613,
                  "y":848.989
+                }, 
+                {
+                 "gid":81,
+                 "height":73,
+                 "id":150,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"keyCode",
+                         "type":"string",
+                         "value":"1"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"move right"
+                        }],
+                 "rotation":0,
+                 "type":"tutorial",
+                 "visible":true,
+                 "width":94,
+                 "x":1340,
+                 "y":1256
+                }, 
+                {
+                 "gid":81,
+                 "height":73,
+                 "id":151,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"keyCode",
+                         "type":"string",
+                         "value":"0"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"move right"
+                        }],
+                 "rotation":0,
+                 "type":"tutorial",
+                 "visible":true,
+                 "width":94,
+                 "x":1172,
+                 "y":1260
+                }, 
+                {
+                 "gid":81,
+                 "height":73,
+                 "id":152,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"keyCode",
+                         "type":"string",
+                         "value":"2"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"move right"
+                        }],
+                 "rotation":0,
+                 "type":"tutorial",
+                 "visible":true,
+                 "width":94,
+                 "x":771,
+                 "y":1043
+                }, 
+                {
+                 "gid":81,
+                 "height":73,
+                 "id":153,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"keyCode",
+                         "type":"string",
+                         "value":"3"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"move right"
+                        }],
+                 "rotation":0,
+                 "type":"tutorial",
+                 "visible":true,
+                 "width":94,
+                 "x":926,
+                 "y":1047
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -297,7 +389,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":150,
+ "nextobjectid":155,
  "orientation":"orthogonal",
  "properties":[
         {
