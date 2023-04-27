@@ -478,6 +478,8 @@ public class GameController implements Screen {
         minimap.initialize(directory, levelFormat, x, y);
 
         SoundController.playMusic("game");
+
+        shipBackground.reset();
         shipBackground.initialize(directory, levelFormat, x, y);
 
     }

@@ -89,6 +89,14 @@ public class ShipBackground {
         this.space_bg = space_bg;
     }
 
+    /** Resets all variables to their inital values */
+    public void reset(){
+        y_max = 0;
+        x_max = 0;
+        shipReg = null;
+        spaceReg = null;
+    }
+
     /** Initializes the minimap for a given level.
      *
      * @param directory The asset directory.
@@ -105,6 +113,7 @@ public class ShipBackground {
         x_offset = width;
         y_offset = height;
 
+
         //Find all positions of floors/platforms.
         cornerPositions = new ArrayList<>();
         JsonValue layer = levelFormat.get("layers").child();
@@ -115,6 +124,10 @@ public class ShipBackground {
                 tileLayer = layer;
             }
             layer = layer.next();
+        }
+        //if no Corners layer was found
+        if (tileLayer == null){
+            return;
         }
 
         // width x height matrix as array
@@ -264,15 +277,18 @@ public class ShipBackground {
     public void draw(GameCanvas canvas){
         canvas.begin();
 
-        canvas.draw(spaceReg, 0,0);
-        canvas.draw(shipReg, x_offset * 64, y_offset * 64);
+        if (spaceReg != null && shipReg != null) {
+
+            canvas.draw(spaceReg, 0, 0);
+            canvas.draw(shipReg, x_offset * 64, y_offset * 64);
 //        canvas.draw(shipReg, 0, 0);
 
-        for (int i = 0; i < vertices.length; i += 2){
-            canvas.drawText( valueOf(i/2) , debugFont, vertices[i] + x_offset * 64, vertices[i+1] + y_offset * 64);
-        }
+            for (int i = 0; i < vertices.length; i += 2) {
+                canvas.drawText(valueOf(i / 2), debugFont, vertices[i] + x_offset * 64, vertices[i + 1] + y_offset * 64);
+            }
 
-        canvas.drawText("X", debugFont, centroid.x * 64, centroid.y * 64);
+            canvas.drawText("X", debugFont, centroid.x * 64, centroid.y * 64);
+        }
 
 //        interior.draw(canvas);
 
