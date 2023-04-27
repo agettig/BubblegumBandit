@@ -739,6 +739,7 @@ public class SettingsMode implements Screen {
         SoundController.setMusicVolume(musicSlider.getValue());
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
+        PlayerController.changeControls(values);
         //add to save data
     }
 
