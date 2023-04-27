@@ -201,6 +201,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         levels = new Array<>();
         levels.add(new LevelIconModel(ship1, 1, 100, SPACE_HEIGHT - SPACE_GAP));
         levels.add(new LevelIconModel(ship2, 2, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - SPACE_GAP));
+        levels.add(new LevelIconModel(ship1, 3, ship1.getRegionWidth() + ship2.getRegionWidth() + 2* LEVEL_GAP, SPACE_HEIGHT - SPACE_GAP));
+
+        levels.add(new LevelIconModel(ship1, 4, 100, SPACE_HEIGHT - 2*SPACE_GAP));
+        levels.add(new LevelIconModel(ship2, 5, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - 2*SPACE_GAP));
+        levels.add(new LevelIconModel(ship1, 6, ship1.getRegionWidth() + ship2.getRegionWidth() + 2* LEVEL_GAP, SPACE_HEIGHT - 2*SPACE_GAP));
+
+        levels.add(new LevelIconModel(ship1, 7, 100, SPACE_HEIGHT - 3*SPACE_GAP));
+        levels.add(new LevelIconModel(ship2, 8, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - 3*SPACE_GAP));
+        levels.add(new LevelIconModel(ship1, 9, ship1.getRegionWidth() + ship2.getRegionWidth() + 2* LEVEL_GAP, SPACE_HEIGHT - 3*SPACE_GAP));
     }
 
     /**
@@ -560,8 +569,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * The axisCode is controller specific. The axis value is in the range [-1, 1].
      *
      * @param controller The game controller
-     * @param axisCode 	The axis moved
-     * @param value 	The axis value, -1 to 1
+     * @param axisCode     The axis moved
+     * @param value     The axis value, -1 to 1
      * @return whether to hand the event to other listeners.
      */
     public boolean axisMoved (Controller controller, int axisCode, float value) {
