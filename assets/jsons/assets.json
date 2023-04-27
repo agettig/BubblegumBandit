@@ -281,7 +281,7 @@
 
     },
 	"jsons" : {
-		"level1" : "jsons/levels/test.json",
+		"level1" : "jsons/levels/level7.json",
         "level2":"jsons/levels/betaMedium.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
