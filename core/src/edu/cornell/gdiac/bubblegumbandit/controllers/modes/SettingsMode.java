@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
@@ -240,6 +241,8 @@ public class SettingsMode implements Screen {
 
         SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
+
+
     }
 
     /**
@@ -273,6 +276,7 @@ public class SettingsMode implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 SoundController.getInstance().setEffectsVolume(soundEffectsSlider.getValue());
+                SoundController.playSound("jump", 1);
             }
         });
         soundEffectsSlider.setValue(SaveData.getSFXVolume());
@@ -641,6 +645,8 @@ public class SettingsMode implements Screen {
         this.titleFont = projectSpace;
         makeSettingsTable();
         makeControlsTable();
+
+
     }
 
 
