@@ -42,10 +42,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
-import edu.cornell.gdiac.bubblegumbandit.view.Minimap;
+import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -95,6 +92,8 @@ public class GameController implements Screen {
     private HUDController hud;
 
     private Minimap minimap;
+
+    private ShipBackground shipBackground;
 
     /**
      * The jump sound.  We only want to play once.
@@ -428,6 +427,9 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
+
+        shipBackground =  new ShipBackground(new TextureRegion(directory.getEntry("background", Texture.class)),
+                new TextureRegion(directory.getEntry("space_bg", Texture.class)));
     }
 
 
@@ -450,7 +452,6 @@ public class GameController implements Screen {
         projectileController.reset();
         collisionController.reset();
         hud.resetStars();
-
 
         level.dispose();
 
@@ -477,6 +478,8 @@ public class GameController implements Screen {
         minimap.initialize(directory, levelFormat, x, y);
 
         SoundController.playMusic("game");
+        shipBackground.initialize(directory, levelFormat, x, y);
+
     }
 
     public void respawn() {
@@ -493,6 +496,7 @@ public class GameController implements Screen {
         bubblegumController.resetAmmo();
         spawnedPostOrbEnemies = false;
         level.getBandit().respawnPlayer();
+
     }
 
     /**
@@ -770,6 +774,9 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
+        canvas.clear();
+        shipBackground.draw(canvas);
+
         level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
