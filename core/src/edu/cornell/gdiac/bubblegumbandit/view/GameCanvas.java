@@ -158,19 +158,27 @@ public class GameCanvas {
         fovRender = new ShapeRenderer();
 
         // Set the projection matrix (for proper scaling)
-        camera = new GameCamera(getWidth(), getHeight());
-        camera.setToOrtho(false);
+        resetCamera();
         viewport = new FitViewport(getWidth(), getHeight(), camera); //why
         viewport.apply(true);
-        spriteBatch.setProjectionMatrix(camera.combined);
-        debugRender.setProjectionMatrix(camera.combined);
-        fovRender.setProjectionMatrix(camera.combined);
+
 
         // Initialize the cache objects
         holder = new TextureRegion();
         local = new Affine2();
         global = new Matrix4();
         vertex = new Vector2();
+    }
+
+    public void resetCamera() {
+        camera = new GameCamera(getWidth(), getHeight());
+        camera.setToOrtho(false);
+        spriteBatch.setProjectionMatrix(camera.combined);
+        debugRender.setProjectionMatrix(camera.combined);
+        fovRender.setProjectionMatrix(camera.combined);
+        if (viewport != null) {
+            viewport.setCamera(camera);
+        }
     }
 
     public FitViewport getUIViewport() {return viewport;}
