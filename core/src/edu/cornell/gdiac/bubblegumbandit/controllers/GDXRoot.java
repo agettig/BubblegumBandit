@@ -128,9 +128,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setLevelNum(levels.getSelectedLevel());
 			controller.reset();
 			setScreen(controller);
-
-			levels.dispose();
-			levels = null;
 		} else if (screen == loading && exitCode == 1) {
 			directory = loading.getAssets();
 			setScreen(controller);
