@@ -348,7 +348,7 @@ public class Minimap {
         float backgroundW = minimapBackground.getWidth();
         float backgroundH = minimapBackground.getHeight();
 
-        float condensedTileSize = 6;
+        float condensedTileSize = 5;
         int tilesLong = expanded ? expandedTilesLong : CONDENSED_TILES_LONG;
         int tilesTall = expanded ? expandedTilesTall : CONDENSED_TILES_TALL;
 
