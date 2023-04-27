@@ -121,6 +121,12 @@ public class Minimap {
         minimapTable.add(minimapBackground);
         minimapBackground.setSize(0, 0);
         minimapBackground.setColor(new Color(0,0,0,.3f));
+
+        // These calls are necessary based on how Math.max() is called, if the previous level had
+        // a bigger minimap the values will not update and the game will crash
+        expandedTilesTall = 0;
+        expandedTilesLong = 0;
+
         assert levelFormat != null;
         assert physicsWidth >= 0;
         assert physicsHeight >= 0;
@@ -258,16 +264,16 @@ public class Minimap {
         for (int x = topLeftX; x < bottomRightX; x++) {
             for (int y = topLeftY; y < bottomRightY; y++) {
                 Vector2 floorPos = new Vector2(x, y);
-                Image tile = minimapTiles[x][y];
-                tile.setVisible(false);
-                if (floorPositions.contains(floorPos)) validFloors.add(floorPos);
-                if (validFloors.contains(floorPos)) {
-                    int minimapX = x - topLeftX;
-                    int minimapY = y - topLeftY;
-                    setMinimapTilePosition(tile, minimapX, minimapY);
-                    drawAsPlatformTile(tile);
-                    prevVisibleTiles.add(floorPos);
-                }
+                    Image tile = minimapTiles[x][y];
+                    tile.setVisible(false);
+                    if (floorPositions.contains(floorPos)) validFloors.add(floorPos);
+                    if (validFloors.contains(floorPos)) {
+                        int minimapX = x - topLeftX;
+                        int minimapY = y - topLeftY;
+                        setMinimapTilePosition(tile, minimapX, minimapY);
+                        drawAsPlatformTile(tile);
+                        prevVisibleTiles.add(floorPos);
+                    }
             }
         }
 
