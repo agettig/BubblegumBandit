@@ -864,6 +864,7 @@ public class LevelModel {
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
             gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
         canvas.begin();
+        canvas.clear();
         if (backgroundRegion != null) {
             drawBackground(canvas);
         }
