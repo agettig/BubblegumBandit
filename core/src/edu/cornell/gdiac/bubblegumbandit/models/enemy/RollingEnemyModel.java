@@ -109,6 +109,9 @@ public class RollingEnemyModel extends EnemyModel {
         if (isRolling){
             animationController.setAnimation("roll", true);
         }
+        else if (stuck || gummed){
+            animationController.setAnimation("stuck", true);
+        }
         else{
             animationController.setAnimation("patrol", true);
         }

@@ -89,6 +89,10 @@
     "roll": {
       "strip": "medRoll.attack",
       "fps": 8
+    },
+    "stuck" : {
+      "strip": "medStick.stuck",
+      "fps": 1
     }
   },
   "shielded_medium_robot": {

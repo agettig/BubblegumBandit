@@ -206,6 +206,17 @@
                 }
             }
         },
+        "medStick": {
+            "file": "textures/mediumEnemy/medSticky.png",
+            "wrap": false,
+            "sprites": {
+                "stuck": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
         "shielded_med_walk":  {
             "file": "textures/mediumEnemy/shielded_med_walk.png",
             "wrap": false,
