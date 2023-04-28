@@ -32,7 +32,7 @@
     },
     "stuck": {
       "strip": "smallEnemyStuck.stuck",
-      "fps": 1
+      "fps": 2
     },
     "fire": {
       "strip": "smallEnemyFire.fire",
@@ -68,7 +68,7 @@
     },
     "stuck": {
       "strip": "laserStuck.stuck",
-      "fps": 1
+      "fps": 2
     }
   },
   "shieldedLargeEnemy": {
@@ -92,7 +92,7 @@
     },
     "stuck" : {
       "strip": "medStick.stuck",
-      "fps": 1
+      "fps": 2
     }
   },
   "shielded_medium_robot": {

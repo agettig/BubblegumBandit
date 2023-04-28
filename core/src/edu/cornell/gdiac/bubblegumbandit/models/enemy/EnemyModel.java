@@ -385,25 +385,30 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             float effect = faceRight ? 1.0f : -1.0f;
             TextureRegion drawn = texture;
             float x = getX() * drawScale.x;
+            float y = getY() * drawScale.y;
+
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                 x-=getWidth()/2*drawScale.x*effect;
+//                    x -= drawn.getRegionWidth()/2 * effect;
+//                System.out.println(x);
+                 x-=(getWidth()/2)*drawScale.x*effect;
+//                 y+= getHeight()/2*drawScale.y*effect;
             }
 //            if (stuck || gummed){
 //                drawn = gummedTexture;
 //            }
 
             // TODO: Fix rolling robots so don't have to do this
-            float y = getY() * drawScale.y;
-            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
-                y += 10*yScale;
-            }
+//            float y = getY() * drawScale.y;
+//            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
+//                y += 10*yScale;
+//            }
 
-            //if gum, overlay with gumTexture
+
+            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+
+            //if gummed, overlay with gumTexture
             if (gummed) {
-
-                canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        y, getAngle(), effect, yScale);
                 if(getVY()==0) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), 1, yScale);
@@ -412,29 +417,29 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
                         getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
                         y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
                 }
-
-            } else {
-                canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                    y, getAngle(), effect, yScale);
-            }
 //
+            }
         }
     }
+
+    /** Draw method for when highlighting the enemy before unsticking them */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
+            float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
-            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
-                y += 10*yScale;
-            }
+//            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
+//                y += 10*yScale;
+//            }
             float effect = faceRight ? 1.0f : -1.0f;
-            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
+            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
                     y, getAngle(), effect, yScale);
+
             if (getVY()==0) {
-                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()* drawScale.x-5,
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
                     y-5*yScale, getAngle(), 1, yScale);
             } else {
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
-                    getX() * drawScale.x+(gummedTexture.getRegionWidth()
+                    x +(gummedTexture.getRegionWidth()
                         -squishedGum.getRegionWidth())/2f-5f,
                     y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
 
