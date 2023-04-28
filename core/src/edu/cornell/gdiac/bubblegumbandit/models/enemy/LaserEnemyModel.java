@@ -96,6 +96,8 @@ public class LaserEnemyModel extends EnemyModel{
 
     public void update(float dt){
         super.update(dt);
+
+        // attack animations
         if (chargingLaser() ){
             animationController.setAnimation("charge", true);
         }
@@ -104,6 +106,9 @@ public class LaserEnemyModel extends EnemyModel{
         }
         else if (firingLaser()){
             animationController.setAnimation("fire", true);
+        }
+        else if (stuck || gummed){
+            animationController.setAnimation("stuck", true);
         }
         else{
             animationController.setAnimation("patrol", true);

@@ -57,6 +57,10 @@
     "fire": {
       "strip": "laserCharge.charge",
       "fps": 1
+    },
+    "stuck": {
+      "strip": "laserStuck.stuck",
+      "fps": 1
     }
   },
   "shieldedLargeEnemy": {

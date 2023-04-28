@@ -389,9 +389,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
                 drawn = animationController.getFrame();
                  x-=getWidth()/2*drawScale.x*effect;
             }
-            if (stuck || gummed){
-                drawn = gummedTexture;
-            }
+//            if (stuck || gummed){
+//                drawn = gummedTexture;
+//            }
 
             // TODO: Fix rolling robots so don't have to do this
             float y = getY() * drawScale.y;
