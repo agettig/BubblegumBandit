@@ -55,7 +55,10 @@ public class ProjectileEnemyModel extends EnemyModel {
 
     public void update(float dt){
         super.update(dt);
-        if (stuck || gummed){
+        if(fired()){
+            animationController.setAnimation("fire", false);
+        }
+        else if (stuck || gummed){
             animationController.setAnimation("stuck", true);
         }
         else {
