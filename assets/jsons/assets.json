@@ -212,6 +212,17 @@
                 }
             }
         },
+        "laserCharge":  {
+            "file": "textures/largeEnemy/charging.png",
+            "wrap": false,
+            "sprites": {
+                "charge": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
         "shielded_large_walk":  {
             "file": "textures/largeEnemy/shielded_large_anim.png",
             "wrap": false,

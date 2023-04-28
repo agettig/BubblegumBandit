@@ -299,6 +299,18 @@
                  "width":94,
                  "x":926,
                  "y":1047
+                }, 
+                {
+                 "gid":73,
+                 "height":186,
+                 "id":157,
+                 "name":"",
+                 "rotation":0,
+                 "type":"largeEnemy",
+                 "visible":true,
+                 "width":134,
+                 "x":1493,
+                 "y":949
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -389,7 +401,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":155,
+ "nextobjectid":158,
  "orientation":"orthogonal",
  "properties":[
         {

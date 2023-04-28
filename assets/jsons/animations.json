@@ -45,9 +45,13 @@
     "patrol": {
       "strip": "largeWalk.patrol",
       "fps": 4
+    },
+    "charge": {
+      "strip": "laserCharge.charge",
+      "fps": 4
     }
   },
-  "shieledLargeEnemy": {
+  "shieldedLargeEnemy": {
     "patrol": {
       "strip": "shielded_large_walk.patrol",
       "fps": 4
