@@ -210,7 +210,7 @@ public class ShipBackground {
             cwPositions[i] = new Vertex(point, centroid);
         }
 
-        //sort angles
+        //sort angles via insertion sort
         int k = 0;
         while (k < cwPositions.length){
             int j = k;

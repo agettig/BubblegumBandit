@@ -90,13 +90,6 @@ public class LevelModel {
     /** true if the level is in debug mode  */
     private boolean debug;
 
-    /** The complete background of the level  */
-    private Texture backgroundText;
-
-    /** The background of the level, cropped if necessary */
-    private TextureRegion backgroundRegion;
-
-
     /** All AIControllers in the level. */
     private Array<AIController> enemyControllers;
 
@@ -154,9 +147,6 @@ public class LevelModel {
 
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
-
-    /** Draws the background of the ship cropped to the boundaries of the level */
-//    private ShipBackground shipBackground;
 
 
     /**
@@ -391,12 +381,6 @@ public class LevelModel {
 
         tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f / 8);
         tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f / 8);
-
-        String key2 = constants.get("background").asString();
-        backgroundText = directory.getEntry(key2, Texture.class);
-        backgroundRegion = new TextureRegion(backgroundText);
-
-
 
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
@@ -874,10 +858,6 @@ public class LevelModel {
             gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
         canvas.begin();
 //        canvas.clear();
-        if (backgroundRegion != null) {
-            drawBackground(canvas);
-        }
-
         alarms.drawAlarms(canvas, scale);
         for(TutorialIcon icon: icons) icon.draw(canvas);
 
@@ -997,52 +977,6 @@ public class LevelModel {
                 }
             }
         }
-    }
-
-    /**
-     * Draws a repeating background, and crops off any overhangs outside the level
-     * to maintain resolution and aspect ratio.
-     *
-     * @param canvas the current canvas
-     */
-    private void drawBackground(GameCanvas canvas) {
-//        for (int i = 0; i < levelWidth * scale.x; i += backgroundRegion.getRegionWidth()) {
-//            for (int j = 0; j < levelHeight * scale.x; j += backgroundRegion.getRegionHeight()) {
-//                if (j + backgroundRegion.getRegionHeight() > levelHeight * scale.x) {
-//                    backgroundRegion.setRegionY((int) (backgroundText.getHeight()
-//                            - (levelHeight * scale.x - j)));
-//                }
-//                if (i + backgroundRegion.getRegionWidth() > levelWidth * scale.x) {
-//                    backgroundRegion.setRegionWidth((int) (levelWidth * scale.x - i));
-//                }
-//                canvas.draw(backgroundRegion, i, j);
-//                backgroundRegion.setRegionX(0);
-//                backgroundRegion.setRegionY(0);
-//                backgroundRegion.setRegionHeight(backgroundText.getHeight());
-//                backgroundRegion.setRegionWidth(backgroundText.getWidth());
-//            }
-//        }
-
-//        PolygonSprite poly;
-//        PolygonSpriteBatch polyBatch = new PolygonSpriteBatch(); // To assign at the beginning
-//        Texture textureSolid;
-//
-//        PolygonRegion polyReg = new PolygonRegion(backgroundRegion,
-//                new float[] {      // Four vertices
-//                        0, 0,            // Vertex 0         3--2
-//                        100, 0,          // Vertex 1         | /|
-//                        100, 100,        // Vertex 2         |/ |
-//                        0, 100           // Vertex 3         0--1
-//                }, new short[] {
-//                0, 1, 2,         // Two triangles using vertex indices.
-//                0, 2, 3          // Take care of the counter-clockwise direction.
-//        });
-//
-//        canvas.draw(polyReg, 0, 0);
-//        poly = new PolygonSprite(polyReg);
-//        poly.setOrigin(a, b);
-//        polyBatch = new PolygonSpriteBatch();
-
     }
 
     /**
