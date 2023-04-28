@@ -80,9 +80,6 @@ public class Minimap {
     /** true if the Minimap is expanded.*/
     private boolean expanded;
 
-    /** Image drawn as a Bandit tile during the previous pass. */
-    private Image prevBanditTile;
-
     /** Bandit's position during the previous draw pass. */
     private Vector2 prevBanditPosition;
 
@@ -92,6 +89,9 @@ public class Minimap {
     /** Tiles that were visible in the previous draw pass.*/
     private Set<Vector2> prevVisibleTiles;
 
+    /** Tiles that the Bandit has explored. */
+    private Set<Image> seenTiles;
+
     /** How quickly the Minimap changes states.*/
     private final float TRANSITION_SPEED = 15f;
 
@@ -99,7 +99,7 @@ public class Minimap {
     private boolean initialized;
 
     /** How many draw passes we've done since the last reset. */
-    private  int draws;
+    private int draws;
 
 
     /** Initializes the minimap for a given level.
@@ -113,6 +113,7 @@ public class Minimap {
         //Make the Minimap's background and map tiles.
         initialized = false;
         draws = 0;
+
         minimapTable = new Table();
         minimapTable.align(Align.bottomRight);
         minimapTable.setFillParent(true);
@@ -155,6 +156,7 @@ public class Minimap {
         prevBanditPosition = new Vector2();
         expandedFloors = new HashSet<>();
         prevVisibleTiles = new HashSet<>();
+        seenTiles = new HashSet<>();
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
             if (tileVal != 0) {
@@ -162,7 +164,6 @@ public class Minimap {
                 float y = height - (i / width) - 1f;
                 Vector2 floorPos = new Vector2(x, y);
                 floorPositions.add(floorPos);
-                expandedFloors.add(floorPos);
             }
         }
         expandedTilesLong = physicsWidth;
@@ -260,34 +261,51 @@ public class Minimap {
             prevBanditPosition.set(banditPosition);
         }
 
+        //Draw the Bandit pt. 1
+        int banditX = (int) banditPosition.x;
+        int banditY = (int) banditPosition.y;
+        int minimapBanditX = banditX - topLeftX;
+        int minimapBanditY = banditY - topLeftY;
+        Image banditTile = minimapTiles[banditX][banditY];
+
+        //Sight range calculations
+        int drawRange = 5;
+        int topRange = banditY + drawRange;
+        int botRange = banditY - drawRange;
+        int leftRange = banditX - drawRange;
+        int rightRange = banditX + drawRange;
 
 
         //Draw the floor Tiles
         for (int x = topLeftX; x < bottomRightX; x++) {
             for (int y = topLeftY; y < bottomRightY; y++) {
                 Vector2 floorPos = new Vector2(x, y);
+                if(!expandedFloors.contains(floorPos)){
+                    if(y > topRange || y < botRange) continue;
+                    if (x > rightRange || x < leftRange) continue;
+                }
                     Image tile = minimapTiles[x][y];
                     tile.setVisible(false);
                     if (floorPositions.contains(floorPos)) validFloors.add(floorPos);
                     if (validFloors.contains(floorPos)) {
-                        int minimapX = x - topLeftX;
-                        int minimapY = y - topLeftY;
-                        setMinimapTilePosition(tile, minimapX, minimapY);
-                        drawAsPlatformTile(tile);
-                        prevVisibleTiles.add(floorPos);
+                        if(seenTiles.contains(tile)){
+                            int minimapX = x - topLeftX;
+                            int minimapY = y - topLeftY;
+                            setMinimapTilePosition(tile, minimapX, minimapY);
+                            drawAsPlatformTile(tile);
+                            prevVisibleTiles.add(floorPos);
+                        }
+                        else{
+                            seenTiles.add(tile);
+                            expandedFloors.add(floorPos);
+                        }
                     }
             }
         }
 
-        //Draw the Bandit
-        int banditX = (int) banditPosition.x;
-        int banditY = (int) banditPosition.y;
-        int minimapBanditX = banditX - topLeftX;
-        int minimapBanditY = banditY - topLeftY;
-        Image banditTile = minimapTiles[banditX][banditY];
+        //Draw the Bandit pt. 2
         setMinimapTilePosition(banditTile, minimapBanditX, minimapBanditY);
         drawAsBanditTile(banditTile);
-        prevBanditTile = banditTile;
 
         //Draw the background
         minimapStage.draw();
