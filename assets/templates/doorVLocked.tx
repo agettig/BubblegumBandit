@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
  <tileset firstgid="1" source="../tilesets/objects.json"/>
- <object type="door_v_locked" gid="18" width="64" height="256">
+ <object type="doorVLocked" gid="18" width="64" height="256">
   <properties>
    <property name="enemy1" type="object" value="0"/>
    <property name="leftx1" type="int" value="-1"/>

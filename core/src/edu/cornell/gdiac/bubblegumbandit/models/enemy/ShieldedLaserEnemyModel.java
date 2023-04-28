@@ -46,7 +46,7 @@ public class ShieldedLaserEnemyModel extends LaserEnemyModel implements Shield {
     }
 
     public void setUnshieldedTexture() {
-        animationController.setAnimation("unshielded_patrol", true);
+        animationController.setAnimation("unshieldedPatrol", true);
     }
 
     public void setShieldedTexture() {

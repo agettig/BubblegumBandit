@@ -597,7 +597,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v_locked",
+                 "type":"doorVLocked",
                  "visible":true,
                  "width":64,
                  "x":832,
@@ -609,7 +609,7 @@
                  "id":462,
                  "name":"",
                  "rotation":0,
-                 "type":"shieldedlargerobot",
+                 "type":"shieldedLargeEnemy",
                  "visible":true,
                  "width":134,
                  "x":1088,
@@ -674,7 +674,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":1536,
@@ -727,7 +727,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":1600,
@@ -790,7 +790,7 @@
                          "value":17
                         }],
                  "rotation":0,
-                 "type":"door_v_locked",
+                 "type":"doorVLocked",
                  "visible":true,
                  "width":64,
                  "x":832,
@@ -853,7 +853,7 @@
                          "value":33
                         }],
                  "rotation":0,
-                 "type":"door_v_locked",
+                 "type":"doorVLocked",
                  "visible":true,
                  "width":64,
                  "x":832,
@@ -906,7 +906,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":832,
@@ -959,7 +959,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":2112,
@@ -1012,7 +1012,7 @@
                          "value":27
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":2368,
@@ -1065,7 +1065,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":3264,
@@ -1442,7 +1442,7 @@
                          "value":49
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":832,
@@ -1495,7 +1495,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":1536,

@@ -354,7 +354,7 @@
                  "id":116,
                  "name":"",
                  "rotation":0,
-                 "type":"shieldedsmallrobot",
+                 "type":"shieldedSmallEnemy",
                  "visible":true,
                  "width":43,
                  "x":2349.34108224263,
@@ -402,7 +402,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":65,
                  "x":3777,

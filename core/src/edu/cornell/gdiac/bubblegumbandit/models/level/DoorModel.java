@@ -1,7 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_DOOR;
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_DOOR_SENSOR;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_doorSensor;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -304,7 +304,7 @@ public class DoorModel extends TileModel implements Gummable {
         sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
 
-        setFilter(CATEGORY_DOOR, MASK_DOOR_SENSOR); // Sets everything's filter, including sensor
+        setFilter(CATEGORY_DOOR, MASK_doorSensor); // Sets everything's filter, including sensor
         Filter filter = body.getFixtureList().get(0).getFilterData();
         filter.maskBits = CollisionController.MASK_DOOR;
         body.getFixtureList().get(0).setFilterData(filter);

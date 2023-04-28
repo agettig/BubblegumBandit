@@ -31,8 +31,8 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "space_bg": {
-            "file": "textures/environment/space_sample.png",
+        "spaceBg": {
+            "file": "textures/environment/spaceSample.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -82,8 +82,8 @@
                 }
             }
         },
-        "bandit_knock": {
-            "file": "textures/bandit/bandit_knockback.png",
+        "banditKnock": {
+            "file": "textures/bandit/banditKnockback.png",
             "wrap": false,
             "sprites": {
                 "knock": {
@@ -94,8 +94,8 @@
             }
 
         },
-        "bandit_backpedal": {
-            "file": "textures/bandit/bandit_backpedal.png",
+        "banditBackpedal": {
+            "file": "textures/bandit/banditBackpedal.png",
             "wrap": false,
             "sprites": {
                 "back": {
@@ -106,8 +106,8 @@
             }
 
         },
-        "bandit_death": {
-            "file": "textures/bandit/bandit_death.png",
+        "banditDeath": {
+            "file": "textures/bandit/banditDeath.png",
             "wrap": false,
             "sprites": {
                 "death": {
@@ -118,7 +118,7 @@
             }
 
         },
-        "banditDead" : "textures/bandit/bandit_dead.png",
+        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
@@ -147,8 +147,8 @@
                 }
             }
         },
-        "shielded_small_robot_patrol":  {
-            "file": "textures/smallEnemy/shielded_small_robot_patrol.png",
+        "shieldedSmallEnemyPatrol":  {
+            "file": "textures/smallEnemy/shieldedSmallEnemyPatrol.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -183,8 +183,8 @@
                 }
             }
         },
-        "shielded_med_walk":  {
-            "file": "textures/mediumEnemy/shielded_med_walk.png",
+        "shieldedMedWalk":  {
+            "file": "textures/mediumEnemy/shieldedMedWalk.png",
             "wrap": false,
             "sprites": {
                 "patrol": {
@@ -211,8 +211,8 @@
                 }
             }
         },
-        "shielded_large_walk":  {
-            "file": "textures/largeEnemy/shielded_large_anim.png",
+        "shieldedLargeWalk":  {
+            "file": "textures/largeEnemy/shieldedLargeAnim.png",
             "wrap": false,
             "sprites": {
                 "patrol": {

@@ -13,15 +13,15 @@
       "fps": 2
     },
     "knock": {
-      "strip": "bandit_knock.knock",
+      "strip": "banditKnock.knock",
       "fps": 6
     },
     "back": {
-      "strip": "bandit_backpedal.back",
+      "strip": "banditBackpedal.back",
       "fps": 6
     },
     "death": {
-      "strip": "bandit_death.death",
+      "strip": "banditDeath.death",
       "fps": 8
     }
   },
@@ -31,12 +31,12 @@
       "fps": 6
     }
   },
-  "shielded_small_robot": {
+  "shieldedSmallEnemy": {
     "patrol": {
-      "strip": "shielded_small_robot_patrol.patrol",
+      "strip": "shieldedSmallEnemyPatrol.patrol",
       "fps": 6
     },
-    "unshielded_patrol": {
+    "unshieldedPatrol": {
       "strip": "smallEnemyPatrol.patrol",
       "fps": 6
     }
@@ -49,10 +49,10 @@
   },
   "shieledLargeEnemy": {
     "patrol": {
-      "strip": "shielded_large_walk.patrol",
+      "strip": "shieldedLargeWalk.patrol",
       "fps": 4
     },
-    "unshielded_patrol": {
+    "unshieldedPatrol": {
       "strip": "largeWalk.patrol",
       "fps": 4
     }
@@ -67,9 +67,9 @@
       "fps": 8
     }
   },
-  "shielded_medium_robot": {
+  "shieldedMediumEnemy": {
     "patrol": {
-      "strip": "shielded_med_walk.patrol",
+      "strip": "shieldedMedWalk.patrol",
       "fps": 8
     },
     "roll": {

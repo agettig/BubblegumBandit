@@ -47,7 +47,7 @@
     "debugColor": "yellow",
     "debugOpacity": 200
   },
-  "crushing_block": {
+  "crushingBlock": {
     "density": 0.4,
     "friction": 0.2,
     "restitution": 0.0,
@@ -127,7 +127,7 @@
       5,
       2
     ],
-    "sensorname": "door_sensor",
+    "sensorname": "doorSensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
     "lockedTexture": "lockedDoor",
@@ -152,7 +152,7 @@
     "debugcolor": "yellow",
     "debugopacity": 200
   },
-  "shieldedMediumRobot": {
+  "shieldedMediumEnemy": {
     "type": "projectile",
     "size": [
       1.6,
@@ -164,7 +164,7 @@
     "force": 10.0,
     "damping": 10.0,
     "maxSpeed": 12.0,
-    "animations" : "shielded_medium_robot",
+    "animations" : "shieldedMediumEnemy",
     "gumTexture": "medGum",
     "outline": "medGumOutline",
     "texture": "medEnemy",
@@ -236,7 +236,7 @@
     "chaseSpeed": 4,
     "pursueSpeed": 5
   },
-  "shieldedSmallRobot": {
+  "shieldedSmallEnemy": {
     "type": "projectile",
     "size": [
       0.5,
@@ -248,7 +248,7 @@
     "force": 10.0,
     "damping": 2.0,
     "maxSpeed": 5.0,
-    "animations": "shielded_small_robot",
+    "animations": "shieldedSmallEnemy",
     "texture": "smallEnemy",
     "outline": "smallGumOutline",
     "gummedTexture": "gummedEnemy",
@@ -291,7 +291,7 @@
     "chaseSpeed": 3,
     "pursueSpeed": 4
   },
-  "shieldedlargerobot": {
+  "shieldedLargeEnemy": {
     "type": "moving",
     "size": [
       1.5,

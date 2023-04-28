@@ -26,6 +26,7 @@ public class AnimationController {
     animations = new HashMap<>();
     fps = new HashMap<>();
 
+    System.out.println(key);
     JsonValue controllerJSON = directory.getEntry("animations", JsonValue.class).get(key);
 
     for(JsonValue value : controllerJSON) {
