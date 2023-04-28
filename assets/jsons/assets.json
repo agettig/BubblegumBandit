@@ -148,6 +148,28 @@
                 }
             }
         },
+        "smallEnemyStuck":  {
+            "file": "textures/smallEnemy/stuck.png",
+            "wrap": false,
+            "sprites": {
+                "stuck": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "smallEnemyFire":  {
+            "file": "textures/smallEnemy/fire.png",
+            "wrap": false,
+            "sprites": {
+                "fire": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
         "shielded_small_robot_patrol":  {
             "file": "textures/smallEnemy/shielded_small_robot_patrol.png",
             "wrap": false,

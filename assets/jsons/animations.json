@@ -29,6 +29,14 @@
     "patrol": {
       "strip": "smallEnemyPatrol.patrol",
       "fps": 6
+    },
+    "stuck": {
+      "strip": "smallEnemyStuck.stuck",
+      "fps": 1
+    },
+    "fire": {
+      "strip": "smallEnemyFire.fire",
+      "fps": 2
     }
   },
   "shielded_small_robot": {
