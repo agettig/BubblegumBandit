@@ -156,8 +156,6 @@ public class BanditModel extends CapsuleObstacle {
 
     private TextureRegion deadText;
 
-    private Texture guide;
-
     private Vector2 orbPostion;
 
     public void setOrbPostion(Vector2 orbPostion){
@@ -532,7 +530,6 @@ public class BanditModel extends CapsuleObstacle {
 
 
         animationController = new AnimationController(directory, "bandit");
-        guide = directory.getEntry("bandit_guide", Texture.class);
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
@@ -771,17 +768,6 @@ public class BanditModel extends CapsuleObstacle {
 
         }
         poofController.draw(canvas);
-
-        float deltaX = orbPostion.x - getX();
-        float deltaY = orbPostion.y - getY();
-
-        double theta = Math.atan2(deltaY, deltaX);
-        double x = getX() + 1 * Math.cos(theta);
-        double y = getY() + 1.25 * Math.sin(theta);
-
-        if (!orbCollected){
-            canvas.draw(guide,Color.WHITE, (float) (guide.getWidth()/2), guide.getHeight()/2, (float) x * drawScale.x, (float) y * drawScale.y,(float)theta, 1, 1);
-        }
     }
 
     /**
