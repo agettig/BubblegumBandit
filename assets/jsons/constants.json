@@ -164,7 +164,7 @@
     "force": 10.0,
     "damping": 10.0,
     "maxSpeed": 12.0,
-    "animations" : "shielded_medium_robot",
+    "animations" : "mediumEnemy",
     "gumTexture": "medGum",
     "outline": "medGumOutline",
     "texture": "medEnemy",
@@ -248,7 +248,7 @@
     "force": 10.0,
     "damping": 2.0,
     "maxSpeed": 5.0,
-    "animations": "shielded_small_robot",
+    "animations": "smallEnemy",
     "texture": "smallEnemy",
     "outline": "smallGumOutline",
     "gummedTexture": "gummedEnemy",
@@ -287,9 +287,9 @@
     "visionRadius": 3.0,
     "sensorName": "listeningSensor",
     "listeningRadius": 7,
-    "wanderSpeed": 2,
-    "chaseSpeed": 3,
-    "pursueSpeed": 4
+    "wanderSpeed": 1,
+    "chaseSpeed": 2,
+    "pursueSpeed": 3
   },
   "shieldedlargerobot": {
     "type": "moving",
@@ -303,7 +303,7 @@
     "force": 10.0,
     "damping": 10.0,
     "maxSpeed": 5.0,
-    "animations": "shieledLargeEnemy",
+    "animations": "largeEnemy",
     "texture": "largeEnemy",
     "gumTexture": "largeGum",
     "outline": "largeGumOutline",
@@ -314,9 +314,9 @@
     "visionRadius": 3.0,
     "sensorName": "listeningSensor",
     "listeningRadius": 7,
-    "wanderSpeed": 2,
-    "chaseSpeed": 3,
-    "pursueSpeed": 4
+    "wanderSpeed": 1,
+    "chaseSpeed": 2,
+    "pursueSpeed": 3
   },
   "exit": {
     "size": [

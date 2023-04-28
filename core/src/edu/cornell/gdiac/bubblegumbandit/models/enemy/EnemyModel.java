@@ -115,9 +115,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     // endRegion
 
-    // Stuck in Gum Fields
 
-
+//    private boolean isShielded;
 
 
 
@@ -389,23 +388,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-//                    x -= drawn.getRegionWidth()/2 * effect;
-//                System.out.println(x);
                  x-=(getWidth()/2)*drawScale.x*effect;
-//                 y+= getHeight()/2*drawScale.y*effect;
             }
-//            if (stuck || gummed){
-//                drawn = gummedTexture;
-//            }
 
-            // TODO: Fix rolling robots so don't have to do this
-//            float y = getY() * drawScale.y;
-//            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
-//                y += 10*yScale;
-//            }
+            Color color = Color.WHITE;
+            //if shielded, tint color purple
+            if (getName().equals("shieldedMediumEnemy") || getName().equals("shieldedLaserEnemy")){
+                color = new Color(0.8f,0.7f,1f,1);
+            }
+//            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
 
 
-            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+            canvas.drawWithShadow(drawn, color, origin.x, origin.y, x, y, getAngle(), effect, yScale);
 
             //if gummed, overlay with gumTexture
             if (gummed) {
@@ -427,9 +421,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         if (outline != null && gummedTexture != null) {
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
-//            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
-//                y += 10*yScale;
-//            }
+
             float effect = faceRight ? 1.0f : -1.0f;
             canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
                     y, getAngle(), effect, yScale);

@@ -36,13 +36,13 @@ public class ShieldedRollingEnemyModel extends RollingEnemyModel implements Shie
     }
 
     public void isShielded(boolean value) {
-        if (value == false) {
-            setUnshieldedTexture();
-        }
-        else {
-            setShieldedTexture();
-        }
-        isShielded = value;
+//        if (value == false) {
+//            setUnshieldedTexture();
+//        }
+//        else {
+//            setShieldedTexture();
+//        }
+//        isShielded = value;
     }
 
     public void setShieldedTexture() {
