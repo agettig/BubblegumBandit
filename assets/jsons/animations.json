@@ -49,6 +49,14 @@
     "charge": {
       "strip": "laserCharge.charge",
       "fps": 4
+    },
+    "lock": {
+      "strip": "laserCharge.charge",
+      "fps": 8
+    },
+    "fire": {
+      "strip": "laserCharge.charge",
+      "fps": 1
     }
   },
   "shieldedLargeEnemy": {

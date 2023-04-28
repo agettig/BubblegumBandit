@@ -235,8 +235,6 @@
             }
         },
 
-
-
         "gumProjectile": "textures/gum/gum.png",
         "floatingGum": "textures/gum/gum.png",
         "splatGum": "textures/gum/splatGum.png",

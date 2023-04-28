@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
@@ -91,6 +92,22 @@ public class LaserEnemyModel extends EnemyModel{
         super.initialize(directory, x, y, constantsJson);
         setName("laserEnemy");
         setPhase(LASER_PHASE.INACTIVE);
+    }
+
+    public void update(float dt){
+        super.update(dt);
+        if (chargingLaser() ){
+            animationController.setAnimation("charge", true);
+        }
+        else if (lockingLaser()){
+            animationController.setAnimation("lock", true);
+        }
+        else if (firingLaser()){
+            animationController.setAnimation("fire", true);
+        }
+        else{
+            animationController.setAnimation("patrol", true);
+        }
     }
 
     /**
