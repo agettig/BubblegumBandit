@@ -453,6 +453,7 @@ public class GameController implements Screen {
         collisionController.reset();
         hud.resetStars();
 
+
         level.dispose();
 
         setComplete(false);
