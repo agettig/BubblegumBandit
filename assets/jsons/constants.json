@@ -184,7 +184,7 @@
     "type": "projectile",
     "size": [
       1.6,
-      1.6
+      2
     ],
     "density": 1.0,
     "friction": 2.0,
