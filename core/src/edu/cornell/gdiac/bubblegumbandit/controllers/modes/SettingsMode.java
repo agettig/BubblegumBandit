@@ -276,7 +276,9 @@ public class SettingsMode implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 SoundController.getInstance().setEffectsVolume(soundEffectsSlider.getValue());
-                SoundController.playSound("jump", 1);
+                if (!soundEffectsSlider.isDragging()) {
+                    SoundController.playSound("jump", 1);
+                }
             }
         });
         soundEffectsSlider.setValue(SaveData.getSFXVolume());
