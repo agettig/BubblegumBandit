@@ -276,7 +276,9 @@ public class SettingsMode implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 SoundController.getInstance().setEffectsVolume(soundEffectsSlider.getValue());
-                SoundController.playSound("jump", 1);
+                if (!soundEffectsSlider.isDragging()) {
+                    SoundController.playSound("jump", 1);
+                }
             }
         });
         soundEffectsSlider.setValue(SaveData.getSFXVolume());
@@ -739,6 +741,7 @@ public class SettingsMode implements Screen {
         SoundController.setMusicVolume(musicSlider.getValue());
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
+        PlayerController.changeControls(values);
         //add to save data
     }
 
