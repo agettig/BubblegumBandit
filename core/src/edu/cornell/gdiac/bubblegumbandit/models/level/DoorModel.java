@@ -136,7 +136,7 @@ public class DoorModel extends TileModel implements Gummable {
     private HashMap<Integer, EnemyModel> enemyMap;
 
     /** The height of the texture */
-    private float textureHeight;
+    private int textureHeight;
 
     /** How open the door is */
     private float openFraction;
@@ -399,8 +399,8 @@ public class DoorModel extends TileModel implements Gummable {
     }
 
     public void draw(GameCanvas canvas) {
-            if (!isLocked) {
-                float halfHeight = textureHeight / 2f;
+        float halfHeight = textureHeight / 2f;
+        if (!isLocked) {
                 texture.setRegionHeight((int) ((1 - openFraction) * textureHeight));
                 canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
                     getX()*drawScale.x, getY()*drawScale.y+halfHeight, (float) (getAngle()+Math.PI), 1, 1);
@@ -408,7 +408,7 @@ public class DoorModel extends TileModel implements Gummable {
                         getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
             } else if (!isOpen) {
                 canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
-                    getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+                    getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
             }
             if(!isOpen && gummed) { canvas.draw(gummedTexture, Color.WHITE, 0f, .5f,
                 getX()*drawScale.x-gummedTexture.getRegionWidth()/2f,
@@ -418,15 +418,16 @@ public class DoorModel extends TileModel implements Gummable {
 
     @Override
     public void drawWithOutline(GameCanvas canvas) {
+        float halfHeight = texture.getRegionHeight() / 2f;
         if (!isLocked) {
-            float halfHeight = texture.getRegionHeight() / 2f;
+            texture.setRegionHeight(textureHeight);
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
                     getX()*drawScale.x, getY()*drawScale.y+halfHeight, (float) (getAngle()+Math.PI), 1, 1);
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
                     getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
         } else {
             canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
-                getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+                getX()*drawScale.x, getY()*drawScale.y - halfHeight, getAngle(), 1, 1);
         }
         canvas.draw(outlineTexture, Color.WHITE, 0f, 0f,
             getX()*drawScale.x-5-gummedTexture.getRegionWidth()/2,
