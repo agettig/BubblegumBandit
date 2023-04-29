@@ -56,6 +56,7 @@ public class ProjectileEnemyModel extends EnemyModel {
     public void update(float dt){
         super.update(dt);
         if(fired()){
+            System.out.println("fire");
             animationController.setAnimation("fire", false);
         }
         else if (stuck || gummed){

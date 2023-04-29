@@ -36,7 +36,7 @@
     },
     "fire": {
       "strip": "smallEnemyFire.fire",
-      "fps": 2
+      "fps": 12
     }
   },
   "largeEnemy": {
