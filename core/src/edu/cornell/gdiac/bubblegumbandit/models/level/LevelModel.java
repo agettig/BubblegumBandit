@@ -139,6 +139,10 @@ public class LevelModel {
     /** All support tile objects in the level.  */
     private Array<BackgroundTileModel> supportTiles;
 
+    /** All background tile objects in the level */
+    private Array<BackgroundTileModel> backgroundTiles;
+
+
     /** All objects in the world.  */
     protected PooledList<Obstacle> objects = new PooledList<>();
 
@@ -303,6 +307,7 @@ public class LevelModel {
         postOrbEnemies = new HashSet<>();
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
         supportTiles = new Array<>();
+        backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
 
@@ -311,6 +316,7 @@ public class LevelModel {
         JsonValue terrainLayer = null;
         JsonValue objects = null;
         JsonValue supports = null;
+        JsonValue backgroundLayer = null;
         JsonValue postOrb = null;
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -331,11 +337,14 @@ public class LevelModel {
                 case "Supports":
                     supports = layer;
                     break;
+                case "Background":
+                    backgroundLayer = layer;
+                    break;
                 case "PostOrb":
                     postOrb = layer.get("Objects");
                     break;
                 default:
-                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");
+                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, Background, and Objects.");
             }
             layer = layer.next();
         }
@@ -423,6 +432,23 @@ public class LevelModel {
                 }
             }
         }
+
+        if (backgroundLayer != null) {
+            int[] backgroundData =backgroundLayer.get("data").asIntArray();
+            // Iterate over each support in the world and create if it exists
+            for (int i = 0; i < backgroundData.length; i++) {
+                int tileVal = backgroundData[i];
+                if (tileVal != 0) {
+                    BackgroundTileModel newTile = new BackgroundTileModel();
+                    float x = (i % levelWidth) + 0.5f;
+                    float y = levelHeight - (i / levelWidth) - 0.5f;
+                    newTile.initialize(textures.get(tileVal), x, y, scale);
+                    backgroundTiles.add(newTile);
+
+                }
+            }
+        }
+
 
         // Iterate over each tile in the world, find and mark open corners of tiles that have them
         for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
@@ -871,6 +897,10 @@ public class LevelModel {
         canvas.clear();
         if (backgroundRegion != null) {
             drawBackground(canvas);
+        }
+
+        for(BackgroundTileModel tile: backgroundTiles) {
+            tile.draw(canvas);
         }
 
         alarms.drawAlarms(canvas, scale);
