@@ -29,32 +29,36 @@
     "patrol": {
       "strip": "smallEnemyPatrol.patrol",
       "fps": 6
-    }
-  },
-  "shieldedSmallEnemy": {
-    "patrol": {
-      "strip": "shieldedSmallEnemyPatrol.patrol",
-      "fps": 6
     },
-    "unshieldedPatrol": {
-      "strip": "smallEnemyPatrol.patrol",
-      "fps": 6
+    "stuck": {
+      "strip": "smallEnemyStuck.stuck",
+      "fps": 2
+    },
+    "fire": {
+      "strip": "smallEnemyFire.fire",
+      "fps": 12
     }
   },
   "largeEnemy": {
     "patrol": {
       "strip": "largeWalk.patrol",
       "fps": 4
-    }
-  },
-  "shieledLargeEnemy": {
-    "patrol": {
-      "strip": "shieldedLargeWalk.patrol",
+    },
+    "charge": {
+      "strip": "laserCharge.charge",
       "fps": 4
     },
-    "unshieldedPatrol": {
-      "strip": "largeWalk.patrol",
-      "fps": 4
+    "lock": {
+      "strip": "laserCharge.charge",
+      "fps": 8
+    },
+    "fire": {
+      "strip": "laserCharge.charge",
+      "fps": 1
+    },
+    "stuck": {
+      "strip": "laserStuck.stuck",
+      "fps": 2
     }
   },
   "mediumEnemy": {
@@ -65,16 +69,10 @@
     "roll": {
       "strip": "medRoll.attack",
       "fps": 8
-    }
-  },
-  "shieldedMediumEnemy": {
-    "patrol": {
-      "strip": "shieldedMedWalk.patrol",
-      "fps": 8
     },
-    "roll": {
-      "strip": "medRoll.attack",
-      "fps": 8
+    "stuck" : {
+      "strip": "medStick.stuck",
+      "fps": 2
     }
   },
   "poof": {

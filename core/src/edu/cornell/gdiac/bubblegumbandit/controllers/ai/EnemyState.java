@@ -26,9 +26,7 @@ public enum EnemyState implements State<AIController> {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
 
-            if (aiController.getEnemy() instanceof Shield) {
-                ((Shield) aiController.getEnemy()).isShielded(true);
-            }
+            aiController.getEnemy().isShielded(true);
 
             // set next action to no action
             aiController.getEnemy().setNextAction(CONTROL_NO_ACTION);
@@ -56,14 +54,13 @@ public enum EnemyState implements State<AIController> {
             }
             setAction(aiController);
 
-            if (aiController.getEnemy() instanceof Shield) {
-                ((Shield) aiController.getEnemy()).isShielded(true);
-                if (aiController.getEnemy() instanceof LaserEnemyModel) {
-                    if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
-                        ((Shield) aiController.getEnemy()).isShielded(false);
-                    }
+            aiController.getEnemy().isShielded(true);
+            if (aiController.getEnemy() instanceof LaserEnemyModel) {
+                if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
+                    aiController.getEnemy().isShielded(false);
                 }
             }
+
         }
 
         public void setAction(AIController aiController) {
@@ -136,14 +133,13 @@ public enum EnemyState implements State<AIController> {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
 
-            if (aiController.getEnemy() instanceof Shield) {
-                ((Shield) aiController.getEnemy()).isShielded(true);
-                if (aiController.getEnemy() instanceof LaserEnemyModel) {
-                    if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
-                        ((Shield) aiController.getEnemy()).isShielded(false);
-                    }
+            aiController.getEnemy().isShielded(true);
+            if (aiController.getEnemy() instanceof LaserEnemyModel) {
+                if (!((LaserEnemyModel) aiController.getEnemy()).inactiveLaser()) {
+                    aiController.getEnemy().isShielded(false);
                 }
             }
+
 
             // update action
             setAction(aiController);
@@ -198,9 +194,7 @@ public enum EnemyState implements State<AIController> {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
 
-            if (aiController.getEnemy() instanceof Shield) {
-                ((Shield) aiController.getEnemy()).isShielded(false);
-            }
+            aiController.getEnemy().isShielded(false);
 
             // if can move find next move
             if (aiController.getEnemyStateMachine().canMove() && (aiController.getEnemy() instanceof RollingEnemyModel || !aiController.enemyCloseToBandit())) {
@@ -341,9 +335,7 @@ public enum EnemyState implements State<AIController> {
                         (int) banditModel.getY());
             }
 
-            if (aiController.getEnemy() instanceof Shield) {
-                ((Shield) aiController.getEnemy()).isShielded(false);
-            }
+            aiController.getEnemy().isShielded(false);
 
             // determine if enemy can shoot
             if (aiController.canShootTarget()) {
