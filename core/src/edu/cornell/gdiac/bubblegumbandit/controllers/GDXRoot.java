@@ -16,6 +16,8 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LevelSelectMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LoadingMode;
@@ -48,6 +50,10 @@ public class GDXRoot extends Game implements ScreenListener {
 
 	private SettingsMode settingsMode;
 
+	private Cursor mouseCursor;
+
+	private Cursor crosshairCursor;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 */
@@ -60,6 +66,16 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
+
+		Pixmap mouse = new Pixmap(Gdx.files.internal("textures/UI/pinkMouse.png"));
+		Pixmap crosshair = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
+		mouseCursor = Gdx.graphics.newCursor(mouse, 16, 16);
+		crosshairCursor = Gdx.graphics.newCursor(crosshair, 16,16);
+		mouse.dispose();
+		crosshair.dispose();
+		Gdx.graphics.setCursor(mouseCursor);
+
+
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
 
@@ -121,14 +137,19 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 
+		if (screen == controller){
+			Gdx.graphics.setCursor(mouseCursor);
+		}
 
 		if (screen == levels) {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setLevelNum(levels.getSelectedLevel());
 			controller.reset();
+			Gdx.graphics.setCursor(crosshairCursor);
 			setScreen(controller);
 		} else if (screen == loading && exitCode == 1) {
+			Gdx.graphics.setCursor(crosshairCursor);
 			directory = loading.getAssets();
 			setScreen(controller);
 			directory = loading.getAssets();
@@ -155,11 +176,14 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.setScreenListener(this);
 			setScreen(loading);
 
-		} else if (exitCode == GameController.EXIT_QUIT) {
+		} else if (exitCode == GameController.EXIT_QUIT && screen==controller) {
 			// We quit the main application
 			canvas.resetCamera();
 			loading.setScreenListener(this);
 			setScreen(loading);
+		}
+		else{
+			Gdx.app.exit();
 		}
 
 	}
