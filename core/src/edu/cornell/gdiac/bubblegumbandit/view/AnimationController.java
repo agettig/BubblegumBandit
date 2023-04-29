@@ -8,20 +8,46 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
 import java.util.HashMap;
 
+/** An animation controller to animate objects in the game */
 public class AnimationController {
-  int FPS = 8;
-  int tempFPS = 8;
-  HashMap<String, FilmStrip> animations;
-  HashMap<String, Integer> fps;
-  FilmStrip current;
-  FilmStrip temp;
-  boolean finished;
-  float timeSinceLastFrame = 0f;
-  String currentName;
-  String tempName;
+
+  /** The FPS of the current looping animation */
+  private int FPS = 8;
+
+  /** The FPS of the current temporary (non-looping) animation */
+  private int tempFPS = 8;
+
+  /** Maps animations to their names */
+
+  private HashMap<String, FilmStrip> animations;
+
+  /** Maps FPS to animation names */
+  private HashMap<String, Integer> fps;
+
+  /** The current looping animation */
+  private FilmStrip current;
+
+  /** The current temporary animation (will usually be null) */
+  private FilmStrip temp;
+
+  /** Whether the temporary animation has finished and is ready to be dropped */
+  private boolean finished;
+
+  /** The time elapsed since the last animation frame; */
+  private float timeSinceLastFrame = 0f;
+
+  /** The name of the current looping animation */
+  private String currentName;
+
+  /** The name of the current temporary animation */
+  private String tempName;
 
 
-
+  /**
+   * Creates an animation controller
+   * @param directory the asset directory
+   * @param key the key for the animation controller in animations.json
+   */
   public AnimationController(AssetDirectory directory, String key) {
     animations = new HashMap<>();
     fps = new HashMap<>();
@@ -45,6 +71,9 @@ public class AnimationController {
   }
 
 
+  /**
+   * Returns the current frame
+   */
   public FilmStrip getFrame() {
     timeSinceLastFrame += Gdx.graphics.getDeltaTime();
 
@@ -78,20 +107,33 @@ public class AnimationController {
 
   }
 
+  /**
+   * Returns whether the controller has a temporary animation
+   */
   public boolean hasTemp() {
     return temp != null;
   }
 
+  /**
+   * Returns whether the controller has any animation
+   */
   public boolean hasAnimation() {
     return temp!=null&&current!=null;
   }
 
+  /**
+   * Returns the name of the animation playing
+   */
   public String getCurrentAnimation() {
     return temp==null ? currentName : tempName;
   }
 
 
-
+  /**
+   * Sets the animation
+   * @param name the name of the animation
+   * @param loop whether the animation is looping or temporary
+   */
   public void setAnimation(String name, boolean loop) {
     if(animations.containsKey(name)&&(currentName!=name)) {
       timeSinceLastFrame = 0f;
@@ -109,6 +151,9 @@ public class AnimationController {
     }
   }
 
+  /**
+   * Clears all current animations, looping and not.
+   */
   public void clearAnimations() {
     this.current = null;
     this.currentName = "No animation playing.";
