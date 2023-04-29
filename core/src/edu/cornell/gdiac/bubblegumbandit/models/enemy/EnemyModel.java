@@ -401,7 +401,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
             //if gummed, overlay with gumTexture
             if (gummed) {
-                if(getVY()==0) {
+                //if speed is below threshold, draw static gum
+                if(Math.abs(getVY())<=5) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), 1, yScale);
                 } else {
@@ -427,11 +428,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
 
-            float effect = faceRight ? 1.0f : -1.0f;
+//            float effect = faceRight ? 1.0f : -1.0f;
 //            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
 //                    y, getAngle(), effect, yScale);
 
-            if (getVY()==0) {
+            //if speed is below threshold, draw static gum
+            if (Math.abs(getVY())<=5) {
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
                     y-5*yScale, getAngle(), 1, yScale);
             } else {
@@ -443,6 +445,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             }
         }
     }
+
+
 
     /**
      * Draws this EnemyModel in Debug Mode.

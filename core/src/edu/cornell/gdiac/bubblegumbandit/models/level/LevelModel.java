@@ -844,8 +844,6 @@ public class LevelModel {
         Set<Obstacle> postLaserDraw = new HashSet<>();
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
-
-
         for (Obstacle obj : objects) {
             obj.draw(canvas);
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
