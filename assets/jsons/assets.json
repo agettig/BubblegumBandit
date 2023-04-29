@@ -46,6 +46,7 @@
         "frame": "textures/environment/frameB.png",
         "star": "textures/environment/star.png",
         "supports": "textures/environment/supports.png",
+        "backgroundTiles" : "textures/environment/backgroundTiles.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",
@@ -136,6 +137,7 @@
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
+        "smallShield": "textures/smallEnemy/smallShield.png",
         "smallEnemyPatrol":  {
             "file": "textures/smallEnemy/smallEnemyPatrol.png",
             "wrap": false,
@@ -147,20 +149,32 @@
                 }
             }
         },
-        "shielded_small_robot_patrol":  {
-            "file": "textures/smallEnemy/shielded_small_robot_patrol.png",
+        "smallEnemyStuck":  {
+            "file": "textures/smallEnemy/stuck.png",
             "wrap": false,
             "sprites": {
-                "patrol": {
-                    "size": 4,
+                "stuck": {
+                    "size": 2,
                     "rows": 1,
-                    "cols": 4
+                    "cols": 2
+                }
+            }
+        },
+        "smallEnemyFire":  {
+            "file": "textures/smallEnemy/fire.png",
+            "wrap": false,
+            "sprites": {
+                "fire": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
                 }
             }
         },
 
         "medOutline": "textures/mediumEnemy/medWhite.png",
         "medEnemy": "textures/mediumEnemy/mediumEnemy.png",
+        "medShield": "textures/mediumEnemy/medShield.png",
         "medWalk":  {
             "file": "textures/mediumEnemy/medWalk.png",
             "wrap": false,
@@ -183,23 +197,23 @@
                 }
             }
         },
-        "shielded_med_walk":  {
-            "file": "textures/mediumEnemy/shielded_med_walk.png",
+        "medStick": {
+            "file": "textures/mediumEnemy/medSticky.png",
             "wrap": false,
             "sprites": {
-                "patrol": {
-                    "size": 8,
+                "stuck": {
+                    "size": 4,
                     "rows": 1,
-                    "cols": 8
+                    "cols": 4
                 }
             }
         },
-
 
         "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
         "largeEnemy": "textures/largeEnemy/largeEnemy.png",
         "laserBeam": "textures/largeEnemy/laserBeam.png",
         "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
+        "largeShield": "textures/largeEnemy/bigShield.png",
         "largeWalk":  {
             "file": "textures/largeEnemy/largeAnim.png",
             "wrap": false,
@@ -211,19 +225,28 @@
                 }
             }
         },
-        "shielded_large_walk":  {
-            "file": "textures/largeEnemy/shielded_large_anim.png",
+        "laserCharge":  {
+            "file": "textures/largeEnemy/charging.png",
             "wrap": false,
             "sprites": {
-                "patrol": {
+                "charge": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "laserStuck":  {
+            "file": "textures/largeEnemy/stuck.png",
+            "wrap": false,
+            "sprites": {
+                "stuck": {
                     "size": 4,
                     "rows": 1,
                     "cols": 4
                 }
             }
         },
-
-
 
         "gumProjectile": "textures/gum/gum.png",
         "reloadGumSymbol": "textures/gum/reloading_gum.png",
@@ -312,7 +335,7 @@
             "size": 40
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
-            "size": 50
+            "size": 30
         }
     },
 	"soundfx": {
@@ -341,6 +364,7 @@
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",
+        "backgroundTiles" : "tilesets/backgroundTiles.json",
         "terrain" : "tilesets/terrain.json",
         "objects" : "tilesets/objects.json"
     }

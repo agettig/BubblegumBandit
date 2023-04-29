@@ -86,12 +86,6 @@ public class LevelModel {
     /** true if the level is in debug mode  */
     private boolean debug;
 
-    /** The complete background of the level  */
-    private Texture backgroundText;
-
-    /** The background of the level, cropped if necessary */
-    private TextureRegion backgroundRegion;
-
 
     /** All AIControllers in the level. */
     private Array<AIController> enemyControllers;
@@ -138,6 +132,10 @@ public class LevelModel {
 
     /** All support tile objects in the level.  */
     private Array<BackgroundTileModel> supportTiles;
+
+    /** All background tile objects in the level */
+    private Array<BackgroundTileModel> backgroundTiles;
+
 
     /** All objects in the world.  */
     protected PooledList<Obstacle> objects = new PooledList<>();
@@ -303,6 +301,7 @@ public class LevelModel {
         postOrbEnemies = new HashSet<>();
         HashMap<Vector2, TileModel> tiles = new HashMap<>();
         supportTiles = new Array<>();
+        backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
 
@@ -311,6 +310,7 @@ public class LevelModel {
         JsonValue terrainLayer = null;
         JsonValue objects = null;
         JsonValue supports = null;
+        JsonValue backgroundLayer = null;
         JsonValue postOrb = null;
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
@@ -331,11 +331,17 @@ public class LevelModel {
                 case "Supports":
                     supports = layer;
                     break;
+                case "Background":
+                    backgroundLayer = layer;
+                    break;
                 case "PostOrb":
                     postOrb = layer.get("Objects");
                     break;
+                case "Corners":
+                    //for creating the background
+                    break;
                 default:
-                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, and Objects.");
+                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, Background, Corners, and Objects.");
             }
             layer = layer.next();
         }
@@ -384,12 +390,6 @@ public class LevelModel {
         tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f / 8);
         tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f / 8);
 
-        String key2 = constants.get("background").asString();
-        backgroundText = directory.getEntry(key2, Texture.class);
-        backgroundRegion = new TextureRegion(backgroundText);
-
-
-
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
@@ -423,6 +423,23 @@ public class LevelModel {
                 }
             }
         }
+
+        if (backgroundLayer != null) {
+            int[] backgroundData =backgroundLayer.get("data").asIntArray();
+            // Iterate over each support in the world and create if it exists
+            for (int i = 0; i < backgroundData.length; i++) {
+                int tileVal = backgroundData[i];
+                if (tileVal != 0) {
+                    BackgroundTileModel newTile = new BackgroundTileModel();
+                    float x = (i % levelWidth) + 0.5f;
+                    float y = levelHeight - (i / levelWidth) - 0.5f;
+                    newTile.initialize(textures.get(tileVal), x, y, scale);
+                    backgroundTiles.add(newTile);
+
+                }
+            }
+        }
+
 
         // Iterate over each tile in the world, find and mark open corners of tiles that have them
         for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
@@ -479,6 +496,9 @@ public class LevelModel {
             int objId = (object.getInt("id"));
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
+            float decorX = object.getFloat("x")/scale.x;
+            float decorY = levelHeight - object.getFloat("y")/scale.y;
+
 
 
             switch (objType) {
@@ -488,7 +508,7 @@ public class LevelModel {
                         System.err.println("Invalid keycode "+keyCode+" accessed by tutorial icon.");
                         break;
                     }
-                    icons.add(new TutorialIcon(directory, x, y, keyCode, scale));
+                    icons.add(new TutorialIcon(directory, decorX, decorY, keyCode, scale));
                     break;
                 }
                 case "chair":
@@ -512,55 +532,37 @@ public class LevelModel {
                     goalDoor.setDrawScale(scale);
                     break;
                 case "smallEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     newEnemies.add(enemy);
                     enemyIds.put(objId, enemy);
-                    break;
-                case "shieldedsmallrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
                     break;
                 case "mediumEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedmediumrobot":
+                    enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
-                    break;
-                case "shieldedmediumrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedRollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "shieldedlargerobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedLaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
-                    break;
                 case "largeEnemy":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
@@ -584,7 +586,7 @@ public class LevelModel {
                     activate(door);
                     break;
                 case "alarm":
-                    alarmPos.add(new Vector2(x, y));
+                    alarmPos.add(new Vector2(decorX, decorY));
                     break;
                 case "crushing_block":
                     CrusherModel crush = new CrusherModel();
@@ -633,55 +635,37 @@ public class LevelModel {
 
             switch (objType) {
                 case "smallEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     postOrbEnemies.add(enemy);
                     enemyIds.put(objId, enemy);
                     break;
-                case "shieldedsmallrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
-                    break;
                 case "mediumEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedmediumrobot":
+                    enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    postOrbEnemies.add(enemy);
-                    break;
-                case "shieldedmediumrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedRollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
                 case "shieldedlargerobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedLaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    postOrbEnemies.add(enemy);
-                    break;
                 case "largeEnemy":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
@@ -865,9 +849,10 @@ public class LevelModel {
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
             gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
         canvas.begin();
-        canvas.clear();
-        if (backgroundRegion != null) {
-            drawBackground(canvas);
+//        canvas.clear();
+
+        for(BackgroundTileModel tile: backgroundTiles) {
+            tile.draw(canvas);
         }
 
         alarms.drawAlarms(canvas, scale);
@@ -880,15 +865,12 @@ public class LevelModel {
         Set<Obstacle> postLaserDraw = new HashSet<>();
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
-
-
         for (Obstacle obj : objects) {
+            obj.draw(canvas);
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
             }
-            else {
-                obj.draw(canvas);
-            }
+
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
@@ -987,31 +969,6 @@ public class LevelModel {
                             1f,
                             1 * laserThickness);
                 }
-            }
-        }
-    }
-
-    /**
-     * Draws a repeating background, and crops off any overhangs outside the level
-     * to maintain resolution and aspect ratio.
-     *
-     * @param canvas the current canvas
-     */
-    private void drawBackground(GameCanvas canvas) {
-        for (int i = 0; i < levelWidth * scale.x; i += backgroundRegion.getRegionWidth()) {
-            for (int j = 0; j < levelHeight * scale.x; j += backgroundRegion.getRegionHeight()) {
-                if (j + backgroundRegion.getRegionHeight() > levelHeight * scale.x) {
-                    backgroundRegion.setRegionY((int) (backgroundText.getHeight()
-                            - (levelHeight * scale.x - j)));
-                }
-                if (i + backgroundRegion.getRegionWidth() > levelWidth * scale.x) {
-                    backgroundRegion.setRegionWidth((int) (levelWidth * scale.x - i));
-                }
-                canvas.draw(backgroundRegion, i, j);
-                backgroundRegion.setRegionX(0);
-                backgroundRegion.setRegionY(0);
-                backgroundRegion.setRegionHeight(backgroundText.getHeight());
-                backgroundRegion.setRegionWidth(backgroundText.getWidth());
             }
         }
     }

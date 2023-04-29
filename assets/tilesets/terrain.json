@@ -1,19 +1,11 @@
-{ "columns":11,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"..\/assets\/jsons\/terrain.json"
-        }
-    },
+{ "columns":12,
  "image":"..\/textures\/environment\/tileset.png",
  "imageheight":320,
- "imagewidth":704,
+ "imagewidth":768,
  "margin":0,
  "name":"terrain",
  "spacing":0,
- "tilecount":55,
+ "tilecount":60,
  "tiledversion":"1.10.0",
  "tileheight":64,
  "tiles":[
@@ -235,6 +227,26 @@
         }, 
         {
          "id":54,
+         "type":"terrain"
+        }, 
+        {
+         "id":55,
+         "type":"terrain"
+        }, 
+        {
+         "id":56,
+         "type":"terrain"
+        }, 
+        {
+         "id":57,
+         "type":"terrain"
+        }, 
+        {
+         "id":58,
+         "type":"terrain"
+        }, 
+        {
+         "id":59,
          "type":"terrain"
         }],
  "tilewidth":64,

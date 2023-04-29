@@ -42,10 +42,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
-import edu.cornell.gdiac.bubblegumbandit.view.Minimap;
+import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -97,6 +94,9 @@ public class GameController implements Screen {
     private Minimap minimap;
 
     private long reloadSymbolTimer;
+
+    /** represents the ship and space backgrounds */
+    private Background backgrounds;
 
     /**
      * The jump sound.  We only want to play once.
@@ -423,6 +423,9 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
+
+        backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
+                new TextureRegion(directory.getEntry("space_bg", Texture.class)));
     }
 
 
@@ -472,6 +475,9 @@ public class GameController implements Screen {
         minimap.initialize(directory, levelFormat, x, y);
 
         SoundController.playMusic("game");
+
+        backgrounds.reset();
+        backgrounds.initialize(directory, levelFormat, x, y);
     }
 
     public void respawn() {
@@ -715,9 +721,7 @@ public class GameController implements Screen {
                         sameSide = true;
                     boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
                     if (canFire) {
-                        if (enemy instanceof Shield) {
-                            ((Shield) enemy).isShielded(false);
-                        }
+                        enemy.isShielded(false);
                         laserController.fireLaser(controller);
                     }
                 }
@@ -766,6 +770,10 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
+        canvas.clear();
+
+        backgrounds.draw(canvas);
+
         PlayerController inputResults = PlayerController.getInstance();
         level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
 
