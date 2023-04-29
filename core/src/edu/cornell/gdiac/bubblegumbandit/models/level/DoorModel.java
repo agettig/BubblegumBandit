@@ -320,6 +320,7 @@ public class DoorModel extends TileModel implements Gummable {
         Filter filter = body.getFixtureList().get(0).getFilterData();
         filter.maskBits = CollisionController.MASK_DOOR;
         body.getFixtureList().get(0).setFilterData(filter);
+
         return true;
     }
 
