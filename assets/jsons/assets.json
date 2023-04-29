@@ -249,6 +249,7 @@
         },
 
         "gumProjectile": "textures/gum/gum.png",
+        "reloadGumSymbol": "textures/gum/reloading_gum.png",
         "floatingGum": "textures/gum/gum.png",
         "splatGum": "textures/gum/splatGum.png",
         "topRightGum": "textures/gum/topRightGum.png",

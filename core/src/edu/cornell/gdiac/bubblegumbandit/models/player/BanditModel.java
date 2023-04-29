@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -92,6 +93,8 @@ public class BanditModel extends CapsuleObstacle {
      * Cache for internal force calculations
      */
     private Vector2 forceCache = new Vector2();
+
+    private Texture reloadSymbol;
 
     /**
      * Whether we are actively shooting
@@ -530,6 +533,7 @@ public class BanditModel extends CapsuleObstacle {
 
 
         animationController = new AnimationController(directory, "bandit");
+        reloadSymbol = directory.getEntry("reloadGumSymbol", Texture.class);
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
@@ -647,6 +651,15 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    /**Draw the reload gum symbol above bandits head*/
+    public void drawReload(GameCanvas canvas) {
+        if (isFlipped) {
+            canvas.draw(reloadSymbol, Color.WHITE, (getX() - getWidth()/3) * drawScale.x, (getY() - getHeight() * 1.1f) * drawScale.y, reloadSymbol.getWidth(), reloadSymbol.getHeight());
+        }
+        else {
+            canvas.draw(reloadSymbol, Color.WHITE, (getX() - getWidth()/3) * drawScale.x, (getY() + getHeight()/2 * 1.3f) * drawScale.y, reloadSymbol.getWidth(), reloadSymbol.getHeight());
+        }
+    }
 
     /**
      * Applies the force to the body of this dude
@@ -758,8 +771,6 @@ public class BanditModel extends CapsuleObstacle {
             if(!animationController.hasTemp()&&health<=0) {
                 text = deadText;
             }
-
-
 
 
             canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,
