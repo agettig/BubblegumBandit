@@ -96,6 +96,8 @@ public class GameController implements Screen {
 
     private Minimap minimap;
 
+    private long reloadSymbolTimer;
+
     /**
      * The jump sound.  We only want to play once.
      */
@@ -368,6 +370,7 @@ public class GameController implements Screen {
         orbCountdown = -1;
         levelNum = 1;
         reloadingGum = false;
+        reloadSymbolTimer = -1;
         setComplete(false);
         setFailure(false);
 
@@ -638,6 +641,7 @@ public class GameController implements Screen {
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
             if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
+                reloadSymbolTimer = -1;
                 reloadingGum = true;
             }
         } else {
@@ -762,6 +766,7 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
+        PlayerController inputResults = PlayerController.getInstance();
         level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
@@ -772,10 +777,15 @@ public class GameController implements Screen {
 
         minimap.draw(banditPosition);
 
-        if (bubblegumController.getAmmo() == 0) {
+        if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
+            reloadSymbolTimer = 0;
+        }
+
+        if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
             canvas.begin();
             level.getBandit().drawReload(canvas);
             canvas.end();
+            reloadSymbolTimer++;
         }
 
         // Final message
