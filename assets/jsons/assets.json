@@ -264,7 +264,7 @@
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
-        "door":  "textures/objects/doorUnlocked.png",
+        "door":  "textures/objects/halfDoor.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
         "glass":  "textures/objects/glass.png",
         "glassShatter":  {

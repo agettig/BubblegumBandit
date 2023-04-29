@@ -123,6 +123,7 @@
     "debugcolor": "magenta",
     "debugopacity": 200,
     "texture": "door",
+    "doorOpenRate": 0.1,
     "sensorsize": [
       5,
       2
