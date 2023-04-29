@@ -548,7 +548,7 @@
                          "value":26
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":1984,
@@ -649,7 +649,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":3264,

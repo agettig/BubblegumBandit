@@ -166,7 +166,7 @@
                  "id":367,
                  "name":"",
                  "rotation":0,
-                 "type":"shieldedlargerobot",
+                 "type":"shieldedLargeEnemy",
                  "visible":true,
                  "width":134,
                  "x":1856,
@@ -219,7 +219,7 @@
                          "value":22
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":1536,
@@ -272,7 +272,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":2368,
@@ -481,7 +481,7 @@
                          "value":-1
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":2368,
@@ -534,7 +534,7 @@
                          "value":28
                         }],
                  "rotation":0,
-                 "type":"door_v",
+                 "type":"doorV",
                  "visible":true,
                  "width":64,
                  "x":1216,

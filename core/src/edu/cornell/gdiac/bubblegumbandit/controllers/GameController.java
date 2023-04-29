@@ -425,7 +425,7 @@ public class GameController implements Screen {
         minimap = new Minimap();
 
         backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
-                new TextureRegion(directory.getEntry("space_bg", Texture.class)));
+                new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
     }
 
 

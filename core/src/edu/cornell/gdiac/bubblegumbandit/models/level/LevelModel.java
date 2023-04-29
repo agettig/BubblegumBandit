@@ -532,7 +532,7 @@ public class LevelModel {
                     goalDoor.setDrawScale(scale);
                     break;
                 case "smallEnemy":
-                case "shieldedsmallrobot":
+                case "shieldedSmallEnemy":
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
@@ -544,7 +544,7 @@ public class LevelModel {
                     enemyIds.put(objId, enemy);
                     break;
                 case "mediumEnemy":
-                case "shieldedmediumrobot":
+                case "shieldedMediumEnemy":
                     enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
@@ -555,7 +555,7 @@ public class LevelModel {
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
-                case "shieldedlargerobot":
+                case "shieldedLargeEnemy":
                 case "largeEnemy":
                     enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
@@ -577,20 +577,20 @@ public class LevelModel {
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
-                case "door_v_locked":
-                case "door_v":
-                case "door_h":
+                case "doorVLocked":
+                case "doorV":
+                case "doorH":
                     DoorModel door = new DoorModel();
-                    boolean isLocked = objType.contains("locked");
+                    boolean isLocked = objType.contains("Locked");
                     door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
                     activate(door);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(decorX, decorY));
                     break;
-                case "crushing_block":
+                case "crushingBlock":
                     CrusherModel crush = new CrusherModel();
-                    crush.initialize(directory, scale, x, y, object, constants.get("crushing_block"));
+                    crush.initialize(directory, scale, x, y, object, constants.get("crushingBlock"));
                     activate(crush);
                     flippableObjects.add(crush);
                     crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
@@ -635,7 +635,7 @@ public class LevelModel {
 
             switch (objType) {
                 case "smallEnemy":
-                case "shieldedsmallrobot":
+                case "shieldedSmallEnemy":
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
@@ -647,7 +647,7 @@ public class LevelModel {
                     enemyIds.put(objId, enemy);
                     break;
                 case "mediumEnemy":
-                case "shieldedmediumrobot":
+                case "shieldedMediumEnemy":
                     enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
@@ -658,7 +658,7 @@ public class LevelModel {
                     enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
-                case "shieldedlargerobot":
+                case "shieldedLargeEnemy":
                 case "largeEnemy":
                     enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
@@ -1131,7 +1131,7 @@ public class LevelModel {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                 if (!canUnstickThrough.contains(ob.getName()) &&
                         ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.equals(bandit)) {
-                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                    if (ob.getName().equals("crushingBlock") && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
                     if (fixture.getUserData() instanceof DoorModel) {

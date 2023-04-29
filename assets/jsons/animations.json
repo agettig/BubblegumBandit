@@ -13,15 +13,15 @@
       "fps": 2
     },
     "knock": {
-      "strip": "bandit_knock.knock",
+      "strip": "banditKnock.knock",
       "fps": 6
     },
     "back": {
-      "strip": "bandit_backpedal.back",
+      "strip": "banditBackpedal.back",
       "fps": 6
     },
     "death": {
-      "strip": "bandit_death.death",
+      "strip": "banditDeath.death",
       "fps": 8
     }
   },
