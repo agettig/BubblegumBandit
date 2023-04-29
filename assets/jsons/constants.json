@@ -152,7 +152,7 @@
     "debugcolor": "yellow",
     "debugopacity": 200
   },
-  "shieldedMediumRobot": {
+  "mediumEnemy": {
     "type": "projectile",
     "size": [
       1.6,
@@ -178,35 +178,8 @@
     "wanderSpeed": 3,
     "chaseSpeed": 4,
     "pursueSpeed": 5,
-    "mediumAttack": 8
-  },
-  "mediumEnemy": {
-    "type": "projectile",
-    "size": [
-      1.6,
-      2
-    ],
-    "density": 1.0,
-    "friction": 2.0,
-    "restitution": 0.0,
-    "force": 10.0,
-    "damping": 10.0,
-    "maxSpeed": 12.0,
-    "animations" : "mediumEnemy",
-    "gumTexture": "medGum",
-    "outline": "medGumOutline",
-    "texture": "medEnemy",
-    "debugColor": "white",
-    "debugOpacity": 192,
-    "sensorColor": "yellow",
-    "sensorOpacity": 192,
-    "visionRadius": 3.0,
-    "sensorName": "listeningsensor",
-    "listeningRadius": 7,
-    "wanderSpeed": 3,
-    "chaseSpeed": 4,
-    "pursueSpeed": 5,
-    "mediumAttack": 8
+    "mediumAttack": 8,
+    "shield": "medShield"
   },
   "smallEnemy": {
     "type": "projectile",
@@ -234,35 +207,8 @@
     "listeningRadius": 7,
     "wanderSpeed": 3,
     "chaseSpeed": 4,
-    "pursueSpeed": 5
-  },
-  "shieldedSmallRobot": {
-    "type": "projectile",
-    "size": [
-      0.5,
-      1.0
-    ],
-    "density": 0.5,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "force": 10.0,
-    "damping": 2.0,
-    "maxSpeed": 5.0,
-    "animations": "smallEnemy",
-    "texture": "smallEnemy",
-    "outline": "smallGumOutline",
-    "gummedTexture": "gummedEnemy",
-    "gumTexture": "smallGum",
-    "debugColor": "white",
-    "debugOpacity": 192,
-    "sensorColor": "yellow",
-    "sensorOpacity": 192,
-    "visionRadius": 3.0,
-    "sensorName": "listeningSensor",
-    "listeningRadius": 7,
-    "wanderSpeed": 3,
-    "chaseSpeed": 4,
-    "pursueSpeed": 5
+    "pursueSpeed": 5,
+    "shield": "smallShield"
   },
   "largeEnemy": {
     "type": "moving",
@@ -289,34 +235,8 @@
     "listeningRadius": 7,
     "wanderSpeed": 1,
     "chaseSpeed": 2,
-    "pursueSpeed": 3
-  },
-  "shieldedlargerobot": {
-    "type": "moving",
-    "size": [
-      1.5,
-      2.8
-    ],
-    "density": 1.0,
-    "friction": 2.0,
-    "restitution": 0.0,
-    "force": 10.0,
-    "damping": 10.0,
-    "maxSpeed": 5.0,
-    "animations": "largeEnemy",
-    "texture": "largeEnemy",
-    "gumTexture": "largeGum",
-    "outline": "largeGumOutline",
-    "debugColor": "white",
-    "debugOpacity": 192,
-    "sensorColor": "yellow",
-    "sensorOpacity": 192,
-    "visionRadius": 3.0,
-    "sensorName": "listeningSensor",
-    "listeningRadius": 7,
-    "wanderSpeed": 1,
-    "chaseSpeed": 2,
-    "pursueSpeed": 3
+    "pursueSpeed": 3,
+    "shield": "largeShield"
   },
   "exit": {
     "size": [

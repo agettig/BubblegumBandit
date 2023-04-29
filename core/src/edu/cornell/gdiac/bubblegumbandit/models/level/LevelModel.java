@@ -513,7 +513,7 @@ public class LevelModel {
                     break;
                 case "smallEnemy":
                 case "shieldedsmallrobot":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
@@ -525,7 +525,7 @@ public class LevelModel {
                     break;
                 case "mediumEnemy":
                 case "shieldedmediumrobot":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
@@ -537,7 +537,7 @@ public class LevelModel {
                     break;
                 case "shieldedlargerobot":
                 case "largeEnemy":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
@@ -616,7 +616,7 @@ public class LevelModel {
             switch (objType) {
                 case "smallEnemy":
                 case "shieldedsmallrobot":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
@@ -628,7 +628,7 @@ public class LevelModel {
                     break;
                 case "mediumEnemy":
                 case "shieldedmediumrobot":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
@@ -640,7 +640,7 @@ public class LevelModel {
                     break;
                 case "shieldedlargerobot":
                 case "largeEnemy":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);

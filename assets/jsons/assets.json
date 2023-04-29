@@ -137,6 +137,7 @@
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
+        "smallShield": "textures/smallEnemy/smallShield.png",
         "smallEnemyPatrol":  {
             "file": "textures/smallEnemy/smallEnemyPatrol.png",
             "wrap": false,
@@ -173,6 +174,7 @@
 
         "medOutline": "textures/mediumEnemy/medWhite.png",
         "medEnemy": "textures/mediumEnemy/mediumEnemy.png",
+        "medShield": "textures/mediumEnemy/medShield.png",
         "medWalk":  {
             "file": "textures/mediumEnemy/medWalk.png",
             "wrap": false,
@@ -207,11 +209,11 @@
             }
         },
 
-
         "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
         "largeEnemy": "textures/largeEnemy/largeEnemy.png",
         "laserBeam": "textures/largeEnemy/laserBeam.png",
         "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
+        "largeShield": "textures/largeEnemy/bigShield.png",
         "largeWalk":  {
             "file": "textures/largeEnemy/largeAnim.png",
             "wrap": false,
