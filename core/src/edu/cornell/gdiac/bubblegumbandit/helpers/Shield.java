@@ -6,7 +6,7 @@ public interface Shield {
 
     public void isShielded(boolean value);
 
-    public void setUnshieldedTexture();
-
-    public void setShieldedTexture();
+//    public void setUnshieldedTexture();
+//
+//    public void setShieldedTexture();
 }

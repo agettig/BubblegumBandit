@@ -541,55 +541,37 @@ public class LevelModel {
                     goalDoor.setDrawScale(scale);
                     break;
                 case "smallEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     newEnemies.add(enemy);
                     enemyIds.put(objId, enemy);
-                    break;
-                case "shieldedsmallrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
                     break;
                 case "mediumEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedmediumrobot":
+                    enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
-                    break;
-                case "shieldedmediumrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedRollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "shieldedlargerobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedLaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
-                    break;
                 case "largeEnemy":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
@@ -662,55 +644,37 @@ public class LevelModel {
 
             switch (objType) {
                 case "smallEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedsmallrobot":
+                    enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     postOrbEnemies.add(enemy);
                     enemyIds.put(objId, enemy);
                     break;
-                case "shieldedsmallrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    newEnemies.add(enemy);
-                    break;
                 case "mediumEnemy":
-                    enemyConstants = constants.get(objType);
+                case "shieldedmediumrobot":
+                    enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    postOrbEnemies.add(enemy);
-                    break;
-                case "shieldedmediumrobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedRollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
                 case "shieldedlargerobot":
-                    enemyConstants = constants.get(objType);
-                    x = (float) ((int) x + .5);
-                    enemy = new ShieldedLaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
-                    enemy.setDrawScale(scale);
-                    enemyIds.put(objId, enemy);
-                    postOrbEnemies.add(enemy);
-                    break;
                 case "largeEnemy":
-                    enemyConstants = constants.get(objType);
+                    enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     postOrbEnemies.add(enemy);
                     break;
@@ -913,15 +877,12 @@ public class LevelModel {
         Set<Obstacle> postLaserDraw = new HashSet<>();
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
-
-
         for (Obstacle obj : objects) {
+            obj.draw(canvas);
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
             }
-            else {
-                obj.draw(canvas);
-            }
+
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 

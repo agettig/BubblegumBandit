@@ -51,4 +51,18 @@ public class ProjectileEnemyModel extends EnemyModel {
         super.initialize(directory, x, y, constantsJson);
         setVisionRadius(constantsJson.get("visionRadius").asFloat());
     }
+
+
+    public void update(float dt){
+        super.update(dt);
+        if(fired()){
+            animationController.setAnimation("fire", false);
+        }
+        else if (stuck || gummed){
+            animationController.setAnimation("stuck", true);
+        }
+        else {
+            animationController.setAnimation("patrol", true);
+        }
+    }
 }
