@@ -184,7 +184,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         sunfish = new SunfishModel(sunfish_texture, fire, boost, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
         sunfish.activatePhysics(world);
 
-        background = new TextureRegion(directory.getEntry("space_bg", Texture.class));
+        background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
 
         createIcons(directory);
 

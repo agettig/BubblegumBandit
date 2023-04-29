@@ -948,7 +948,7 @@
                  "id":144,
                  "name":"",
 ========
-                 "template":"..\/..\/tilesets\/camera\/camera_h.tx",
+                 "template":"..\/..\/tilesets\/camera\/cameraH.tx",
                  "width":15,
                  "x":2019.1617440225,
                  "y":1660.48382559775
@@ -986,7 +986,7 @@
                  "x":3776,
                  "y":3200
 ========
-                 "template":"..\/..\/tilesets\/camera\/camera_h.tx",
+                 "template":"..\/..\/tilesets\/camera\/cameraH.tx",
                  "width":15,
                  "x":3280.59071729958,
                  "y":1663.15049226442
