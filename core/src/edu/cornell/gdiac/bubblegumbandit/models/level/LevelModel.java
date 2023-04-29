@@ -479,6 +479,9 @@ public class LevelModel {
             int objId = (object.getInt("id"));
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
+            float decorX = object.getFloat("x")/scale.x;
+            float decorY = levelHeight - object.getFloat("y")/scale.y;
+
 
 
             switch (objType) {
@@ -488,7 +491,7 @@ public class LevelModel {
                         System.err.println("Invalid keycode "+keyCode+" accessed by tutorial icon.");
                         break;
                     }
-                    icons.add(new TutorialIcon(directory, x, y, keyCode, scale));
+                    icons.add(new TutorialIcon(directory, decorX, decorY, keyCode, scale));
                     break;
                 }
                 case "chair":
@@ -584,7 +587,7 @@ public class LevelModel {
                     activate(door);
                     break;
                 case "alarm":
-                    alarmPos.add(new Vector2(x, y));
+                    alarmPos.add(new Vector2(decorX, decorY));
                     break;
                 case "crushing_block":
                     CrusherModel crush = new CrusherModel();

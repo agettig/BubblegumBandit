@@ -404,7 +404,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
                 canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), effect, yScale);
-                if(getVY()==0) {
+                if(stuck) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), 1, yScale);
                 } else {
@@ -429,7 +429,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             float effect = faceRight ? 1.0f : -1.0f;
             canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                     y, getAngle(), effect, yScale);
-            if (getVY()==0) {
+            if (stuck) {
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()* drawScale.x-5,
                     y-5*yScale, getAngle(), 1, yScale);
             } else {

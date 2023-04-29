@@ -311,7 +311,7 @@
             "size": 40
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
-            "size": 50
+            "size": 30
         }
     },
 	"soundfx": {
