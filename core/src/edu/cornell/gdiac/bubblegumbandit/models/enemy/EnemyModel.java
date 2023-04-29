@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
@@ -27,7 +28,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  * <p>
  * Initialization is done by reading the json
  */
-public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
+public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Shield {
 
     private TextureRegion outline;
 
@@ -115,10 +116,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     // endRegion
 
+    /** Whether the enemy has a shield */
+    private boolean hasShield;
 
-//    private boolean isShielded;
-
-
+    /** Whether a shielded enemy's shield is lowered, happens during attacking */
+    private boolean isShielded;
 
     // endRegion
 
@@ -126,7 +128,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
      *
      * @returns this EnemyModel's unique ID. */
     public int getId() { return id; };
-
 
     /** Returns true if this EnemyModel is facing right;
      * otherwise, returns false.
@@ -393,7 +394,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
             Color color = Color.WHITE;
             //if shielded, tint color purple
-            if (getName().equals("shieldedMediumEnemy") || getName().equals("shieldedLaserEnemy")){
+            if (isShielded){
                 color = new Color(0.8f,0.7f,1f,1);
             }
 //            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
@@ -501,4 +502,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public float getYFeet(){
         return getY();
     }
+
+
+    //shielded attributes
+    public void hasShield(boolean value){
+        hasShield = value;
+    }
+    public boolean isShielded(){return isShielded;}
+
+    public void isShielded(boolean value){
+        if (hasShield){
+            isShielded = value;
+        }
+    }
+
 }
