@@ -102,11 +102,11 @@ public class HUDController {
     table.row();
     for (int i = 0; i < 6; i++) {
       Image emptyGum = new Image(directory.getEntry("emptyGum", Texture.class));
-      emptyGum.setPosition(32 + i*50, stage.getHeight() - 103);
+      emptyGum.setPosition(32 + i*72, stage.getHeight() - 103);
       stage.addActor(emptyGum);
 
       Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
-      reloadGumIcon.setPosition(32 + i*50, stage.getHeight() - 103);
+      reloadGumIcon.setPosition(32 + i*72, stage.getHeight() - 103);
       gumCount[i] = reloadGumIcon;
       stage.addActor(reloadGumIcon);
     }
@@ -130,8 +130,8 @@ public class HUDController {
     for (int i = 0; i < 6; i++) {
       Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
       Image emptyGumIcon = new Image(directory.getEntry("emptyGum", Texture.class));
-      emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
-      reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*50, stage.getHeight() / 4, Align.center);
+      emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*72, stage.getHeight() / 4, Align.center);
+      reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*72, stage.getHeight() / 4, Align.center);
 
       emptyGumCount[i] = emptyGumIcon;
       reloadGumCount[i] = reloadGumIcon;

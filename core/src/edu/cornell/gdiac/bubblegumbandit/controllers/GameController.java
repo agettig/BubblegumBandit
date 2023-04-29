@@ -772,6 +772,12 @@ public class GameController implements Screen {
 
         minimap.draw(banditPosition);
 
+        if (bubblegumController.getAmmo() == 0) {
+            canvas.begin();
+            level.getBandit().drawReload(canvas);
+            canvas.end();
+        }
+
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
