@@ -847,12 +847,11 @@ public class LevelModel {
 
 
         for (Obstacle obj : objects) {
+            obj.draw(canvas);
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
                 aim.highlighted.drawWithOutline(canvas);
             }
-            else {
-                obj.draw(canvas);
-            }
+
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 

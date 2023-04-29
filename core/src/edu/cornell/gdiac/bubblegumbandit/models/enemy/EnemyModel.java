@@ -428,8 +428,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             float y = getY() * drawScale.y;
 
             float effect = faceRight ? 1.0f : -1.0f;
-            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
-                    y, getAngle(), effect, yScale);
+//            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
+//                    y, getAngle(), effect, yScale);
 
             if (getVY()==0) {
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
