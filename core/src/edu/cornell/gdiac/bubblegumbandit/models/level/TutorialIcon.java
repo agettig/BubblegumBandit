@@ -79,9 +79,9 @@ public class TutorialIcon {
 
   public void draw(GameCanvas canvas) {
     canvas.draw(icon, x* scale.x, y*scale.y);
-    canvas.drawText(getKeyText(),  font, Color.WHITE,
-        x*scale.x-textOffset,
-        y*scale.y-margin, icon.getRegionWidth(), Align.center, true);
+    //canvas.drawText(getKeyText(),  font, Color.WHITE,
+     //  x*scale.x-textOffset,
+     //   y*scale.y-margin, icon.getRegionWidth(), Align.center, true);
     canvas.drawText(getKeyText(),  font, bubblePink,
         x*scale.x,
         y*scale.y-margin, icon.getRegionWidth(), Align.center, true);

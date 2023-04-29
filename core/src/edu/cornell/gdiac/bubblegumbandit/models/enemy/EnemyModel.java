@@ -357,7 +357,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         } else if (movingUp) {
 
             if (!isFlipped){
-               setX((int) getPosition().x + .5f);
+                setX((int) getPosition().x + .5f);
                 setVY(speed);
             }
             else{
@@ -394,7 +394,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                 x-=(getWidth()/2)*drawScale.x*effect;
+                x-=(getWidth()/2)*drawScale.x*effect;
             }
 
             canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
@@ -404,11 +404,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                 //if speed is below threshold, draw static gum
                 if(Math.abs(getVY())<=5) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        y, getAngle(), 1, yScale);
+                            y, getAngle(), 1, yScale);
                 } else {
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y,
-                        getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
-                        y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
+                            getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
+                            y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
                 }
 //
             }
@@ -435,12 +435,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             //if speed is below threshold, draw static gum
             if (Math.abs(getVY())<=5) {
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
-                    y-5*yScale, getAngle(), 1, yScale);
+                        y-5*yScale, getAngle(), 1, yScale);
             } else {
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
-                    x +(gummedTexture.getRegionWidth()
-                        -squishedGum.getRegionWidth())/2f-5f,
-                    y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
+                        x +(gummedTexture.getRegionWidth()
+                                -squishedGum.getRegionWidth())/2f-5f,
+                        y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
 
             }
         }
@@ -494,7 +494,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     /**
      * Flips the player's angle and direction when the world gravity is flipped
-    /**
+     /**
      * Negates this EnemyModel's current "flipped" state (if it is
      * grounded).
      */

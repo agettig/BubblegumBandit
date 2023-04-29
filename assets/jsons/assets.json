@@ -46,6 +46,7 @@
         "frame": "textures/environment/frameB.png",
         "star": "textures/environment/star.png",
         "supports": "textures/environment/supports.png",
+        "backgroundTiles" : "textures/environment/backgroundTiles.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",
@@ -333,7 +334,7 @@
             "size": 40
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
-            "size": 50
+            "size": 30
         }
     },
 	"soundfx": {
@@ -362,6 +363,7 @@
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",
+        "backgroundTiles" : "tilesets/backgroundTiles.json",
         "terrain" : "tilesets/terrain.json",
         "objects" : "tilesets/objects.json"
     }
