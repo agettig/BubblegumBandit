@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
@@ -27,7 +28,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  * <p>
  * Initialization is done by reading the json
  */
-public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
+public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Shield {
 
     private TextureRegion outline;
 
@@ -115,11 +116,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
 
     // endRegion
 
-    // Stuck in Gum Fields
+    /** Whether the enemy has a shield */
+    private boolean hasShield;
 
+    /** Whether a shielded enemy's shield is lowered, happens during attacking */
+    private boolean isShielded;
 
-
-
+    /** texture for the shield surrounding an enemy */
+    private TextureRegion shield;
 
     // endRegion
 
@@ -127,7 +131,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
      *
      * @returns this EnemyModel's unique ID. */
     public int getId() { return id; };
-
 
     /** Returns true if this EnemyModel is facing right;
      * otherwise, returns false.
@@ -301,6 +304,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
 
+        String shieldKey = constantsJson.get("shield").asString();
+        shield = new TextureRegion(directory.getEntry(shieldKey, Texture.class));
     }
 
     public CircleShape getSensorShape() {
@@ -385,26 +390,19 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
             float effect = faceRight ? 1.0f : -1.0f;
             TextureRegion drawn = texture;
             float x = getX() * drawScale.x;
+            float y = getY() * drawScale.y;
+
             if(animationController!=null) {
                 drawn = animationController.getFrame();
-                 x-=getWidth()/2*drawScale.x*effect;
-            }
-            if (stuck || gummed){
-                drawn = gummedTexture;
+                 x-=(getWidth()/2)*drawScale.x*effect;
             }
 
-            // TODO: Fix rolling robots so don't have to do this
-            float y = getY() * drawScale.y;
-            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
-                y += 10*yScale;
-            }
+            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
 
-            //if gum, overlay with gumTexture
+            //if gummed, overlay with gumTexture
             if (gummed) {
-
-                canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                        y, getAngle(), effect, yScale);
-                if(getVY()==0) {
+                //if speed is below threshold, draw static gum
+                if(Math.abs(getVY())<=5) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                         y, getAngle(), 1, yScale);
                 } else {
@@ -412,35 +410,43 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
                         getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
                         y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
                 }
-
-            } else {
-                canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x,
-                    y, getAngle(), effect, yScale);
-            }
 //
+            }
+
+            //if shielded, overlay shield
+            if (isShielded){
+                canvas.draw(shield, Color.WHITE, origin.x , origin.y, (getX() - (getDimension().x/2))* drawScale.x ,
+                        y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale);
+            }
+//            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
         }
     }
+
+    /** Draw method for when highlighting the enemy before unsticking them */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
+            float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
-            if (getName().equals("mediumEnemy")||getName().equals("shieldedMediumEnemy")) {
-                y += 10*yScale;
-            }
-            float effect = faceRight ? 1.0f : -1.0f;
-            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                    y, getAngle(), effect, yScale);
-            if (getVY()==0) {
-                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()* drawScale.x-5,
+
+//            float effect = faceRight ? 1.0f : -1.0f;
+//            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
+//                    y, getAngle(), effect, yScale);
+
+            //if speed is below threshold, draw static gum
+            if (Math.abs(getVY())<=5) {
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
                     y-5*yScale, getAngle(), 1, yScale);
             } else {
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
-                    getX() * drawScale.x+(gummedTexture.getRegionWidth()
+                    x +(gummedTexture.getRegionWidth()
                         -squishedGum.getRegionWidth())/2f-5f,
                     y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
 
             }
         }
     }
+
+
 
     /**
      * Draws this EnemyModel in Debug Mode.
@@ -504,4 +510,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable {
     public float getYFeet(){
         return getY();
     }
+
+
+    //shielded attributes
+    public void hasShield(boolean value){
+        hasShield = value;
+    }
+    public boolean isShielded(){return isShielded;}
+
+    public void isShielded(boolean value){
+        if (hasShield){
+            isShielded = value;
+        }
+    }
+
 }
