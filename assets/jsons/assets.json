@@ -24,7 +24,7 @@
         "downIcon" : "textures/tutorial/downIcon.png",
 
         "terrain": {
-            "file": "textures/environment/tileset.png"
+            "file": "textures/environment/tileSet.png"
         },
         "background": {
             "file": "textures/environment/background.png",

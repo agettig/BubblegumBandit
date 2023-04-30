@@ -1,12 +1,4 @@
 { "columns":5,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"backgroundTiles.json"
-        }
-    },
  "image":"..\/textures\/environment\/backgroundTiles.png",
  "imageheight":192,
  "imagewidth":320,

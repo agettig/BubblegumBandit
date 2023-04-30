@@ -1,0 +1,15 @@
+{
+  "platform": "mac",
+  "jdk": "/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home",
+  "executable": "BubblegumBandit",
+  "classpath": [
+    "BubblegumBandit.jar"
+  ],
+  "mainclass": "BubblegumBandit.desktop.main",
+  "resources": [
+    "assets/",
+    "desktop/",
+    "core"
+  ],
+  "output": "out-mac"
+}

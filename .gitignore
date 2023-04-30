@@ -2,6 +2,10 @@
 .DS_Store
 
 assets/Bandit.tiled-session
+out-mac/
+packr-all-4.0.0.jar
+macPackrConfig.json
+assets/jsons/levels/images
 
 core/resources/
 desktop/out/
