@@ -1129,12 +1129,17 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                if (!canUnstickThrough.contains(ob.getName()) &&
-                        ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.equals(bandit)) {
-                    if (ob.getName().equals("crushingBlock") && ob.getStuck() && !ob.getGummed()) {
+                if (!ob.equals(bandit) && ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.getName().equals("gumProjectile")) {
+                    if (ob.getName().equals("projectile")) {
+                        return -1;
+                    }
+                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
                     if (fixture.getUserData() instanceof DoorModel) {
+                        return -1;
+                    }
+                    if (ob instanceof DoorModel && ((DoorModel) ob).isOpen()) {
                         return -1;
                     }
                     lastCollision[0] = ob;
@@ -1157,7 +1162,7 @@ public class LevelModel {
             directionCache = new Vector2();
             endCache = new Vector2();
             originCache = new Vector2();
-            canUnstickThrough.add("gumProjectile");
+//            canUnstickThrough.add("gumProjectile");
 //            canUnstickThrough.add("door");
         }
 

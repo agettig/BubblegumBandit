@@ -288,7 +288,7 @@
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
-        "door":  "textures/objects/doorUnlocked.png",
+        "door":  "textures/objects/halfDoor.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
         "glass":  "textures/objects/glass.png",
         "glassShatter":  {
@@ -360,7 +360,7 @@
         "level6":"jsons/levels/level6.json",
         "level7" : "jsons/levels/level7.json",
         "level8": "jsons/levels/level8.json",
-        "level9": "jsons/levels/old/betaMedium.json",
+        "level9": "jsons/levels/level9.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",
