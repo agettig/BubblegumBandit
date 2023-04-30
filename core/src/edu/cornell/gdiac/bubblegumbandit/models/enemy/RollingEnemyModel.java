@@ -10,9 +10,14 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONT
 public class RollingEnemyModel extends EnemyModel {
 
     /**
-     * How long the enemy can roll to attack the player
+     * How long the enemy can roll to attack the player + charge time
      */
-    private final int ATTACK_TIME = 60;
+    private final int ATTACK_TIME = 70;
+
+    /**
+     * Time that rolling enemies take to charge
+     */
+    private final int CHARGE_TIME = 10;
 
     /**
      * Time need for enemy to cooldown in between attacks
@@ -123,13 +128,18 @@ public class RollingEnemyModel extends EnemyModel {
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0 && (previousAction & CONTROL_MOVE_RIGHT) != 0;
 
         if (fired() && isRolling && (movingLeft || movingRight) && cooldownTime <= 0) {
+            int speed = 0;
             if (movingLeft) {
-                setVX(-rollingAttackSpeed);
+                speed = -rollingAttackSpeed;
                 setFaceRight(false);
             } else {
-                setVX(rollingAttackSpeed);
+                speed = rollingAttackSpeed;
                 setFaceRight(true);
             }
+            if (attackDuration < CHARGE_TIME){
+                speed = -speed;
+            }
+            setVX(speed);
         } else {
             updateMovement(nextAction);
         }
