@@ -273,6 +273,10 @@
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
+        "largeGumMidair" : "textures/gum/largeGumMidair.png",
+        "largeGumMidairOutline": "textures/gum/largeGumMidairOutline.png",
+        "medGumMidair" :  "textures/gum/medGumMidair.png",
+        "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,

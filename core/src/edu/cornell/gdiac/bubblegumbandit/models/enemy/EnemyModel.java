@@ -260,11 +260,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
 
-        squishedGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
-        squishedGumOutline = new TextureRegion(directory.getEntry("stuckOutline", Texture.class));
+        String key = constantsJson.get("midairGumTexture").asString();
+        squishedGum = new TextureRegion(directory.getEntry(key, Texture.class));
+
+
+        key = constantsJson.get("midairGumOutlineTexture").asString();
+        squishedGumOutline = new TextureRegion(directory.getEntry(key, Texture.class));
+
+
 
         // Now get the texture from the AssetManager singleton
-        String key = constantsJson.get("texture").asString();
+        key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 
         gummedTexture = texture;
@@ -391,6 +397,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             TextureRegion drawn = texture;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
+            float gumY = y;
+            float gumX = x;
 
             if(animationController!=null) {
                 drawn = animationController.getFrame();
@@ -402,13 +410,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             //if gummed, overlay with gumTexture
             if (gummed) {
                 //if speed is below threshold, draw static gum
-                if(Math.abs(getVY())<=5) {
-                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                            y, getAngle(), 1, yScale);
+                if(stuck) {
+                    //gumY += yScale*gumTexture.getRegionHeight()/2;
+                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
+                            gumY, getAngle(), 1, yScale);
                 } else {
-                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y,
-                            getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
-                            y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
+                   // gumY += yScale*squishedGum.getRegionHeight()/2;
+                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
+                       gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
                 }
 //
             }
@@ -425,22 +434,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /** Draw method for when highlighting the enemy before unsticking them */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
-            float x = getX() * drawScale.x;
-            float y = getY() * drawScale.y;
 
-//            float effect = faceRight ? 1.0f : -1.0f;
-//            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
-//                    y, getAngle(), effect, yScale);
 
-            //if speed is below threshold, draw static gum
-            if (Math.abs(getVY())<=5) {
-                canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
+
+            if (stuck) {
+                float y = getY() * drawScale.y; //-yScale*outline.getRegionHeight()/2;
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()*drawScale.x-5,
                         y-5*yScale, getAngle(), 1, yScale);
             } else {
+                float y = getY() * drawScale.y; //-yScale*squishedGumOutline.getRegionHeight()/2;
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
-                        x +(gummedTexture.getRegionWidth()
-                                -squishedGum.getRegionWidth())/2f-5f,
-                        y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
+                    getX()*drawScale.x-5,
+                    y-5*yScale-yScale*squishedGumOutline.getRegionHeight()/2, getAngle(), 1, yScale);
 
             }
         }
