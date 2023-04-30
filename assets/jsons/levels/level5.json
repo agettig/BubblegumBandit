@@ -252,12 +252,12 @@
                         {
                          "name":"rightx1",
                          "type":"int",
-                         "value":24
+                         "value":27
                         }, 
                         {
                          "name":"rightx2",
                          "type":"int",
-                         "value":37
+                         "value":43
                         }, 
                         {
                          "name":"righty1",
@@ -285,12 +285,12 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":24
+                         "value":27
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":37
+                         "value":43
                         }, 
                         {
                          "name":"lefty1",
@@ -494,12 +494,12 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":19
+                         "value":24
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":37
+                         "value":43
                         }, 
                         {
                          "name":"lefty1",
@@ -567,12 +567,12 @@
                         {
                          "name":"rightx1",
                          "type":"int",
-                         "value":19
+                         "value":24
                         }, 
                         {
                          "name":"rightx2",
                          "type":"int",
-                         "value":37
+                         "value":43
                         }, 
                         {
                          "name":"righty1",
