@@ -61,6 +61,17 @@
                 }
             }
         },
+        "banditReload": {
+            "file": "textures/bandit/banditReload.png",
+            "wrap": false,
+            "sprites": {
+                "reload": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
         "banditIdle":  {
             "file": "textures/bandit/banditIdle.png",
             "wrap": false,

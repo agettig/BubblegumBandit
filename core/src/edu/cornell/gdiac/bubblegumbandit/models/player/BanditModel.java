@@ -742,6 +742,15 @@ public class BanditModel extends CapsuleObstacle {
         super.update(dt);
     }
 
+    private boolean playingReload;
+
+    public void startReload() {
+        playingReload = true;
+    }
+
+    public void stopReload() {
+       playingReload = false;
+    }
 
     /**
      * Draws the physics object.
@@ -752,7 +761,8 @@ public class BanditModel extends CapsuleObstacle {
         if (texture != null) {
 
             if(!animationController.hasTemp()&&health>0) {
-                if (!isGrounded) animationController.setAnimation("fall", true);
+                if(playingReload) animationController.setAnimation("reload", true);
+                else if (!isGrounded) animationController.setAnimation("fall", true);
                 else if (getMovement() == 0) animationController.setAnimation("idle", true);
                 else {
                     if(backpedal) {

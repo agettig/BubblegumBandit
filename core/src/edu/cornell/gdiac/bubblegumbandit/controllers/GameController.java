@@ -645,6 +645,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
                 reloadSymbolTimer = -1;
@@ -652,6 +653,7 @@ public class GameController implements Screen {
             }
         } else {
             reloadingGum = false;
+            bandit.stopReload();
         }
 
 

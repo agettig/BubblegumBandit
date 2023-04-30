@@ -23,6 +23,10 @@
     "death": {
       "strip": "banditDeath.death",
       "fps": 8
+    },
+    "reload": {
+      "strip": "banditReload.reload",
+      "fps": 8
     }
   },
   "smallEnemy": {
