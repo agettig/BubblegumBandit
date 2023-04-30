@@ -157,7 +157,6 @@ public class RollingEnemyModel extends EnemyModel {
         }
     }
 
-
     /**
      * Resets attack
      */

@@ -141,7 +141,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.graphics.setCursor(mouseCursor);
 		}
 
-		if (screen == levels) {
+		if (screen == levels && exitCode == 0) {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setLevelNum(levels.getSelectedLevel());
@@ -176,7 +176,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.setScreenListener(this);
 			setScreen(loading);
 
-		} else if (exitCode == GameController.EXIT_QUIT && screen==controller) {
+		} else if ((exitCode == GameController.EXIT_QUIT && screen==controller) || (screen == levels && exitCode == 1)) {
 			// We quit the main application
 			canvas.resetCamera();
 			loading.setScreenListener(this);
