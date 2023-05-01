@@ -808,6 +808,8 @@ public class GameController implements Screen {
             canvas.drawTextCentered("FAILURE!", displayFont, 150);
             canvas.end();
         }
+
+//        backgrounds.drawDebug(canvas);
     }
 
     /**
