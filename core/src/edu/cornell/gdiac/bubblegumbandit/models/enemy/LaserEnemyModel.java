@@ -164,6 +164,10 @@ public class LaserEnemyModel extends EnemyModel {
         return gumStuck == gumToStick;
     }
 
+    public void resetGumStuck(){
+        gumStuck = 0;
+    }
+
 
     /**
      * Returns true if this LaserEnemyModel is in its charging phase.

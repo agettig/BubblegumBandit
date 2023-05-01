@@ -684,7 +684,10 @@ public class GameController implements Screen {
                         // Ungum it
                         bubblegumController.removeGummable(gummable);
                         SoundController.playSound("enemySplat", 1f); // Temp sound
+                    }
 
+                    if (gummable instanceof LaserEnemyModel){
+                        ((LaserEnemyModel) gummable).resetGumStuck();
                     }
                 }
             }
