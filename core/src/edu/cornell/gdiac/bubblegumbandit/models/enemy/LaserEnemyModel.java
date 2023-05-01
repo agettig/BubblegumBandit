@@ -417,7 +417,7 @@ public class LaserEnemyModel extends EnemyModel{
 //
             } else if (gumStuck>0){
                     canvas.draw(halfStuck, Color.WHITE,
-                        origin.x, origin.y, x, y, getAngle(), effect, yScale);
+                        origin.x, origin.y, (getX() - (getDimension().x/2))* drawScale.x, y, getAngle(), 1, yScale);
             }
 
             //if shielded, overlay shield
