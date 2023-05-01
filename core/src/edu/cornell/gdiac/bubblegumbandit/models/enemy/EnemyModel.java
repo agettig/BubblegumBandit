@@ -336,6 +336,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
     }
 
+
     public RayCastCone getAttacking() {
         return attacking;
     }
