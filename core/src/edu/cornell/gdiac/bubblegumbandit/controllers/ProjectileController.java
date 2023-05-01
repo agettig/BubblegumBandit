@@ -69,7 +69,8 @@ public class ProjectileController{
      */
     public ProjectileModel fireWeapon(AIController controller, float targetX, float targetY){
         EnemyModel e = controller.getEnemy();
-        ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY()+e.getHeight()*1/3, radius);
+        ProjectileModel p = new ProjectileModel(projJV, e.getX(),
+            e.getY()+e.getHeight()*e.getYScale()*1/3, radius);
         //set velocity
         Vector2 vel = new Vector2(targetX - e.getX(), targetY - e.getY());
         vel.nor();
