@@ -809,7 +809,7 @@ public class GameController implements Screen {
             canvas.end();
         }
 
-        backgrounds.drawDebug(canvas);
+//        backgrounds.drawDebug(canvas);
     }
 
     /**
