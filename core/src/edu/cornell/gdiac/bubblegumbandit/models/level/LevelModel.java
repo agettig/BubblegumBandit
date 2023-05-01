@@ -36,6 +36,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -827,7 +828,8 @@ public class LevelModel {
      * @param canvas the drawing context
      */
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
-            gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
+            gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd,
+                     float dt) {
         canvas.begin();
         canvas.clear();
         if (backgroundRegion != null) {
@@ -841,7 +843,6 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
-        Set<Obstacle> postLaserDraw = new HashSet<>();
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
 
@@ -854,7 +855,7 @@ public class LevelModel {
                 obj.draw(canvas);
             }
         }
-        drawChargeLasers(laserBeam, laserBeamEnd, canvas);
+        drawChargeLasers(laserBeam, laserBeamEnd, canvas, dt);
 
 
 
@@ -882,12 +883,18 @@ public class LevelModel {
         alarms.drawLights(canvas, scale);
     }
 
-    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
+    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas, float dt) {
+
+
 
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .5f;
         final float lockedLaserScale = 1f;
         final float firingLaserScale = 1.2f;
+
+
+
+
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
 
@@ -921,35 +928,79 @@ public class LevelModel {
                         intersect.y - enemyPos.y
                 );
 
-                beam.setRegionWidth(2);
+                beam.setRegionWidth(1);
                 int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
                 numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
                 dir.nor();
 
+                //Offset calculations to match the animation.
+
+                float laserEyeNormalOffsetXLeft = 40 + canvas.getShadowOffset();
+                float laserEyeNormalOffsetYLeft = 20;
+                float laserEyeJettedOffsetXRight = 40 + + canvas.getShadowOffset();
+                float laserEyeJettedOffsetYRight = 20;
+                float jetBoostY = 3;
+
+                boolean jetted = enemy.getCurrentFrameNum() > 0;
+
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
 
+
                     //Calculate the positions and angle of the charging laser.
-                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()): -(enemy.getWidth());
-                    float enemyOffsetY = enemy.getHeight()*10;
+                    float enemyOffsetX = enemy.getFaceRight()? laserEyeJettedOffsetXRight : laserEyeNormalOffsetXLeft;
+                    float enemyOffsetY = enemy.getFaceRight()? laserEyeJettedOffsetYRight : laserEyeNormalOffsetYLeft;
+                    if(jetted) enemyOffsetY += jetBoostY;
+                    if(!enemy.getFaceRight()) enemyOffsetX = -enemyOffsetX;
+
+
                     float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
                     float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
+
+
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
-                    enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
-                    if(enemy.getFaceRight()) enemyOffsetX *= -1;
+                    if(enemy.getFaceRight() && !beamEnd.isFlipX()) beamEnd.flip(true, false);
+                    if(!enemy.getFaceRight() && beamEnd.isFlipX()) beamEnd.flip(true, false);
 
                     canvas.draw(
                             beam,
                             laserColor,
-                            beam.getRegionWidth(),
-                            beam.getRegionHeight(),
+                            beam.getRegionWidth()/2f,
+                            beam.getRegionHeight()/2f,
                             x + enemyOffsetX,
-                            y + enemyOffsetY * enemy.getYScale(),
+                            y + (enemyOffsetY * enemy.getYScale()),
                             ang,
                             1f,
                             1 * laserThickness);
+
+                    if(i == 0){
+                        canvas.draw(
+                                beamEnd,
+                                laserColor,
+                                beamEnd.getRegionWidth()/2f,
+                                beamEnd.getRegionHeight()/2f,
+                                x + enemyOffsetX,
+                                y+ (enemyOffsetY * enemy.getYScale()),
+                                ang,
+                                1f,
+                                1 * laserThickness);
+                    }
+
+                    if(i == numSegments - 1){
+                        beamEnd.flip(true, false);
+                        canvas.draw(
+                                beamEnd,
+                                laserColor,
+                                beamEnd.getRegionWidth()/2f,
+                                beamEnd.getRegionHeight()/2f,
+                                x + enemyOffsetX,
+                                y+ (enemyOffsetY * enemy.getYScale()),
+                                ang,
+                                1f,
+                                1 * laserThickness);
+                    }
                 }
             }
         }

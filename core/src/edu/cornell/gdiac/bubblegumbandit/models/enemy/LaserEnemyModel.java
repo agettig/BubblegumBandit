@@ -102,10 +102,10 @@ public class LaserEnemyModel extends EnemyModel{
             animationController.setAnimation("charge", true);
         }
         else if (lockingLaser()){
-            animationController.setAnimation("lock", true);
+            //animationController.setAnimation("lock", true);
         }
         else if (firingLaser()){
-            animationController.setAnimation("fire", true);
+            //animationController.setAnimation("fire", true);
         }
         else if (stuck || gummed){
             animationController.setAnimation("stuck", true);
@@ -266,7 +266,19 @@ public class LaserEnemyModel extends EnemyModel{
      *         see the Bandit's model; otherwise, false.
      * */
     public boolean canSeeBandit(BanditModel bandit){
-        return vision.canSee(bandit);
+        Vector2 enemyPosition = getPosition();
+        Vector2 banditPosition = bandit.getPosition();
+        float minAngle = 310;
+        float maxAngle = 50;
+
+        Vector2 directionToBandit = banditPosition.cpy().sub(enemyPosition);
+        Vector2 referenceDirection = getFaceRight() ?
+                new Vector2(1, 0) : new Vector2(-1, 0);
+        float angle = directionToBandit.angleDeg(referenceDirection);
+
+        return ((angle >= minAngle && angle <= 360) ||
+                (angle >= 0 && angle <= maxAngle)) &&
+                vision.canSee(bandit);
     }
 
 

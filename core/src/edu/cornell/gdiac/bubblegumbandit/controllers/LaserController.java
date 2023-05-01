@@ -4,10 +4,12 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
@@ -77,7 +79,7 @@ public class LaserController {
         banditEnemyDist = new Vector2();
         lasers =  new HashSet<>();
         bodiesToIgnore = new ArrayList<>();
-        bodiesToIgnore.add("Laser Enemy");
+        bodiesToIgnore.add("laserEnemy");
         bodiesToIgnore.add("door");
         bodiesToIgnore.add("exit");
         bodiesToIgnore.add("gumProjectile");
@@ -111,7 +113,8 @@ public class LaserController {
         enemiesToRemove.clear();
         for (final LaserEnemyModel enemy : lasers) {
 
-            boolean disqualified = false;
+            //Disqualification #2: cannot see bandit.
+            boolean disqualified = !enemy.canSeeBandit(bandit);
 
             //Disqualification #1: too far.
             banditEnemyDist.set(
@@ -200,11 +203,12 @@ public class LaserController {
         //The point at which our raycast will "hit."
         final Vector2 intersect = new Vector2();
 
-        //The origin of the laser beam is at the LaserEnemy's face.
-        float originAdjustX = enemy.getFaceRight() ? enemy.getWidth() + .5f :
-                -enemy.getWidth() -.5f;
-        float originAdjustY = enemy.isFlipped() ? -.5f : .5f;
-        chargeOrigin.set(enemy.getX(), enemy.getY());
+        //Set the origin.
+        float verticalOriginOffset = enemy.getHeight()/10f;
+        float horizontalOriginOffset = enemy.getWidth() * .6f;
+        if(enemy.isFlipped()) verticalOriginOffset = -verticalOriginOffset;
+        if(!enemy.getFaceRight()) horizontalOriginOffset = -horizontalOriginOffset;
+        chargeOrigin.set(enemy.getX() + horizontalOriginOffset, enemy.getY() + verticalOriginOffset);
 
         //The direction of the laser beam is at the passed-in target.
         chargeDirection.set(
@@ -261,7 +265,11 @@ public class LaserController {
         final Vector2 banditIntersect = new Vector2();
 
         //Set the charging origin.
-        chargeOrigin.set(enemy.getX(), enemy.getY());
+        float verticalOriginOffset = enemy.getHeight()/10f;
+        float horizontalOriginOffset = enemy.getWidth() * .6f;
+        if(enemy.isFlipped()) verticalOriginOffset = -verticalOriginOffset;
+        if(!enemy.getFaceRight()) horizontalOriginOffset = -horizontalOriginOffset;
+        chargeOrigin.set(enemy.getX() + horizontalOriginOffset, enemy.getY() + verticalOriginOffset);
 
         //We normalize the direction and scale it so that it reaches the screen's end.
         chargeDirection.nor();
@@ -273,9 +281,6 @@ public class LaserController {
                 chargeOrigin.y + chargeDirection.y
         );
 
-        //Get the intersect PAST the bandit. Like a tile.
-        //Draw towards the intersect.
-        //If hitting the ban
 
         //Time to raycast.
         RayCastCallback chargeRaycast = new RayCastCallback() {

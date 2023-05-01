@@ -712,12 +712,7 @@ public class GameController implements Screen {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
                 if (laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
                 else {
-                    boolean sameSide = false;
-                    if (enemy.getFaceRight() && enemy.getX() < bandit.getX())
-                        sameSide = true;
-                    if (!enemy.getFaceRight() && enemy.getX() > bandit.getX())
-                        sameSide = true;
-                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
+                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser();
                     if (canFire) {
                         enemy.isShielded(false);
                         laserController.fireLaser(controller);
@@ -768,7 +763,7 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
-        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
+        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd, delta);
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();

@@ -50,11 +50,11 @@
     },
     "lock": {
       "strip": "laserCharge.charge",
-      "fps": 8
+      "fps": 4
     },
     "fire": {
       "strip": "laserCharge.charge",
-      "fps": 1
+      "fps": 4
     },
     "stuck": {
       "strip": "laserStuck.stuck",

@@ -65,6 +65,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return nextAction;
     }
 
+    /** Index of the current frame of the animation playing
+     * for this EnemyModel.*/
+    private int currentFrameNum;
+
     protected int nextAction;
 
     protected int previousAction;
@@ -334,6 +338,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return attacking;
     }
 
+    public int getCurrentFrameNum(){return currentFrameNum;}
+
     public void updateMovement(int nextAction){
         // Determine how we are moving.
         boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
@@ -393,6 +399,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             float y = getY() * drawScale.y;
 
             if(animationController!=null) {
+                currentFrameNum = animationController.getFrameNum();
                 drawn = animationController.getFrame();
                  x-=(getWidth()/2)*drawScale.x*effect;
             }
