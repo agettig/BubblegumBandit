@@ -288,6 +288,8 @@
         "largeGumMidairOutline": "textures/gum/largeGumMidairOutline.png",
         "medGumMidair" :  "textures/gum/medGumMidair.png",
         "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
+        "halfStuck" : "textures/gum/halfStuck.png",
+        "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,

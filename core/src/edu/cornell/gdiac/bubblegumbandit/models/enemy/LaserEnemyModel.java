@@ -1,12 +1,13 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
@@ -52,6 +53,18 @@ public class LaserEnemyModel extends EnemyModel{
     /**Amount of gum currently stuck to robot*/
     private int gumStuck;
 
+    /** Texture for gum after just one shot */
+    private TextureRegion halfStuck;
+
+    /** Texture for gum after just one shot, with outline
+     * currently draw with outline is never called unless the enemy is gummed, however
+     * */
+    private TextureRegion halfStuckOutline;
+
+
+
+
+
 
     /**
      * Every phase that this LaserEnemyModel goes through when it attacks.
@@ -90,6 +103,8 @@ public class LaserEnemyModel extends EnemyModel{
     public void initialize(AssetDirectory directory, float x, float y,
                            JsonValue constantsJson){
         super.initialize(directory, x, y, constantsJson);
+        halfStuck = new TextureRegion(directory.getEntry("halfStuck", Texture.class));
+        halfStuckOutline = new TextureRegion(directory.getEntry("halfStuckOutline", Texture.class));
         setName("laserEnemy");
         setPhase(LASER_PHASE.INACTIVE);
     }
@@ -371,5 +386,49 @@ public class LaserEnemyModel extends EnemyModel{
         if(chargingLaser() || lockingLaser() || firingLaser()) return;
         super.setFaceRight(isRight);
     }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        if (texture != null) {
+            float effect = getFaceRight() ? 1.0f : -1.0f;
+            TextureRegion drawn = texture;
+            float x = getX() * drawScale.x;
+            float y = getY() * drawScale.y;
+            float gumY = y;
+            float gumX = x;
+
+            if(animationController!=null) {
+                drawn = animationController.getFrame();
+                x-=(getWidth()/2)*drawScale.x*effect;
+            }
+
+            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+
+            //if gummed, overlay with gumTexture
+
+            if (gummed) {
+                if(stuck) {
+                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
+                        gumY, getAngle(), 1, yScale);
+                } else {
+                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
+                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
+                }
+//
+            } else if (gumStuck>0){
+                    canvas.draw(halfStuck, Color.WHITE,
+                        origin.x, origin.y, x, y, getAngle(), effect, yScale);
+            }
+
+            //if shielded, overlay shield
+            if (isShielded()){
+                canvas.draw(shield, Color.WHITE, origin.x , origin.y, (getX() - (getDimension().x/2))* drawScale.x ,
+                    y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale);
+            }
+        }
+    }
+
+
+
 
 }

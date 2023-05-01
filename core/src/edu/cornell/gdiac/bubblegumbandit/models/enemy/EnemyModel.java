@@ -30,7 +30,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  */
 public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Shield {
 
-    private TextureRegion outline;
+    protected TextureRegion outline;
 
     /** EnemyModel's unique ID */
     private int id;
@@ -84,8 +84,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     private TextureRegion gummedTexture;
 
-    private TextureRegion squishedGum;
-    private TextureRegion squishedGumOutline;
+    protected TextureRegion squishedGum;
+    protected TextureRegion squishedGumOutline;
 
     private CircleShape sensorShape;
     /** The name of the sensor for detection purposes */
@@ -98,7 +98,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
 
     /** Texture of the gum overlay when gummed */
-    private TextureRegion gumTexture;
+    protected TextureRegion gumTexture;
 
     private float speed;
 
@@ -123,7 +123,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     private boolean isShielded;
 
     /** texture for the shield surrounding an enemy */
-    private TextureRegion shield;
+    protected TextureRegion shield;
 
     // endRegion
 
@@ -430,6 +430,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 //            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
         }
     }
+
+
 
     /** Draw method for when highlighting the enemy before unsticking them */
     public void drawWithOutline(GameCanvas canvas) {
