@@ -177,11 +177,11 @@ public class Background {
 
         //space polygon is just a large rectangle
         spaceReg = new PolygonRegion(spaceBg,
-                new float[] {      // Four vertices
-                        0, 0,            // Vertex 0         3--2
-                        width*SCALE, 0,          // Vertex 1         | /|
-                        width*SCALE, height*SCALE,        // Vertex 2         |/ |
-                        0, height * SCALE           // Vertex 3         0--1
+                new float[] {
+                        0, 0,
+                        width*SCALE*3, 0,
+                        width*SCALE*3, height*SCALE*3,
+                        0, height * SCALE*3
                 }, new short[] {
                 0, 1, 2,         // Two triangles using vertex indices.
                 0, 2, 3          // Take care of the counter-clockwise direction.
@@ -277,7 +277,7 @@ public class Background {
         if (spaceReg == null || shipReg == null) return;
         canvas.begin();
 
-        canvas.draw(spaceReg, 0, 0);
+        canvas.draw(spaceReg, -width * SCALE, -height * SCALE);
         canvas.draw(shipReg, x_offset * SCALE, y_offset * SCALE);
 
         canvas.end();
