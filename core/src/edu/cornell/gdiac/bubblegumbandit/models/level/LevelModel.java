@@ -890,9 +890,7 @@ public class LevelModel {
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .5f;
         final float lockedLaserScale = 1f;
-        final float firingLaserScale = 1.2f;
-
-
+        final float firingLaserScale = 1.3f;
 
 
         for (AIController ai : enemyControllers) {
@@ -935,9 +933,9 @@ public class LevelModel {
 
                 //Offset calculations to match the animation.
 
-                float laserEyeNormalOffsetXLeft = 40 + canvas.getShadowOffset();
+                float laserEyeNormalOffsetXLeft = 41 + canvas.getShadowOffset();
                 float laserEyeNormalOffsetYLeft = 20;
-                float laserEyeJettedOffsetXRight = 40 + + canvas.getShadowOffset();
+                float laserEyeJettedOffsetXRight = 41 + + canvas.getShadowOffset();
                 float laserEyeJettedOffsetYRight = 20;
                 float jetBoostY = 3;
 
@@ -945,6 +943,7 @@ public class LevelModel {
 
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
+
 
 
                     //Calculate the positions and angle of the charging laser.
@@ -956,13 +955,28 @@ public class LevelModel {
 
                     float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
                     float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
-
+                    float scaleX = 1f;
+                    float scaleY = laserThickness;
 
                     float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
                     float ang = (float) Math.atan(slope);
 
                     if(enemy.getFaceRight() && !beamEnd.isFlipX()) beamEnd.flip(true, false);
                     if(!enemy.getFaceRight() && beamEnd.isFlipX()) beamEnd.flip(true, false);
+
+                    //Vibrations
+                    if(enemy.firingLaser()){
+                        if(Math.floor(Math.random()*10) % 2 == 0){
+                            scaleX *= (1f + Math.random());
+                            scaleY *= (1f + Math.random());
+                        }
+                        else if (Math.floor(Math.random()*10) % 3 == 0){
+                            scaleX *= (1f + Math.random());
+                            scaleY *= (1f + Math.random());
+                        }
+                    }
+
+
 
                     canvas.draw(
                             beam,
@@ -972,8 +986,8 @@ public class LevelModel {
                             x + enemyOffsetX,
                             y + (enemyOffsetY * enemy.getYScale()),
                             ang,
-                            1f,
-                            1 * laserThickness);
+                            scaleX,
+                            scaleY);
 
                     if(i == 0){
                         canvas.draw(
@@ -984,8 +998,8 @@ public class LevelModel {
                                 x + enemyOffsetX,
                                 y+ (enemyOffsetY * enemy.getYScale()),
                                 ang,
-                                1f,
-                                1 * laserThickness);
+                                scaleX,
+                                scaleY);
                     }
 
                     if(i == numSegments - 1){
@@ -998,8 +1012,8 @@ public class LevelModel {
                                 x + enemyOffsetX,
                                 y+ (enemyOffsetY * enemy.getYScale()),
                                 ang,
-                                1f,
-                                1 * laserThickness);
+                                scaleX,
+                                scaleY);
                     }
                 }
             }

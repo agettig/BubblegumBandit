@@ -275,6 +275,7 @@ public class LaserEnemyModel extends EnemyModel{
         Vector2 referenceDirection = getFaceRight() ?
                 new Vector2(1, 0) : new Vector2(-1, 0);
         float angle = directionToBandit.angleDeg(referenceDirection);
+        System.out.println(angle);
 
         return ((angle >= minAngle && angle <= 360) ||
                 (angle >= 0 && angle <= maxAngle)) &&

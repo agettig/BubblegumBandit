@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.DoorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -80,7 +81,6 @@ public class LaserController {
         lasers =  new HashSet<>();
         bodiesToIgnore = new ArrayList<>();
         bodiesToIgnore.add("laserEnemy");
-        bodiesToIgnore.add("door");
         bodiesToIgnore.add("exit");
         bodiesToIgnore.add("gumProjectile");
         enemiesToRemove = new HashSet<>();
@@ -234,8 +234,17 @@ public class LaserController {
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
 
+                //Special case: doors. We need to check locked status.
+                if(ob.getName().equals("door")){
+                    DoorModel door = (DoorModel) ob;
+                    if(!door.isOpen()){
+                        intersect.set(point);
+                        return fraction;
+                    }
+                }
+
                 //Return what the laser is hitting.
-                if (!ignores.contains(ob.getName())) {
+                else if (!ignores.contains(ob.getName())) {
                     enemy.setHittingBandit(ob.getName().equals("bandit"));
                     intersect.set(point);
                     return fraction;
@@ -289,8 +298,18 @@ public class LaserController {
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
 
+                //Special case: doors. We need to check locked status.
+                if(ob.getName().equals("door")){
+                    System.out.println("Here!");
+                    DoorModel door = (DoorModel) ob;
+                    if(!door.isOpen()){
+                        intersect.set(point);
+                        return fraction;
+                    }
+                }
+
                 //Return what the laser is hitting.
-                if (!ignores.contains(ob.getName())) {
+                else if (!ignores.contains(ob.getName())) {
                     enemy.setHittingBandit(ob.getName().equals("bandit"));
                     intersect.set(point);
                     return fraction;
