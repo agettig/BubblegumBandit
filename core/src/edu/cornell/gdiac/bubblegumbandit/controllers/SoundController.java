@@ -210,7 +210,6 @@ public class SoundController {
     }
 
     public static void setEffectsVolume(float volume){
-
       soundEffectsVolume = volume;
     }
 
