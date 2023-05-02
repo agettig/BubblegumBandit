@@ -1,0 +1,11 @@
+{
+  "textures": {
+    "background": "textures/settings/settingsBackground.png",
+    "resumeButton": "textures/UI/resume.png",
+    "retryButton": "textures/UI/retry.png",
+    "levelSelectButton": "textures/UI/levelSelect.png",
+    "quitButton": "textures/UI/quitGame.png",
+    "settingsButton": "textures/UI/settings.png",
+    "pointer": "textures/UI/hoverPointer.png"
+  }
+}

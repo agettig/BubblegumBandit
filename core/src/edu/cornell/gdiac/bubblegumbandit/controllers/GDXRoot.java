@@ -15,14 +15,17 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LevelSelectMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LoadingMode;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.util.*;
-import edu.cornell.gdiac.assets.*;
+import edu.cornell.gdiac.util.ScreenListener;
 
 /**
  * Root class for a LibGDX.  
@@ -48,6 +51,8 @@ public class GDXRoot extends Game implements ScreenListener {
 
 	private SettingsMode settingsMode;
 
+	private PauseMode pause;
+
 	/**
 	 * Creates a new game from the configuration settings.
 	 */
@@ -62,6 +67,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
+		//pause = new PauseMode(canvas);
 
 		levels = new LevelSelectMode();
 		settingsMode = new SettingsMode();
@@ -154,10 +160,16 @@ public class GDXRoot extends Game implements ScreenListener {
 			BitmapFont projectSpace = loading.getAssets().getEntry("projectSpace", BitmapFont.class);
 			settingsMode.initialize(codygoonRegular, projectSpace);
 			setScreen(settingsMode);
-		} else if (screen == settingsMode) {
+		} else if (screen == controller && exitCode == 9) {
+			controller.setPause(true);
+		}
+		else if (screen == settingsMode) {
 			loading.setScreenListener(this);
 			setScreen(loading);
 
+//		} else if (screen == pause) {
+//			pause.setScreenListener(this);
+//			setScreen(pause);
 		} else if (exitCode == GameController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();

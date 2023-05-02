@@ -99,6 +99,9 @@ public class PlayerController{
     /** For the gamepad crosshair control */
     private float momentum;
 
+    private boolean pausePressed;
+
+    private boolean pausePrevious;
 
     /** If gravity was pulled down */
     private boolean gravityDown;
@@ -180,6 +183,11 @@ public class PlayerController{
         return primePressed && !primePrevious;
     }
 
+    /** Returns true if pause was pressed*/
+    public boolean getPause() {
+        return pausePressed && !pausePrevious;
+    }
+
     /**
      *
      * */
@@ -235,6 +243,8 @@ public class PlayerController{
     public boolean didExpandMinimap() {return minimapPressed;}
 
     public boolean didReload() {return reloadPressed;}
+
+    public boolean didPause() {return pausePressed & !pausePrevious;}
 
     /**
      * Returns true if the player wants to go to the next level.
@@ -328,6 +338,7 @@ public class PlayerController{
         resetPrevious  = resetPressed;
         minimapPrevious = minimapPressed;
         debugPrevious  = debugPressed;
+        pausePrevious = pausePressed;
         exitPrevious = exitPressed;
         nextPrevious = nextPressed;
         prevPrevious = prevPressed;
@@ -400,6 +411,7 @@ public class PlayerController{
         5: reload (and you can't be moving at the time? why doesn't it just stop you from moving?)
         6: shoot
         7: unstick
+        8: pause
 
         */
         // TODO remove
@@ -427,9 +439,9 @@ public class PlayerController{
 
 
         minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(keyBindings[4]));
-        exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(keyBindings[2]));
         gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(keyBindings[3]));
+        pausePressed = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 
 
         // Mouse results

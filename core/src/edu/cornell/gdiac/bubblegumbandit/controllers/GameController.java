@@ -17,7 +17,6 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -29,15 +28,15 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -48,8 +47,6 @@ import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
 import edu.cornell.gdiac.bubblegumbandit.view.Minimap;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.ArrayList;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -257,6 +254,12 @@ public class GameController implements Screen {
     /**Whether the player is reloading gum */
     private boolean reloadingGum;
 
+    private PauseMode pause;
+
+    private boolean paused;
+
+    public void setPause(boolean paused) {this.paused = paused;}
+
 
     /**
      * Returns true if the level is completed.
@@ -368,9 +371,12 @@ public class GameController implements Screen {
         reloadingGum = false;
         setComplete(false);
         setFailure(false);
+        paused = false;
 
         //Data Structures && Classes
         level = new LevelModel();
+        pause = new PauseMode(canvas);
+        pause.setScreenListener(listener);
 
         setComplete(false);
         setFailure(false);
@@ -440,7 +446,6 @@ public class GameController implements Screen {
         projectileController.reset();
         collisionController.reset();
         hud.resetStars();
-
 
         level.dispose();
 
@@ -526,6 +531,12 @@ public class GameController implements Screen {
                 levelNum = NUM_LEVELS;
             }
             reset();
+        }
+
+        if (input.didPause()) {
+            setPause(true);
+            //listener.exitScreen(this, 9);
+            return false;
         }
 
         // Switch screens if necessary.
@@ -762,6 +773,7 @@ public class GameController implements Screen {
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
         hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
+        pause.draw(canvas);
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
@@ -803,11 +815,17 @@ public class GameController implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     public void render(float delta) {
-        if (active) {
+        if (active && !paused) {
+            pause.hide();
             if (preUpdate(delta)) {
                 update(delta);
             }
             draw(delta);
+        }
+        else if (paused) {
+            pause = new PauseMode(canvas);
+            pause.setScreenListener(listener);
+            pause.show();
         }
     }
 
