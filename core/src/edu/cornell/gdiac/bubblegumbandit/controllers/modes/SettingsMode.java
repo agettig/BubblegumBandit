@@ -210,6 +210,17 @@ public class SettingsMode implements Screen {
      */
     private int[] values;
 
+    private final int[] defaultVals = new int[]{
+            Input.Keys.A,
+            Input.Keys.D,
+            Input.Keys.SPACE,
+            Input.Keys.SPACE,
+            Input.Keys.SHIFT_LEFT,
+            Input.Keys.R,
+            Input.Buttons.LEFT,
+            Input.Buttons.RIGHT
+    };
+
     /**
      * Contructor for making a settings mode
      */
@@ -243,6 +254,29 @@ public class SettingsMode implements Screen {
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
 
 
+    }
+
+    public void resetDefaultBindings(){
+        for (int i = 0; i < defaultVals.length; i++){
+            values[i] = defaultVals[i];
+        }
+
+        for (Map.Entry<TextButton,Integer> entry : buttonIndexMap.entrySet()){
+            int index = entry.getValue();
+            int value = values[index];
+            if (index < 6){
+                entry.getKey().setText(Input.Keys.toString(value).toUpperCase());
+            }
+            else{
+                if (value == 0){
+                    entry.getKey().setText("LEFT CLICK");
+                }
+                else{
+                    entry.getKey().setText("RIGHT CLICK");
+                }
+            }
+
+        }
     }
 
     /**
@@ -768,6 +802,10 @@ public class SettingsMode implements Screen {
                 checkedButton.setChecked(false);
                 checkedButton = null;
             }
+
+           if (keycode == Input.Keys.ESCAPE){
+               resetDefaultBindings();
+           }
 
           //  }
             //if (keycode == Input.Keys.NUM_1){
