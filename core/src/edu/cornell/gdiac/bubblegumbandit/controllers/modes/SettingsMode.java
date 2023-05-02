@@ -252,8 +252,6 @@ public class SettingsMode implements Screen {
 
         SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
-
-
     }
 
     public void resetDefaultBindings(){
@@ -806,6 +804,7 @@ public class SettingsMode implements Screen {
            if (keycode == Input.Keys.ESCAPE){
                resetDefaultBindings();
            }
+           SoundController.playSound("error", 100);
 
           //  }
             //if (keycode == Input.Keys.NUM_1){
