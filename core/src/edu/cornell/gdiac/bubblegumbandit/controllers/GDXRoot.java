@@ -69,7 +69,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		Pixmap mouse = new Pixmap(Gdx.files.internal("textures/UI/pinkMouse.png"));
 		Pixmap crosshair = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
-		mouseCursor = Gdx.graphics.newCursor(mouse, 16, 16);
+		mouseCursor = Gdx.graphics.newCursor(mouse, 9, 2);
 		crosshairCursor = Gdx.graphics.newCursor(crosshair, 16,16);
 		mouse.dispose();
 		crosshair.dispose();
