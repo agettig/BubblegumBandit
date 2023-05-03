@@ -83,6 +83,8 @@ public class SunfishModel extends WheelObstacle {
     /** How long we can draw flame again */
     private int cooldown;
 
+    private Vector2 pos;
+
     // endRegion
 
     public SunfishModel (TextureRegion texture, TextureRegion fire_texture, TextureRegion boost_texture, float x, float y){
@@ -99,6 +101,7 @@ public class SunfishModel extends WheelObstacle {
         ship_offset = new Vector2(texture.getRegionWidth()/ 2, texture.getRegionHeight() / 2);
         exhaust_offset = new Vector2(0, ship_offset.y * 1.5f);
 //        setMass(0.1f);
+        pos = new Vector2();
 
     }
 
@@ -182,6 +185,9 @@ public class SunfishModel extends WheelObstacle {
                 exhaust.removeValue(fire, true);
             }
         }
+
+
+        pos = getPosition();
     }
 
 

@@ -22,6 +22,7 @@ public class SaveData {
 
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
+//    return false;
     return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
   }
 
@@ -60,8 +61,6 @@ public class SaveData {
     prefs.putInteger("key5", Input.Keys.R);
     prefs.putInteger("key6", Input.Buttons.LEFT); //as in click
     prefs.putInteger("key7", Input.Buttons.RIGHT);
-
-
 
     prefs.putBoolean("save created", true);
     prefs.flush();

@@ -6,31 +6,23 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.*;
-import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.LevelIconModel;
 import edu.cornell.gdiac.bubblegumbandit.models.SunfishModel;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
-import edu.cornell.gdiac.util.Controllers;
 import edu.cornell.gdiac.util.ScreenListener;
-import edu.cornell.gdiac.util.XBoxController;
 
-import javax.xml.parsers.SAXParser;
+import static java.lang.String.valueOf;
 
 /**
  * Class that provides the level select screen for the state of the game.
@@ -78,7 +70,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private ScreenListener listener;
 
     // level select specific attributes
-
     /**
      * The Box2D world
      */
@@ -95,6 +86,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** array of all level icons */
     private Array<LevelIconModel> levels;
 
+    /** dashes used to draw the paths between levels*/
+    private TextureRegion path;
+
     /** Whether this player mode is still active */
     private boolean active;
 
@@ -105,7 +99,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private int selectedLevel;
 
     /** the gap between level icons */
-    private final static float LEVEL_GAP = 500;
+    private final static float LEVEL_GAP = 700;
 
     /** the gap between level icons and the bounds of space */
     private final static float SPACE_GAP = 800;
@@ -122,6 +116,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     /** Camera zoom out */
     private final static float ZOOM = 1.5f;
+
+    /** the number of levels to add to the level select screen*/
+    private final static int NUM_LEVELS = 9;
+
+    /** whether the player started to move their mouse, only start sunfish movement after player starts controlling*/
+    private boolean startMove;
+
+    /** used to debug the accursed camera */
+    private boolean pause;
 
     // music
 
@@ -182,13 +185,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
         TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
 
-        sunfish = new SunfishModel(sunfish_texture, fire, boost, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
+        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP, SPACE_HEIGHT - 100);
         sunfish.activatePhysics(world);
 
         background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
 
-        createIcons(directory);
+        path = fire;
 
+        createIcons(directory);
         //music
         SoundController.playMusic("menu");
 
@@ -196,21 +200,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     private void createIcons(AssetDirectory directory){
 
-        TextureRegion ship1 = new TextureRegion(directory.getEntry("ship1", Texture.class));
-        TextureRegion ship2 = new TextureRegion(directory.getEntry("ship2", Texture.class));
-
         levels = new Array<>();
-        levels.add(new LevelIconModel(ship1, 1, 100, SPACE_HEIGHT - SPACE_GAP));
-        levels.add(new LevelIconModel(ship2, 2, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - SPACE_GAP));
-        levels.add(new LevelIconModel(ship1, 3, ship1.getRegionWidth() + ship2.getRegionWidth() + 2* LEVEL_GAP, SPACE_HEIGHT - SPACE_GAP));
-
-        levels.add(new LevelIconModel(ship1, 4, 100, SPACE_HEIGHT - 2*SPACE_GAP));
-        levels.add(new LevelIconModel(ship2, 5, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - 2*SPACE_GAP));
-        levels.add(new LevelIconModel(ship1, 6, ship1.getRegionWidth() + ship2.getRegionWidth() + 2* LEVEL_GAP, SPACE_HEIGHT - 2*SPACE_GAP));
-
-        levels.add(new LevelIconModel(ship1, 7, 100, SPACE_HEIGHT - 3*SPACE_GAP));
-        levels.add(new LevelIconModel(ship2, 8, ship1.getRegionWidth() + LEVEL_GAP , SPACE_HEIGHT - 3*SPACE_GAP));
-        levels.add(new LevelIconModel(ship1, 9, ship1.getRegionWidth() + ship2.getRegionWidth() + 2* LEVEL_GAP, SPACE_HEIGHT - 3*SPACE_GAP));
+        for (int i = 1; i <= NUM_LEVELS; i++){
+            TextureRegion texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
+            levels.add(new LevelIconModel(texture, i, 200 + LEVEL_GAP * (i-1), SPACE_HEIGHT - SPACE_GAP));
+        }
     }
 
     /**
@@ -268,18 +262,20 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             level.update();
         }
 
-        sunfish.setMovement(mousePos);
-        sunfish.update(dt);
-
-//        for (LevelIconModel level : levels){
-//            level.update();
-//        }
-
+        //only start sunfish movement when player starts interacting with screen
+        if (startMove) {
+            sunfish.setMovement(mousePos);
+            sunfish.update(dt);
+        }
 
         //move camera, while keeping view in bounds
         canvas.getCamera().setTarget(sunfish.getPosition());
 //        System.out.println(sunfish.getPosition());
 
+
+        if (pause){
+            System.out.println("start debug");
+        }
          //x bounds
 //        if (sunfish.getX() < camWidth) {
 //            canvas.getCamera().setTargetX(camWidth);
@@ -288,13 +284,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 //            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
 //        }
         //y bounds
-        if (sunfish.getY() < camHeight) {
-            canvas.getCamera().setTargetY(camHeight);
-
-        }
-        if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
-            canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
-        }
+//        if (sunfish.getY() < camHeight) {
+//            canvas.getCamera().setTargetY(camHeight);
+//
+//        }
+//        if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
+//            canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
+//        }
 
         canvas.getCamera().update(dt);
     }
@@ -317,9 +313,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         drawBackground(canvas);
 
+        drawPaths(canvas);
+
+
         for (LevelIconModel level : levels){
             level.draw(canvas, displayFont);
         }
+//        levels.draw(canvas, displayFont);
 
         sunfish.draw(canvas);
         canvas.end();
@@ -393,6 +393,24 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     }
 
+    private void drawPaths(GameCanvas canvas){
+        for (int i = 0; i < levels.size - 1; i++){
+            Vector2 start = levels.get(i).getPosition();
+            Vector2 end = levels.get(i+1).getPosition();
+
+            float dst = start.dst(end);
+
+            float space = path.getRegionWidth() + 50;
+
+            int numDashes = (int) (dst / space);
+
+            for (int k = 0; k <= numDashes; k++){
+                canvas.draw(path, start.x + k * space, start.y);
+            }
+
+        }
+    }
+
     // PROCESSING PLAYER INPUT
     /**
      * Called when the screen was touched or a mouse button was pressed.
@@ -416,6 +434,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                     level.setPressState(2);
                 }
             }
+//            levels.updateState();
 
         }
 
@@ -461,6 +480,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean mouseMoved(int screenX, int screenY) {
+
+        if (active){
+            startMove = true;
+        }
         return true;
     }
 
@@ -510,7 +533,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         if (keycode == Input.Keys.SPACE) {
             sunfish.setBoosting(true);
         }
-
+        //start debug
+//        if (keycode == Input.Keys.NUM_1){
+//            pause = true;
+//        }
         return true;
 
     }

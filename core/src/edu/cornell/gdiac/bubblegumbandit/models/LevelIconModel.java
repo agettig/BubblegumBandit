@@ -3,6 +3,8 @@ package edu.cornell.gdiac.bubblegumbandit.models;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import org.w3c.dom.Text;
 
@@ -43,6 +45,9 @@ public class LevelIconModel {
 
     private boolean goingDown;
 
+    /** The number of collected stars in the level, updated based on save data*/
+    private int stars;
+
     public LevelIconModel (TextureRegion texture, int level, float x, float y) {
         this.texture = texture;
         this.level = level;
@@ -82,9 +87,16 @@ public class LevelIconModel {
         return level;
     }
 
+    /** returns the x,y coordinates of the center of the icon*/
+    public Vector2 getPosition(){
+        return new Vector2(x + 0.5f * texture.getRegionWidth(), y + 0.5f * texture.getRegionHeight());
+    }
+
+
 
     public void update() {
 
+        //update position based on hover
         if (y >= max_hover) {
             y = max_hover;
             goingDown = true;
@@ -100,11 +112,21 @@ public class LevelIconModel {
         else if (y > min_hover && goingDown){
             y -= HOVER_SPEED;
         }
+
+        //update stats from save data
+//        stars = SaveData.getStars(level);
+
     }
 
     public void draw(GameCanvas canvas, BitmapFont font){
-        canvas.draw(texture, tint, x, y, texture.getRegionWidth(), texture.getRegionHeight());
-        canvas.drawText(valueOf(level), font, (float) (x + 0.5 * texture.getRegionWidth()), (float) (y + 0.5 * texture.getRegionHeight()));
+        if (SaveData.unlocked(level)){
+            canvas.draw(texture, tint, x, y, texture.getRegionWidth(), texture.getRegionHeight());
+        } else {
+            canvas.draw(texture, Color.DARK_GRAY, x, y, texture.getRegionWidth(), texture.getRegionHeight());
+        }
+//        System.out.println(SaveData.unlocked(level));
+        Vector2 position = getPosition();
+        canvas.drawText(valueOf(level), font, position.x, position.y);
     }
 
 

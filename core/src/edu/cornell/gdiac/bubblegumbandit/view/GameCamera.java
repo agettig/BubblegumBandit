@@ -282,17 +282,22 @@ public class GameCamera  extends OrthographicCamera {
         }
 
         float newTargetX = target.x;
-        if (!isFixedX) {
+        if (!isFixedX && !secondaryTarget.isZero()) {
+            System.out.println("ayo");
             newTargetX = target.x * (1 - secondaryWeight) + secondaryTarget.x * secondaryWeight;
         }
 
         float newTargetY = target.y;
-        if (!isFixedY) {
+        if (!isFixedY && !secondaryTarget.isZero()) {
+            System.out.println("ayo");
             newTargetY = target.y * (1 - secondaryWeight) + secondaryTarget.y * secondaryWeight;
         }
 
         basePos.x += (newTargetX - basePos.x) * xSpeed * dt;
         basePos.y += (newTargetY - basePos.y) * ySpeed * dt;
+
+//        basePos.x = newTargetX;
+//        basePos.y = newTargetY;
 
         // Adjust y clamp
         if (!isFixedY) {
