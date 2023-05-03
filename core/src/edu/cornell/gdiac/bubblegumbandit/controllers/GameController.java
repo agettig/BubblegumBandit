@@ -561,7 +561,7 @@ public class GameController implements Screen {
 
         if (orbCountdown > 0 && !complete) {
             orbCountdown -= dt;
-        } else if (orbCollected && orbCountdown <= 0) {
+        } else if (orbCollected && orbCountdown <= 0 && !failed) {
             level.getBandit().kill();
         }
 
