@@ -58,6 +58,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     public RayCastCone attacking;
 
+    public RayCastEnv envRays;
+
     /**Reference to the Box2D world */
     private World world;
 
@@ -306,6 +308,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
         String shieldKey = constantsJson.get("shield").asString();
         shield = new TextureRegion(directory.getEntry(shieldKey, Texture.class));
+
+        envRays = new RayCastEnv(Color.GREEN, getHeight());
     }
 
     public CircleShape getSensorShape() {
@@ -461,6 +465,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         attacking.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        envRays.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
     /**
@@ -471,9 +476,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
         sensing.setDirection(!faceRight? (float) 0 : (float) Math.PI);
         attacking.setDirection(faceRight? (float) 0 : (float) Math.PI);
+        envRays.setFaceRight(faceRight);
         vision.update(world, getPosition());
         sensing.update(world, getPosition());
         attacking.update(world, getPosition());
+        envRays.update(world,getPosition());
     }
 
     /**

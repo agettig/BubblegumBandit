@@ -2,69 +2,51 @@ package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
-
-/** Fields of vision for enemies */
-public class RayCastCone {
-
+public class RayCastEnv {
     /** The color of the FOV graphic. */
     private Color color;
 
     /** The color of the rays of the FOV during debug mode. */
     private Color DEBUGCOLOR;
 
-    /** The direction of the FOV. In LibGdx, 0 is up. */
-    private float direction;
-    /** The range in radians of the FOV */
-    private float range;
-    /** The length of the FOV. */
-    private float radius;
-    /** The number of rays being cast per radius unit */
-    private int numRays = 10;
-    boolean resetRadius = false;
+    /**
+     * Length of ray casts
+     * */
+    private float length;
 
     /**
      * Contains the current endpoints of the FOV
      */
-    private Array<Vector2> rays = new Array<>(numRays);
+    private Array<Vector2> rays = new Array<>();
     /**
      * The bodies currently in the FOV
      */
     private Array<Body> bodies = new Array<>();
 
+    private float height;
+
+    private boolean faceRight;
+
 
     /**
      * Creates an FOV
-     * @param radius the radius/length of the FOV
-     * @param direction the direction the FOV points in radians
-     * @param range the range in radians of the FOV
      * @param color the color of the FOV for drawing, will always be drawn translucent
      */
-    public RayCastCone(float radius, float direction, float range, Color color) {
+    public RayCastEnv( Color color, float height) {
         this.color = new Color(color.r, color.g, color.b, .5f);
-        this.radius = radius;
-        this.direction = direction;
-        this.range = range;
+        this.length = 3;
         this.DEBUGCOLOR = color;
-        for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
-    }
-
-    /**
-     * Creates a circular FOV
-     * @param radius the radius of the FOV
-     * @param color the color of the FOV for drawing, will always be translucent
-     */
-    public RayCastCone(float radius, Color color) {
-        this.color = new Color(color.r, color.g, color.b, .5f);
-        this.radius = radius;
-        this.direction = (float) Math.PI/2;
-        this.range = (float) Math.PI*2;
-        for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
+        this.height = height;
+        for(int i = 0; i < height * 2; i++) this.rays.add(new Vector2());
     }
 
     /**
@@ -74,18 +56,12 @@ public class RayCastCone {
      */
     public void update(World world, Vector2 origin) {
         bodies.clear();
-        if(resetRadius) {
-            this.rays.clear();
-            for(int i = 0; i<numRays*radius; i++) this.rays.add(new Vector2());
-            resetRadius = false;
-        }
-        float startAngle = direction - range / 2;
-        float incrementAngle = range/(rays.size-1);
+        float y = origin.y - height/2 ;
         for (int i = 0; i < rays.size; i++) {
-            float angle =  startAngle + i * incrementAngle;
             final int finalI = i;
-            Vector2 end = new Vector2(origin.x + radius * (float) Math.cos(angle),
-                    origin.y + radius * (float) Math.sin(angle));
+            Vector2 begin = new Vector2(origin.x, y);
+            float x2 = faceRight ? origin.x + length : origin.x - length;
+            Vector2 end = new Vector2(x2, y );
             rays.get(finalI).set(end);
 
             final float[] minFraction = new float[1];
@@ -115,9 +91,10 @@ public class RayCastCone {
                 }
             };
 
-            world.rayCast(rayFirstPass, origin, end);
-            world.rayCast(raySecondPass, origin, end);
+            world.rayCast(rayFirstPass, begin, end);
+            world.rayCast(raySecondPass, begin, end);
             rays.get(i).sub(origin);
+            y += height/rays.size;
         }
     }
 
@@ -141,10 +118,9 @@ public class RayCastCone {
      * Modifies the direction of the FOV, maintains range
      * Should be called when the parent obstacle turns around or flips, etc.
      * Could also be used for robots that scan back and forth.
-     * @param direction the new direction in radians
      */
-    public void setDirection(float direction) {
-        this.direction = direction;
+    public void setFaceRight(boolean faceRight) {
+        this.faceRight = faceRight;
     }
 
 
@@ -161,14 +137,6 @@ public class RayCastCone {
      * Draws the outline of the physics object.
      */
     public void drawDebug(GameCanvas canvas, float x, float y, float scalex, float scaley) {
-//        canvas.drawFOV(color, rays, x, y, scalex, scaley);
-//        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
-//        canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
-    }
-
-    public void setRadius(float radius) {
-        this.radius = radius;
-        resetRadius = true;
-
+        canvas.drawEnvRays(DEBUGCOLOR, rays, x, y, scalex, scaley, faceRight);
     }
 }
