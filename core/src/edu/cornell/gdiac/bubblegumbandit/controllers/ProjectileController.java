@@ -66,16 +66,24 @@ public class ProjectileController{
      * Creates a projectile and updates the enemy's cooldown.
      *
      * @param controller The AIController that is firing
+     * @param isLeft whether the projectile is going left
+     * @param isGravDown whether gravity is down
      */
-    public ProjectileModel fireWeapon(AIController controller, float targetX, float targetY){
+    public ProjectileModel fireWeapon(AIController controller, boolean isLeft, boolean isGravDown){
         EnemyModel e = controller.getEnemy();
-        ProjectileModel p = new ProjectileModel(projJV, e.getX(), e.getY(), radius);
+        // Snap position to floor / ceiling
+        float projY;
+        if (isGravDown) {
+            float ground = e.getY() - (e.getHeight() / 2);
+            projY = ground + radius + 0.01f;
+        } else {
+            float ground = e.getY() + (e.getHeight() / 2);
+            projY = ground - radius - 0.01f;
+        }
+        ProjectileModel p = new ProjectileModel(projJV, e.getX(), projY, radius);
         //set velocity
-        Vector2 vel = new Vector2(targetX - e.getX(), targetY - e.getY());
-        vel.nor();
-        vel.scl(speed);
-        p.setVX(vel.x);
-        p.setVY(vel.y);
+        p.setVX(isLeft ? -speed : speed);
+        p.setVY(0);
 
         //Physics Constants
         p.setDrawScale(drawScale);

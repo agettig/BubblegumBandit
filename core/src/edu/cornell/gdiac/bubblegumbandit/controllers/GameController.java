@@ -702,11 +702,16 @@ public class GameController implements Screen {
             boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
 
             if (isProjectileEnemy) {
-                if (controller.getEnemy().fired()) {
-                    ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
+                // Ensure enemy is on the ground
+                if (controller.getEnemy().fired() && (controller.getTileType() != 0)) {
+                    boolean isGravDown = level.getWorld().getGravity().y < 0;
+                    ProjectileModel newProjLeft = projectileController.fireWeapon(controller, true, isGravDown);
+                    ProjectileModel newProjRight = projectileController.fireWeapon(controller, false, isGravDown);
                     smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
-                    level.activate(newProj);
-                    newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                    level.activate(newProjLeft);
+                    level.activate(newProjRight);
+                    newProjLeft.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                    newProjRight.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
                 } else {
                     controller.coolDown(true);
                 }
