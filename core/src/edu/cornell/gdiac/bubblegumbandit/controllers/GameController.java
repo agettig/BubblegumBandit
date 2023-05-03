@@ -269,6 +269,8 @@ public class GameController implements Screen {
      */
     private boolean reloadingGum;
 
+    private GameOverScreen gameOver;
+
 
     /**
      * Returns true if the level is completed.
@@ -798,13 +800,17 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
+            gameOver = new GameOverScreen(directory, canvas);
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
+            gameOver.show();
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
+            gameOver = new GameOverScreen(directory, canvas);
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
+            gameOver.show();
             canvas.drawTextCentered("FAILURE!", displayFont, 150);
             canvas.end();
         }
