@@ -164,6 +164,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private static float BAR_HEIGHT_RATIO = 0.4f;
 
+    private static float BUTTONS_PUSH_DOWN = 50f;
+
     /**
      * Reference to GameCanvas created by the root
      */
@@ -496,9 +498,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             drawProgress(canvas);
         } else {
             canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
-            float highestButtonY = canvas.getCamera().viewportHeight / 2;
+            float highestButtonY = canvas.getCamera().viewportHeight / 2 - BUTTONS_PUSH_DOWN;
             float lowestButtonY = canvas.getCamera().viewportHeight / 6;
-            float buttonSpace = highestButtonY - lowestButtonY;
+            float buttonSpace = highestButtonY+BUTTONS_PUSH_DOWN - lowestButtonY;
             float gap = buttonSpace / 4;
 
 
