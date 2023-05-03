@@ -301,7 +301,20 @@
                 }
             }
         },
-
+        "captive" : "textures/environment/captive.png",
+        "captiveIcon": "textures/UI/captiveIcon.png",
+        "captiveIconOutline": "textures/UI/captiveIconOutline.png",
+        "captiveFloat":{
+            "file": "textures/environment/captiveFloat.png",
+            "wrap": false,
+            "sprites": {
+                "float": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",

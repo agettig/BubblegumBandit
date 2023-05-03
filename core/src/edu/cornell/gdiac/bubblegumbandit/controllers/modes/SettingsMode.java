@@ -581,7 +581,7 @@ public class SettingsMode implements Screen {
         7: unstick */
 
         int[] values = SaveData.getKeyBindings();
-        for(int i : values) System.out.println(Input.Keys.toString(i));
+        //for(int i : values) System.out.println(Input.Keys.toString(i));
 
         moveLeftButton = new TextButton(Input.Keys.toString(values[0]).toUpperCase(), controlsButtonStyle);
         moveRightButton = new TextButton(Input.Keys.toString(values[1]).toUpperCase(), controlsButtonStyle);

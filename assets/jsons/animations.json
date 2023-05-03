@@ -102,5 +102,11 @@
       "strip": "hazardSparks.sparks",
       "fps": 16
     }
+  },
+  "captive": {
+    "float": {
+      "strip": "captiveFloat.float",
+      "fps": 1
+    }
   }
 }
