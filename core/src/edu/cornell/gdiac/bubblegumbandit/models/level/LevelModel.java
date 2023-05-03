@@ -627,7 +627,7 @@ public class LevelModel {
             }
             object = object.next();
         }
-        captiveCount--;
+
 
 
         postOrb = postOrb.child();
