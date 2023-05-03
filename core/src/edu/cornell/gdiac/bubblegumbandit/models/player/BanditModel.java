@@ -240,15 +240,18 @@ public class BanditModel extends CapsuleObstacle {
 
 
     /**
-     * Decreases the player's health
+     * Decreases the player's health if not in cooldown. Returns whether the player was hit
      *
      * @param damage The amount of damage done to the player
+     * @param laser Whether the player was hit by a laser
      */
-    public void hitPlayer(float damage, boolean laser) {
+    public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             setCooldown(true);
+            return true;
         }
+        return false;
     }
 
     /**

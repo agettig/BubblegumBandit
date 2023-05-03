@@ -597,14 +597,14 @@ public class LevelModel {
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();
-                    glass.initialize(directory, x, y, constants.get("glass"), "glass");
+                    glass.initialize(directory, x, y, scale, object, constants.get("glass"), "glass");
                     activate(glass);
                     glass.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     glass.setDrawScale(scale);
                     break;
                 case "hazard":
                     SpecialTileModel hazard = new SpecialTileModel();
-                    hazard.initialize(directory, x, y, constants.get("hazard"), "hazard");
+                    hazard.initialize(directory, x, y, scale, object, constants.get("hazard"), "hazard");
                     activate(hazard);
                     hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     hazard.setDrawScale(scale);
@@ -1131,6 +1131,9 @@ public class LevelModel {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                 if (!ob.equals(bandit) && ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.getName().equals("gumProjectile")) {
                     if (ob.getName().equals("projectile")) {
+                        return -1;
+                    }
+                    if (ob.getName().equals("hazard")) {
                         return -1;
                     }
                     if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
