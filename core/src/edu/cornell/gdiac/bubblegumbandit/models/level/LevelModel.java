@@ -18,6 +18,7 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -888,9 +889,9 @@ public class LevelModel {
 
 
         //Local variables to scale our laser depending on its phase.
-        final float chargeLaserScale = .5f;
-        final float lockedLaserScale = 1f;
-        final float firingLaserScale = 1.3f;
+        final float chargeLaserScale = 1f;
+        final float lockedLaserScale = 1.2f;
+        final float firingLaserScale = 1.5f;
 
 
         for (AIController ai : enemyControllers) {
@@ -920,15 +921,14 @@ public class LevelModel {
 
                 //Math calculations for the laser.
                 Vector2 intersect = enemy.getBeamIntersect();
-                Vector2 enemyPos = enemy.getPosition();
+                Vector2 beamStartPos = enemy.getBeamOrigin();
                 Vector2 dir = new Vector2(
-                        intersect.x - enemyPos.x,
-                        intersect.y - enemyPos.y
+                        intersect.x - beamStartPos.x,
+                        intersect.y - beamStartPos.y
                 );
 
                 beam.setRegionWidth(1);
                 int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
-                numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
                 dir.nor();
 
                 //Offset calculations to match the animation.
@@ -941,10 +941,9 @@ public class LevelModel {
 
                 boolean jetted = enemy.getCurrentFrameNum() > 0;
 
+
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
-
-
 
                     //Calculate the positions and angle of the charging laser.
                     float enemyOffsetX = enemy.getFaceRight()? laserEyeJettedOffsetXRight : laserEyeNormalOffsetXLeft;
@@ -957,12 +956,7 @@ public class LevelModel {
                     float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
                     float scaleX = 1f;
                     float scaleY = laserThickness;
-
-                    float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
-                    float ang = (float) Math.atan(slope);
-
-                    if(enemy.getFaceRight() && !beamEnd.isFlipX()) beamEnd.flip(true, false);
-                    if(!enemy.getFaceRight() && beamEnd.isFlipX()) beamEnd.flip(true, false);
+                    float ang = (float) Math.atan2(dir.y, dir.x);
 
                     //Vibrations
                     if(enemy.firingLaser()){
@@ -976,8 +970,6 @@ public class LevelModel {
                         }
                     }
 
-
-
                     canvas.draw(
                             beam,
                             laserColor,
@@ -989,7 +981,9 @@ public class LevelModel {
                             scaleX,
                             scaleY);
 
+
                     if(i == 0){
+                        if(!beamEnd.isFlipX()) beamEnd.flip(true, false);
                         canvas.draw(
                                 beamEnd,
                                 laserColor,
@@ -1000,10 +994,11 @@ public class LevelModel {
                                 ang,
                                 scaleX,
                                 scaleY);
+
                     }
 
                     if(i == numSegments - 1){
-                        beamEnd.flip(true, false);
+                        if(beamEnd.isFlipX()) beamEnd.flip(true, false);
                         canvas.draw(
                                 beamEnd,
                                 laserColor,

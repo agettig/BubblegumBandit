@@ -166,7 +166,6 @@ public class LaserController {
              * */
             if (enemy.lockingLaser()) {
                 //We use the most recent charging hit point to shoot our locked laser towards.
-//                bodiesToIgnore.add("bandit");
                 lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
             }
@@ -209,6 +208,7 @@ public class LaserController {
         if(enemy.isFlipped()) verticalOriginOffset = -verticalOriginOffset;
         if(!enemy.getFaceRight()) horizontalOriginOffset = -horizontalOriginOffset;
         chargeOrigin.set(enemy.getX() + horizontalOriginOffset, enemy.getY() + verticalOriginOffset);
+        enemy.setBeamOrigin(chargeOrigin);
 
         //The direction of the laser beam is at the passed-in target.
         chargeDirection.set(
@@ -279,10 +279,7 @@ public class LaserController {
         if(enemy.isFlipped()) verticalOriginOffset = -verticalOriginOffset;
         if(!enemy.getFaceRight()) horizontalOriginOffset = -horizontalOriginOffset;
         chargeOrigin.set(enemy.getX() + horizontalOriginOffset, enemy.getY() + verticalOriginOffset);
-
-        //We normalize the direction and scale it so that it reaches the screen's end.
-        chargeDirection.nor();
-        chargeDirection.scl(Integer.MAX_VALUE);
+        enemy.setBeamOrigin(chargeOrigin);
 
         //With the origin and direction, we can calculate the endpoint.
         chargeEndpoint.set(

@@ -27,6 +27,9 @@ public class LaserEnemyModel extends EnemyModel{
     /** The point at which the most up-to-date laser beam intersects.  */
     private Vector2 beamIntersect;
 
+    /** The point at which the laser beam starts.*/
+    private Vector2 beamOrigin;
+
     /**Current phase of this LaserEnemyModel. */
     private LASER_PHASE phase;
 
@@ -46,9 +49,12 @@ public class LaserEnemyModel extends EnemyModel{
      * locking, and firing. Resets to zero for each laser shot.*/
     private float age;
 
+    /**Timer for the firing phase. */
     private float firingTimer;
+
     /**Amount of gum needed to stick the robot*/
     private int gumToStick;
+
     /**Amount of gum currently stuck to robot*/
     private int gumStuck;
 
@@ -170,7 +176,6 @@ public class LaserEnemyModel extends EnemyModel{
         beamIntersect = intersect;
     }
 
-
     /**
      * Returns the Vector2 at which this LaserEnemyModel's laser
      * beam intersected with an object of interest.
@@ -179,6 +184,28 @@ public class LaserEnemyModel extends EnemyModel{
      *         beam intersected with an object of interest.
      * */
     public Vector2 getBeamIntersect(){return beamIntersect;}
+
+    /**
+     * Sets the Vector2 at which this LaserEnemyModel's laser
+     * beam started firing.
+     *
+     * @param origin  the Vector2 at which this LaserEnemyModel's
+     *                   laser beam started firing.
+     * */
+    public void setBeamOrigin(Vector2 origin){
+        beamOrigin = origin;
+    }
+
+    /**
+     * Returns the Vector2 at which this LaserEnemyModel's laser
+     * beam started firing.
+     *
+     * @return the Vector2 at which this LaserEnemyModel's
+     *         laser beam started firing.
+     * */
+    public Vector2 getBeamOrigin(){
+        return beamOrigin;
+    }
 
     /**
      * Resets the attack cycle of this LaserEnemyModel. This can be
