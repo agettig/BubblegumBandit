@@ -444,6 +444,8 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
         if (active) {
             update(delta);
             draw(canvas);
+            System.out.println("hk");
+
 //            // If the player hits the start/play button
 //            // We are ready, notify our listener
 //            if (isReady() && listener != null) {
@@ -521,7 +523,7 @@ public class PauseMode implements Screen, InputProcessor, ControllerListener {
     public void hide() {
         // Useless if called in outside animation loop
         active = false;
-        pressState = 0;
+        //pressState = 0;
     }
 
 

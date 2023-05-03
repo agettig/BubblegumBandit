@@ -342,6 +342,7 @@ public class GameController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        pause = new PauseMode(canvas);
     }
 
     /**
@@ -785,7 +786,15 @@ public class GameController implements Screen {
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
-        } else if (failed) {
+        } else if (paused) {
+//            displayFont.setColor(Color.YELLOW);
+//            canvas.begin(); // DO NOT SCALE
+//            pause.render(delta);
+//            canvas.drawTextCentered("VICTORY!", displayFont, 150);
+//            canvas.end();
+            pause.draw(canvas);
+        }
+        else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("FAILURE!", displayFont, 150);
@@ -824,8 +833,8 @@ public class GameController implements Screen {
         }
         else if (paused) {
             pause = new PauseMode(canvas);
-            pause.setScreenListener(listener);
             pause.show();
+            //pause.render(delta);
         }
     }
 
