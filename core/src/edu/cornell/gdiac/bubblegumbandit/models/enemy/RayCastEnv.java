@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
@@ -43,7 +44,7 @@ public class RayCastEnv {
      */
     public RayCastEnv( Color color, float height) {
         this.color = new Color(color.r, color.g, color.b, .5f);
-        this.length = 3;
+        this.length = 2;
         this.DEBUGCOLOR = color;
         this.height = height;
         for(int i = 0; i < height * 2; i++) this.rays.add(new Vector2());
@@ -64,15 +65,22 @@ public class RayCastEnv {
             Vector2 end = new Vector2(x2, y );
             rays.get(finalI).set(end);
 
-            final float[] minFraction = new float[1];
+            final float[] minFraction = new float[]{1};
             RayCastCallback rayFirstPass = new RayCastCallback() {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
                     // TODO: Should enemies obscure enemy vision? Add additional categories here if so.
-                    if (fixture.getFilterData().categoryBits == CollisionController.CATEGORY_TERRAIN) {
+
+                    boolean isHazard = ((Obstacle) fixture.getBody().getUserData()).getName().equals("hazard");
+                    boolean isBlock = fixture.getBody().getUserData() instanceof CrusherModel;
+
+                    if (fixture.getFilterData().categoryBits == CollisionController.CATEGORY_TERRAIN
+                            && !isHazard && !isBlock) {
                         rays.get(finalI).set(point);
-                        minFraction[0] = fraction;
+                        if (fraction < minFraction[0]) {
+                            minFraction[0] = fraction;
+                        }
                         return fraction;
                     }
                     return -1f;
@@ -84,7 +92,10 @@ public class RayCastEnv {
                 @Override
                 public float reportRayFixture(Fixture fixture, Vector2 point,
                                               Vector2 normal, float fraction) {
-                    if(fraction < minFraction[0] && !bodies.contains(fixture.getBody(), true)) {
+
+                    boolean isHazard = ((Obstacle) fixture.getBody().getUserData()).getName().equals("hazard");
+                    boolean isBlock = fixture.getBody().getUserData() instanceof CrusherModel;
+                    if(fraction < minFraction[0] && !bodies.contains(fixture.getBody(), true) && (isBlock || isHazard)) {
                         bodies.add(fixture.getBody());
                     }
                     return minFraction[0];
