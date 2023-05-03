@@ -37,9 +37,9 @@ public class LevelIconModel {
     private static final float HOVER_SPEED = 0.1f;
     private static final float HOVER_DIFF = 10f;
 
-    private static float max_hover;
+    private float max_hover;
 
-    private static float min_hover;
+    private float min_hover;
 
     private boolean goingDown;
 
@@ -85,13 +85,19 @@ public class LevelIconModel {
 
     public void update() {
 
-        if (y >= max_hover) goingDown = true;
-        if ( y <= min_hover) goingDown = false;
+        if (y >= max_hover) {
+            y = max_hover;
+            goingDown = true;
+        }
+        else if ( y <= min_hover) {
+            y = min_hover;
+            goingDown = false;
+        }
 
         if (y < max_hover && !goingDown) {
             y += HOVER_SPEED;
         }
-        if (y > min_hover && goingDown){
+        else if (y > min_hover && goingDown){
             y -= HOVER_SPEED;
         }
     }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -280,13 +281,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 //        System.out.println(sunfish.getPosition());
 
          //x bounds
-        if (sunfish.getX() < camWidth) {
-            canvas.getCamera().setTargetX(camWidth);
-        }
+//        if (sunfish.getX() < camWidth) {
+//            canvas.getCamera().setTargetX(camWidth);
+//        }
 //        if (sunfish.getX() > SPACE_WIDTH - camWidth){
 //            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
 //        }
-         //y bounds
+        //y bounds
         if (sunfish.getY() < camHeight) {
             canvas.getCamera().setTargetY(camHeight);
 
@@ -373,6 +374,23 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                 canvas.draw(background, i, j);
             }
         }
+
+        //space polygon is just a large rectangle
+//        PolygonRegion spaceReg = new PolygonRegion(background,
+//                new float[] {
+//                        0, 0,
+//                        background.getRegionWidth()*2, 0,
+//                        background.getRegionWidth()*2, background.getRegionHeight()*2,
+//                        0, background.getRegionHeight()*2
+//                }, new short[] {
+//                0, 1, 2,         // Two triangles using vertex indices.
+//                0, 2, 3          // Take care of the counter-clockwise direction.
+//        });
+//
+//        float x = canvas.getCamera().position.x - background.getRegionWidth();
+//        float y = canvas.getCamera().position.y - background.getRegionHeight();
+//        canvas.draw(spaceReg, x, y);
+
     }
 
     // PROCESSING PLAYER INPUT
