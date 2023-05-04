@@ -791,6 +791,10 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    public void stopAnimation() {
+        animationController.clearAnimations();
+    }
+
 
 
     /**
