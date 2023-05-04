@@ -33,6 +33,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
+import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser.TileRect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
@@ -406,6 +407,18 @@ public class LevelModel {
                 activate(newTile);
                 newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
             }
+        }
+
+        // Aggregated tiles for seaming fixes.
+        // TODO: Make the previous tiles not have associated physics bodies for optimization.
+        TiledParser parser = new TiledParser();
+        Array<TileRect> rects = parser.mergeTiles(levelWidth, levelHeight, worldData);
+        for (TileRect rect : rects) {
+            WallModel newWall = new WallModel();
+            newWall.initialize(rect.startX, levelHeight - rect.endY - 1, rect.endX, levelHeight - rect.startY - 1, constants.get("wall"));
+            newWall.setDrawScale(scale);
+            activate(newWall);
+            newWall.setFilter(CATEGORY_TERRAIN, MASK_WALL);
         }
 
         if (supports != null) {

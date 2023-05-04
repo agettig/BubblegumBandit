@@ -38,7 +38,8 @@ public class CollisionController implements ContactListener {
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
     public static final short CATEGORY_BACK = 0x0012;
 
-    public static final short MASK_TERRAIN = -1; // Collides with everything
+    public static final short MASK_TERRAIN = (CATEGORY_GUM); // Collides with everything
+    public static final short MASK_WALL = ~(CATEGORY_GUM);
     public static final short MASK_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);

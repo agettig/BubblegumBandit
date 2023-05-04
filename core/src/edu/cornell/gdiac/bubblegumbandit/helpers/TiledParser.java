@@ -2,11 +2,13 @@ package edu.cornell.gdiac.bubblegumbandit.helpers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class TiledParser {
@@ -87,5 +89,89 @@ public class TiledParser {
             levelTilesetJson = levelTilesetJson.next();
         }
         return tileset;
+    }
+
+    private static Comparator<TileRect> compareRect = new Comparator<TileRect>() {
+        @Override
+        public int compare(TileRect o1, TileRect o2) {
+            return Integer.compare(o1.startY, o2.startY);
+        }
+    };
+
+    public class TileRect {
+        public int startX;
+        public int startY;
+        public int endX;
+        public int endY;
+
+        public TileRect(int startX, int startY, int endX, int endY) {
+            this.startX = startX;
+            this.startY = startY;
+            this.endX = endX;
+            this.endY = endY;
+        }
+
+        public String toString() {
+            return "StartX: " + startX + " StartY: " + startY + " EndX: " + endX + " EndY: " + endY;
+        }
+    }
+
+    public Array<TileRect> mergeTiles(int mapWidth, int mapHeight, int[] worldData) {
+        Array<TileRect> rectangles = new Array<>();
+
+        for (int x = 0; x <= mapWidth - 1; x++) {
+            int startY = -1;
+            int endY = -1;
+            for (int y = 0; y <= mapHeight - 1; y++) {
+                if (worldData[y * mapWidth + x] != 0) {
+                    if (startY == -1) {
+                        startY = y;
+                    }
+                    endY = y;
+                } else if (startY != -1) {
+                    TileRect newRect = new TileRect(x, startY, x, endY);
+                    rectangles.add(newRect);
+                    startY = -1;
+                    endY = -1;
+//                    Array<TileRect> overlaps = new Array<>();
+//                    for (TileRect r : rectangles) {
+//                        if ((r.endX == x - 1) && (startY <= r.startY) && (endY >= r.startY)) {
+//                            overlaps.add(r);
+//                        }
+//                    }
+//                    overlaps.sort(compareRect);
+//
+//                    for (TileRect r : overlaps) {
+//                        if (startY < r.startY) {
+//                            TileRect newRect = new TileRect(x, startY, x, r.startY - 1);
+//                            rectangles.add(newRect);
+//                            System.out.println(newRect);
+//                            startY = r.startY;
+//                        }
+//
+//                        if (startY == r.startY) {
+//                            r.endX = r.endX + 1;
+//                            if (endY == r.endY) {
+//                                startY = -1;
+//                                endY = -1;
+//                            } else if (endY > r.endY) {
+//                                startY = r.endY + 1;
+//                            }
+//                        }
+                    }
+//                    if (startY != -1) {
+//                        TileRect newRect = new TileRect(x, startY, x, endY);
+//                        rectangles.add(newRect);
+//                        System.out.println(newRect);
+//                        startY = -1;
+//                        endY = -1;
+//                    }
+            }
+            if (startY != -1) {
+                TileRect newRect = new TileRect(x, startY, x, endY);
+                rectangles.add(newRect);
+            }
+        }
+        return rectangles;
     }
 }
