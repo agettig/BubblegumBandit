@@ -119,6 +119,7 @@ public class TiledParser {
     public Array<TileRect> mergeTiles(int mapWidth, int mapHeight, int[] worldData) {
         Array<TileRect> rectangles = new Array<>();
 
+        // This pass merges rectangles on the y-axis
         for (int x = 0; x <= mapWidth - 1; x++) {
             int startY = -1;
             int endY = -1;
@@ -133,45 +134,33 @@ public class TiledParser {
                     rectangles.add(newRect);
                     startY = -1;
                     endY = -1;
-//                    Array<TileRect> overlaps = new Array<>();
-//                    for (TileRect r : rectangles) {
-//                        if ((r.endX == x - 1) && (startY <= r.startY) && (endY >= r.startY)) {
-//                            overlaps.add(r);
-//                        }
-//                    }
-//                    overlaps.sort(compareRect);
-//
-//                    for (TileRect r : overlaps) {
-//                        if (startY < r.startY) {
-//                            TileRect newRect = new TileRect(x, startY, x, r.startY - 1);
-//                            rectangles.add(newRect);
-//                            System.out.println(newRect);
-//                            startY = r.startY;
-//                        }
-//
-//                        if (startY == r.startY) {
-//                            r.endX = r.endX + 1;
-//                            if (endY == r.endY) {
-//                                startY = -1;
-//                                endY = -1;
-//                            } else if (endY > r.endY) {
-//                                startY = r.endY + 1;
-//                            }
-//                        }
-                    }
-//                    if (startY != -1) {
-//                        TileRect newRect = new TileRect(x, startY, x, endY);
-//                        rectangles.add(newRect);
-//                        System.out.println(newRect);
-//                        startY = -1;
-//                        endY = -1;
-//                    }
+                }
             }
             if (startY != -1) {
                 TileRect newRect = new TileRect(x, startY, x, endY);
                 rectangles.add(newRect);
             }
         }
-        return rectangles;
+
+        Array<TileRect> mergedRects = new Array<>();
+        rectangles.sort(compareRect);
+
+        // This pass merges rectangles of equal height on the x-axis
+        TileRect newRect = new TileRect(-1, -1, -1, -1);
+        for (TileRect r : rectangles) {
+            if (newRect.startX == -1) {
+                newRect.startX = r.startX;
+                newRect.startY = r.startY;
+                newRect.endX = r.endX;
+                newRect.endY = r.endY;
+            } else if (r.startY == newRect.startY && r.endY == newRect.endY && r.startX == newRect.endX + 1) {
+                newRect.endX = r.endX;
+            } else {
+                mergedRects.add(newRect);
+                newRect = new TileRect(r.startX, r.startY, r.endX, r.endY);
+            }
+        }
+        mergedRects.add(newRect);
+        return mergedRects;
     }
 }
