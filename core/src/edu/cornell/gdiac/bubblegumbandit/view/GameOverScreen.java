@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.util.ScreenListener;
 
 public class GameOverScreen implements Screen {
@@ -44,13 +45,15 @@ public class GameOverScreen implements Screen {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
+    private final static float SPACE_WIDTH = 5000;
+    private final static float SPACE_HEIGHT = 5000;
+
     public GameOverScreen() {}
 
     /**
      * Creates a GameOverScreen with the default size and position.
      *
      * @param directory  The asset directory to load in the background
-     * @param canvas The game canvas to draw to
      */
 
     public void initialize(AssetDirectory directory, GameCanvas canvas) {
@@ -91,8 +94,22 @@ public class GameOverScreen implements Screen {
     private void draw() {
         canvas.clear();
         canvas.begin();
-        canvas.draw(background, 0, 0);
+        drawBackground(canvas);
         canvas.end();
+    }
+
+    /**
+     * Draws a repeating background, and crops off any overhangs outside the level
+     * to maintain resolution and aspect ratio.
+     *
+     * @param canvas the current canvas
+     */
+    private void drawBackground(GameCanvas canvas) {
+        for (int i = 0; i < SPACE_WIDTH; i += background.getRegionWidth()) {
+            for (int j = 0; j < SPACE_HEIGHT; j += background.getRegionHeight()) {
+                canvas.draw(background, i, j);
+            }
+        }
     }
 
     public void pause() {}
@@ -105,20 +122,6 @@ public class GameOverScreen implements Screen {
     }
 
     public void dispose() {}
-
-    /**
-     * Sets the canvas associated with this controller
-     * <p>
-     * The canvas is shared across all controllers.  Setting this value will compute
-     * the drawing scale from the canvas size.
-     *
-     * @param canvas the canvas associated with this controller
-     */
-    public void setCanvas(GameCanvas canvas) {
-        this.canvas = canvas;
-        canvas.getCamera().setFixedX(true);
-        canvas.getCamera().setFixedY(true);
-    }
 
     /**
      * Called when the Screen is resized.

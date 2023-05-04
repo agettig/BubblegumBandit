@@ -142,31 +142,25 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 
-		System.out.println(screen);
-
-		if (screen == controller){
+		if (screen == controller && exitCode == -1) {
+			directory = loading.getAssets();
+			gameOver.initialize(directory, canvas);
+			gameOver.setScreenListener(this);
+			setScreen(gameOver);
+		}
+		else if (screen == controller && exitCode == -2) {
+			directory = loading.getAssets();
+			gameOver.initialize(directory, canvas);
+			gameOver.setScreenListener(this);
+			setScreen(gameOver);
+		}
+		else if (screen == gameOver) {
 			Gdx.graphics.setCursor(mouseCursor);
 		}
-		if (screen == controller && exitCode == -1) {
-			System.out.println("hereeee");
-			directory = loading.getAssets();
-			gameOver.setCanvas(canvas);
-			gameOver.initialize(directory, canvas);
-			gameOver.setScreenListener(this);
-			setScreen(gameOver);
+		else if (screen == controller){
+			Gdx.graphics.setCursor(mouseCursor);
 		}
-		if (screen == controller && exitCode == -2) {
-			directory = loading.getAssets();
-			gameOver.setCanvas(canvas);
-			gameOver.initialize(directory, canvas);
-			gameOver.setScreenListener(this);
-			setScreen(gameOver);
-		}
-		if (screen == gameOver) {
-			System.out.println("hi");
-			setScreen(gameOver);
-		}
-		if (screen == levels) {
+		else if (screen == levels) {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setLevelNum(levels.getSelectedLevel());
