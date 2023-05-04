@@ -137,9 +137,10 @@ public class RollingEnemyModel extends EnemyModel {
                 setFaceRight(true);
             }
             if (attackDuration < CHARGE_TIME){
-                speed = -speed;
+                speed = (-speed);
             }
             setVX(speed);
+
         } else {
             updateMovement(nextAction);
         }
@@ -163,5 +164,9 @@ public class RollingEnemyModel extends EnemyModel {
     public void resetAttack() {
         isRolling = false;
         attackDuration = 0;
+    }
+
+    public boolean isRolling(){
+        return isRolling;
     }
 }

@@ -173,7 +173,6 @@ public class LaserEnemyModel extends EnemyModel {
     }
 
     public void update(float dt) {
-
         // laser enemy can no longer jump set attack to laser
         if (getGummed() || getStuck()){
             setShouldJumpAttack(false);
