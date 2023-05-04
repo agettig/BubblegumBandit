@@ -1157,7 +1157,7 @@ public class LevelModel {
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("door") && !ob.equals(bandit)) {
+                 if (!canUnstickThrough.contains(ob.getName()) && !ob.getName().equals("door") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -1182,10 +1182,7 @@ public class LevelModel {
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                 if (!ob.equals(bandit) && ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.getName().equals("gumProjectile")) {
-                    if (ob.getName().equals("projectile")) {
-                        return -1;
-                    }
-                    if (ob.getName().equals("hazard")) {
+                    if (canUnstickThrough.contains(ob.getName())) {
                         return -1;
                     }
                     if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
@@ -1217,8 +1214,9 @@ public class LevelModel {
             directionCache = new Vector2();
             endCache = new Vector2();
             originCache = new Vector2();
-//            canUnstickThrough.add("gumProjectile");
-//            canUnstickThrough.add("door");
+            canUnstickThrough.add("projectile");
+            canUnstickThrough.add("hazard");
+            canUnstickThrough.add("exit");
         }
 
         /**
