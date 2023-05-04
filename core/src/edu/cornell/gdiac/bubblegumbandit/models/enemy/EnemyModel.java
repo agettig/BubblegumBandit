@@ -224,16 +224,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * @param x the x position of this enemy
      * @param y the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
-     * @param x the x position of this EnemyModel
-     * @param y the y position of this EnemyModel
-     * @param constantsJson the JSON subtree defining all EnemyModels
+     * @param isFacingRight whether the enemy spawns facing right
      */
-    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson, boolean isFacingRight) {
         setName("enemy" + id);
         float[] size = constantsJson.get("size").asFloatArray();
         setPosition(x, y);
         setDimension(size[0], size[1]);
-
+        faceRight = isFacingRight;
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
         setBodyType(BodyDef.BodyType.DynamicBody);

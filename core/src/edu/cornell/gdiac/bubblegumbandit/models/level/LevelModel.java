@@ -542,12 +542,12 @@ public class LevelModel {
                 objType = objType.substring(substringStart, substringEnd);
             }
             int objId = (object.getInt("id"));
+            int objGid = (object.getInt("gid"));
+            boolean isFacingRight = (objGid & (1 << 31)) == 0; // Check if bit 31 of gid is 1
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
             float decorX = object.getFloat("x")/scale.x;
             float decorY = levelHeight - object.getFloat("y")/scale.y;
-
-
 
             switch (objType) {
                 case "tutorial": {
@@ -584,7 +584,7 @@ public class LevelModel {
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield - DISABLED for now
 //                    if (objType.contains("shielded")) enemy.hasShield(true);
@@ -596,7 +596,7 @@ public class LevelModel {
                     enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -607,7 +607,7 @@ public class LevelModel {
                 case "largeEnemy":
                     enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -677,6 +677,9 @@ public class LevelModel {
                 objType = objType.substring(substringStart, substringEnd);
             }
             int objId = (postOrb.getInt("id"));
+            int objGid = (postOrb.getInt("gid"));
+            boolean isFacingRight = !((objGid & 0x40000000) == 0x40000000); // Check if bit 30 of gid is 1
+
             float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
 
@@ -687,7 +690,7 @@ public class LevelModel {
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new ProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -699,7 +702,7 @@ public class LevelModel {
                     enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -710,7 +713,7 @@ public class LevelModel {
                 case "largeEnemy":
                     enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);

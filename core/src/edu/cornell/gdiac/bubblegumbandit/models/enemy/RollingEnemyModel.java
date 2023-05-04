@@ -73,10 +73,11 @@ public class RollingEnemyModel extends EnemyModel {
      * @param x             the x position to set this ProjectileEnemyModel
      * @param y             the y position to set this ProjectileEnemyModel
      * @param constantsJson the constants json
+     * @param isFacingRight whether the enemy spawns facing right
      */
     public void initialize(AssetDirectory directory, float x, float y,
-                           JsonValue constantsJson) {
-        super.initialize(directory, x, y+.01f, constantsJson);
+                           JsonValue constantsJson, boolean isFacingRight) {
+        super.initialize(directory, x, y+.01f, constantsJson, isFacingRight);
         rollingAttackSpeed = constantsJson.get("mediumAttack").asInt();
         setName("mediumEnemy");
         attackDuration = 0;

@@ -47,9 +47,10 @@ public class ProjectileEnemyModel extends EnemyModel {
      * @param x the x position of this enemy
      * @param y the y position of this enemy
      * @param constantsJson the constants json
+     * @param isFacingRight whether the enemy spawns facing right
      * */
-    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson){
-        super.initialize(directory, x, y, constantsJson);
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson, boolean isFacingRight){
+        super.initialize(directory, x, y, constantsJson, isFacingRight);
         setVisionRadius(constantsJson.get("visionRadius").asFloat());
         attacking.setRadius(constantsJson.get("attackRadius").asFloat());
     }
