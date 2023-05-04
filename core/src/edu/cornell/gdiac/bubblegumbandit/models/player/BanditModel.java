@@ -791,11 +791,6 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
-    public void stopAnimation() {
-        animationController.clearAnimations();
-    }
-
-
 
     /**
      * Draws the outline of the physics body, including the field of vision

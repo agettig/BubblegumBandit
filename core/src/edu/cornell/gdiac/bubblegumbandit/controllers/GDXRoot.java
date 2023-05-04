@@ -79,7 +79,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		crosshair.dispose();
 		Gdx.graphics.setCursor(mouseCursor);
 
-
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
 
@@ -145,17 +144,16 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (screen == controller && exitCode == -1) {
 			directory = loading.getAssets();
 			gameOver.initialize(directory, canvas);
+			gameOver.gameWon();
 			gameOver.setScreenListener(this);
 			setScreen(gameOver);
 		}
 		else if (screen == controller && exitCode == -2) {
 			directory = loading.getAssets();
 			gameOver.initialize(directory, canvas);
+			gameOver.gameLost();
 			gameOver.setScreenListener(this);
 			setScreen(gameOver);
-		}
-		else if (screen == gameOver) {
-			Gdx.graphics.setCursor(mouseCursor);
 		}
 		else if (screen == controller){
 			Gdx.graphics.setCursor(mouseCursor);
@@ -167,16 +165,15 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.reset();
 			Gdx.graphics.setCursor(crosshairCursor);
 			setScreen(controller);
-		} else if (screen == loading && exitCode == 1) {
+		} else if ((screen == loading || screen == gameOver) && exitCode == 1) {
 			Gdx.graphics.setCursor(crosshairCursor);
-			directory = loading.getAssets();
 			setScreen(controller);
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.reset();
-		} else if(screen == loading && exitCode == 6){
+		} else if((screen == loading || screen == gameOver) && exitCode == 6){
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			levels.gatherAssets(directory);
@@ -200,6 +197,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			canvas.resetCamera();
 			loading.setScreenListener(this);
 			setScreen(loading);
+		}
+		else if (screen == gameOver) {
+			Gdx.graphics.setCursor(mouseCursor);
 		}
 		else{
 			Gdx.app.exit();

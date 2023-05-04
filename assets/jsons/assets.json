@@ -7,6 +7,9 @@
         "emptyGum": "textures/UI/emptyGum.png",
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
+        "hoverPointer": "textures/UI/hoverPointer.png",
+        "continueGameButton": "textures/UI/continueGame.png",
+        "levelSelectButton": "textures/UI/levelSelect.png",
 
         "sunfish" : "textures/levelSelect/sunfish.png",
         "ship1" : "textures/levelSelect/level1.png",

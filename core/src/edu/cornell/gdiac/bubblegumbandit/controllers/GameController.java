@@ -798,8 +798,9 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
-            level.getBandit().stopAnimation();
-            listener.exitScreen(this, -1);
+            if (ticks % 100 == 0) {
+                listener.exitScreen(this, -1);
+            }
         } else if (failed) {
             listener.exitScreen(this, -2);
         }
