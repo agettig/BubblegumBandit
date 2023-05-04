@@ -12,12 +12,12 @@ public class RollingEnemyModel extends EnemyModel {
     /**
      * How long the enemy can roll to attack the player + charge time
      */
-    private final int ATTACK_TIME = 70;
+    private final int ATTACK_TIME = 80;
 
     /**
      * Time that rolling enemies take to charge
      */
-    private final int CHARGE_TIME = 10;
+    private final int CHARGE_TIME = 20;
 
     /**
      * Time need for enemy to cooldown in between attacks
