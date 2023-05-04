@@ -4,5 +4,6 @@
 ./rules/rules4.tmx
 ./rules/rules5.tmx
 ./rules/rules6.tmx
+./rules/rules7.tmx
 
 
