@@ -107,12 +107,6 @@ public class LaserEnemyModel extends EnemyModel{
         if (chargingLaser() ){
             animationController.setAnimation("charge", true);
         }
-        else if (lockingLaser()){
-            //animationController.setAnimation("lock", true);
-        }
-        else if (firingLaser()){
-            //animationController.setAnimation("fire", true);
-        }
         else if (stuck || gummed){
             animationController.setAnimation("stuck", true);
         }
