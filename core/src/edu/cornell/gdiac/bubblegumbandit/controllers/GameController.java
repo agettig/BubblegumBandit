@@ -15,12 +15,8 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,15 +25,14 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -45,8 +40,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.ArrayList;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -269,6 +262,12 @@ public class GameController implements Screen {
      */
     private boolean reloadingGum;
 
+    private PauseMode pause;
+    private boolean paused;
+
+    public void setPaused(boolean paused) {this.paused = paused;}
+
+    public boolean getPaused() {return paused; }
 
     /**
      * Returns true if the level is completed.
@@ -351,6 +350,7 @@ public class GameController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        //pause.setViewport(canvas.getUIViewport());
     }
 
     /**
@@ -370,12 +370,14 @@ public class GameController implements Screen {
         orbCountdown = -1;
         levelNum = 1;
         reloadingGum = false;
+        paused = false;
         reloadSymbolTimer = -1;
         setComplete(false);
         setFailure(false);
 
         //Data Structures && Classes
         level = new LevelModel();
+        pause = new PauseMode();
 
         setComplete(false);
         setFailure(false);
@@ -457,6 +459,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
+        paused = false;
         spawnedPostOrbEnemies = false;
         bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -537,6 +540,11 @@ public class GameController implements Screen {
                 levelNum = NUM_LEVELS;
             }
             reset();
+        }
+
+        if (input.didPause()) {
+            setPaused(true);
+            return false;
         }
 
         // Switch screens if necessary.
@@ -809,6 +817,13 @@ public class GameController implements Screen {
             canvas.end();
         }
 
+        if (paused) {
+            pause.setScreenListener(listener);
+            pause.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
+            pause.render(delta);
+            pause.draw();
+        }
+
 //        backgrounds.drawDebug(canvas);
     }
 
@@ -834,11 +849,34 @@ public class GameController implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     public void render(float delta) {
-        if (active) {
+        if (active && !paused) {
             if (preUpdate(delta)) {
                 update(delta);
             }
             draw(delta);
+        }else if (paused) {
+            pause.render(delta);
+            pause.setScreenListener(listener);
+            pause.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
+            pause.render(delta);
+            pause.draw();
+
+            if (pause.getQuitClicked()) {
+                listener.exitScreen(this, EXIT_QUIT);
+            }
+            if (pause.getResumeClicked()) {
+                setPaused(false);
+            }
+            if (pause.getRetryClicked()) {
+                reset();
+                setPaused(false);
+            }
+            if (pause.getLevelSelectClicked()) {
+                listener.exitScreen(this, 6);
+            }
+            if (pause.getSettingsClicked()) {
+                listener.exitScreen(this, 7);
+            }
         }
     }
 
