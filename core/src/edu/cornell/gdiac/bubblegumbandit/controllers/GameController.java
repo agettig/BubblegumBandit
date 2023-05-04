@@ -703,8 +703,8 @@ public class GameController implements Screen {
 
             if (isProjectileEnemy) {
                 // Ensure enemy is on the ground
-                if (controller.getEnemy().fired() && (controller.getTileType() != 0)) {
-                    boolean isGravDown = level.getWorld().getGravity().y < 0;
+                if (enemy.fired() && (controller.getTileType() != 0)) {
+                    boolean isGravDown = !enemy.isFlipped();
                     ProjectileModel newProjLeft = projectileController.fireWeapon(controller, true, isGravDown);
                     ProjectileModel newProjRight = projectileController.fireWeapon(controller, false, isGravDown);
                     smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);

@@ -136,6 +136,7 @@
 
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
+        "shockwave": "textures/smallEnemy/shockwave.png",
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
         "smallShield": "textures/smallEnemy/smallShield.png",
         "smallEnemyPatrol":  {
