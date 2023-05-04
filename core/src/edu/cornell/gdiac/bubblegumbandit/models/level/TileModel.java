@@ -69,13 +69,6 @@ public class TileModel extends BoxObstacle {
         setPosition(x,y);
         setDimension(1, 1);
 
-        // Technically, we should do error checking here.
-        // A JSON field might accidentally be missing
-        setBodyType(constants.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
-        setDensity(constants.get("density").asFloat());
-        setFriction(constants.get("friction").asFloat());
-        setRestitution(constants.get("restitution").asFloat());
-
         // Reflection is best way to convert name to color
         Color debugColor;
         try {
@@ -100,11 +93,5 @@ public class TileModel extends BoxObstacle {
         if (texture != null) {
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
         }
-    }
-
-    // TODO: Remove
-    //  Temporarily disable debug draw
-    public void drawDebug(GameCanvas canvas) {
-
     }
 }

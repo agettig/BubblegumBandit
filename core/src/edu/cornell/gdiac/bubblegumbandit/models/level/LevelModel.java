@@ -72,6 +72,12 @@ public class LevelModel {
     /** The Box2D world  */
     protected World world;
 
+    /** Map from tile id in worldData to tile in the world. */
+    private HashMap<Integer, TileModel> worldTileMap;
+
+    /** Array holding all the tiles in the world. */
+    private Array<TileModel> worldTiles;
+
     /** The boundary of the world */
     protected Rectangle bounds;
 
@@ -150,6 +156,8 @@ public class LevelModel {
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
 
+    /** Cache for figuring out which tile is hit */
+    private Vector2 tileCache = new Vector2();
 
 
     /**
@@ -286,6 +294,32 @@ public class LevelModel {
     }
 
     /**
+     * Returns the TileModel that an object at (x, y) collided with when colliding with WallModel wall
+     * @param x the x position of the object
+     * @param y the y position of the object
+     * @param contactX the x position of the contact
+     * @param contactY the y position of the contact
+     * @return the TileModel at the collision spot
+     */
+    public TileModel getTile(float x, float y, float contactX, float contactY) {
+        tileCache.set(contactX - x, contactY - y);
+        tileCache.scl(0.1f); // Scoot in direction of contact
+
+        // Figure out which tile is there
+        int tileX = (int) (contactX + tileCache.x);
+        int tileY = (int) (contactY + tileCache.y);
+        tileY = levelHeight - tileY - 1;
+//        System.out.println("Tile X: " + tileX + " Tile Y: " + tileY + " Contact X: " + contactX + " Contact Y: " + contactY);
+
+        TileModel selectedTile = worldTileMap.get(tileY * levelWidth + tileX);
+//        System.out.println("Selected Tile X: " + selectedTile.getX() + " Selected Tile Y: " + (levelHeight - selectedTile.getY() - 1));
+        if (selectedTile == null) {
+            throw new RuntimeException("The tile was not found successfully. Please tell Ben about this and he will try to fix it");
+        }
+        return selectedTile;
+    }
+
+    /**
      * Lays out the game geography from the given JSON file. Spawns
      * tiles, objects, boards, and other assets that should appear
      * in a Bubblegum Bandit level.
@@ -391,6 +425,8 @@ public class LevelModel {
         tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f / 8);
         tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f / 8);
 
+        worldTiles = new Array<>();
+        worldTileMap = new HashMap<>();
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
@@ -404,13 +440,12 @@ public class LevelModel {
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 tiles.put(new Vector2(x, y), newTile);
                 newTile.setDrawScale(scale);
-                activate(newTile);
-                newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                worldTileMap.put(i, newTile);
+                worldTiles.add(newTile);
             }
         }
 
         // Aggregated tiles for seaming fixes.
-        // TODO: Make the previous tiles not have associated physics bodies for optimization.
         TiledParser parser = new TiledParser();
         Array<TileRect> rects = parser.mergeTiles(levelWidth, levelHeight, worldData);
         for (TileRect rect : rects) {
@@ -418,7 +453,7 @@ public class LevelModel {
             newWall.initialize(rect.startX, levelHeight - rect.endY - 1, rect.endX, levelHeight - rect.startY - 1, constants.get("wall"));
             newWall.setDrawScale(scale);
             activate(newWall);
-            newWall.setFilter(CATEGORY_TERRAIN, MASK_WALL);
+            newWall.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
         }
 
         if (supports != null) {
@@ -551,8 +586,8 @@ public class LevelModel {
                     enemy = new ProjectileEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants);
                     enemy.setDrawScale(scale);
-                    //if shielded add shield
-                    if (objType.contains("shielded")) enemy.hasShield(true);
+                    //if shielded add shield - DISABLED for now
+//                    if (objType.contains("shielded")) enemy.hasShield(true);
                     newEnemies.add(enemy);
                     enemyIds.put(objId, enemy);
                     break;
@@ -865,6 +900,10 @@ public class LevelModel {
 //        canvas.clear();
 
         for(BackgroundTileModel tile: backgroundTiles) {
+            tile.draw(canvas);
+        }
+
+        for (TileModel tile : worldTiles) {
             tile.draw(canvas);
         }
 

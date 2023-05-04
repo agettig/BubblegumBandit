@@ -32,14 +32,11 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
     public static final short CATEGORY_DOOR = 0x0100;
 
-
-
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
     public static final short CATEGORY_BACK = 0x0012;
 
-    public static final short MASK_TERRAIN = (CATEGORY_GUM); // Collides with everything
-    public static final short MASK_WALL = ~(CATEGORY_GUM);
+    public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);
@@ -145,7 +142,7 @@ public class CollisionController implements ContactListener {
             }
 
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
-            resolveGumCollision(obstacleA, obstacleB);
+            resolveGumCollision(obstacleA, obstacleB, contact);
             resolveWinCondition(obstacleA, obstacleB);
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
@@ -301,8 +298,9 @@ public class CollisionController implements ContactListener {
      *
      *  @param bodyA The first body in the collision
      *  @param bodyB The second body in the collision
+     * @param contact The contact
      */
-    public void resolveGumCollision(Obstacle bodyA, Obstacle bodyB){
+    public void resolveGumCollision(Obstacle bodyA, Obstacle bodyB, Contact contact){
         //Safety check.
         if (bodyA == null || bodyB == null) return;
         // Gum should destroy projectiles, but not become sticky gum.
@@ -315,7 +313,7 @@ public class CollisionController implements ContactListener {
         GumModel gum = null;
         Obstacle body = null;
         Gummable gummable = null;
-        TileModel tile;
+        TileModel tile = null;
         if (isGumObstacle(bodyA)) {
             gum = (GumModel) bodyA;
             body = bodyB;
@@ -363,6 +361,7 @@ public class CollisionController implements ContactListener {
         }
         //0 = horizontal, 1 = vertical, 2 = rightCorner, 3 = leftCorner
         int orientation = 0;
+        boolean isTile = false;
         if (gum != null && gum.canAddObstacle(body)){
             if (gummable != null) {
                 if (gummable instanceof LaserEnemyModel) {
@@ -389,8 +388,12 @@ public class CollisionController implements ContactListener {
                     gummable.setStuck(true);
                 }
             }
-            else if (body instanceof TileModel) {
-                tile = (TileModel) body;
+            else if (body instanceof WallModel) {
+                // Get the corresponding tile
+                float contactX = contact.getWorldManifold().getPoints()[0].x;
+                float contactY = contact.getWorldManifold().getPoints()[0].y;
+                tile = levelModel.getTile(gum.getX(), gum.getY(), contactX, contactY);
+                isTile = true;
                 orientation = checkGumPosition(gum, tile);
                 gum.setOnTile(true);
                // levelModel.makeGumSplat(gum.getX(), gum.getY());
@@ -399,11 +402,18 @@ public class CollisionController implements ContactListener {
                 // Make bandit stuck
                 levelModel.getBandit().setStuck(true);
             }
-            // creates joint between gum and object
-            WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
-            GumJointPair pair = new GumJointPair(gum, weldJointDef);
-            bubblegumController.addToAssemblyQueue(pair);
-            gum.addObstacle(body);
+            if (isTile) { // Need to make the joint at the tile position, not the wall
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation, tile);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+                gum.addObstacle(body);
+            } else {
+                // creates joint between gum and object
+                WeldJointDef weldJointDef = bubblegumController.createGumJoint(gum, body, orientation);
+                GumJointPair pair = new GumJointPair(gum, weldJointDef);
+                bubblegumController.addToAssemblyQueue(pair);
+                gum.addObstacle(body);
+            }
             gum.setCollisionFilters();
 
 
@@ -584,8 +594,6 @@ public class CollisionController implements ContactListener {
      * @param bd2 The second Obstacle in the collision.
      */
     private void resolveHazardCollision(Obstacle bd1, Obstacle bd2) {
-
-        // Check that obstacles are not null and one is a crusher sensor
         if (bd1 == null || bd2 == null) return;
         SpecialTileModel hazard;
         BanditModel bandit = levelModel.getBandit();
