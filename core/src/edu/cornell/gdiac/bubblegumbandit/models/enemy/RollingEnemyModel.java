@@ -12,12 +12,12 @@ public class RollingEnemyModel extends EnemyModel {
     /**
      * How long the enemy can roll to attack the player + charge time
      */
-    private final int ATTACK_TIME = 80;
+    private final int ATTACK_TIME = 75;
 
     /**
      * Time that rolling enemies take to charge
      */
-    private final int CHARGE_TIME = 20;
+    private final int CHARGE_TIME = 15;
 
     /**
      * Time need for enemy to cooldown in between attacks
@@ -128,7 +128,7 @@ public class RollingEnemyModel extends EnemyModel {
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0 && (previousAction & CONTROL_MOVE_RIGHT) != 0;
 
         if (fired() && isRolling && (movingLeft || movingRight) && cooldownTime <= 0) {
-            int speed = 0;
+            float speed = 0;
             if (movingLeft) {
                 speed = -rollingAttackSpeed;
                 setFaceRight(false);
@@ -137,7 +137,7 @@ public class RollingEnemyModel extends EnemyModel {
                 setFaceRight(true);
             }
             if (attackDuration < CHARGE_TIME){
-                speed = (-speed);
+                speed = (-speed * .75f);
             }
             setVX(speed);
 

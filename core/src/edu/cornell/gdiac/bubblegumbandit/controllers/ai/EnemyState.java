@@ -192,6 +192,7 @@ public enum EnemyState implements State<AIController> {
             boolean isRollingEnemy = aiController.enemy instanceof RollingEnemyModel;
 
             // set state to wander if enemy can not hear bandit
+            // don't change state if enemy is currently rolling
             if (!aiController.enemyHeardBandit() && (!(isRollingEnemy && ((RollingEnemyModel) aiController.enemy).isRolling()) || !isRollingEnemy)) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
