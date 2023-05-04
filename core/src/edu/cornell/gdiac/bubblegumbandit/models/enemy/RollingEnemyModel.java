@@ -1,8 +1,10 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
+import com.badlogic.gdx.math.Interpolation.SwingOut;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_LEFT;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_RIGHT;
@@ -88,8 +90,6 @@ public class RollingEnemyModel extends EnemyModel {
      * Updates rolling enemy
      * */
     public void update(float delta) {
-
-
         updateYScale();
         updateRayCasts();
 

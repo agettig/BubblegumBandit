@@ -1,2 +1,8 @@
 ./rules/rules1.tmx
 ./rules/rules2.tmx
+./rules/rules3.tmx
+./rules/rules4.tmx
+./rules/rules5.tmx
+./rules/rules6.tmx
+
+
