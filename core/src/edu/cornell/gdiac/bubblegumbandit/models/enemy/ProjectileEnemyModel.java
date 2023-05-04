@@ -29,6 +29,7 @@ public class ProjectileEnemyModel extends EnemyModel {
      * @param visionRadius The new vision radius */
     public void setVisionRadius(float visionRadius) {
         this.visionRadius = visionRadius;
+        vision.setRadius(visionRadius);
     }
 
     /**Creates a MovingEnemy.
@@ -50,6 +51,7 @@ public class ProjectileEnemyModel extends EnemyModel {
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson){
         super.initialize(directory, x, y, constantsJson);
         setVisionRadius(constantsJson.get("visionRadius").asFloat());
+        attacking.setRadius(constantsJson.get("attackRadius").asFloat());
     }
 
 
