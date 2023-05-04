@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -186,22 +187,22 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.clear();
         canvas.begin();
-        resize((int)canvas.getCamera().viewportWidth, (int)canvas.getCamera().viewportHeight);
-        canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
-        canvas.draw(background, 0, 25);
+        drawBackground(canvas);
         canvas.drawTextCentered(gameOverMessage, displayFont, 150);
 
-        float highestButtonY = canvas.getCamera().viewportHeight / 2;
-        float lowestButtonY = canvas.getCamera().viewportHeight / 6;
-        float buttonSpace = highestButtonY - lowestButtonY;
-        float gap = buttonSpace / 4;
+        float x = (canvas.getWidth()) / 2.0f;
+        float y = (canvas.getHeight())/ 2.0f;
+        Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
+
+        float highestButtonY = coords.y;
+        float lowestButtonY = coords.y - 100;
 
 
-        startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+        startButtonPositionX = (int) coords.x;
         startButtonPositionY = (int) highestButtonY;
 
-        levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-        levelSelectButtonPositionY = (int) (highestButtonY - gap);
+        levelSelectButtonPositionX = (int) coords.x;
+        levelSelectButtonPositionY = (int) lowestButtonY;
 
         float pointerX = startButtonPositionX / 4f;
 
@@ -258,6 +259,20 @@ public class GameOverScreen implements Screen, InputProcessor {
         }
 
         canvas.end();
+    }
+
+    /**
+     * Draws a repeating background, and crops off any overhangs outside the level
+     * to maintain resolution and aspect ratio.
+     *
+     * @param canvas the current canvas
+     */
+    private void drawBackground(GameCanvas canvas) {
+        for (int i = 0; i < SPACE_WIDTH; i += background.getRegionWidth()) {
+            for (int j = 0; j < SPACE_HEIGHT; j += background.getRegionHeight()) {
+                canvas.draw(background, i, j);
+            }
+        }
     }
 
     private Color getButtonTint(String buttonName) {

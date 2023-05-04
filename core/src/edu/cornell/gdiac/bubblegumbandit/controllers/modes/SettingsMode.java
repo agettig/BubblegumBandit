@@ -241,8 +241,6 @@ public class SettingsMode implements Screen {
 
         SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
-
-
     }
 
     /**
