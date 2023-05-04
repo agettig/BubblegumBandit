@@ -161,6 +161,11 @@ public class BanditModel extends CapsuleObstacle {
 
     private Vector2 orbPostion;
 
+    /**
+     * Amount of time to stun player
+     *
+     * Non-positive stunTime means player is not stunned
+     * */
     private int stunTime = 0;
 
     public void setOrbPostion(Vector2 orbPostion){
@@ -794,11 +799,23 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
-    public void stun(int time){
-        stunTime = time;
+    /**
+     * Stuns player for time t
+     *
+     * @param t Time to stun player for
+     */
+    public void stun(int t){
+        stunTime = t;
     }
 
-
+    /**
+     * Stuns player for time t
+     *
+     * @return amount of time remaining for player to be stunned
+     */
+    public int getStunTime() {
+        return stunTime;
+    }
 
     /**
      * Draws the outline of the physics body, including the field of vision
@@ -811,7 +828,4 @@ public class BanditModel extends CapsuleObstacle {
         super.drawDebug(canvas);
     }
 
-    public int getStunTime() {
-        return stunTime;
-    }
 }

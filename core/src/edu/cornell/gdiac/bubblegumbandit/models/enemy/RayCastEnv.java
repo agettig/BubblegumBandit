@@ -12,6 +12,10 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
+/**
+ * RayCastEnv is used to detect environmental features in front of enemies
+ * Note: In debug mode, represented by green horizontal ray casts
+ * */
 public class RayCastEnv {
     /** The color of the FOV graphic. */
     private Color color;

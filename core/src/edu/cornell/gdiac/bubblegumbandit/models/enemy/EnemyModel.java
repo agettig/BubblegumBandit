@@ -64,6 +64,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     public RayCastCone attacking;
 
+    /**
+     * Ray casts used to detect blocks and hazards in enemy paths
+     */
     public RayCastEnv envRays;
 
     /**

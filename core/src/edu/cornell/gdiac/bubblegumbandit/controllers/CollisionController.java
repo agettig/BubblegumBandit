@@ -143,12 +143,13 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA);
             }
 
+            // check to see if laser enemy has landed on floor
             if (obstacleB instanceof TileModel && obstacleA instanceof LaserEnemyModel){
-                resolveLaserEnemyTileCollision((TileModel) obstacleB, (LaserEnemyModel) obstacleA);
+                resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleA);
             }
 
             if (obstacleA instanceof TileModel && obstacleB instanceof LaserEnemyModel){
-                resolveLaserEnemyTileCollision((TileModel) obstacleA, (LaserEnemyModel) obstacleB);
+                resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleB);
             }
 
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
@@ -234,7 +235,13 @@ public class CollisionController implements ContactListener {
 
     }
 
-    private void resolveLaserEnemyTileCollision(TileModel tile, LaserEnemyModel enemy){
+    /**
+     * Resolves a collision between the laser enemy and tile
+     * Shakes camera and damages bandit
+     *
+     * @param enemy Laser enemy that landed on the ground
+     */
+    private void resolveLaserEnemyTileCollision(LaserEnemyModel enemy){
         if (enemy.isJumping()){
             enemy.hasLanded();
             int trauma = enemy.isFlipped() ? -2 : 2;

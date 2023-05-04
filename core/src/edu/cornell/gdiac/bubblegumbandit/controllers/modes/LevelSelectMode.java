@@ -122,6 +122,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Camera zoom out */
     private final static float ZOOM = 1.5f;
 
+    /**
+     * Whether we should return to the main menu
+     * */
     private boolean returnToMain;
 
     // music

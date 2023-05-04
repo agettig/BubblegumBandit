@@ -163,7 +163,7 @@ public class RayCastCone {
     public void drawDebug(GameCanvas canvas, float x, float y, float scalex, float scaley) {
 //        canvas.drawFOV(color, rays, x, y, scalex, scaley);
 //        canvas.drawFOV(color, rays, x, y, radius, scalex, scaley);
-//        canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
+        canvas.drawRays(DEBUGCOLOR, rays, x, y, scalex, scaley);
     }
 
     public void setRadius(float radius) {
