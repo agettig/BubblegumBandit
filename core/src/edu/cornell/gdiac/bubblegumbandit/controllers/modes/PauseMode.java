@@ -71,6 +71,8 @@ public class PauseMode implements Screen {
 
     private BitmapFont font;
 
+    private shapeRenderer shape;
+
     private TextButton.TextButtonStyle style;
 
     public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
@@ -85,6 +87,7 @@ public class PauseMode implements Screen {
 
         stage = new Stage();
         pauseTable = new Table();
+        shape = new ShapeRenderer();
         pauseTable.align(Align.topLeft);
         pauseTable.setFillParent(true);
         stage.addActor(pauseTable);
@@ -218,7 +221,16 @@ public class PauseMode implements Screen {
 
     public void draw() {
         stage.getBatch().begin();
-        stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
+        //stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(new Color(0, 0, 0, 0.5f));
+        shape.rect(0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
+        shape.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
 
         stage.getBatch().end();
         stage.draw();
