@@ -33,6 +33,9 @@ import java.lang.reflect.Field;
  * by reading the JSON value.
  */
 public class BanditModel extends CapsuleObstacle {
+
+    /** The time the player can't move after knockback */
+    private final float STUN_TIME = 0.3f;
     // Physics constants
     /**
      * The factor to multiply by the input
@@ -59,6 +62,9 @@ public class BanditModel extends CapsuleObstacle {
      * Whether our feet are on the ground
      */
     private boolean isGrounded;
+
+    /** Knockback timer */
+    private float knockbackTimer;
 
     // SENSOR FIELDS
     /**
@@ -236,6 +242,7 @@ public class BanditModel extends CapsuleObstacle {
        if(knockback && health>0) {
            animationController.setAnimation("knock", false);
        }
+       knockbackTimer = STUN_TIME;
     }
 
 
@@ -705,6 +712,13 @@ public class BanditModel extends CapsuleObstacle {
      */
     public void update(float dt) {
         ticks++;
+
+        if (isKnockback) {
+            knockbackTimer -= dt;
+            if (knockbackTimer <= 0) {
+                isKnockback = false;
+            }
+        }
 
         if (inCooldown) {
             if (ticks >= 60) {
