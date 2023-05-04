@@ -122,7 +122,7 @@ public class HUDController {
 
 
     orbCountdown = new Label("00", new Label.LabelStyle(font, Color.WHITE));
-    orbCountdown.setFontScale(1f);
+    orbCountdown.setFontScale(2f);
     orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
     stage.addActor(orbCountdown);
 
@@ -202,7 +202,7 @@ public class HUDController {
       gumImage.setVisible(false);
     }
 
-    if (timer >= 9) {
+    if (timer > 9) {
       orbCountdown.setText(timer);
     } else if (timer >= 0) {
       orbCountdown.setText("0" + timer);
