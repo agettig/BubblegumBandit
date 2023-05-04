@@ -212,7 +212,6 @@ public class GameController implements Screen {
      * A collection of the active projectiles on screen
      */
     private ProjectileController projectileController;
-
     /**
      * Reference to LaserController instance
      */
