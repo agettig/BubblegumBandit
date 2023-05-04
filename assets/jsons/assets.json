@@ -11,6 +11,7 @@
         "sunfish" : "textures/levelSelect/sunfish.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
+        "point" : "textures/levelSelect/point.png",
 
         "ship1" : "textures/levelSelect/level1.png",
         "ship2" : "textures/levelSelect/level2.png",

@@ -42,12 +42,12 @@ public class SunfishModel extends WheelObstacle {
     /**
      * The amount to slow the ship down
      */
-    private static final float DAMPING = 5f;
+    private static final float DAMPING = 10f;
 
     /**
      * The amount to speed the ship up
      */
-    private static final float THRUST = 20f;
+    private static final float THRUST = 30f;
 
     // attributes
 
@@ -149,18 +149,19 @@ public class SunfishModel extends WheelObstacle {
 
         }
         //boosting distance
-        else if (boosting){
-            forceCache.set(movement).scl(THRUST);
+         else if (boosting){
+//            forceCache.add(movement.scl(THRUST));
             body.setTransform(body.getPosition().add(movement.scl(1.8f)), 0);
         }
         //normal speed distance
         else {
-            forceCache.set(movement);
+//            forceCache.add(movement);
             body.setTransform(body.getPosition().add(movement), 0);
         }
 
         body.applyForce(forceCache, getPosition(), true);
 //            body.applyLinearImpulse(movement, getPosition(), true);
+        //rotate ship to face cursor
         body.setTransform(body.getPosition(), angle);
 
         //add exhaust

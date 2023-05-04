@@ -88,11 +88,9 @@ public class LevelIconModel {
     }
 
     /** returns the x,y coordinates of the center of the icon*/
-    public Vector2 getPosition(){
+    public Vector2 getCenter(){
         return new Vector2(x + 0.5f * texture.getRegionWidth(), y + 0.5f * texture.getRegionHeight());
     }
-
-
 
     public void update() {
 
@@ -125,8 +123,8 @@ public class LevelIconModel {
             canvas.draw(texture, Color.DARK_GRAY, x, y, texture.getRegionWidth(), texture.getRegionHeight());
         }
 //        System.out.println(SaveData.unlocked(level));
-        Vector2 position = getPosition();
-        canvas.drawText(valueOf(level), font, position.x, position.y);
+        Vector2 position = getCenter();
+        canvas.drawText(valueOf(level), font, position.x, position.y + texture.getRegionHeight());
     }
 
 

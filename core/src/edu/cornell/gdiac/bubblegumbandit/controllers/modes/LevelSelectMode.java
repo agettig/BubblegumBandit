@@ -9,6 +9,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -99,16 +100,16 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private int selectedLevel;
 
     /** the gap between level icons */
-    private final static float LEVEL_GAP = 700;
+    private final static float LEVEL_GAP = 1000;
 
     /** the gap between level icons and the bounds of space */
-    private final static float SPACE_GAP = 800;
+    private final static float SPACE_GAP = 1000;
 
     //space boundaries
     /** the width of the sunfish movement bounds */
-    private final static float SPACE_WIDTH = 5000;
+    private final static float SPACE_WIDTH = 10000;
     /** height of sunfish movement bounds */
-    private final static float SPACE_HEIGHT = 5000;
+    private final static float SPACE_HEIGHT = 2000;
 
     //the camera dimensions
     private float camWidth;
@@ -185,12 +186,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
         TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
 
-        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP, SPACE_HEIGHT - 100);
+        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP * 0.7f, SPACE_HEIGHT - SPACE_GAP/2);
         sunfish.activatePhysics(world);
 
         background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
 
-        path = fire;
+        path =new TextureRegion (directory.getEntry("point", Texture.class));
 
         createIcons(directory);
         //music
@@ -203,7 +204,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
             TextureRegion texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
-            levels.add(new LevelIconModel(texture, i, 200 + LEVEL_GAP * (i-1), SPACE_HEIGHT - SPACE_GAP));
+            levels.add(new LevelIconModel(texture, i, LEVEL_GAP * i, SPACE_HEIGHT - SPACE_GAP));
         }
     }
 
@@ -276,21 +277,21 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         if (pause){
             System.out.println("start debug");
         }
-         //x bounds
-//        if (sunfish.getX() < camWidth) {
-//            canvas.getCamera().setTargetX(camWidth);
-//        }
-//        if (sunfish.getX() > SPACE_WIDTH - camWidth){
-//            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
-//        }
+        //x bounds
+        if (sunfish.getX() < camWidth) {
+            canvas.getCamera().setTargetX(camWidth);
+        }
+        if (sunfish.getX() > SPACE_WIDTH - camWidth){
+            canvas.getCamera().setTargetX(SPACE_WIDTH - camWidth);
+        }
         //y bounds
-//        if (sunfish.getY() < camHeight) {
-//            canvas.getCamera().setTargetY(camHeight);
-//
-//        }
-//        if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
-//            canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
-//        }
+        if (sunfish.getY() < camHeight) {
+            canvas.getCamera().setTargetY(camHeight);
+
+        }
+        if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
+            canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
+        }
 
         canvas.getCamera().update(dt);
     }
@@ -395,12 +396,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     private void drawPaths(GameCanvas canvas){
         for (int i = 0; i < levels.size - 1; i++){
-            Vector2 start = levels.get(i).getPosition();
-            Vector2 end = levels.get(i+1).getPosition();
+            Vector2 start = levels.get(i).getCenter();
+            Vector2 end = levels.get(i+1).getCenter();
 
             float dst = start.dst(end);
 
-            float space = path.getRegionWidth() + 50;
+            float space = path.getRegionWidth() + 30;
 
             int numDashes = (int) (dst / space);
 
