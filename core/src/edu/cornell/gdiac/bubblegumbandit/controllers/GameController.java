@@ -820,8 +820,9 @@ public class GameController implements Screen {
         if (paused) {
             pause.setScreenListener(listener);
             pause.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
+            pause.show();
             pause.render(delta);
-            pause.draw();
+//            pause.draw();
         }
 
 //        backgrounds.drawDebug(canvas);

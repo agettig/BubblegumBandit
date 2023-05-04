@@ -73,8 +73,6 @@ public class PauseMode implements Screen {
 
     private TextButton.TextButtonStyle style;
 
-    private InputMultiplexer inputMultiplexer;
-
     public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
 
     public PauseMode() {
@@ -90,9 +88,6 @@ public class PauseMode implements Screen {
         pauseTable.align(Align.topLeft);
         pauseTable.setFillParent(true);
         stage.addActor(pauseTable);
-
-        inputMultiplexer = new InputMultiplexer(stage);
-
     }
 
     public void setViewport(Viewport view) {
@@ -236,7 +231,7 @@ public class PauseMode implements Screen {
         levelSelectClicked = false;
         settingsClicked = false;
         quitClicked = false;
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
