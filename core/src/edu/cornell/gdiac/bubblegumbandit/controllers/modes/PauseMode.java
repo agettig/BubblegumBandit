@@ -1,5 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers.modes;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -71,6 +73,8 @@ public class PauseMode implements Screen {
 
     private TextButton.TextButtonStyle style;
 
+    private InputMultiplexer inputMultiplexer;
+
     public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
 
     public PauseMode() {
@@ -86,6 +90,9 @@ public class PauseMode implements Screen {
         pauseTable.align(Align.topLeft);
         pauseTable.setFillParent(true);
         stage.addActor(pauseTable);
+
+        inputMultiplexer = new InputMultiplexer(stage);
+
     }
 
     public void setViewport(Viewport view) {
@@ -229,6 +236,7 @@ public class PauseMode implements Screen {
         levelSelectClicked = false;
         settingsClicked = false;
         quitClicked = false;
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override

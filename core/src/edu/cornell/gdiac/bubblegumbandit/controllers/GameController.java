@@ -858,8 +858,6 @@ public class GameController implements Screen {
             pause.render(delta);
             pause.setScreenListener(listener);
             pause.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
-            pause.render(delta);
-            pause.draw();
 
             if (pause.getQuitClicked()) {
                 listener.exitScreen(this, EXIT_QUIT);
