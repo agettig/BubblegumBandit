@@ -2,13 +2,18 @@ package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 
 /**
@@ -68,6 +73,41 @@ public class LaserEnemyModel extends EnemyModel {
      */
     private int gumStuck;
 
+    private boolean hasJumped;
+
+    private boolean isJumping;
+
+    private int jumpCooldown = 0;
+
+    private int stompRange = 5;
+
+    private final int JUMP_COOLDOWN = 120;
+
+    private Vector2 beginVector = new Vector2();
+
+    private Vector2 endVector = new Vector2();
+
+    public boolean isShouldJumpAttack() {
+        return shouldJumpAttack;
+    }
+
+    public void setShouldJumpAttack(boolean shouldJumpAttack) {
+        this.shouldJumpAttack = shouldJumpAttack;
+    }
+
+    private boolean shouldJumpAttack = true;
+
+    public boolean isLaserShot() {
+        return laserShot;
+    }
+
+    public void setLaserShot(boolean laserShot) {
+        this.laserShot = laserShot;
+    }
+
+    private boolean laserShot = false;
+
+
 
     /**
      * Every phase that this LaserEnemyModel goes through when it attacks.
@@ -94,6 +134,12 @@ public class LaserEnemyModel extends EnemyModel {
         shape.setAsBox(.5f, .5f);
         gumToStick = 1;
         gumStuck = 0;
+        isJumping = false;
+        hasJumped = false;
+    }
+
+    public boolean laserInactive(){
+        return phase == LASER_PHASE.INACTIVE;
     }
 
     /**
@@ -112,7 +158,35 @@ public class LaserEnemyModel extends EnemyModel {
         setPhase(LASER_PHASE.INACTIVE);
     }
 
+    public boolean isJumping() {
+        return isJumping;
+    }
+
     public void update(float dt) {
+        if (getGummed() || getStuck()){
+            setShouldJumpAttack(false);
+        }
+        if (isJumping){
+            if (!hasJumped && jumpCooldown <=0){
+               int impulse = isFlipped ? -30 : 30;
+                getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
+                hasJumped = true;
+            }
+
+            if (!isFlipped && yScale < 1) {
+                if (yScale != -1 || !stuck) {
+                    yScale += 0.1f;
+                }
+            } else if (isFlipped && yScale > -1) {
+                if (yScale != 1 || !stuck) {
+                    yScale -= 0.1f;
+                }
+            }
+            updateRayCasts();
+
+            return;
+        }
+        jumpCooldown --;
         if (phase == LASER_PHASE.INACTIVE) super.update(dt);
         else {
             if (!isFlipped && yScale < 1) {
@@ -138,6 +212,44 @@ public class LaserEnemyModel extends EnemyModel {
         } else {
             animationController.setAnimation("patrol", true);
         }
+    }
+
+    public void jump(){
+        if (jumpCooldown <= 0) isJumping = true;
+    }
+
+    public void hasLanded(){
+        isJumping = false;
+        hasJumped = false;
+        jumpCooldown = JUMP_COOLDOWN;
+        setShouldJumpAttack(false);
+
+
+        RayCastCallback rayPass = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point,
+                                          Vector2 normal, float fraction) {
+
+                boolean isBandit = fixture.getBody().getUserData() instanceof BanditModel;
+                if (isBandit) {
+                    BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
+                    bandit.hitPlayer(Damage.JUMP_STUN_DAMAGE, false);
+                    int yImpulse = isFlipped ? -10 : 10;
+                    int xImpulse = getX() > bandit.getX() ? -5 : 5;
+                    bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);
+                    bandit.stun(180);
+                };
+                return -1;
+            }
+        };
+
+        beginVector.x = getX() - stompRange;
+        beginVector.y = getYFeet();
+
+        endVector.x = getX() + stompRange;
+        endVector.y = getYFeet();
+
+        world.rayCast(rayPass, beginVector, endVector);
     }
 
     /**
@@ -236,6 +348,7 @@ public class LaserEnemyModel extends EnemyModel {
         firingTimer = 0;
         phase = LASER_PHASE.INACTIVE;
         cooldownTimer = LASER_COOLDOWN;
+        setShouldJumpAttack(true);
     }
 
 
@@ -353,6 +466,7 @@ public class LaserEnemyModel extends EnemyModel {
      */
     public void ageLaser(float amount, float chargeTime, float lockTime, float fireTime) {
 
+        if (shouldJumpAttack) return;
         //Return if invalid values or if this Enemy is cooling down.
         if (amount < 0) return;
         if (chargeTime < 0) return;
@@ -366,10 +480,18 @@ public class LaserEnemyModel extends EnemyModel {
         float timeToReset = chargeTime + lockTime + fireTime;
         float timeToFire = chargeTime + lockTime;
 
-        if (age >= timeToReset) resetLaserCycle();
-        else if (age >= timeToFire) processFiringPhase(amount);
-        else if (age >= chargeTime) processLockedPhase();
-        else processChargingPhase();
+        if (age >= timeToReset) {
+            resetLaserCycle();
+        }
+        else if (age >= timeToFire) {
+            processFiringPhase(amount);
+        }
+        else if (age >= chargeTime) {
+            processLockedPhase();
+        }
+        else {
+            processChargingPhase();
+        }
     }
 
     /**
@@ -415,7 +537,7 @@ public class LaserEnemyModel extends EnemyModel {
 
     @Override
     public void setFaceRight(boolean isRight) {
-        if (chargingLaser() || lockingLaser() || firingLaser()) return;
+        if (chargingLaser() || lockingLaser() || firingLaser() || getStuck() || getGummed()) return;
         super.setFaceRight(isRight);
     }
 

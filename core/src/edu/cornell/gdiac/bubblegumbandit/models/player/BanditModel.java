@@ -161,6 +161,8 @@ public class BanditModel extends CapsuleObstacle {
 
     private Vector2 orbPostion;
 
+    private int stunTime = 0;
+
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
         this.orbPostion = orbPostion;
@@ -702,6 +704,7 @@ public class BanditModel extends CapsuleObstacle {
      */
     public void update(float dt) {
         ticks++;
+        stunTime--;
 
         if (inCooldown) {
             if (ticks >= 60) {
@@ -791,6 +794,10 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    public void stun(int time){
+        stunTime = time;
+    }
+
 
 
     /**
@@ -802,5 +809,9 @@ public class BanditModel extends CapsuleObstacle {
      */
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
+    }
+
+    public int getStunTime() {
+        return stunTime;
     }
 }

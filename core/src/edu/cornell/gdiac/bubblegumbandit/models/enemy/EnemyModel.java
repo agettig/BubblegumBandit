@@ -69,7 +69,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * Reference to the Box2D world
      */
-    private World world;
+    protected World world;
 
     public int getNextAction() {
         return nextAction;

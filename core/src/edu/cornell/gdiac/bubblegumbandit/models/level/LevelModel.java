@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
@@ -792,6 +793,10 @@ public class LevelModel {
                 double distFromPlayer = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
                 if (distFromPlayer < UPDATE_DIST) {
                     controller.getEnemyStateMachine().update();
+                }
+                // if not updating set next action to no action
+                else{
+                    enemy.setNextAction(InputController.CONTROL_NO_ACTION);
                 }
             }
         }

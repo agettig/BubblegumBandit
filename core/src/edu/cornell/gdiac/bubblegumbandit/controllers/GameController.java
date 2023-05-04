@@ -95,7 +95,9 @@ public class GameController implements Screen {
 
     private long reloadSymbolTimer;
 
-    /** represents the ship and space backgrounds */
+    /**
+     * represents the ship and space backgrounds
+     */
     private Background backgrounds;
 
     /**
@@ -424,7 +426,7 @@ public class GameController implements Screen {
         hud = new HUDController(directory);
         minimap = new Minimap();
 
-        backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
+        backgrounds = new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
     }
 
@@ -610,7 +612,15 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        if (bandit.getHealth() > 0) {
+
+        // bandit can't move
+        if (bandit.getStunTime() > 0) {
+            // if bandit stunned knockback and hit ground set
+            if (bandit.isGrounded() && bandit.getStunTime() < 100) {
+                bandit.setVY(0);
+                bandit.setVX(.1f);
+            }
+        } else if (bandit.getHealth() > 0) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
@@ -686,7 +696,7 @@ public class GameController implements Screen {
                         SoundController.playSound("enemySplat", 1f); // Temp sound
                     }
 
-                    if (gummable instanceof LaserEnemyModel){
+                    if (gummable instanceof LaserEnemyModel) {
                         ((LaserEnemyModel) gummable).resetGumStuck();
                     }
                 }
@@ -725,7 +735,11 @@ public class GameController implements Screen {
                     boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
                     if (canFire) {
                         enemy.isShielded(false);
-                        laserController.fireLaser(controller);
+                        if (laserEnemy.isShouldJumpAttack()) {
+                            laserEnemy.jump();
+                        } else {
+                            laserController.fireLaser(controller);
+                        }
                     }
                 }
             }
