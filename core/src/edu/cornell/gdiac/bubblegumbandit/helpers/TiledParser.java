@@ -94,7 +94,7 @@ public class TiledParser {
     private static Comparator<TileRect> compareRect = new Comparator<TileRect>() {
         @Override
         public int compare(TileRect o1, TileRect o2) {
-            return Integer.compare(o1.startY, o2.startY);
+            return Integer.compare(o1.startX, o2.startX);
         }
     };
 
@@ -119,25 +119,25 @@ public class TiledParser {
     public Array<TileRect> mergeTiles(int mapWidth, int mapHeight, int[] worldData) {
         Array<TileRect> rectangles = new Array<>();
 
-        // This pass merges rectangles on the y-axis
-        for (int x = 0; x <= mapWidth - 1; x++) {
-            int startY = -1;
-            int endY = -1;
-            for (int y = 0; y <= mapHeight - 1; y++) {
+        // This pass merges rectangles on the x-axis
+        for (int y = 0; y <= mapHeight - 1; y++) {
+            int startX = -1;
+            int endX = -1;
+            for (int x = 0; x <= mapWidth - 1; x++) {
                 if (worldData[y * mapWidth + x] != 0) {
-                    if (startY == -1) {
-                        startY = y;
+                    if (startX == -1) {
+                        startX = x;
                     }
-                    endY = y;
-                } else if (startY != -1) {
-                    TileRect newRect = new TileRect(x, startY, x, endY);
+                    endX = x;
+                } else if (startX != -1) {
+                    TileRect newRect = new TileRect(startX, y, endX, y);
                     rectangles.add(newRect);
-                    startY = -1;
-                    endY = -1;
+                    startX = -1;
+                    endX = -1;
                 }
             }
-            if (startY != -1) {
-                TileRect newRect = new TileRect(x, startY, x, endY);
+            if (startX != -1) {
+                TileRect newRect = new TileRect(startX, y, endX, y);
                 rectangles.add(newRect);
             }
         }
@@ -145,16 +145,16 @@ public class TiledParser {
         Array<TileRect> mergedRects = new Array<>();
         rectangles.sort(compareRect);
 
-        // This pass merges rectangles of equal height on the x-axis
+        // This pass merges rectangles of equal width on the y-axis
         TileRect newRect = new TileRect(-1, -1, -1, -1);
         for (TileRect r : rectangles) {
-            if (newRect.startX == -1) {
+            if (newRect.startY == -1) {
                 newRect.startX = r.startX;
                 newRect.startY = r.startY;
                 newRect.endX = r.endX;
                 newRect.endY = r.endY;
-            } else if (r.startY == newRect.startY && r.endY == newRect.endY && r.startX == newRect.endX + 1) {
-                newRect.endX = r.endX;
+            } else if (r.startX == newRect.startX && r.endX == newRect.endX && r.startY == newRect.endY + 1) {
+                newRect.endY = r.endY;
             } else {
                 mergedRects.add(newRect);
                 newRect = new TileRect(r.startX, r.startY, r.endX, r.endY);
