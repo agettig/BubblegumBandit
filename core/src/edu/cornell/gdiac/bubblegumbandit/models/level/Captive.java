@@ -11,6 +11,10 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 /** A class representing the NPCS which may be freed during larger levels, mostly support for animations */
 public class Captive extends Collectible {
   private AnimationController animationController;
+  private boolean freed;
+
+  private TextureRegion drawn;
+
 
 
   public Captive() {
@@ -31,12 +35,21 @@ public class Captive extends Collectible {
   @Override
   public void draw(GameCanvas canvas) {
 
-    TextureRegion drawn;
-    drawn = animationController.getFrame();
-    if(getCollected()) {
-      if(ys>.1)
-      ys-=.1;
-      else markRemoved(true);
+    if (getCollected() && !freed) {
+      freed = true;
+      animationController.setAnimation("free", false);
+    }
+
+    if (freed && animationController.onLastFrame()) {
+      //need shrink here
+      if (ys > 0) {
+          ys-=.3f;
+      } else {
+        markRemoved(true);
+        return;
+      }
+    } else {
+      drawn = animationController.getFrame();
     }
 
     canvas.drawWithShadow(drawn,

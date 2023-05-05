@@ -1,8 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.view;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
@@ -11,23 +10,23 @@ import java.util.HashMap;
 /** An animation controller to animate objects in the game */
 public class AnimationController {
 
-  /** The FPS of the current looping animation */
-  private int FPS = 8;
+  /** The FPS of the looping looping animation */
+  private float loopFPS = 8;
 
-  /** The FPS of the current temporary (non-looping) animation */
-  private int tempFPS = 8;
+  /** The FPS of the looping temporary (non-looping) animation */
+  private float tempFPS = 8;
 
   /** Maps animations to their names */
 
   private HashMap<String, FilmStrip> animations;
 
   /** Maps FPS to animation names */
-  private HashMap<String, Integer> fps;
+  private HashMap<String, Float> fps;
 
-  /** The current looping animation */
-  private FilmStrip current;
+  /** The looping looping animation */
+  private FilmStrip looping;
 
-  /** The current temporary animation (will usually be null) */
+  /** The looping temporary animation (will usually be null) */
   private FilmStrip temp;
 
   /** Whether the temporary animation has finished and is ready to be dropped */
@@ -36,11 +35,13 @@ public class AnimationController {
   /** The time elapsed since the last animation frame; */
   private float timeSinceLastFrame = 0f;
 
-  /** The name of the current looping animation */
+  /** The name of the looping looping animation */
   private String currentName;
 
-  /** The name of the current temporary animation */
+  /** The name of the looping temporary animation */
   private String tempName;
+
+  private TextureRegion lastFrame;
 
 
   /**
@@ -60,37 +61,35 @@ public class AnimationController {
       FilmStrip strip = directory.getEntry(value.get("strip").asString(), FilmStrip.class);
       strip = strip.copy(); // Each needs own filmstrip to make this not dependent on # enemies
       animations.put(name,strip);
-      fps.put(name, value.get("fps").asInt());
-      if(current==null) {
-        current = strip;
+      fps.put(name, value.get("fps").asFloat());
+      if(looping ==null) {
+        looping = strip;
         currentName = name;
-        FPS =  value.get("fps").asInt();
+        loopFPS =  value.get("fps").asFloat();
       }
       if(strip==null) System.err.println("ohno "+name);
     }
+    finished = true;
 
+  }
+
+  public boolean onLastFrame() {
+    FilmStrip strip = temp==null ? looping : temp;
+    return strip.getSize() == strip.getFrame()+1;
   }
 
 
   /**
-   * Returns the current frame
+   * Returns the looping frame
    */
   public FilmStrip getFrame() {
+
     timeSinceLastFrame += Gdx.graphics.getDeltaTime();
 
-    if(finished) {
-      if (timeSinceLastFrame >= 1f / tempFPS) {
-        finished = false;
-        temp = null;
-        timeSinceLastFrame = 0;
-      } else {
-        return temp;
-      }
+    if(temp!=null&&finished&&timeSinceLastFrame>=1f/tempFPS) temp = null;
 
-    }
-
-    FilmStrip strip = temp==null ? current : temp;
-    int fps = temp==null ? FPS : tempFPS-1;
+    FilmStrip strip = temp==null ? looping : temp;
+    float fps = temp==null ? loopFPS : tempFPS-1;
 
 
     if(timeSinceLastFrame<1f/fps) return strip;
@@ -99,14 +98,12 @@ public class AnimationController {
     strip.setFrame(frame);
     timeSinceLastFrame = 0;
 
-    if(temp!=null&&temp.getFrame()==temp.getSize()-1) {
-      finished = true; //discard after one loop
-
-    }
+    if(temp!=null&&temp.getFrame()==temp.getSize()-1) finished = true;
 
     return strip;
 
   }
+
 
   /**
    * Returns whether the controller has a temporary animation
@@ -119,7 +116,7 @@ public class AnimationController {
    * Returns whether the controller has any animation
    */
   public boolean hasAnimation() {
-    return temp!=null&&current!=null;
+    return temp!=null&& looping !=null;
   }
 
   /**
@@ -136,13 +133,14 @@ public class AnimationController {
    * @param loop whether the animation is looping or temporary
    */
   public void setAnimation(String name, boolean loop) {
-    if(animations.containsKey(name)&&(currentName!=name)) {
+   if(animations.containsKey(name)&&(currentName!=name)) {
       timeSinceLastFrame = 0f;
       if(loop) {
-        current = animations.get(name);
+        looping = animations.get(name);
         currentName = name;
-        FPS = fps.get(name);
+        loopFPS = fps.get(name);
       } else {
+        finished = false;
         temp = animations.get(name);
         tempName = name;
         tempFPS = fps.get(name);
@@ -150,18 +148,21 @@ public class AnimationController {
     } else {
       if(!animations.containsKey(name)) System.err.println("Animation "+name+" does not exist in this context.");
     }
+
   }
 
   /**
-   * Clears all current animations, looping and not.
+   * Clears all looping animations, looping and not.
    */
   public void clearAnimations() {
-    this.current = null;
+    this.looping = null;
     this.currentName = "No animation playing.";
-    this.FPS = -1;
+    this.loopFPS = -1;
     this.temp = null;
     this.tempFPS = -1;
     this.tempName = "No animation playing.";
+
+
   }
 
 

@@ -107,6 +107,11 @@
     "float": {
       "strip": "captiveFloat.float",
       "fps": 1
+    },
+    "free": {
+      "strip": "captiveFree.free",
+      "fps": 12
     }
+
   }
 }

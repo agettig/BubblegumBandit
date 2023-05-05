@@ -315,6 +315,17 @@
                 }
             }
         },
+        "captiveFree":{
+            "file": "textures/environment/captiveFree.png",
+            "wrap": false,
+            "sprites": {
+                "free": {
+                    "size": 13,
+                    "rows": 1,
+                    "cols": 13
+                }
+            }
+        },
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
