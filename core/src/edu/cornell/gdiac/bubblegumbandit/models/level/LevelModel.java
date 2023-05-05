@@ -152,6 +152,9 @@ public class LevelModel {
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
 
+    /** Number of total captives in the level */
+    private int captiveCount;
+
 
 
     /**
@@ -178,6 +181,9 @@ public class LevelModel {
     public AimModel getAim() {
         return aim;
     }
+
+    /** Returns the total amount of captives in the level */
+    public int getCaptiveCount() {return captiveCount; }
 
     /**
      * Returns an Array of all AIControllers in this level.
@@ -372,6 +378,9 @@ public class LevelModel {
             }
             if (propName.equals("timer")) {
                 timer = property.getFloat("value");
+            }
+            if( propName.equals("captives")) {
+                captiveCount = property.getInt("value");
             }
             property = property.next();
         }

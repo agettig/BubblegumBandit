@@ -405,12 +405,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         assets = new AssetDirectory(file);
         assets.loadAssets();
 
-        int levelCount = 9; //grab from where?
-        if(!SaveData.saveExists())  {
-            SaveData.makeData(levelCount, false);
-        }
-            //is this a VM thing?
-
         active = true;
 
 
@@ -424,6 +418,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         internal.unloadAssets();
         internal.dispose();
     }
+
+    private boolean dataMade = false;
 
     /**
      * Update the status of this player mode.
@@ -450,6 +446,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
+        if(assets.isFinished()) {
+            if(!SaveData.saveExists()&&!dataMade)  {
+                dataMade = true;
+                SaveData.makeData(false, assets);
+
+            }
+        }
     }
 
     /**

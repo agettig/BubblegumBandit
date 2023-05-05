@@ -1510,6 +1510,11 @@
  "orientation":"orthogonal",
  "properties":[
         {
+         "name":"captives",
+         "type":"int",
+         "value":3
+        }, 
+        {
          "name":"gravity",
          "type":"float",
          "value":-15
