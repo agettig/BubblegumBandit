@@ -1,11 +1,38 @@
 package edu.cornell.gdiac.bubblegumbandit.helpers;
 
+
+/**
+ * Class to store damage-related constants.
+ * */
 public class Damage {
 
+
+    // --- BEGIN REGION: ENVIRONMENT ---
+
+    /** Damage dealt when a block falls on the Bandit. */
     public static final float CRUSH_DAMAGE = 20f;
-    // TODO: Increase once player is invulnerable for short time period
+
+    /** Damage dealt when the Bandit touches an environmental hazard. */
     public static final float HAZARD_DAMAGE = 20f;
 
-    public static final float JUMP_STUN_DAMAGE = 30f;
+    // --- END REGION: ENVIRONMENT ---
+
+
+    // --- BEGIN REGION: ENEMIES ---
+
+    /** Damage dealt when the Bandit touches an environmental hazard. */
+    public static final float LASER_JUMP_DAMAGE = 30f;
+
+    /** Damage dealt when the Bandit touches a LaserEnemy's laser. */
+    public static final float LASER_TICK_DAMAGE = .75f;
+
+    /** Damage dealt when a RollingEnemy rolls into the Bandit. */
+    public static final float ROLLING_HIT_DAMAGE = 25f;
+
+    /** Damage dealt when a ProjectileEnemy bullet hits the Bandit. */
+    public static final float PROJECTILE_SHOCK_DAMAGE = 12f;
+
+    // --- END REGION: ENEMIES ---
+
 
 }

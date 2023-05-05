@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.DoorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
@@ -31,9 +32,6 @@ public class LaserController {
 
     /**How long a LaserModel beam lasts after charging. */
     private float firingTime = 1.5f;
-
-    /**How much damage the laser does to the bandit each frame. */
-    private float TICK_DAMAGE = .5f;
 
     /**Start point of the laser raycast. */
     private final Vector2 chargeOrigin;
@@ -177,7 +175,7 @@ public class LaserController {
                 enemy.setBeamIntersect(lockHitPoint);
 
                 //If we're hitting the bandit, take some damage.
-                if (enemy.isHittingBandit()) bandit.hitPlayer(TICK_DAMAGE, true);
+                if (enemy.isHittingBandit()) bandit.hitPlayer(Damage.LASER_TICK_DAMAGE, true);
             }
 
         }

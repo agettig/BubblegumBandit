@@ -27,35 +27,15 @@ public class RollingEnemyModel extends EnemyModel {
     private int cooldownTime;
 
     /**
-     * Damage from bumping into a moving robot
-     */
-    private float damage = 10;
-
-    /**
      * If the robot is attacking
      */
     private boolean isRolling;
-
-    /**
-     * Sets the damage of a MovingEnemyModel.
-     *
-     * @param damage The new damage
-     */
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
 
     /**
      * How long the enemy has been attacking for
      */
     private int attackDuration;
 
-    /**
-     * Returns the damage of a RollingEnemyModel.
-     */
-    public float getDamage() {
-        return damage;
-    }
 
     private int rollingAttackSpeed;
 

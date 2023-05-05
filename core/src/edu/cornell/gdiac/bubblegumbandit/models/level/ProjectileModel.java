@@ -17,9 +17,6 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
     /** Gravity scale of bullets */
     private float gravity = 0;
 
-    /** damage that the bullet deals upon impact with player */
-    private float damage = 10;
-
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectileController.
      *
@@ -71,15 +68,6 @@ public class ProjectileModel extends WheelObstacle implements Pool.Poolable{
         this.setBullet(true);
         this.setGravityScale(gravity);
     }
-
-    /**
-     *
-     * @return the damage that this bullet deals to the player
-     */
-    public float getDamage(){
-        return damage;
-    }
-
 
     /**
      * Returns whether this projectile should be removed.
