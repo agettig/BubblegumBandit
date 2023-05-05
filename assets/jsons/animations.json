@@ -8,6 +8,10 @@
       "strip": "banditIdle.idle",
       "fps": 2
     },
+    "shock": {
+      "strip": "banditShock.shock",
+      "fps": 6
+    },
     "fall": {
       "strip": "banditFall.fall",
       "fps": 2

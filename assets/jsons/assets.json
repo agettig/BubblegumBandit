@@ -60,6 +60,17 @@
                 }
             }
         },
+        "banditShock":  {
+            "file": "textures/bandit/banditShock.png",
+            "wrap": false,
+            "sprites": {
+                "shock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
         "banditIdle":  {
             "file": "textures/bandit/banditIdle.png",
             "wrap": false,
