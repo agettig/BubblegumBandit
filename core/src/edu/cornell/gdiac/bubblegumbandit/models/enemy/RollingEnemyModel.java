@@ -22,11 +22,21 @@ public class RollingEnemyModel extends EnemyModel {
     /** Damage taken from bumping into a RollingEnemyModel */
     private final float DAMAGE = 10;
 
+    /** How many seconds it takes for a RollingEnemyModel to unstick itself*/
+    private final float UNSTICK_TIME = 3f;
+
     /** Velocity at which a RollingEnemyModel rolls. */
     private int ROLL_SPEED;
 
-    /** How many more seconds until this RollingEnemyModel can attack again */
-    private int cooldownTime;
+    /** How many more seconds until this RollingEnemyModel can roll again */
+    private int rollCoolDown;
+
+    /** How many seconds this RollingEnemyModel has been trying to unstick
+     *  itself */
+    private float unstickStopWatch;
+
+    /** true if this RollingEnemyModel is in the process of unsticking itself.*/
+    private boolean unsticking;
 
     /** true if this RollingEnemyModel is attacking */
     private boolean isRolling;
@@ -53,7 +63,7 @@ public class RollingEnemyModel extends EnemyModel {
     public RollingEnemyModel(World world, int id) {
         super(world, id);
         isRolling = false;
-        cooldownTime = 0;
+        rollCoolDown = 0;
     }
 
     /**
@@ -77,13 +87,12 @@ public class RollingEnemyModel extends EnemyModel {
      * Updates rolling enemy
      * */
     public void update(float delta) {
-
-
         updateYScale();
         updateRayCasts();
         updateAnimations();
         updateAttackState();
         updateMovement();
+        updateUnstick(delta);
     }
 
     private void updateYScale(){
@@ -107,7 +116,9 @@ public class RollingEnemyModel extends EnemyModel {
             animationController.setAnimation("roll", true);
         }
         else if (stuck || gummed){
-            animationController.setAnimation("stuck", true);
+            //TODO: Replace the if() animation to an unsticking one
+            if(unsticking) animationController.setAnimation("stuck", true);
+            else animationController.setAnimation("stuck", true);
         }
         else{
             animationController.setAnimation("patrol", true);
@@ -118,11 +129,11 @@ public class RollingEnemyModel extends EnemyModel {
      * Updates this RollingEnemyModel's attack state.
      * */
     private void updateAttackState(){
-        if (fired() && cooldownTime <= 0) {
+        if (fired() && rollCoolDown <= 0) {
             if (isRolling) {
                 if (attackDuration == ATTACK_TIME) {
                     isRolling = false;
-                    cooldownTime = COOLDOWN;
+                    rollCoolDown = COOLDOWN;
                 } else {
                     attackDuration++;
                 }
@@ -131,7 +142,7 @@ public class RollingEnemyModel extends EnemyModel {
                 isRolling = true;
             }
         }
-        cooldownTime--;
+        rollCoolDown--;
     }
 
     /**
@@ -141,7 +152,7 @@ public class RollingEnemyModel extends EnemyModel {
         boolean movingLeft = (nextAction & CONTROL_MOVE_LEFT) != 0 && (previousAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0 && (previousAction & CONTROL_MOVE_RIGHT) != 0;
 
-        if (fired() && isRolling && (movingLeft || movingRight) && cooldownTime <= 0) {
+        if (fired() && isRolling && (movingLeft || movingRight) && rollCoolDown <= 0) {
             if (movingLeft) {
                 setVX(-ROLL_SPEED);
                 setFaceRight(false);
@@ -154,9 +165,57 @@ public class RollingEnemyModel extends EnemyModel {
         }
     }
 
+    /**
+     * Updates how long this RollingEnemyModel has been
+     * trying to unstick itself. Handles other unstick
+     * logic.
+     *
+     * @param dt Time since last frame
+     * */
+    private void updateUnstick(float dt){
+        if(getStuck() || getGummed()){
+            unsticking = true;
+            unstickStopWatch += dt;
+            System.out.println(unstickStopWatch);
+        }
+        else{
+            unsticking = false;
+            unstickStopWatch = 0;
+        }
+    }
+
+    /**
+     * Returns true if this RollingEnemyModel is stuck and
+     * should unstick itself.
+     *
+     * @return true if this RollingEnemyModel is stuck and
+     * should unstick; otherwise, false.
+     * */
+    public boolean shouldUnstick(){
+        return unstickStopWatch >= UNSTICK_TIME;
+    }
+
+    /**
+     * Resets this RollingEnemyModel's unsticking loop.
+     * */
+    public void resetUnstick(){
+        clearStuckGum();
+        unstickStopWatch = 0;
+        unsticking = false;
+    }
 
 
-
+    /**
+     * Passes in an instance of a GumModel that stuck this RollingEnemyModel.
+     * Restarts the unsticking process.
+     *
+     * @param gum The instance of the GumModel that stuck this EnemyModel.
+     * */
+    @Override
+    public void stickWithGum(GumModel gum) {
+        super.stickWithGum(gum);
+        unstickStopWatch = 0;
+    }
 
     /**
      * Resets this RollingEnemyModel's attack.

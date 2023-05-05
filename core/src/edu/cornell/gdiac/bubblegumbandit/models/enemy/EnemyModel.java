@@ -21,6 +21,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
@@ -127,7 +128,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     private TextureRegion shield;
 
     /** The GumModel instance that stuck this EnemyModel. */
-    private GumModel stuckGum;
+    private HashSet<GumModel> stuckGum;
 
     // endRegion
 
@@ -310,6 +311,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
         String shieldKey = constantsJson.get("shield").asString();
         shield = new TextureRegion(directory.getEntry(shieldKey, Texture.class));
+
+        stuckGum = new HashSet<>();
     }
 
     public CircleShape getSensorShape() {
@@ -496,28 +499,34 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return true;
     }
 
-    /**
-     * Returns true if this RollingEnemyModel is stuck and
-     * should unstick itself.
-     *
-     * @return true if this RollingEnemyModel is stuck and
-     * should unstick; otherwise, false.
-     * */
-    public boolean shouldUnstick(){
-        return false;
-    }
 
     /**
-     * Passes the instance of the GumModel that stuck this EnemyModel.
+     * Passes in an instance of a GumModel that stuck this EnemyModel.
      *
      * @param gum The instance of the GumModel that stuck this EnemyModel.
      * */
     public void stickWithGum(GumModel gum){
         if(gum == null) return;
-
-        stuckGum = gum;
+        if(stuckGum == null) stuckGum = new HashSet<>();
+        stuckGum.add(gum);
     }
 
+    /**
+     * Returns a HashSet of GumModels that have stuck this EnemyModel.
+     *
+     * @return a HashSet of GumModels that have stuck this EnemyModel
+     * */
+    public HashSet<GumModel> getStuckGum(){
+        return new HashSet<>(stuckGum);
+    }
+
+    /**
+     * Empties the HashSet of GumModels that have stuck
+     * this EnemyMode.
+     * */
+    protected void clearStuckGum(){
+        stuckGum.clear();
+    }
 
     /**
      * Flips the player's angle and direction when the world gravity is flipped

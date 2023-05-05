@@ -329,6 +329,10 @@ public class CollisionController implements ContactListener {
                     return;
                 }
             }
+            if(bodyB instanceof EnemyModel){
+                EnemyModel enemy = (EnemyModel) bodyB;
+                enemy.stickWithGum(gum);
+            }
         }
 
         if (isGumObstacle(bodyB)) {
@@ -345,6 +349,10 @@ public class CollisionController implements ContactListener {
                 if (door.isOpen()) {
                     return;
                 }
+            }
+            if(bodyA instanceof EnemyModel){
+                EnemyModel enemy = (EnemyModel) bodyA;
+                enemy.stickWithGum(gum);
             }
         }
 
@@ -403,8 +411,6 @@ public class CollisionController implements ContactListener {
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
             gum.setCollisionFilters();
-
-
         }
     }
 
