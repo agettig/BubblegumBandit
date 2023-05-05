@@ -40,6 +40,8 @@ public class SettingsMode implements Screen {
      */
     private TextureRegionDrawable background;
 
+    private TextureRegionDrawable scrollBar;
+
     /**
      * Hover arrow texture
      */
@@ -164,6 +166,8 @@ public class SettingsMode implements Screen {
      */
     private Drawable sliderKnob;
 
+    private Drawable scrollKnob;
+
     /**
      * Texture for not filled slider (white)
      */
@@ -262,9 +266,12 @@ public class SettingsMode implements Screen {
         background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
         sliderBeforeKnob = new TextureRegionDrawable(new TextureRegion(slider));
         sliderKnob = new TextureRegionDrawable(new TextureRegion(knob));
+        scrollKnob =  new TextureRegionDrawable(sliderBeforeKnobTexture);
         sliderTexture = new TextureRegionDrawable(sliderBeforeKnobTexture);
         arrow = new TextureRegion(internal.getEntry("arrow", Texture.class));
-
+        scrollBar = new TextureRegionDrawable(new TextureRegion(slider));
+        scrollBar.setMinWidth(10);
+        scrollKnob.setMinWidth(10);
 
         stage = new Stage();
         settingsTable = new Table();
@@ -411,174 +418,68 @@ public class SettingsMode implements Screen {
      * Add listeners to controls buttons
      */
     private void addControlButtonListeners() {
-        moveLeftButton.addListener(new ClickListener() {
+
+        ClickListener listener = new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
+                TextButton button = (TextButton) event.getListenerActor();
                 if (checkedButton != null) {
                     checkedButton.setChecked(false);
                 }
-                if (checkedButton == moveLeftButton) {
+                if (checkedButton == button) {
+                    ArrayList<Integer> indices = new ArrayList<>(2);
+
+                    for (int i = 0; i < values.length; i++) {
+                        if (values[i] == Input.Buttons.LEFT) {
+                            indices.add(i);
+                            break;
+                        }
+                    }
+
+                    int buttonIndex = buttonIndexMap.get(checkedButton);
+
+                    int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
+                    int indexGravityDown = buttonIndexMap.get(toggleGravityDownButton);
+
+
+                    // only no duplicates except for gravity
+                    if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                            !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
+//                        SoundController.playSound("error", 1);
+                        checkedButton.setChecked(false);
+                        checkedButton = null;
+                        return;
+                    }
+
+                    values[buttonIndex] = Input.Buttons.LEFT;
+                    bindings[buttonIndex] = false;
+                    checkedButton.setText("LEFT CLICK");
+                    checkedButton.setChecked(false);
                     checkedButton = null;
                 } else {
-                    checkedButton = moveLeftButton;
+                    checkedButton = button;
                 }
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(moveLeftButton)] = true;
+                TextButton button = (TextButton) event.getListenerActor();
+                hoverBooleans[buttonIndexMap.get(button)] = true;
             }
 
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(moveLeftButton)] = false;
+                TextButton button = (TextButton) event.getListenerActor();
+                hoverBooleans[buttonIndexMap.get(button)] = false;
             }
-        });
-        moveRightButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == moveRightButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = moveRightButton;
-                }
-            }
+        };
 
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(moveRightButton)] = true;
-            }
+        moveLeftButton.addListener(listener);
+        moveRightButton.addListener(listener);
+        toggleGravityUpButton.addListener(listener);
+        toggleGravityDownButton.addListener(listener);
+        toggleMinimapButton.addListener(listener);
+        shootGumButton.addListener(listener);
+        unstickGumButton.addListener(listener);
+        reloadGumButton.addListener(listener);
 
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(moveRightButton)] = false;
-            }
-        });
-        toggleGravityUpButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == toggleGravityUpButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = toggleGravityUpButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(toggleGravityUpButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(toggleGravityUpButton)] = false;
-            }
-        });
-        toggleGravityDownButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == toggleGravityDownButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = toggleGravityDownButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(toggleGravityDownButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(toggleGravityDownButton)] = false;
-            }
-        });
-
-        toggleMinimapButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == toggleMinimapButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = toggleMinimapButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(toggleMinimapButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(toggleMinimapButton)] = false;
-            }
-        });
-        shootGumButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == shootGumButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = shootGumButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(shootGumButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(shootGumButton)] = false;
-            }
-        });
-        unstickGumButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == unstickGumButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = unstickGumButton;
-                }
-
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = false;
-            }
-        });
-        reloadGumButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == reloadGumButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = reloadGumButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(reloadGumButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(reloadGumButton)] = false;
-            }
-        });
         controlsBackButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
@@ -648,7 +549,6 @@ public class SettingsMode implements Screen {
         6: shoot
         7: unstick */
 
-
         moveLeftButton = new TextButton("", controlsButtonStyle);
         moveRightButton = new TextButton("", controlsButtonStyle);
         toggleGravityUpButton = new TextButton("", controlsButtonStyle);
@@ -664,7 +564,7 @@ public class SettingsMode implements Screen {
                                                 toggleMinimapButton, reloadGumButton,
                                                 shootGumButton, unstickGumButton};
 
-        for (int i = 0; i < values.length; i++){
+        for (int i = 0; i < values.length; i++) {
             String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : keyToString.get(values[i]);
             buttons[i].setText(buttonName);
         }
@@ -703,9 +603,12 @@ public class SettingsMode implements Screen {
         Table c = new Table();
 
         scrollPane = new ScrollPane(c);
-//        scrollPane.debug();
+        scrollPane.setScrollbarsVisible(true);
+        scrollPane.debug();
         scrollPane.setScrollingDisabled(true, false);
-        scrollPane.setScrollBarPositions(false, true);
+        scrollPane.getStyle().vScroll = scrollBar;
+        scrollPane.getStyle().vScrollKnob = scrollKnob;
+        scrollPane.setupFadeScrollBars(.5f,.5f);
 
         for (int i = 0; i < 8; i++) {
             TextButton button = buttons[i];
@@ -714,7 +617,7 @@ public class SettingsMode implements Screen {
             c.add(button).pad(0, 0, 32, 0);
         }
         controlsTable.row();
-        controlsTable.add(scrollPane).pad(-10, 160, 0, 0).height(350);
+        controlsTable.add(scrollPane).pad(-10, 160, 0, 0).height(350).width(1000);
 
 
         controlsTable.row();
@@ -911,12 +814,32 @@ public class SettingsMode implements Screen {
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
+            ArrayList<Integer> indices = new ArrayList<>(2);
+
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] == button) {
+                    indices.add(i);
+                    break;
+                }
+            }
+
             if (checkedButton != null) {
-                System.out.println(button);
-                int index = buttonIndexMap.get(checkedButton);
+                int buttonIndex = buttonIndexMap.get(checkedButton);
+
+                int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
+                int indexGravityDown = buttonIndexMap.get(toggleGravityDownButton);
+
+
+                // only no duplicates except for gravity
+                if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                        !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
+                    SoundController.playSound("error", 1);
+                    return true;
+                }
+
+                values[buttonIndex] = button;
+                bindings[buttonIndex] = false;
                 checkedButton.setText(keyToString.get(button));
-                values[index] = button;
-                bindings[index] = false;
                 checkedButton.setChecked(false);
                 checkedButton = null;
             }
