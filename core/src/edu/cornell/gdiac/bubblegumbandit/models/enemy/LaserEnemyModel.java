@@ -27,6 +27,9 @@ public class LaserEnemyModel extends EnemyModel{
     /** The point at which the most up-to-date laser beam intersects.  */
     private Vector2 beamIntersect;
 
+    /** The point at which the laser beam starts.*/
+    private Vector2 beamOrigin;
+
     /**Current phase of this LaserEnemyModel. */
     private LASER_PHASE phase;
 
@@ -46,9 +49,12 @@ public class LaserEnemyModel extends EnemyModel{
      * locking, and firing. Resets to zero for each laser shot.*/
     private float age;
 
+    /**Timer for the firing phase. */
     private float firingTimer;
+
     /**Amount of gum needed to stick the robot*/
     private int gumToStick;
+
     /**Amount of gum currently stuck to robot*/
     private int gumStuck;
 
@@ -100,12 +106,6 @@ public class LaserEnemyModel extends EnemyModel{
         // attack animations
         if (chargingLaser() ){
             animationController.setAnimation("charge", true);
-        }
-        else if (lockingLaser()){
-            animationController.setAnimation("lock", true);
-        }
-        else if (firingLaser()){
-            animationController.setAnimation("fire", true);
         }
         else if (stuck || gummed){
             animationController.setAnimation("stuck", true);
@@ -170,7 +170,6 @@ public class LaserEnemyModel extends EnemyModel{
         beamIntersect = intersect;
     }
 
-
     /**
      * Returns the Vector2 at which this LaserEnemyModel's laser
      * beam intersected with an object of interest.
@@ -179,6 +178,28 @@ public class LaserEnemyModel extends EnemyModel{
      *         beam intersected with an object of interest.
      * */
     public Vector2 getBeamIntersect(){return beamIntersect;}
+
+    /**
+     * Sets the Vector2 at which this LaserEnemyModel's laser
+     * beam started firing.
+     *
+     * @param origin  the Vector2 at which this LaserEnemyModel's
+     *                   laser beam started firing.
+     * */
+    public void setBeamOrigin(Vector2 origin){
+        beamOrigin = origin;
+    }
+
+    /**
+     * Returns the Vector2 at which this LaserEnemyModel's laser
+     * beam started firing.
+     *
+     * @return the Vector2 at which this LaserEnemyModel's
+     *         laser beam started firing.
+     * */
+    public Vector2 getBeamOrigin(){
+        return beamOrigin;
+    }
 
     /**
      * Resets the attack cycle of this LaserEnemyModel. This can be
@@ -266,7 +287,20 @@ public class LaserEnemyModel extends EnemyModel{
      *         see the Bandit's model; otherwise, false.
      * */
     public boolean canSeeBandit(BanditModel bandit){
-        return vision.canSee(bandit);
+        Vector2 enemyPosition = getPosition();
+        Vector2 banditPosition = bandit.getPosition();
+        float minAngle = 310;
+        float maxAngle = 50;
+
+        Vector2 directionToBandit = banditPosition.cpy().sub(enemyPosition);
+        Vector2 referenceDirection = getFaceRight() ?
+                new Vector2(1, 0) : new Vector2(-1, 0);
+        float angle = directionToBandit.angleDeg(referenceDirection);
+        System.out.println(angle);
+
+        return ((angle >= minAngle && angle <= 360) ||
+                (angle >= 0 && angle <= maxAngle)) &&
+                vision.canSee(bandit);
     }
 
 

@@ -1354,6 +1354,13 @@ public class GameCanvas {
 
     }
 
+    /**
+     * Returns the shadow offset for sprites.
+     *
+     * @return the offset for shadows.
+     * */
+    public float getShadowOffset(){return shadowOffset;}
+
     public void drawPhysicsLevel(CircleShape shape, Color color, float x, float y, float sx, float sy) {
         float x0 = x * sx;
         float y0 = y * sy;
