@@ -39,7 +39,7 @@ public class SaveData {
 
     prefs.putInteger("level1", -1);
     for(int i = 2; i<levelCount+1; i++) {
-      prefs.putInteger("level"+i, lockLevels? LOCKED : INCOMPLETE);
+      prefs.putInteger("level"+i, lockLevels ? LOCKED : INCOMPLETE);
     }
 
     /*the key bindings are as follows:

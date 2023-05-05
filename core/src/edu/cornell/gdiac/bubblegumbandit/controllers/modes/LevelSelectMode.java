@@ -40,6 +40,28 @@ import static java.lang.String.valueOf;
  */
 public class LevelSelectMode implements Screen, InputProcessor, ControllerListener {
 
+    //constants
+
+    /** the number of levels to add to the level select screen*/
+    private final static int NUM_LEVELS = 9;
+
+    /** the gap between level icons */
+    private final static float LEVEL_GAP = 800;
+
+    /** the gap between level icons and the center of space */
+    private final static float SPACE_GAP = 100;
+
+    /** the width of the sunfish movement bounds */
+    private final static float SPACE_WIDTH = LEVEL_GAP * (NUM_LEVELS + 2);
+    /** height of sunfish movement bounds */
+    private final static float SPACE_HEIGHT = 2000;
+
+    /** spacing between path dots */
+    private static final float PATH_SPACE = 50;
+
+    /** Camera zoom out */
+    private final static float ZOOM = 1.5f;
+
     // technical attributes
 
     /**
@@ -56,7 +78,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * The JSON defining game constants
      */
     private JsonValue constantsJson;
-
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 800;
@@ -99,33 +120,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** the level chosen by the player */
     private int selectedLevel;
 
-    /** the gap between level icons */
-    private final static float LEVEL_GAP = 1000;
-
-    /** the gap between level icons and the bounds of space */
-    private final static float SPACE_GAP = 1000;
-
-    //space boundaries
-    /** the width of the sunfish movement bounds */
-    private final static float SPACE_WIDTH = 10000;
-    /** height of sunfish movement bounds */
-    private final static float SPACE_HEIGHT = 2000;
-
     //the camera dimensions
     private float camWidth;
     private float camHeight;
 
-    /** Camera zoom out */
-    private final static float ZOOM = 1.5f;
 
-    /** the number of levels to add to the level select screen*/
-    private final static int NUM_LEVELS = 9;
 
     /** whether the player started to move their mouse, only start sunfish movement after player starts controlling*/
     private boolean startMove;
-
-    /** used to debug the accursed camera */
-    private boolean pause;
 
     // music
 
@@ -186,7 +188,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
         TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
 
-        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP * 0.7f, SPACE_HEIGHT - SPACE_GAP/2);
+        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP * 0.7f, SPACE_HEIGHT * 0.8f);
         sunfish.activatePhysics(world);
 
         background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
@@ -199,12 +201,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     }
 
+    /** Creates NUM_LEVELS number of level icons and adds them to the levels array */
     private void createIcons(AssetDirectory directory){
-
+        float flip = 0;
+        TextureRegion texture;
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
-            TextureRegion texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
-            levels.add(new LevelIconModel(texture, i, LEVEL_GAP * i, SPACE_HEIGHT - SPACE_GAP));
+            texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
+            flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
+            levels.add(new LevelIconModel(texture, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
         }
     }
 
@@ -271,12 +276,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         //move camera, while keeping view in bounds
         canvas.getCamera().setTarget(sunfish.getPosition());
-//        System.out.println(sunfish.getPosition());
 
-
-        if (pause){
-            System.out.println("start debug");
-        }
         //x bounds
         if (sunfish.getX() < camWidth) {
             canvas.getCamera().setTargetX(camWidth);
@@ -398,15 +398,22 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         for (int i = 0; i < levels.size - 1; i++){
             Vector2 start = levels.get(i).getCenter();
             Vector2 end = levels.get(i+1).getCenter();
-
+            Vector2 pos = new Vector2();
+            pos.set(start);
             float dst = start.dst(end);
 
-            float space = path.getRegionWidth() + 30;
+            Vector2 d = end.sub(start);
 
+            float angle = d.angleRad();
+            float space = path.getRegionWidth() + PATH_SPACE;
             int numDashes = (int) (dst / space);
+            Vector2 inc = new Vector2(space, 0).setAngleRad(angle);
 
             for (int k = 0; k <= numDashes; k++){
-                canvas.draw(path, start.x + k * space, start.y);
+//                canvas.draw(path, start.x + k * space, start.y);
+//                canvas.draw(path, pos.x, pos.y);
+                canvas.draw(path, Color.WHITE, 0, 0, pos.x, pos.y, angle, 1, 1);
+                pos.add(inc);
             }
 
         }
