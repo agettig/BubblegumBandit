@@ -1342,10 +1342,10 @@ public class GameCanvas {
             return;
         }
 
-//        fovRender.setProjectionMatrix(camera.combined);
-//        fovRender.begin(ShapeRenderer.ShapeType.Line);
-//        local.applyTo(vertex);
-//        fovRender.setColor(color);
+        fovRender.setProjectionMatrix(camera.combined);
+        fovRender.begin(ShapeRenderer.ShapeType.Line);
+        local.applyTo(vertex);
+        fovRender.setColor(color);
 
         for (Vector2 end : ends) {
             fovRender.line(x * scalex, y * scaley, (end.x + x) * scalex, (end.y + y) * scaley);
