@@ -26,6 +26,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
@@ -46,6 +47,7 @@ import edu.cornell.gdiac.util.PooledList;
 import java.util.*;
 
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
+import jdk.jfr.internal.tool.PrettyWriter;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -135,6 +137,9 @@ public class LevelModel {
 
     /** All support tile objects in the level.  */
     private Array<BackgroundTileModel> supportTiles;
+
+    /** All reactor tile objects in the level.  */
+    private Array<BackgroundTileModel> reactorTiles;
 
     /** All background tile objects in the level */
     private Array<BackgroundTileModel> backgroundTiles;
@@ -307,6 +312,7 @@ public class LevelModel {
         backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
+        reactorTiles = new Array<>();
 
         JsonValue boardGravityDownLayer = null;
         JsonValue boardGravityUpLayer = null;
@@ -315,6 +321,7 @@ public class LevelModel {
         JsonValue supports = null;
         JsonValue backgroundLayer = null;
         JsonValue postOrb = null;
+        JsonValue reactor = null;
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
             String layerName = layer.getString("name");
@@ -340,11 +347,15 @@ public class LevelModel {
                 case "PostOrb":
                     postOrb = layer.get("Objects");
                     break;
+                case "Reactor":
+                    //for populating the environment around the orb
+                    reactor = layer;
+                    break;
                 case "Corners":
                     //for creating the background
                     break;
                 default:
-                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, Background, Corners, and Objects.");
+                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, Background, Corners, Reactor, and Objects.");
             }
             layer = layer.next();
         }
@@ -443,6 +454,20 @@ public class LevelModel {
             }
         }
 
+        if (reactor != null) {
+            int[] reactorData = reactor.get("data").asIntArray();
+            // Iterate over each reactor tile in the world and create if it exists
+            for (int i = 0; i < reactorData.length; i++) {
+                int tileVal = reactorData[i];
+                if (tileVal != 0) {
+                    BackgroundTileModel newTile = new BackgroundTileModel();
+                    float x = (i % levelWidth) + 0.5f;
+                    float y = levelHeight - (i / levelWidth) - 0.5f;
+                    newTile.initialize(textures.get(tileVal), x, y, scale);
+                    reactorTiles.add(newTile);
+                }
+            }
+        }
 
         // Iterate over each tile in the world, find and mark open corners of tiles that have them
         for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
@@ -858,6 +883,10 @@ public class LevelModel {
                      float dt) {
         canvas.begin();
 //        canvas.clear();
+
+        for(BackgroundTileModel tile: reactorTiles) {
+            tile.draw(canvas);
+        }
 
         for(BackgroundTileModel tile: backgroundTiles) {
             tile.draw(canvas);

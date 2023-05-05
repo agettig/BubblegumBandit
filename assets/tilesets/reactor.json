@@ -1,0 +1,77 @@
+{
+  "columns": 4,
+  "image": "..\/textures\/environment\/pipes.png",
+  "imageheight": 256,
+  "imagewidth": 256,
+  "margin": 0,
+  "name": "reactor",
+  "spacing": 0,
+  "tilecount": 16,
+  "tiledversion": "1.10.0",
+  "tileheight": 64,
+  "tilewidth": 64,
+  "type": "tileset",
+  "version": "1.10",
+  "tiles": [
+    {
+      "id": 0,
+      "type": "terrain"
+    },
+    {
+      "id": 1,
+      "type": "terrain"
+    },
+    {
+      "id": 2,
+      "type": "terrain"
+    },
+    {
+      "id": 3,
+      "type": "terrain"
+    },
+    {
+      "id": 4,
+      "type": "terrain"
+    },
+    {
+      "id": 5,
+      "type": "terrain"
+    },
+    {
+      "id": 6,
+      "type": "terrain"
+    },
+    {
+      "id": 7,
+      "type": "terrain"
+    },
+    {
+      "id": 8,
+      "type": "terrain"
+    },
+    {
+      "id": 9,
+      "type": "terrain"
+    },
+    {
+      "id": 10,
+      "type": "terrain"
+    },
+    {
+      "id": 12,
+      "type": "terrain"
+    },
+    {
+      "id": 13,
+      "type": "terrain"
+    },
+    {
+      "id": 14,
+      "type": "terrain"
+    },
+    {
+      "id": 15,
+      "type": "terrain"
+    }
+  ]
+}
