@@ -297,7 +297,6 @@ public class LaserController {
 
                 //Special case: doors. We need to check locked status.
                 if(ob.getName().equals("door")){
-                    System.out.println("Here!");
                     DoorModel door = (DoorModel) ob;
                     if(!door.isOpen()){
                         intersect.set(point);

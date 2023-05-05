@@ -143,6 +143,15 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA);
             }
 
+            // check to see if laser enemy has landed on floor
+            if (obstacleB instanceof TileModel && obstacleA instanceof LaserEnemyModel){
+                resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleA);
+            }
+
+            if (obstacleA instanceof TileModel && obstacleB instanceof LaserEnemyModel){
+                resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleB);
+            }
+
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
@@ -224,6 +233,20 @@ public class CollisionController implements ContactListener {
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
+    }
+
+    /**
+     * Resolves a collision between the laser enemy and tile
+     * Shakes camera and damages bandit
+     *
+     * @param enemy Laser enemy that landed on the ground
+     */
+    private void resolveLaserEnemyTileCollision(LaserEnemyModel enemy){
+        if (enemy.isJumping()){
+            enemy.hasLanded();
+            int trauma = enemy.isFlipped() ? -2 : 2;
+            camera.addTrauma(enemy.getX() * enemy.getDrawScale().x, enemy.getY() * enemy.getDrawScale().y, trauma);
+        }
     }
 
     /** Updates the camera based on the collision between the player and the door.
