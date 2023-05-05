@@ -137,10 +137,22 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     private boolean hoveringReturnTitleScreen;
 
+    /** How much of screen is shown*/
+    private float fadeFraction;
+
+    /** How fast the screen fades in */
+    private float fadeRate;
+
     /**
      * The height of the canvas window (necessary since sprite origin != screen origin)
      */
     private int heightY;
+
+    private long ticks;
+
+    private float backgroundHeight;
+
+    private float backgroundWidth;
 
 
     public GameOverScreen() {}
@@ -165,6 +177,10 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("levelSelectButton", Texture.class);
         titleScreenButton = directory.getEntry("titleScreenButton", Texture.class);
+        backgroundHeight = background.getRegionHeight();
+        backgroundWidth = background.getRegionWidth();
+        fadeFraction = 0;
+        fadeRate = 0.01f;
     }
 
     public void gameWon(AssetDirectory directory) {
@@ -195,6 +211,7 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     public void render(float delta) {
         if (active) {
+            update(delta);
             draw();
             if (continueGame() && listener != null) {
                 listener.exitScreen(this, 1);
@@ -211,108 +228,141 @@ public class GameOverScreen implements Screen, InputProcessor {
         }
     }
 
+    /**draws fade in/out effect */
+    public void drawFade(Texture image) {
+        float x = canvas.getCamera().viewportWidth;
+        float y = canvas.getCamera().viewportHeight;
+
+        int height = image.getHeight();
+        int width = image.getWidth();
+        int i = (int) x - width;
+
+        while (i >= 0) {
+            if (ticks % 75 == 0) {
+                canvas.draw(image, i, 0);
+                i -= x/width;
+            }
+            ticks++;
+        }
+    }
+
+    private void update(float dt) {
+        //if (fadeRate < 1 && ticks % 2 == 0) {
+            fadeFraction += fadeRate;
+        //}
+        //ticks++;
+    }
+
     private void draw() {
-        canvas.clear();
         canvas.begin();
-        canvas.draw(background, 0, 0);
-        canvas.drawTextCentered(gameOverMessage, displayFont, 150);
 
-        float x = (canvas.getWidth()) / 2.0f;
-        float y = (canvas.getHeight())/ 2.0f;
-        Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
+        //canvas.clear();
+        if (fadeFraction < 1) {
+            background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
+            //background.setRegionWidth((int) ((fadeFraction) * backgroundWidth));
+            canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
+        }
+        else {
+            //background.setRegionHeight((int) ((fadeFraction) * background.getRegionHeight()));
+            canvas.draw(background, 0, 0);
+            canvas.drawTextCentered(gameOverMessage, displayFont, 150);
 
-        float highestButtonY = coords.y;
-        float lowestButtonY = coords.y - 75;
+            float x = (canvas.getWidth()) / 2.0f;
+            float y = (canvas.getHeight())/ 2.0f;
+            Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
+
+            float highestButtonY = coords.y;
+            float lowestButtonY = coords.y - 75;
 
 
-        startButtonPositionX = (int) coords.x;
-        startButtonPositionY = (int) highestButtonY;
+            startButtonPositionX = (int) coords.x;
+            startButtonPositionY = (int) highestButtonY;
 
-        levelSelectButtonPositionX = (int) coords.x;
-        levelSelectButtonPositionY = (int) lowestButtonY;
+            levelSelectButtonPositionX = (int) coords.x;
+            levelSelectButtonPositionY = (int) lowestButtonY;
 
-        titleScreenButtonPositionX = (int) coords.x;
-        titleScreenButtonPositionY = (int) lowestButtonY - 75;
+            titleScreenButtonPositionX = (int) coords.x;
+            titleScreenButtonPositionY = (int) lowestButtonY - 75;
 
-        float pointerX = startButtonPositionX / 4f;
+            float pointerX = startButtonPositionX / 4f;
 
-        //Draw continue game options
-        canvas.draw(
-                continueGameButton,
-                getButtonTint("continue"),
-                continueGameButton.getWidth() / 2f,
-                continueGameButton.getHeight() / 2f,
-                startButtonPositionX,
-                startButtonPositionY,
-                0,
-                scale * BUTTON_SCALE,
-                scale * BUTTON_SCALE
-        );
-        if (hoveringStart) {
+            //Draw continue game options
             canvas.draw(
-                    hoverPointer,
-                    Color.WHITE,
-                    hoverPointer.getWidth() / 2f,
-                    hoverPointer.getHeight() / 2f,
-                    pointerX,
+                    continueGameButton,
+                    getButtonTint("continue"),
+                    continueGameButton.getWidth() / 2f,
+                    continueGameButton.getHeight() / 2f,
+                    startButtonPositionX,
                     startButtonPositionY,
                     0,
-                    scale,
-                    scale
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
             );
-        }
+            if (hoveringStart) {
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth() / 2f,
+                        hoverPointer.getHeight() / 2f,
+                        pointerX,
+                        startButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+            }
 
-        //Draw Level Select
-        canvas.draw(
-                levelSelectButton,
-                getButtonTint("level"),
-                levelSelectButton.getWidth() / 2f,
-                levelSelectButton.getHeight() / 2f,
-                levelSelectButtonPositionX,
-                levelSelectButtonPositionY,
-                0,
-                scale * BUTTON_SCALE,
-                scale * BUTTON_SCALE
-        );
-        if (hoveringLevelSelect) {
+            //Draw Level Select
             canvas.draw(
-                    hoverPointer,
-                    Color.WHITE,
-                    hoverPointer.getWidth() / 2f,
-                    hoverPointer.getHeight() / 2f,
-                    pointerX,
+                    levelSelectButton,
+                    getButtonTint("level"),
+                    levelSelectButton.getWidth() / 2f,
+                    levelSelectButton.getHeight() / 2f,
+                    levelSelectButtonPositionX,
                     levelSelectButtonPositionY,
                     0,
-                    scale,
-                    scale
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
             );
-        }
-        //Draw Continue Game
-        canvas.draw(
-                titleScreenButton,
-                getButtonTint("title"),
-                titleScreenButton.getWidth() / 2f,
-                titleScreenButton.getHeight() / 2f,
-                titleScreenButtonPositionX,
-                titleScreenButtonPositionY,
-                0,
-                scale * BUTTON_SCALE,
-                scale * BUTTON_SCALE
-        );
-        if (hoveringReturnTitleScreen) {
+            if (hoveringLevelSelect) {
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth() / 2f,
+                        hoverPointer.getHeight() / 2f,
+                        pointerX,
+                        levelSelectButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+            }
+            //Draw Continue Game
             canvas.draw(
-                    hoverPointer,
-                    Color.WHITE,
-                    hoverPointer.getWidth() / 2f,
-                    hoverPointer.getHeight() / 2f,
-                    pointerX,
+                    titleScreenButton,
+                    getButtonTint("title"),
+                    titleScreenButton.getWidth() / 2f,
+                    titleScreenButton.getHeight() / 2f,
+                    titleScreenButtonPositionX,
                     titleScreenButtonPositionY,
                     0,
-                    scale,
-                    scale
+                    scale * BUTTON_SCALE,
+                    scale * BUTTON_SCALE
             );
+            if (hoveringReturnTitleScreen) {
+                canvas.draw(
+                        hoverPointer,
+                        Color.WHITE,
+                        hoverPointer.getWidth() / 2f,
+                        hoverPointer.getHeight() / 2f,
+                        pointerX,
+                        titleScreenButtonPositionY,
+                        0,
+                        scale,
+                        scale
+                );
+            }
         }
-
         canvas.end();
     }
 

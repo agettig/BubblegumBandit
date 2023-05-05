@@ -181,9 +181,6 @@ public class GameController implements Screen {
 
     private CollisionController collisionController;
 
-    /**image that draws when screen fades */
-    private Texture fadeImage;
-
     /**
      * Reference to the game level
      */
@@ -418,7 +415,6 @@ public class GameController implements Screen {
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         constantsJson = directory.getEntry("constants", JsonValue.class);
         tilesetJson = directory.getEntry("tileset", JsonValue.class);
-        fadeImage = directory.getEntry("blackSquare", Texture.class);
 
         bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
@@ -803,10 +799,10 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
-            canvas.begin();
-            canvas.drawFade(fadeImage);
-            canvas.end();
-            listener.exitScreen(this, -1);
+            if (ticks % 75 == 0) {
+                listener.exitScreen(this, -1);
+            }
+            //listener.exitScreen(this, -1);
         } else if (failed) {
             listener.exitScreen(this, -2);
         }
