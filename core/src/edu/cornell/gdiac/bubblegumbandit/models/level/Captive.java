@@ -43,7 +43,7 @@ public class Captive extends Collectible {
     if (freed && animationController.onLastFrame()) {
       //need shrink here
       if (ys > 0) {
-          ys-=.3f;
+          ys-=.1f;
       } else {
         markRemoved(true);
         return;
