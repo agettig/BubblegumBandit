@@ -186,6 +186,8 @@ public class SettingsMode implements Screen {
      */
     private Label.LabelStyle labelStyle;
 
+    private int topPadding = 40;
+
     /**
      * Bubblegum Pink color
      * used for hover
@@ -603,14 +605,18 @@ public class SettingsMode implements Screen {
         Table c = new Table();
 
         scrollPane = new ScrollPane(c);
+        scrollPane.getVisualScrollX();
         scrollPane.setScrollbarsVisible(true);
         scrollPane.debug();
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.getStyle().vScroll = scrollBar;
         scrollPane.getStyle().vScrollKnob = scrollKnob;
         scrollPane.setupFadeScrollBars(.5f,.5f);
+        c.row();
+        c.add(moveLeft).pad(topPadding, 0, 32, 0);
+        c.add(moveLeftButton).pad(topPadding, 0, 32, 0);
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 1; i < 8; i++) {
             TextButton button = buttons[i];
             c.row();
             c.add(labels[i]).pad(0, 0, 32, rightPadding[i]);
@@ -679,15 +685,17 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             TextButton button = entry.getKey();
-            if (hoverBooleans[index] || button.isChecked()) {
+            boolean inBounds = button.getX() > scrollPane.getX() && button.getX() + button.getWidth() < scrollPane.getX() + scrollPane.getScrollWidth()
+                    && button.getY() + scrollPane.getScrollY() > scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() < scrollPane.getY() + scrollPane.getScrollHeight();
+            if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 + button.getWidth() + spacing,
-                        button.getY() + scrollPane.getScrollY(), arrow.getRegionWidth() / 2,
+                        button.getY() + scrollPane.getScrollY() - topPadding, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 180);
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 - arrow.getRegionWidth() - spacing,
-                        button.getY() + scrollPane.getScrollY(), arrow.getRegionWidth() / 2,
+                        button.getY() + scrollPane.getScrollY() - topPadding, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 0);
             }
@@ -785,7 +793,8 @@ public class SettingsMode implements Screen {
 
 
                 // only no duplicates except for gravity
-                if (indices.size() == 2 || keycode == Input.Keys.ESCAPE || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                if (indices.size() == 2 || keycode == Input.Keys.ESCAPE || (indices.size() == 1 &&
+                        (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
                         !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
                     SoundController.playSound("error", 1);
                     return true;
