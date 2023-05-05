@@ -15,12 +15,8 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -30,23 +26,19 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.ArrayList;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -211,7 +203,7 @@ public class GameController implements Screen {
     /**
      * A collection of the active projectiles on screen
      */
-    private ProjectileController projectileController;
+    private ShockController projectileController;
 
     /**
      * Reference to LaserController instance
@@ -382,7 +374,7 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
-        projectileController = new ProjectileController();
+        projectileController = new ShockController();
     }
 
     /**
@@ -699,19 +691,18 @@ public class GameController implements Screen {
                 continue;
             }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
-            boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
+            boolean isProjectileEnemy = enemy instanceof ShockEnemyModel;
 
             if (isProjectileEnemy) {
                 // Ensure enemy is on the ground
                 if (enemy.fired() && (controller.getTileType() != 0)) {
                     boolean isGravDown = !enemy.isFlipped();
-                    ProjectileModel newProjLeft = projectileController.fireWeapon(controller, true, isGravDown);
-                    ProjectileModel newProjRight = projectileController.fireWeapon(controller, false, isGravDown);
-                    smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
-                    level.activate(newProjLeft);
-                    level.activate(newProjRight);
-                    newProjLeft.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-                    newProjRight.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                    float halfHeight = (enemy.getHeight() / 2);
+                    float enemyPos = enemy.getY() + (isGravDown ? -halfHeight : halfHeight);
+                    if (Math.abs(enemyPos - Math.round(enemyPos)) < 0.02) { // Check if grounded
+                        projectileController.fireWeapon(level, controller, isGravDown);
+                        smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
+                    }
                 } else {
                     controller.coolDown(true);
                 }

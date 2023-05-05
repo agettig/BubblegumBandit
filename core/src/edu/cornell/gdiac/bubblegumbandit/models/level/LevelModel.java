@@ -583,7 +583,7 @@ public class LevelModel {
                 case "shieldedSmallEnemy":
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
-                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    enemy = new ShockEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield - DISABLED for now
@@ -689,7 +689,7 @@ public class LevelModel {
                 case "shieldedSmallEnemy":
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
-                    enemy = new ProjectileEnemyModel(world, enemyCount);
+                    enemy = new ShockEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield

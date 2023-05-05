@@ -137,6 +137,10 @@
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
         "shockwave": "textures/smallEnemy/shockwave.png",
+        "electricFloor": {
+            "file": "textures/smallEnemy/electricFloor.png",
+            "wrapU": "repeated"
+        },
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
         "smallShield": "textures/smallEnemy/smallShield.png",
         "smallEnemyPatrol":  {
@@ -353,7 +357,7 @@
 
     },
 	"jsons" : {
-        "level1" : "jsons/levels/level1.json",
+        "level1" : "jsons/levels/smallEnemyTest.json",
         "level2":"jsons/levels/level2.json",
         "level3" : "jsons/levels/level3.json",
         "level4": "jsons/levels/level4.json",

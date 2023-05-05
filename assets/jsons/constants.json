@@ -256,9 +256,10 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 8.5,
+    "speed": 6.5,
     "density": 10.0,
-    "texture": "shockwave"
+    "texture": "shockwave",
+    "floorTexture": "electricFloor"
   },
   "box": {
     "name": "box",

@@ -11,7 +11,6 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -518,9 +517,9 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().contains("enemy") || bd2.getName().contains("enemy")) return;
 
         if (bd1.getName().equals("projectile")) {
-            resolveProjectileCollision((ProjectileModel) bd1, bd2);
+            resolveProjectileCollision((ShockModel) bd1, bd2);
         } else if (bd2.getName().equals("projectile")) {
-            resolveProjectileCollision((ProjectileModel) bd2, bd1);
+            resolveProjectileCollision((ShockModel) bd2, bd1);
         }
     }
 
@@ -604,17 +603,16 @@ public class CollisionController implements ContactListener {
             return;
         }
 
-        boolean wasHit = levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE, false);
         levelModel.makeSpark(hazard.getX(), hazard.getY());
         // Bandit on top or below hazard
-        if (wasHit) {
-            if (Math.abs(bandit.getVY()) > 1) {
+        if (Math.abs(bandit.getVY()) > 1) {
+            boolean wasHit = applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 0, 5f);
+            if (wasHit) {
                 shouldFlipGravity = true;
                 bandit.setVY(0);
-                applyKnockback(hazard, bandit, true, 0, 0, 5f);
-            } else { // Bandit colliding on side of hazard
-                applyKnockback(hazard, bandit, true, 0, 15f, 5f);
             }
+        } else { // Bandit colliding on side of hazard
+            applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 15f, 5f);
         }
     }
 
@@ -664,28 +662,34 @@ public class CollisionController implements ContactListener {
      * @param p
      * @param o
      */
-    private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
+    private void resolveProjectileCollision(ShockModel p, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
-            applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f, 1f);
+            applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f);
+            levelModel.makeSpark(o.getX(), o.getY());
         }
-        p.destroy();
     }
 
-    private void applyKnockback(Obstacle other, BanditModel bandit,
+    /** Applies knockback to the player if the player is not currently invulnerable
+     *
+     * Returns whether the knockback was applied */
+    private boolean applyKnockback(Obstacle other, BanditModel bandit,
                                 boolean yImpact, float damage, float impactX, float impactY) {
-        boolean left = (other.getX() < bandit.getX());
-        boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
-        bandit.hitPlayer(damage, false);
-        bandit.setKnockback(true);
-        if(yImpact)  {
-            bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
-                    knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);
+        boolean wasHit = bandit.hitPlayer(damage, false);
+        if (wasHit) {
+            boolean left = (other.getX() < bandit.getX());
+            boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
+            bandit.setKnockback(true);
+            if(yImpact)  {
+                bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
+                        knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);
+            }
+            else {
+                bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
+                        0, bandit.getX(), bandit.getY(), true);
+            }
         }
-        else {
-            bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
-               0, bandit.getX(), bandit.getY(), true);
-        }
+        return wasHit;
     }
 
 
