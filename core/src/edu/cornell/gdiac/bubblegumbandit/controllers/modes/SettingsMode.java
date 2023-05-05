@@ -16,6 +16,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.util.ScreenListener;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,19 +75,6 @@ public class SettingsMode implements Screen {
      */
     private TextButton toggleMinimapButton;
 
-//    /**
-//     * Unstick gum button
-//     */
-//    private TextButton unstickGumButton;
-
-    /**
-     * Shoot gum button
-     */
-    private SelectBox shootGumSelect;
-
-
-    private SelectBox unstickGumSelect;
-
     /**
      * Controls button
      * Takes the player to controls settings screen
@@ -109,6 +97,16 @@ public class SettingsMode implements Screen {
      * Reload gum button
      */
     private TextButton reloadGumButton;
+
+    /**
+     * Unstick gum button
+     */
+    private TextButton unstickGumButton;
+
+    /**
+     * Shoot gum button
+     */
+    private TextButton shootGumButton;
 
     /**
      * Whether back butotn to main menu was clicked
@@ -205,7 +203,7 @@ public class SettingsMode implements Screen {
     /**
      * Maps buttons to indices in arrays
      */
-    private HashMap<Object, Integer> buttonIndexMap = new HashMap<>();
+    private HashMap<TextButton, Integer> buttonIndexMap = new HashMap<>();
 
     private TextureRegionDrawable backgroundButton;
 
@@ -225,7 +223,18 @@ public class SettingsMode implements Screen {
      */
     private int[] values;
 
-    private final int[] defaultVals = new int[]{
+    /**
+     * Array keeping track if setting is a key or a button
+     * <p>
+     * True -> key, False -> button
+     */
+    private boolean[] bindings;
+
+    public static final boolean[] defaultBindings = new boolean[]{
+            true, true, true, true, true, true, false, false
+    };
+
+    public static final int[] defaultVals = new int[]{
             Input.Keys.A,
             Input.Keys.D,
             Input.Keys.SPACE,
@@ -235,6 +244,8 @@ public class SettingsMode implements Screen {
             Input.Buttons.LEFT,
             Input.Buttons.RIGHT
     };
+
+    private HashMap<Integer, String> keyToString;
 
     /**
      * Contructor for making a settings mode
@@ -247,15 +258,12 @@ public class SettingsMode implements Screen {
         Texture slider = internal.getEntry("sliderTexture", Texture.class);
         Texture knob = internal.getEntry("knob", Texture.class);
         Texture sliderBeforeKnobTexture = internal.getEntry("sliderBeforeKnob", Texture.class);
-        Texture buttonBackground = internal.getEntry("backgroundButton", Texture.class);
 
         background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
         sliderBeforeKnob = new TextureRegionDrawable(new TextureRegion(slider));
         sliderKnob = new TextureRegionDrawable(new TextureRegion(knob));
         sliderTexture = new TextureRegionDrawable(sliderBeforeKnobTexture);
         arrow = new TextureRegion(internal.getEntry("arrow", Texture.class));
-        backgroundButton = new TextureRegionDrawable(buttonBackground);
-
 
 
         stage = new Stage();
@@ -267,26 +275,31 @@ public class SettingsMode implements Screen {
         controlsTable.setFillParent(true);
         stage.addActor(settingsTable);
         values = SaveData.getKeyBindings();
+        bindings = SaveData.getKeyButtons();
 
         SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
+        keyToString = new HashMap<>();
+
+        keyToString.put(Input.Buttons.RIGHT, "RIGHT CLICK");
+        keyToString.put(Input.Buttons.LEFT, "LEFT CLICK");
+        keyToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
+        keyToString.put(Input.Buttons.BACK, "BACK CLICK");
+        keyToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
     }
 
     public void resetDefaultBindings() {
         for (int i = 0; i < defaultVals.length; i++) {
             values[i] = defaultVals[i];
+            bindings[i] = defaultBindings[i];
         }
 
-        for (Map.Entry<Object, Integer> entry : buttonIndexMap.entrySet()) {
+        for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             int value = values[index];
-            if (index < 6) {
-                ((TextButton) entry.getKey()).setText(Input.Keys.toString(value).toUpperCase());
-            }
+            String toString = bindings[index] ? Input.Keys.toString(value).toUpperCase() : keyToString.get(value);
+            entry.getKey().setText(toString);
         }
-
-        unstickGumSelect.setSelectedIndex(0);
-        shootGumSelect.setSelectedIndex(1);
     }
 
     /**
@@ -380,12 +393,9 @@ public class SettingsMode implements Screen {
         settingsTable.add(musicSlider).width(460).pad(0, 0, 32, 0);
         settingsTable.row();
         settingsTable.add(soundEffects).pad(0, 160, 32, 295);
-        ;
         settingsTable.add(soundEffectsSlider).width(460).pad(0, 0, 32, 0);
-        ;
         settingsTable.row();
         settingsTable.add(controlsButton).pad(0, 160, 40, 0);
-        ;
         settingsTable.row();
         settingsTable.add(backButtonSettings).pad(0, 100, 0, 0);
         settingsTable.row();
@@ -505,51 +515,49 @@ public class SettingsMode implements Screen {
                 hoverBooleans[buttonIndexMap.get(toggleMinimapButton)] = false;
             }
         });
-//        shootGumButton.addListener(new ClickListener() {
-//            public void clicked(InputEvent event, float x, float y) {
-//
-//                if (checkedButton != shootGumButton)
-//                    checkedButton = shootGumButton;
-//                else {
-//                    checkedButton.setText("LEFT CLICK");
-//                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
-//                    checkedButton.setChecked(false);
-//                    checkedButton = null;
-//                }
-//
-//
-//            }
-//
-//            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-//                hoverBooleans[buttonIndexMap.get(shootGumButton)] = true;
-//            }
-//
-//            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-//                hoverBooleans[buttonIndexMap.get(shootGumButton)] = false;
-//            }
-//        });
-//        unstickGumButton.addListener(new ClickListener() {
-//            public void clicked(InputEvent event, float x, float y) {
-//
-//                if (checkedButton != unstickGumButton)
-//                    checkedButton = unstickGumButton;
-//                else {
-//                    checkedButton.setText("LEFT CLICK");
-//                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
-//                    checkedButton.setChecked(false);
-//                    checkedButton = null;
-//                }
-//
-//            }
-//
-//            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-//                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = true;
-//            }
-//
-//            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-//                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = false;
-//            }
-//        });
+        shootGumButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == shootGumButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = shootGumButton;
+                }
+            }
+
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                hoverBooleans[buttonIndexMap.get(shootGumButton)] = true;
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                hoverBooleans[buttonIndexMap.get(shootGumButton)] = false;
+            }
+        });
+        unstickGumButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+
+                if (checkedButton != null) {
+                    checkedButton.setChecked(false);
+                }
+                if (checkedButton == unstickGumButton) {
+                    checkedButton = null;
+                } else {
+                    checkedButton = unstickGumButton;
+                }
+
+            }
+
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = true;
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = false;
+            }
+        });
         reloadGumButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if (checkedButton != null) {
@@ -575,8 +583,8 @@ public class SettingsMode implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 stage.addActor(settingsTable);
-                for (Object o: buttonIndexMap.keySet()){
-                    if (o instanceof TextButton){
+                for (Object o : buttonIndexMap.keySet()) {
+                    if (o instanceof TextButton) {
                         ((TextButton) o).setChecked(false);
                     }
                 }
@@ -640,15 +648,26 @@ public class SettingsMode implements Screen {
         6: shoot
         7: unstick */
 
-        int[] values = SaveData.getKeyBindings();
-        for (int i : values) System.out.println(Input.Keys.toString(i));
 
-        moveLeftButton = new TextButton(Input.Keys.toString(values[0]).toUpperCase(), controlsButtonStyle);
-        moveRightButton = new TextButton(Input.Keys.toString(values[1]).toUpperCase(), controlsButtonStyle);
-        toggleGravityUpButton = new TextButton(Input.Keys.toString(values[2]).toUpperCase(), controlsButtonStyle);
-        toggleGravityDownButton = new TextButton(Input.Keys.toString(values[3]).toUpperCase(), controlsButtonStyle);
-        toggleMinimapButton = new TextButton(Input.Keys.toString(values[4]).toUpperCase(), controlsButtonStyle);
-        reloadGumButton = new TextButton(Input.Keys.toString(values[5]).toUpperCase(), controlsButtonStyle);
+        moveLeftButton = new TextButton("", controlsButtonStyle);
+        moveRightButton = new TextButton("", controlsButtonStyle);
+        toggleGravityUpButton = new TextButton("", controlsButtonStyle);
+        toggleGravityDownButton = new TextButton("", controlsButtonStyle);
+        toggleMinimapButton = new TextButton("", controlsButtonStyle);
+        reloadGumButton = new TextButton("", controlsButtonStyle);
+        shootGumButton = new TextButton("", controlsButtonStyle);
+        unstickGumButton = new TextButton("", controlsButtonStyle);
+
+
+        TextButton[] buttons = new TextButton[]{moveLeftButton, moveRightButton,
+                                                toggleGravityUpButton, toggleGravityDownButton,
+                                                toggleMinimapButton, reloadGumButton,
+                                                shootGumButton, unstickGumButton};
+
+        for (int i = 0; i < values.length; i++){
+            String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : keyToString.get(values[i]);
+            buttons[i].setText(buttonName);
+        }
 
         controlsBackButton = new TextButton("Back", backButtonStyle);
         controlsBackButton.getLabel().setFontScale(.5f);
@@ -665,54 +684,6 @@ public class SettingsMode implements Screen {
 
         Label[] labels = new Label[]{moveLeft, moveRight, toggleGravityUp, toggleGravityDown, toggleMinimap, reloadGum, shootGum, unstickGum};
 
-        List.ListStyle selectBoxListStyle = new List.ListStyle();
-        selectBoxListStyle.background = backgroundButton;
-        selectBoxListStyle.font = labelFont;
-        selectBoxListStyle.fontColorSelected = bubblegumPink;
-        selectBoxListStyle.fontColorUnselected = Color.WHITE;
-        selectBoxListStyle.selection = backgroundButton;
-
-
-        SelectBox.SelectBoxStyle selectBoxStyle = new SelectBox.SelectBoxStyle();
-        selectBoxStyle.font =labelFont;
-        selectBoxStyle.fontColor = Color.WHITE;
-        selectBoxStyle.listStyle = selectBoxListStyle;
-        selectBoxStyle.scrollStyle = new ScrollPane.ScrollPaneStyle();
-        selectBoxStyle.listStyle.selection.setTopHeight(10);
-        selectBoxStyle.listStyle.selection.setBottomHeight(10);
-
-
-        shootGumSelect = new SelectBox(selectBoxStyle);
-        shootGumSelect.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(shootGumSelect)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(shootGumSelect)] = false;
-            }
-        });
-
-        unstickGumSelect = new SelectBox(selectBoxStyle);
-        unstickGumSelect.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(unstickGumSelect)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(unstickGumSelect)] = false;
-            }
-        });
-
-
 
         controlsTable.row();
         controlsTable.add(controls).pad(100, 100, 40, 0);
@@ -724,14 +695,11 @@ public class SettingsMode implements Screen {
         buttonIndexMap.put(toggleGravityDownButton, 3);
         buttonIndexMap.put(toggleMinimapButton, 4);
         buttonIndexMap.put(reloadGumButton, 5);
-        buttonIndexMap.put(shootGumSelect, 6);
-        buttonIndexMap.put(unstickGumSelect, 7);
+        buttonIndexMap.put(shootGumButton, 6);
+        buttonIndexMap.put(unstickGumButton, 7);
 
         int rightPadding[] = new int[]{0, 240, 220, 120, 80, 280, 240, 200};
-        Object[] objects = new Object[]{moveLeftButton, moveRightButton,
-                                                toggleGravityUpButton, toggleGravityDownButton,
-                                                toggleMinimapButton, reloadGumButton,
-                                                shootGumSelect, unstickGumSelect};
+
         Table c = new Table();
 
         scrollPane = new ScrollPane(c);
@@ -740,18 +708,15 @@ public class SettingsMode implements Screen {
         scrollPane.setScrollBarPositions(false, true);
 
         for (int i = 0; i < 8; i++) {
-            Object button = objects[i];
+            TextButton button = buttons[i];
             c.row();
             c.add(labels[i]).pad(0, 0, 32, rightPadding[i]);
-            c.add((Actor) button).pad(0, 0, 32, 0);
+            c.add(button).pad(0, 0, 32, 0);
         }
         controlsTable.row();
-        controlsTable.add(scrollPane).pad(-10,160,0,0).height(350);
+        controlsTable.add(scrollPane).pad(-10, 160, 0, 0).height(350);
 
 
-
-        shootGumSelect.setItems("Left Click", "Right Click", "Shift-Click");
-        unstickGumSelect.setItems("Left Click", "Right Click", "Shift-Click");
         controlsTable.row();
         controlsTable.add(horizontalButtonGroup).pad(20, 100, 0, 0);
         controlsTable.row();
@@ -759,7 +724,7 @@ public class SettingsMode implements Screen {
         for (Cell cell : c.getCells()) {
             cell.align(Align.left);
         }
-        for (Cell cell : controlsTable.getCells()){
+        for (Cell cell : controlsTable.getCells()) {
             cell.align(Align.left);
         }
         soundEffectsSlider.addListener(new ChangeListener() {
@@ -808,19 +773,18 @@ public class SettingsMode implements Screen {
 
         // draw hover arrows
         int spacing = 15;
-        for (Map.Entry<Object, Integer> entry : buttonIndexMap.entrySet()) {
-            Actor actor = (Actor) entry.getKey();
-
+        for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
-            if (hoverBooleans[index] || (actor instanceof TextButton && ((TextButton) actor).isChecked()) || (actor instanceof SelectBox && ((SelectBox<?>) actor).getScrollPane().hasParent())) {
+            TextButton button = entry.getKey();
+            if (hoverBooleans[index] || button.isChecked()) {
                 stage.getBatch().draw(arrow,
-                        actor.getX() + 160 + actor.getWidth() + spacing,
-                        actor.getY() + scrollPane.getScrollY(), arrow.getRegionWidth() / 2,
+                        button.getX() + 160 + button.getWidth() + spacing,
+                        button.getY() + scrollPane.getScrollY(), arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 180);
                 stage.getBatch().draw(arrow,
-                        actor.getX() + 160 - arrow.getRegionWidth() - spacing,
-                        actor.getY() + scrollPane.getScrollY(), arrow.getRegionWidth() / 2,
+                        button.getX() + 160 - arrow.getRegionWidth() - spacing,
+                        button.getY() + scrollPane.getScrollY(), arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 0);
             }
@@ -871,18 +835,16 @@ public class SettingsMode implements Screen {
     public void hide() {
         active = false;
         checkedButton = null;
-        for (Object o: buttonIndexMap.keySet()){
-            if (o instanceof TextButton){
-                ((TextButton) o).setChecked(false);
-            }
+        for (TextButton button : buttonIndexMap.keySet()) {
+            button.setChecked(false);
         }
-        SaveData.setKeyBindings(values);
+
+        SaveData.setKeyBindings(values, bindings);
         SoundController.setEffectsVolume(soundEffectsSlider.getValue());
         SoundController.setMusicVolume(musicSlider.getValue());
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
         PlayerController.changeControls(values);
-        //add to save data
     }
 
     @Override
@@ -927,6 +889,7 @@ public class SettingsMode implements Screen {
                 }
 
                 values[buttonIndex] = keycode;
+                bindings[buttonIndex] = true;
                 checkedButton.setText(Input.Keys.toString(keycode).toUpperCase());
                 checkedButton.setChecked(false);
                 checkedButton = null;
@@ -940,5 +903,25 @@ public class SettingsMode implements Screen {
             // }
             return true;
         }
+
+        /**
+         * If button is checked, change value to button pressed.
+         * Unchecks button afterward
+         */
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
+            if (checkedButton != null) {
+                System.out.println(button);
+                int index = buttonIndexMap.get(checkedButton);
+                checkedButton.setText(keyToString.get(button));
+                values[index] = button;
+                bindings[index] = false;
+                checkedButton.setChecked(false);
+                checkedButton = null;
+            }
+            return true;
+        }
     }
 }
+
