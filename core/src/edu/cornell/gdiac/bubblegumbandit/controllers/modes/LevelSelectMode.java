@@ -296,7 +296,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
          //y bounds
         if (sunfish.getY() < camHeight) {
             canvas.getCamera().setTargetY(camHeight);
-
         }
         if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
             canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);

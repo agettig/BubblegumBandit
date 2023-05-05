@@ -17,6 +17,9 @@ public class AnimationController {
   /** The FPS of the current temporary (non-looping) animation */
   private int tempFPS = 8;
 
+  /** Frame number */
+  private int frameNum;
+
   /** Maps animations to their names */
 
   private HashMap<String, FilmStrip> animations;
@@ -52,7 +55,6 @@ public class AnimationController {
     animations = new HashMap<>();
     fps = new HashMap<>();
 
-    System.out.println(key);
     JsonValue controllerJSON = directory.getEntry("animations", JsonValue.class).get(key);
 
     for(JsonValue value : controllerJSON) {
@@ -68,8 +70,8 @@ public class AnimationController {
       }
       if(strip==null) System.err.println("ohno "+name);
     }
-
   }
+
 
 
   /**
@@ -86,22 +88,20 @@ public class AnimationController {
       } else {
         return temp;
       }
-
     }
 
     FilmStrip strip = temp==null ? current : temp;
     int fps = temp==null ? FPS : tempFPS-1;
 
-
     if(timeSinceLastFrame<1f/fps) return strip;
     int frame = strip.getFrame();
+    frameNum = frame;
     frame = (int) ((frame + timeSinceLastFrame/(1f/fps))% strip.getSize());
     strip.setFrame(frame);
     timeSinceLastFrame = 0;
 
     if(temp!=null&&temp.getFrame()==temp.getSize()-1) {
       finished = true; //discard after one loop
-
     }
 
     return strip;
@@ -129,6 +129,15 @@ public class AnimationController {
     return temp==null ? currentName : tempName;
   }
 
+  /**
+   * Returns the index of the frame that is currently playing.
+   *
+   * @return the index of the frame that is currently playing.
+   * */
+  public int getFrameNum(){
+    return frameNum;
+  }
+
 
   /**
    * Sets the animation
@@ -138,6 +147,7 @@ public class AnimationController {
   public void setAnimation(String name, boolean loop) {
     if(animations.containsKey(name)&&(currentName!=name)) {
       timeSinceLastFrame = 0f;
+      frameNum = 0;
       if(loop) {
         current = animations.get(name);
         currentName = name;

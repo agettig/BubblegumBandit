@@ -211,7 +211,7 @@
         "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
         "largeEnemy": "textures/largeEnemy/largeEnemy.png",
         "laserBeam": "textures/largeEnemy/laserBeam.png",
-        "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
+        "laserBeamEnd": "textures/largeEnemy/laserRedEnd.png",
         "largeShield": "textures/largeEnemy/bigShield.png",
         "largeWalk":  {
             "file": "textures/largeEnemy/largeAnim.png",
