@@ -6,4 +6,6 @@ public class Damage {
     // TODO: Increase once player is invulnerable for short time period
     public static final float HAZARD_DAMAGE = 20f;
 
+
+
 }
