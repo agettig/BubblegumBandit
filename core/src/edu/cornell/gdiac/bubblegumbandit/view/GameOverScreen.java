@@ -23,8 +23,10 @@ public class GameOverScreen implements Screen, InputProcessor {
      * 0 = nothing pressed
      * 1 = play down
      * 2 = level select down
+     * 3 = return to title down
      * 5 = play up, ready to go
      * 6 = level select up, should open level select
+     * 7 = return to title up, should open title screen
      */
     private int pressState;
 
@@ -60,8 +62,8 @@ public class GameOverScreen implements Screen, InputProcessor {
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
-    private final static float SPACE_WIDTH = 5000;
-    private final static float SPACE_HEIGHT = 5000;
+    private final static float SPACE_WIDTH = 3000;
+    private final static float SPACE_HEIGHT = 3000;
 
     private String gameOverMessage;
 
@@ -79,6 +81,11 @@ public class GameOverScreen implements Screen, InputProcessor {
      * Pointer to take player back to level select.
      */
     private Texture levelSelectButton;
+
+    /**
+     * Pointer to take player back to title Screen.
+     */
+    private Texture titleScreenButton;
 
     /**
      * The x-coordinate of the center of the start button.
@@ -101,6 +108,16 @@ public class GameOverScreen implements Screen, InputProcessor {
     private int levelSelectButtonPositionY;
 
     /**
+     * The x-coordinate of the center of the return to title button.
+     */
+    private int titleScreenButtonPositionX;
+
+    /**
+     * The y-coordinate of the center of the return to title button.
+     */
+    private int titleScreenButtonPositionY;
+
+    /**
      * Scale of continue game, back to level select buttons.
      */
     private final float BUTTON_SCALE = .3f;
@@ -114,6 +131,11 @@ public class GameOverScreen implements Screen, InputProcessor {
      * true if the player is hovering over the level select button
      */
     private boolean hoveringLevelSelect;
+
+    /**
+     * true if the player is hovering over the title button
+     */
+    private boolean hoveringReturnTitleScreen;
 
     /**
      * The height of the canvas window (necessary since sprite origin != screen origin)
@@ -142,15 +164,17 @@ public class GameOverScreen implements Screen, InputProcessor {
         hoverPointer = directory.getEntry("hoverPointer", Texture.class);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("levelSelectButton", Texture.class);
-
+        titleScreenButton = directory.getEntry("titleScreenButton", Texture.class);
     }
 
-    public void gameWon() {
-        gameOverMessage = "You Won!";
+    public void gameWon(AssetDirectory directory) {
+        gameOverMessage = "VICTORY";
+        continueGameButton = directory.getEntry("continueGameButton", Texture.class);
     }
 
-    public void gameLost() {
-        gameOverMessage = "You Lost!";
+    public void gameLost(AssetDirectory directory) {
+        gameOverMessage = "HEIST FAILED";
+        continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
     }
 
     @Override
@@ -178,6 +202,9 @@ public class GameOverScreen implements Screen, InputProcessor {
             if (levelSelect() && listener != null) {
                 listener.exitScreen(this, 6);
             }
+            if (returnToTitle() && listener != null) {
+                listener.exitScreen(this, 7);
+            }
         }
         if (false) {
             listener.exitScreen(this, 0);
@@ -187,7 +214,7 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.clear();
         canvas.begin();
-        drawBackground(canvas);
+        canvas.draw(background, 0, 0);
         canvas.drawTextCentered(gameOverMessage, displayFont, 150);
 
         float x = (canvas.getWidth()) / 2.0f;
@@ -204,9 +231,12 @@ public class GameOverScreen implements Screen, InputProcessor {
         levelSelectButtonPositionX = (int) coords.x;
         levelSelectButtonPositionY = (int) lowestButtonY;
 
+        titleScreenButtonPositionX = (int) coords.x;
+        titleScreenButtonPositionY = (int) lowestButtonY - 100;
+
         float pointerX = startButtonPositionX / 4f;
 
-        //Draw Continue Game
+        //Draw continue game options
         canvas.draw(
                 continueGameButton,
                 getButtonTint("continue"),
@@ -257,22 +287,33 @@ public class GameOverScreen implements Screen, InputProcessor {
                     scale
             );
         }
+        //Draw Continue Game
+        canvas.draw(
+                titleScreenButton,
+                getButtonTint("title"),
+                titleScreenButton.getWidth() / 2f,
+                titleScreenButton.getHeight() / 2f,
+                titleScreenButtonPositionX,
+                titleScreenButtonPositionY,
+                0,
+                scale * BUTTON_SCALE,
+                scale * BUTTON_SCALE
+        );
+        if (hoveringReturnTitleScreen) {
+            canvas.draw(
+                    hoverPointer,
+                    Color.WHITE,
+                    hoverPointer.getWidth() / 2f,
+                    hoverPointer.getHeight() / 2f,
+                    pointerX,
+                    titleScreenButtonPositionY,
+                    0,
+                    scale,
+                    scale
+            );
+        }
 
         canvas.end();
-    }
-
-    /**
-     * Draws a repeating background, and crops off any overhangs outside the level
-     * to maintain resolution and aspect ratio.
-     *
-     * @param canvas the current canvas
-     */
-    private void drawBackground(GameCanvas canvas) {
-        for (int i = 0; i < SPACE_WIDTH; i += background.getRegionWidth()) {
-            for (int j = 0; j < SPACE_HEIGHT; j += background.getRegionHeight()) {
-                canvas.draw(background, i, j);
-            }
-        }
     }
 
     private Color getButtonTint(String buttonName) {
@@ -304,6 +345,12 @@ public class GameOverScreen implements Screen, InputProcessor {
             else return defaultTint;
         }
 
+        if (buttonName.equals("title")) {
+            if (hoveringReturnTitleScreen && pressState == 3) return pressTint;
+            else if (hoveringReturnTitleScreen) return hoverTint;
+            else return defaultTint;
+        }
+
         return null;
     }
 
@@ -321,7 +368,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-        if (continueGameButton == null || levelSelectButton == null) return false;
+        if (continueGameButton == null || levelSelectButton == null || titleScreenButton == null) return false;
         // Flip to match graphics coordinates
 
         //Detect hovers on the start button
@@ -341,6 +388,15 @@ public class GameOverScreen implements Screen, InputProcessor {
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
         hoveringLevelSelect = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
+
+        //Detect hovers on the return to titlebutton
+        rectWidth = scale * BUTTON_SCALE * titleScreenButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * titleScreenButton.getHeight();
+        leftX = titleScreenButtonPositionX - rectWidth / 2.0f;
+        rightX = titleScreenButtonPositionX + rectWidth / 2.0f;
+        topY = titleScreenButtonPositionY - rectHeight / 2.0f;
+        bottomY = titleScreenButtonPositionY + rectHeight / 2.0f;
+        hoveringReturnTitleScreen = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         return true;
     }
@@ -373,7 +429,7 @@ public class GameOverScreen implements Screen, InputProcessor {
 
 
         // if loading has not started
-        if (continueGameButton == null || levelSelectButton == null) return false;
+        if (continueGameButton == null || levelSelectButton == null || titleScreenButton == null) return false;
 
         //Detect clicks on the start button
         float rectWidth = scale * BUTTON_SCALE * continueGameButton.getWidth();
@@ -396,6 +452,17 @@ public class GameOverScreen implements Screen, InputProcessor {
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 2;
         }
+
+        rectWidth = scale * BUTTON_SCALE * titleScreenButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * titleScreenButton.getHeight();
+        leftX = titleScreenButtonPositionX - rectWidth / 2.0f;
+        rightX = titleScreenButtonPositionX + rectWidth / 2.0f;
+        topY = titleScreenButtonPositionY - rectHeight / 2.0f;
+        bottomY = titleScreenButtonPositionY + rectHeight / 2.0f;
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
+            pressState = 3;
+        }
+
         return false;
     }
 
@@ -421,6 +488,11 @@ public class GameOverScreen implements Screen, InputProcessor {
         if (pressState == 2) {
             pressState = 6;
             return false;
+        }
+
+        //return to title
+        if (pressState == 3) {
+            pressState = 7;
         }
         return true;
     }
@@ -458,6 +530,7 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     public boolean continueGame() { return pressState == 5;}
     public boolean levelSelect() {return pressState == 6;}
+    public boolean returnToTitle() {return pressState == 7;}
 
     /**
      * Called when the mouse or finger was dragged. (UNSUPPORTED)

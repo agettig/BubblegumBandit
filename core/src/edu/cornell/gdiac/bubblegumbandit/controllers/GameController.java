@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
@@ -179,6 +180,9 @@ public class GameController implements Screen {
     private ScreenListener listener;
 
     private CollisionController collisionController;
+
+    /**image that draws when screen fades */
+    private Texture fadeImage;
 
     /**
      * Reference to the game level
@@ -414,6 +418,7 @@ public class GameController implements Screen {
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         constantsJson = directory.getEntry("constants", JsonValue.class);
         tilesetJson = directory.getEntry("tileset", JsonValue.class);
+        fadeImage = directory.getEntry("blackSquare", Texture.class);
 
         bubblegumController.initialize(directory, constantsJson.get("gumProjectile"));
 
@@ -798,9 +803,10 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
-            if (ticks % 100 == 0) {
-                listener.exitScreen(this, -1);
-            }
+            canvas.begin();
+            canvas.drawFade(fadeImage);
+            canvas.end();
+            listener.exitScreen(this, -1);
         } else if (failed) {
             listener.exitScreen(this, -2);
         }

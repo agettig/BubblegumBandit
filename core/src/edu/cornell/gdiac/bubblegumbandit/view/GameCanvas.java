@@ -144,6 +144,8 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
+    private long ticks;
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -168,6 +170,8 @@ public class GameCanvas {
         local = new Affine2();
         global = new Matrix4();
         vertex = new Vector2();
+
+        ticks = 0;
     }
 
     public void resetCamera() {
@@ -408,6 +412,28 @@ public class GameCanvas {
         Gdx.gl.glClearColor(0,0,0,1);  // Homage to the XNA years: cute but no
         // blue gutters look awful.
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    /**draws fade in/out effect */
+    public void drawFade(Texture image) {
+        float x = getWidth();
+        float y = getHeight();
+        Vector3 coords = camera.unproject(new Vector3(x, y, 0));
+
+        int height = image.getHeight();
+        int width = image.getWidth();
+        int i = (int) coords.x - width;
+
+        while (i >= 0) {
+            if (ticks % 1000 == 0) {
+                for (int j = (int) coords.y - height; j >= 0; j -= coords.y/height) {
+                    draw(image, i, j);
+
+                }
+                i -= coords.x/width;
+            }
+            ticks++;
+        }
     }
 
     /**

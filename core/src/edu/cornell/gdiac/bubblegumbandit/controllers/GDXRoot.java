@@ -144,15 +144,17 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (screen == controller && exitCode == -1) {
 			directory = loading.getAssets();
 			gameOver.initialize(directory, canvas);
-			gameOver.gameWon();
+			gameOver.gameWon(directory);
 			gameOver.setScreenListener(this);
+			canvas.resetCamera();
 			setScreen(gameOver);
 		}
 		else if (screen == controller && exitCode == -2) {
 			directory = loading.getAssets();
 			gameOver.initialize(directory, canvas);
-			gameOver.gameLost();
+			gameOver.gameLost(directory);
 			gameOver.setScreenListener(this);
+			canvas.resetCamera();
 			setScreen(gameOver);
 		}
 		else if (screen == controller){
@@ -194,6 +196,11 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (exitCode == GameController.EXIT_QUIT && screen==controller) {
 			// We quit the main application
+			canvas.resetCamera();
+			loading.setScreenListener(this);
+			setScreen(loading);
+		}
+		else if (screen == gameOver && exitCode == 7) {
 			canvas.resetCamera();
 			loading.setScreenListener(this);
 			setScreen(loading);
