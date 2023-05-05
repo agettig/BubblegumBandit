@@ -405,7 +405,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         assets = new AssetDirectory(file);
         assets.loadAssets();
 
-        int levelCount = 2; //grab from where?
+        int levelCount = 9; //grab from where?
         if(!SaveData.saveExists())  {
             SaveData.makeData(levelCount, false);
         }

@@ -178,6 +178,8 @@ public class GameCanvas {
         fovRender.setProjectionMatrix(camera.combined);
         if (viewport != null) {
             viewport.setCamera(camera);
+            viewport.update(getWidth(), getHeight(), true);
+            viewport.apply(true);
         }
     }
 

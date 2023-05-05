@@ -47,7 +47,7 @@
     "debugColor": "yellow",
     "debugOpacity": 200
   },
-  "crushing_block": {
+  "crushingBlock": {
     "density": 0.4,
     "friction": 0.2,
     "restitution": 0.0,
@@ -123,11 +123,12 @@
     "debugcolor": "magenta",
     "debugopacity": 200,
     "texture": "door",
+    "doorOpenRate": 0.1,
     "sensorsize": [
       5,
-      2
+      2.1
     ],
-    "sensorname": "door_sensor",
+    "sensorname": "doorSensor",
     "sensorcolor": "red",
     "sensoropacity": 192,
     "lockedTexture": "lockedDoor",

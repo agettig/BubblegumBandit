@@ -31,8 +31,8 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
-        "space_bg": {
-            "file": "textures/environment/space_sample.png",
+        "spaceBg": {
+            "file": "textures/environment/spaceSample.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -46,6 +46,7 @@
         "frame": "textures/environment/frameB.png",
         "star": "textures/environment/star.png",
         "supports": "textures/environment/supports.png",
+        "backgroundTiles" : "textures/environment/backgroundTiles.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",
@@ -82,9 +83,8 @@
                 }
             }
         },
-        "bandit_guide": "textures/bandit/doubleArrow.png",
-        "bandit_knock": {
-            "file": "textures/bandit/bandit_knockback.png",
+        "banditKnock": {
+            "file": "textures/bandit/banditKnockback.png",
             "wrap": false,
             "sprites": {
                 "knock": {
@@ -95,8 +95,8 @@
             }
 
         },
-        "bandit_backpedal": {
-            "file": "textures/bandit/bandit_backpedal.png",
+        "banditBackpedal": {
+            "file": "textures/bandit/banditBackpedal.png",
             "wrap": false,
             "sprites": {
                 "back": {
@@ -107,8 +107,8 @@
             }
 
         },
-        "bandit_death": {
-            "file": "textures/bandit/bandit_death.png",
+        "banditDeath": {
+            "file": "textures/bandit/banditDeath.png",
             "wrap": false,
             "sprites": {
                 "death": {
@@ -119,7 +119,7 @@
             }
 
         },
-        "banditDead" : "textures/bandit/bandit_dead.png",
+        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
@@ -249,6 +249,7 @@
         },
 
         "gumProjectile": "textures/gum/gum.png",
+        "reloadGumSymbol": "textures/gum/reloading_gum.png",
         "floatingGum": "textures/gum/gum.png",
         "splatGum": "textures/gum/splatGum.png",
         "topRightGum": "textures/gum/topRightGum.png",
@@ -287,7 +288,7 @@
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
-        "door":  "textures/objects/doorUnlocked.png",
+        "door":  "textures/objects/halfDoor.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
         "glass":  "textures/objects/glass.png",
         "glassShatter":  {
@@ -334,7 +335,7 @@
             "size": 40
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
-            "size": 50
+            "size": 30
         }
     },
 	"soundfx": {
@@ -359,10 +360,11 @@
         "level6":"jsons/levels/level6.json",
         "level7" : "jsons/levels/level7.json",
         "level8": "jsons/levels/level8.json",
-        "level9": "jsons/levels/old/betaMedium.json",
+        "level9": "jsons/levels/level9.json",
         "constants": "jsons/constants.json",
         "animations" : "jsons/animations.json",
         "supports" : "tilesets/supports.json",
+        "backgroundTiles" : "tilesets/backgroundTiles.json",
         "terrain" : "tilesets/terrain.json",
         "objects" : "tilesets/objects.json"
     }

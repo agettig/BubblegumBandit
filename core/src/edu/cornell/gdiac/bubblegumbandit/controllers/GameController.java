@@ -42,10 +42,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.bubblegumbandit.view.HUDController;
-import edu.cornell.gdiac.bubblegumbandit.view.Minimap;
+import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -95,6 +92,11 @@ public class GameController implements Screen {
     private HUDController hud;
 
     private Minimap minimap;
+
+    private long reloadSymbolTimer;
+
+    /** represents the ship and space backgrounds */
+    private Background backgrounds;
 
     /**
      * The jump sound.  We only want to play once.
@@ -359,14 +361,6 @@ public class GameController implements Screen {
      */
     public GameController() {
 
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
-// Set hotspot to the middle of it (0,0 would be the top-left corner)
-        int xHotspot = 16, yHotspot = 16;
-        Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
-        pixmap.dispose(); // We don't need the pixmap anymore
-        Gdx.graphics.setCursor(cursor);
-
-
         //Technicals
         ticks = 0;
         complete = false;
@@ -376,6 +370,7 @@ public class GameController implements Screen {
         orbCountdown = -1;
         levelNum = 1;
         reloadingGum = false;
+        reloadSymbolTimer = -1;
         setComplete(false);
         setFailure(false);
 
@@ -428,6 +423,8 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
+        backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
+                new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
     }
 
 
@@ -477,6 +474,9 @@ public class GameController implements Screen {
         minimap.initialize(directory, levelFormat, x, y);
 
         SoundController.playMusic("game");
+
+        backgrounds.reset();
+        backgrounds.initialize(directory, levelFormat, x, y);
     }
 
     public void respawn() {
@@ -646,6 +646,7 @@ public class GameController implements Screen {
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
             if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
+                reloadSymbolTimer = -1;
                 reloadingGum = true;
             }
         } else {
@@ -763,6 +764,11 @@ public class GameController implements Screen {
      * @param delta The drawing context
      */
     public void draw(float delta) {
+        canvas.clear();
+
+        backgrounds.draw(canvas);
+
+        PlayerController inputResults = PlayerController.getInstance();
         level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd, delta);
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
@@ -772,6 +778,17 @@ public class GameController implements Screen {
         Vector2 banditPosition = level.getBandit().getPosition();
 
         minimap.draw(banditPosition);
+
+        if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
+            reloadSymbolTimer = 0;
+        }
+
+        if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
+            canvas.begin();
+            level.getBandit().drawReload(canvas);
+            canvas.end();
+            reloadSymbolTimer++;
+        }
 
         // Final message
         if (complete && !failed) {
@@ -785,6 +802,8 @@ public class GameController implements Screen {
             canvas.drawTextCentered("FAILURE!", displayFont, 150);
             canvas.end();
         }
+
+//        backgrounds.drawDebug(canvas);
     }
 
     /**

@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -93,6 +94,8 @@ public class BanditModel extends CapsuleObstacle {
      */
     private Vector2 forceCache = new Vector2();
 
+    private Texture reloadSymbol;
+
     /**
      * Whether we are actively shooting
      */
@@ -155,8 +158,6 @@ public class BanditModel extends CapsuleObstacle {
     private EffectController poofController;
 
     private TextureRegion deadText;
-
-    private Texture guide;
 
     private Vector2 orbPostion;
 
@@ -239,15 +240,18 @@ public class BanditModel extends CapsuleObstacle {
 
 
     /**
-     * Decreases the player's health
+     * Decreases the player's health if not in cooldown. Returns whether the player was hit
      *
      * @param damage The amount of damage done to the player
+     * @param laser Whether the player was hit by a laser
      */
-    public void hitPlayer(float damage, boolean laser) {
+    public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             setCooldown(true);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -532,7 +536,7 @@ public class BanditModel extends CapsuleObstacle {
 
 
         animationController = new AnimationController(directory, "bandit");
-        guide = directory.getEntry("bandit_guide", Texture.class);
+        reloadSymbol = directory.getEntry("reloadGumSymbol", Texture.class);
 
         // Technically, we should do error checking here.
         // A JSON field might accidentally be missing
@@ -650,6 +654,15 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    /**Draw the reload gum symbol above bandits head*/
+    public void drawReload(GameCanvas canvas) {
+        if (isFlipped) {
+            canvas.draw(reloadSymbol, Color.WHITE, (getX() - getWidth()/3) * drawScale.x, (getY() - getHeight() * 1.1f) * drawScale.y, reloadSymbol.getWidth(), reloadSymbol.getHeight());
+        }
+        else {
+            canvas.draw(reloadSymbol, Color.WHITE, (getX() - getWidth()/3) * drawScale.x, (getY() + getHeight()/2 * 1.3f) * drawScale.y, reloadSymbol.getWidth(), reloadSymbol.getHeight());
+        }
+    }
 
     /**
      * Applies the force to the body of this dude
@@ -763,25 +776,12 @@ public class BanditModel extends CapsuleObstacle {
             }
 
 
-
-
             canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
                     getY() * drawScale.y, getAngle(), effect, yScale);
 
         }
         poofController.draw(canvas);
-
-        float deltaX = orbPostion.x - getX();
-        float deltaY = orbPostion.y - getY();
-
-        double theta = Math.atan2(deltaY, deltaX);
-        double x = getX() + 1 * Math.cos(theta);
-        double y = getY() + 1.25 * Math.sin(theta);
-
-        if (!orbCollected){
-            canvas.draw(guide,Color.WHITE, (float) (guide.getWidth()/2), guide.getHeight()/2, (float) x * drawScale.x, (float) y * drawScale.y,(float)theta, 1, 1);
-        }
     }
 
     /**
