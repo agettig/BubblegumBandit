@@ -14,6 +14,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -124,6 +125,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     /** texture for the shield surrounding an enemy */
     private TextureRegion shield;
+
+    /** The GumModel instance that stuck this EnemyModel. */
+    private GumModel stuckGum;
 
     // endRegion
 
@@ -491,6 +495,29 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         }
         return true;
     }
+
+    /**
+     * Returns true if this RollingEnemyModel is stuck and
+     * should unstick itself.
+     *
+     * @return true if this RollingEnemyModel is stuck and
+     * should unstick; otherwise, false.
+     * */
+    public boolean shouldUnstick(){
+        return false;
+    }
+
+    /**
+     * Passes the instance of the GumModel that stuck this EnemyModel.
+     *
+     * @param gum The instance of the GumModel that stuck this EnemyModel.
+     * */
+    public void stickWithGum(GumModel gum){
+        if(gum == null) return;
+
+        stuckGum = gum;
+    }
+
 
     /**
      * Flips the player's angle and direction when the world gravity is flipped
