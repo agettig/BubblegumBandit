@@ -222,7 +222,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
 
         float highestButtonY = coords.y;
-        float lowestButtonY = coords.y - 100;
+        float lowestButtonY = coords.y - 75;
 
 
         startButtonPositionX = (int) coords.x;
@@ -232,7 +232,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         levelSelectButtonPositionY = (int) lowestButtonY;
 
         titleScreenButtonPositionX = (int) coords.x;
-        titleScreenButtonPositionY = (int) lowestButtonY - 100;
+        titleScreenButtonPositionY = (int) lowestButtonY - 75;
 
         float pointerX = startButtonPositionX / 4f;
 
