@@ -407,7 +407,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         int levelCount = 9; //grab from where?
         if(!SaveData.saveExists())  {
-            SaveData.makeData(levelCount, false);
+            SaveData.makeData(levelCount, true);
         }
             //is this a VM thing?
 

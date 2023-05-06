@@ -125,16 +125,19 @@ public class LevelIconModel {
 
     }
 
+
     public void draw(GameCanvas canvas, BitmapFont font){
+        Vector2 pos = getCenter();
+        Color numTint = Color.WHITE;
         if (SaveData.unlocked(level)){
             canvas.draw(texture, tint, x, y, texture.getRegionWidth(), texture.getRegionHeight());
         } else {
             canvas.draw(texture, Color.DARK_GRAY, x, y, texture.getRegionWidth(), texture.getRegionHeight());
+            numTint = Color.DARK_GRAY;
         }
 //        System.out.println(SaveData.unlocked(level));
-        Vector2 pos = getCenter();
-        canvas.draw(marker, Color.WHITE, marker.getRegionWidth()/2, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
-        canvas.drawText(valueOf(level), font, Color.WHITE, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
+        canvas.draw(marker, numTint, marker.getRegionWidth()/2, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
+        canvas.drawText(valueOf(level), font,numTint, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
     }
 
 
