@@ -186,7 +186,7 @@ public class SettingsMode implements Screen {
      */
     private Label.LabelStyle labelStyle;
 
-    private int topPadding = 40;
+    private int topPadding = 30;
 
     private SettingsInputProcessor settingsInputProcessor;
 
@@ -608,7 +608,20 @@ public class SettingsMode implements Screen {
 
         scrollPane = new ScrollPane(c);
 
+        scrollPane.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println(event.toString());
+            }
+        });
+
         scrollPane.addListener(new InputListener(){
+
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                System.out.println(keycode);
+                return super.keyDown(event, keycode);
+            }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -724,7 +737,7 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             TextButton button = entry.getKey();
-            boolean inBounds = button.getY() + scrollPane.getScrollY() > scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() < scrollPane.getY() + scrollPane.getScrollHeight();
+            boolean inBounds = button.getY() + scrollPane.getScrollY() - topPadding > scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() - topPadding < scrollPane.getY() + scrollPane.getScrollHeight();
             if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 + button.getWidth() + spacing,
