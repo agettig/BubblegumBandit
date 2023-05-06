@@ -101,6 +101,11 @@ public class LevelIconModel {
         return new Vector2(x + 0.5f * texture.getRegionWidth(), y + 0.5f * texture.getRegionHeight());
     }
 
+    /** whether this level is unlocked or not, locked levels are inaccessible by the player */
+    public boolean isUnlocked() {
+        return SaveData.unlocked(level);
+    }
+
     public void update() {
 
         //update position based on hover
