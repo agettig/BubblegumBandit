@@ -14,12 +14,14 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
@@ -158,6 +160,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * texture for the shield surrounding an enemy
      */
     private TextureRegion shield;
+
+    /** The GumModel instance that stuck this EnemyModel. */
+    private HashSet<GumModel> stuckGum;
 
     // endRegion
 
@@ -354,6 +359,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         String shieldKey = constantsJson.get("shield").asString();
         shield = new TextureRegion(directory.getEntry(shieldKey, Texture.class));
 
+        stuckGum = new HashSet<>();
+
         envRays = new RayCastEnv(Color.GREEN, getHeight());
     }
 
@@ -549,6 +556,35 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             return false;
         }
         return true;
+    }
+
+
+    /**
+     * Passes in an instance of a GumModel that stuck this EnemyModel.
+     *
+     * @param gum The instance of the GumModel that stuck this EnemyModel.
+     * */
+    public void stickWithGum(GumModel gum){
+        if(gum == null) return;
+        if(stuckGum == null) stuckGum = new HashSet<>();
+        stuckGum.add(gum);
+    }
+
+    /**
+     * Returns a HashSet of GumModels that have stuck this EnemyModel.
+     *
+     * @return a HashSet of GumModels that have stuck this EnemyModel
+     * */
+    public HashSet<GumModel> getStuckGum(){
+        return new HashSet<>(stuckGum);
+    }
+
+    /**
+     * Empties the HashSet of GumModels that have stuck
+     * this EnemyMode.
+     * */
+    protected void clearStuckGum(){
+        stuckGum.clear();
     }
 
     /**

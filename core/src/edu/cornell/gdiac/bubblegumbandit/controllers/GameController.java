@@ -47,6 +47,7 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -214,7 +215,6 @@ public class GameController implements Screen {
      * A collection of the active projectiles on screen
      */
     private ProjectileController projectileController;
-
     /**
      * Reference to LaserController instance
      */
@@ -712,6 +712,7 @@ public class GameController implements Screen {
             }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
             boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
+            boolean isRollingEnemy = enemy instanceof RollingEnemyModel;
 
             if (isProjectileEnemy) {
                 if (controller.getEnemy().fired()) {
@@ -722,7 +723,8 @@ public class GameController implements Screen {
                 } else {
                     controller.coolDown(true);
                 }
-            } else if (isLaserEnemy) {
+            }
+            else if (isLaserEnemy) {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
                 if (laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
                 else {
@@ -737,6 +739,23 @@ public class GameController implements Screen {
                     }
                 }
             }
+            else if(isRollingEnemy){
+                RollingEnemyModel rollingEnemy = (RollingEnemyModel) controller.getEnemy();
+                if(rollingEnemy.shouldUnstick()){
+                    if(rollingEnemy.getGummed()){
+                        bubblegumController.removeGummable(rollingEnemy);
+                        rollingEnemy.resetUnstick();
+                    }
+                    else if(rollingEnemy.getStuck()){
+                        HashSet<GumModel> stuckGum = rollingEnemy.getStuckGum();
+                        for(GumModel g : stuckGum){
+                            bubblegumController.removeGum(g);
+                        }
+                        rollingEnemy.resetUnstick();
+                    }
+                }
+            }
+
 
 
         }
