@@ -25,13 +25,13 @@ import java.util.Set;
 public class LaserController {
 
     /**How long a LaserModel needs to charge up before locking in. */
-    private float chargeTime = 1;
+    private float chargeTime = .3f;
 
     /** How long a LaserModel needs to lock in before firing. */
-    private float lockTime = .75f;
+    private float lockTime = .6f;
 
     /**How long a LaserModel beam lasts after charging. */
-    private float firingTime = 1.5f;
+    private float firingTime = 1.75f;
 
     /**Start point of the laser raycast. */
     private final Vector2 chargeOrigin;
