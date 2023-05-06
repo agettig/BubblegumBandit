@@ -497,6 +497,8 @@ public class LevelModel {
         }
         tiles.clear();
 
+        System.out.println(reactorTiles.size);
+
         bandit = null;
         goalDoor = null;
         boolean orbPlaced = false;
@@ -882,7 +884,6 @@ public class LevelModel {
             gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd,
                      float dt) {
         canvas.begin();
-//        canvas.clear();
 
         for(BackgroundTileModel tile: reactorTiles) {
             tile.draw(canvas);

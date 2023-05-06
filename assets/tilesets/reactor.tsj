@@ -1,4 +1,12 @@
 { "columns":4,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"json",
+         "target":"reactor.json"
+        }
+    },
  "image":"..\/textures\/environment\/pipes.png",
  "imageheight":256,
  "imagewidth":256,
