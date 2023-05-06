@@ -1,9 +1,11 @@
 package edu.cornell.gdiac.bubblegumbandit.models;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import org.w3c.dom.Text;
@@ -14,6 +16,12 @@ public class LevelIconModel {
 
     /** texture of the ship */
     private TextureRegion texture;
+
+    /** texture for the level number to sit in*/
+    private TextureRegion marker;
+
+    /** the distance between the bottom of the marker and the top of the ship, in pixels*/
+    private static final float MARKER_OFFSET = 30;
 
     /** The level number this icon represents */
     private int level;
@@ -48,8 +56,9 @@ public class LevelIconModel {
     /** The number of collected stars in the level, updated based on save data*/
     private int stars;
 
-    public LevelIconModel (TextureRegion texture, int level, float x, float y) {
+    public LevelIconModel (TextureRegion texture, TextureRegion marker, int level, float x, float y) {
         this.texture = texture;
+        this.marker = marker;
         this.level = level;
         this.x = x;
         this.y = y;
@@ -123,8 +132,9 @@ public class LevelIconModel {
             canvas.draw(texture, Color.DARK_GRAY, x, y, texture.getRegionWidth(), texture.getRegionHeight());
         }
 //        System.out.println(SaveData.unlocked(level));
-        Vector2 position = getCenter();
-        canvas.drawText(valueOf(level), font, position.x, position.y + texture.getRegionHeight());
+        Vector2 pos = getCenter();
+        canvas.draw(marker, Color.WHITE, marker.getRegionWidth()/2, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
+        canvas.drawText(valueOf(level), font, Color.WHITE, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
     }
 
 
