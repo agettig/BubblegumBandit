@@ -184,11 +184,13 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     public void gameWon(AssetDirectory directory) {
         gameOverMessage = "VICTORY";
+        displayFont.setColor(Color.GREEN);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
     }
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
+        displayFont.setColor(Color.RED);
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
     }
 
