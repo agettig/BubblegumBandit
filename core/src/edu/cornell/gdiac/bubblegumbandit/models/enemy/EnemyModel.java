@@ -20,6 +20,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
 
@@ -204,6 +205,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         gummed = false;
         stuck = false;
         collidedObs = new ObjectSet<>();
+        obstacleMap = new HashMap<>();
         tile = null;
         helpingTarget = null;
     }
