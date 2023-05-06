@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -42,6 +45,7 @@ public class HUDController {
   private WidgetGroup health;
 
 
+
   /** The container for laying out all HUD elements */
   private Table table;
   /** The margin of the current health bar, depends on the current design */
@@ -58,6 +62,9 @@ public class HUDController {
   private Label orbCountdown;
   private Label fpsLabel;
   private Array<Image> captiveIcons;
+
+  /** Position that the timer "shakes" to */
+  private Vector2 shakeAdjust;
 
   private Texture captiveIcon;
 
@@ -186,9 +193,10 @@ public class HUDController {
     view.apply(true);
   }
 
-  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS, boolean reloadingGum) {
+  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS, boolean reloadingGum, float dt) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
+
 
     if(healthFraction!=lastFrac) {
       if(healthFraction==0) {
@@ -217,13 +225,36 @@ public class HUDController {
       gumImage.setVisible(false);
     }
 
-    if (timer >= 9) {
-      orbCountdown.setText(timer);
-    } else if (timer >= 0) {
-      orbCountdown.setText("0" + timer);
-    }else {
-      orbCountdown.setText("");
-    }
+    if(timer >= 0){
+      shakeTimer(dt, timer);
+      int orbCountdownValue = orbCountdown.getText().toString().equals("") ? -1 :
+              Integer.parseInt(orbCountdown.getText().toString());
+
+      //If we need to "tick"
+      if(orbCountdownValue != timer){
+        if(timer > 10){
+          orbCountdown.setColor(Color.WHITE);
+          orbCountdown.setFontScale(1f);
+        }
+        if(timer < 10 && timer > 3){
+          orbCountdown.setColor(Color.YELLOW);
+        }
+        if(timer == 3){
+          orbCountdown.setFontScale(1.2f);
+        }
+        if(timer == 2){
+          orbCountdown.setColor(Color.ORANGE);
+          orbCountdown.setFontScale(1.4f);
+        }
+        if(timer == 1){
+          orbCountdown.setColor(Color.RED);
+          orbCountdown.setFontScale(1.9f);
+        }
+        orbCountdown.setText(timer);
+      }
+    } else orbCountdown.setText("");
+
+
 
     if (reloadingGum) {
       for (int i = 0; i < 6; i++) {
@@ -252,6 +283,47 @@ public class HUDController {
       fpsLabel.setText("");
     }
 
+
     stage.draw();
+  }
+
+  /** Shakes the timer, lerping quickly it to a random position.*/
+  private void shakeTimer(float dt, float timer){
+    float xShakeRange;
+    float yShakeRange;
+    float transitionSpeed;
+    final float centerTimerX = stage.getWidth() / 2;
+    final float centerTimerY = stage.getHeight() / 8;
+
+    if(timer > 3){
+      orbCountdown.setX(centerTimerX);
+      orbCountdown.setY(centerTimerY);
+      return;
+    }
+
+    if(timer == 3){
+      xShakeRange = 10f;
+      yShakeRange = 2f;
+      transitionSpeed = 7f;
+    }
+    else if (timer == 2){
+      xShakeRange = 20f;
+      yShakeRange = 10f;
+      transitionSpeed = 7f;
+    }
+    else{
+      xShakeRange = 70f;
+      yShakeRange = 30f;
+      transitionSpeed = 7f;
+    }
+
+    shakeAdjust = new Vector2(
+            centerTimerX + MathUtils.random(-xShakeRange, xShakeRange),
+            centerTimerY + MathUtils.random(-yShakeRange, yShakeRange)
+    );
+
+    orbCountdown.setX(MathUtils.lerp(orbCountdown.getX(), shakeAdjust.x, transitionSpeed * dt));
+    orbCountdown.setY(MathUtils.lerp(orbCountdown.getY(), shakeAdjust.y, transitionSpeed * dt));
+
   }
 }

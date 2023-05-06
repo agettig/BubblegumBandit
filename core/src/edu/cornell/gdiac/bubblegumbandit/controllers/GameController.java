@@ -797,6 +797,7 @@ public class GameController implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
+
         backgrounds.draw(canvas);
 
         PlayerController inputResults = PlayerController.getInstance();
@@ -804,7 +805,7 @@ public class GameController implements Screen {
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
+        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum, delta);
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
