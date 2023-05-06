@@ -34,13 +34,19 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     private TextureRegion outline;
 
-    /** EnemyModel's unique ID */
+    /**
+     * EnemyModel's unique ID
+     */
     private int id;
 
-    /** The amount to slow the character down  */
+    /**
+     * The amount to slow the character down
+     */
     private float damping;
 
-    /** true if this EnemyModel is facing right; false if facing left */
+    /**
+     * true if this EnemyModel is facing right; false if facing left
+     */
     private boolean faceRight;
 
     // SENSOR FIELDS
@@ -60,12 +66,23 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     public RayCastCone attacking;
 
-    /**Reference to the Box2D world */
-    private World world;
+    /**
+     * Ray casts used to detect blocks and hazards in enemy paths
+     */
+    public RayCastEnv envRays;
+
+    /**
+     * Reference to the Box2D world
+     */
+    protected World world;
 
     public int getNextAction() {
         return nextAction;
     }
+
+    /** Index of the current frame of the animation playing
+     * for this EnemyModel.*/
+    private int currentFrameNum;
 
     protected int nextAction;
 
@@ -76,7 +93,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         this.nextAction = nextAction;
     }
 
-    /** EnemyModel's y-scale: used for flipping gravity. */
+    /**
+     * EnemyModel's y-scale: used for flipping gravity.
+     */
     protected float yScale;
 
     /**
@@ -90,16 +109,21 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     private TextureRegion squishedGumOutline;
 
     private CircleShape sensorShape;
-    /** The name of the sensor for detection purposes */
+    /**
+     * The name of the sensor for detection purposes
+     */
 
 
     private String sensorName;
-    /** The color to paint the sensor in debug mode */
+    /**
+     * The color to paint the sensor in debug mode
+     */
     private TextureRegion gummed_robot;
 
 
-
-    /** Texture of the gum overlay when gummed */
+    /**
+     * Texture of the gum overlay when gummed
+     */
     private TextureRegion gumTexture;
 
     private float speed;
@@ -110,21 +134,31 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     public static float PURSUE_SPEED;
 
-    /**tile that the robot is currently standing on, or last stood on if in the air */
+    /**
+     * tile that the robot is currently standing on, or last stood on if in the air
+     */
     private TileModel tile;
 
-    /** Position of enemy in need of help */
+    /**
+     * Position of enemy in need of help
+     */
     private Vector2 helpingTarget;
 
     // endRegion
 
-    /** Whether the enemy has a shield */
+    /**
+     * Whether the enemy has a shield
+     */
     private boolean hasShield;
 
-    /** Whether a shielded enemy's shield is lowered, happens during attacking */
+    /**
+     * Whether a shielded enemy's shield is lowered, happens during attacking
+     */
     private boolean isShielded;
 
-    /** texture for the shield surrounding an enemy */
+    /**
+     * texture for the shield surrounding an enemy
+     */
     private TextureRegion shield;
 
     /** The GumModel instance that stuck this EnemyModel. */
@@ -132,29 +166,42 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     // endRegion
 
-    /**Returns this EnemyModel's unique integer ID.
+    /**
+     * Returns this EnemyModel's unique integer ID.
      *
-     * @returns this EnemyModel's unique ID. */
-    public int getId() { return id; };
+     * @returns this EnemyModel's unique ID.
+     */
+    public int getId() {
+        return id;
+    }
 
-    /** Returns true if this EnemyModel is facing right;
+    ;
+
+    /**
+     * Returns true if this EnemyModel is facing right;
      * otherwise, returns false.
      *
      * @return true if this EnemyModel is facing right;
-     *        otherwise, false.*/
-    public boolean getFaceRight(){
+     * otherwise, false.
+     */
+    public boolean getFaceRight() {
         return faceRight;
     }
 
-    /** Returns this EnemyModel's Y-Scale.
+    /**
+     * Returns this EnemyModel's Y-Scale.
      *
      * @return this EnemyModel's Y-Scale.
-     * */
-    public float getYScale(){ return yScale;}
+     */
+    public float getYScale() {
+        return yScale;
+    }
 
-    /** Makes this EnemyModel face right.
+    /**
+     * Makes this EnemyModel face right.
      *
-     *@param isRight if this EnemyModel is facing right.*/
+     * @param isRight if this EnemyModel is facing right.
+     */
     public void setFaceRight(boolean isRight) {
         faceRight = isRight;
     }
@@ -173,7 +220,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * Returns true if this EnemyModel is upside-down.
      *
      * @returns true if this EnemyModel is upside-down.
-     * */
+     */
     public boolean isFlipped() {
         return isFlipped;
     }
@@ -192,8 +239,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * Creates an EnemyModel.
      *
      * @param world The Box2D world.
-     * @param id The unique ID to assign to this EnemyModel.
-     * */
+     * @param id    The unique ID to assign to this EnemyModel.
+     */
     public EnemyModel(World world, int id) {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
@@ -203,9 +250,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         yScale = 1f;
         this.world = world;
         this.id = id;
-        vision = new RayCastCone(7f, 0f, (float) Math.PI/2, Color.YELLOW);
+        vision = new RayCastCone(7f, 0f, (float) Math.PI / 2, Color.YELLOW);
         sensing = new RayCastCone(4f, (float) Math.PI, (float) Math.PI, Color.PINK);
-        attacking = new RayCastCone(6f, 0, (float) Math.PI/2, Color.BLUE);
+        attacking = new RayCastCone(6f, 0, (float) Math.PI / 2, Color.BLUE);
         gummed = false;
         stuck = false;
         collidedObs = new ObjectSet<>();
@@ -225,12 +272,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * Initializes this EnemyModel's physics values from JSON.
      *
-     * @param directory the asset manager
-     * @param x the x position of this enemy
-     * @param y the y position of this enemy
+     * @param directory     the asset manager
+     * @param x             the x position of this enemy
+     * @param y             the y position of this enemy
      * @param constantsJson the JSON subtree defining all enemies
-     * @param x the x position of this EnemyModel
-     * @param y the y position of this EnemyModel
+     * @param x             the x position of this EnemyModel
+     * @param y             the y position of this EnemyModel
      * @param constantsJson the JSON subtree defining all EnemyModels
      */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
@@ -278,7 +325,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         outline = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
         String animationKey;
-        if(constantsJson.get("animations")!=null) {
+        if (constantsJson.get("animations") != null) {
             animationKey = constantsJson.get("animations").asString();
             animationController = new AnimationController(directory, animationKey);
         }
@@ -299,12 +346,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         try {
             String cname = constantsJson.get("sensorColor").asString().toUpperCase();
             Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-            sensorColor = new Color((Color)field.get(null));
+            sensorColor = new Color((Color) field.get(null));
         } catch (Exception e) {
             sensorColor = null; // Not defined
         }
         opacity = constantsJson.get("sensorOpacity").asInt();
-        sensorColor.mul(opacity/255.0f);
+        sensorColor.mul(opacity / 255.0f);
         sensorName = constantsJson.get("sensorName").asString();
         sensorColor.mul(opacity / 255.0f);
         sensorColor = Color.RED;
@@ -313,6 +360,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         shield = new TextureRegion(directory.getEntry(shieldKey, Texture.class));
 
         stuckGum = new HashSet<>();
+
+        envRays = new RayCastEnv(Color.GREEN, getHeight());
     }
 
     public CircleShape getSensorShape() {
@@ -333,7 +382,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         updateMovement(nextAction);
     }
 
-    public boolean fired(){
+    public boolean fired() {
         return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
     }
 
@@ -341,42 +390,48 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return attacking;
     }
 
+    public int getCurrentFrameNum(){return currentFrameNum;}
+
     public void updateMovement(int nextAction){
         // Determine how we are moving.
-        boolean movingLeft  = (nextAction & CONTROL_MOVE_LEFT) != 0;
+
+        // turn if block or hazard in the way
+        if (envRays.getBodies().size > 0) {
+            setFaceRight(!faceRight);
+            return;
+        }
+        boolean movingLeft = (nextAction & CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0;
-        boolean movingUp    = (nextAction & CONTROL_MOVE_UP) != 0;
-        boolean movingDown  = (nextAction & CONTROL_MOVE_DOWN) != 0;
+        boolean movingUp = (nextAction & CONTROL_MOVE_UP) != 0;
+        boolean movingDown = (nextAction & CONTROL_MOVE_DOWN) != 0;
 
         // Process movement command.
         if (movingLeft) {
-            if ((previousAction & CONTROL_MOVE_LEFT) == 0){
+            if ((previousAction & CONTROL_MOVE_LEFT) == 0) {
                 setY((int) getY() + .5f);
             }
             setVX(-speed);
             setFaceRight(false);
         } else if (movingRight) {
-            if ((previousAction & CONTROL_MOVE_RIGHT) == 0){
+            if ((previousAction & CONTROL_MOVE_RIGHT) == 0) {
                 setY((int) getY() + .5f);
             }
             setVX(speed);
             setFaceRight(true);
         } else if (movingUp) {
 
-            if (!isFlipped){
+            if (!isFlipped) {
                 setX((int) getPosition().x + .5f);
                 setVY(speed);
-            }
-            else{
+            } else {
                 setX((int) getPosition().x + .5f);
             }
             setVX(0);
         } else if (movingDown) {
-            if (isFlipped){
+            if (isFlipped) {
                 setX((int) getPosition().x + .5f);
                 setVY(-speed);
-            }
-            else{
+            } else {
                 setX((int) getPosition().x + .5f);
             }
             setVX(0);
@@ -400,8 +455,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             float y = getY() * drawScale.y;
 
             if(animationController!=null) {
+                currentFrameNum = animationController.getFrameNum();
                 drawn = animationController.getFrame();
-                x-=(getWidth()/2)*drawScale.x*effect;
+                x -= (getWidth() / 2) * drawScale.x * effect;
             }
 
             canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
@@ -409,27 +465,29 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             //if gummed, overlay with gumTexture
             if (gummed) {
                 //if speed is below threshold, draw static gum
-                if(Math.abs(getVY())<=5) {
+                if (Math.abs(getVY()) <= 5) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
                             y, getAngle(), 1, yScale);
                 } else {
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y,
-                            getX() * drawScale.x+(drawn.getRegionWidth()-squishedGum.getRegionWidth())/2f,
-                            y-squishedGum.getRegionHeight()*yScale/2, getAngle(), 1, yScale);
+                            getX() * drawScale.x + (drawn.getRegionWidth() - squishedGum.getRegionWidth()) / 2f,
+                            y - squishedGum.getRegionHeight() * yScale / 2, getAngle(), 1, yScale);
                 }
 //
             }
 
             //if shielded, overlay shield
-            if (isShielded){
-                canvas.draw(shield, Color.WHITE, origin.x , origin.y, (getX() - (getDimension().x/2))* drawScale.x ,
-                        y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale);
+            if (isShielded) {
+                canvas.draw(shield, Color.WHITE, origin.x, origin.y, (getX() - (getDimension().x / 2)) * drawScale.x,
+                        y - shield.getRegionHeight() / 8f * yScale, getAngle(), 1, yScale);
             }
 //            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
         }
     }
 
-    /** Draw method for when highlighting the enemy before unsticking them */
+    /**
+     * Draw method for when highlighting the enemy before unsticking them
+     */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
             float x = getX() * drawScale.x;
@@ -440,19 +498,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 //                    y, getAngle(), effect, yScale);
 
             //if speed is below threshold, draw static gum
-            if (Math.abs(getVY())<=5) {
-                canvas.draw(outline, Color.WHITE, origin.x, origin.y, x-5,
-                        y-5*yScale, getAngle(), 1, yScale);
+            if (Math.abs(getVY()) <= 5) {
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, x - 5,
+                        y - 5 * yScale, getAngle(), 1, yScale);
             } else {
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
-                        x +(gummedTexture.getRegionWidth()
-                                -squishedGum.getRegionWidth())/2f-5f,
-                        y-squishedGum.getRegionHeight()*yScale/2-5*yScale, getAngle(), 1, yScale);
+                        x + (gummedTexture.getRegionWidth()
+                                - squishedGum.getRegionWidth()) / 2f - 5f,
+                        y - squishedGum.getRegionHeight() * yScale / 2 - 5 * yScale, getAngle(), 1, yScale);
 
             }
         }
     }
-
 
 
     /**
@@ -468,6 +525,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         attacking.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
+        envRays.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
     }
 
     /**
@@ -475,12 +533,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      */
     public void updateRayCasts() {
 
-        vision.setDirection(faceRight? (float) 0 : (float) Math.PI);
-        sensing.setDirection(!faceRight? (float) 0 : (float) Math.PI);
-        attacking.setDirection(faceRight? (float) 0 : (float) Math.PI);
+        vision.setDirection(faceRight ? (float) 0 : (float) Math.PI);
+        sensing.setDirection(!faceRight ? (float) 0 : (float) Math.PI);
+        attacking.setDirection(faceRight ? (float) 0 : (float) Math.PI);
+        envRays.setFaceRight(faceRight);
         vision.update(world, getPosition());
         sensing.update(world, getPosition());
         attacking.update(world, getPosition());
+        envRays.update(world, getPosition());
     }
 
     /**
@@ -488,7 +548,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * them to the Box2D world.
      *
      * @param world Box2D world to store body
-     *
      * @return true if object allocation succeeded; otherwise,
      * false.
      */
@@ -530,7 +589,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     /**
      * Flips the player's angle and direction when the world gravity is flipped
-     /**
+     * /**
      * Negates this EnemyModel's current "flipped" state (if it is
      * grounded).
      */
@@ -539,23 +598,26 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     }
 
 
-    public void changeSpeed(float speed){
+    public void changeSpeed(float speed) {
         this.speed = speed;
     }
 
-    public float getYFeet(){
+    public float getYFeet() {
         return getY();
     }
 
 
     //shielded attributes
-    public void hasShield(boolean value){
+    public void hasShield(boolean value) {
         hasShield = value;
     }
-    public boolean isShielded(){return isShielded;}
 
-    public void isShielded(boolean value){
-        if (hasShield){
+    public boolean isShielded() {
+        return isShielded;
+    }
+
+    public void isShielded(boolean value) {
+        if (hasShield) {
             isShielded = value;
         }
     }

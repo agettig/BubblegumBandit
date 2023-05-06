@@ -18,6 +18,7 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -28,6 +29,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
@@ -36,6 +38,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -597,14 +600,14 @@ public class LevelModel {
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();
-                    glass.initialize(directory, x, y, constants.get("glass"), "glass");
+                    glass.initialize(directory, x, y, scale, object, constants.get("glass"), "glass");
                     activate(glass);
                     glass.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     glass.setDrawScale(scale);
                     break;
                 case "hazard":
                     SpecialTileModel hazard = new SpecialTileModel();
-                    hazard.initialize(directory, x, y, constants.get("hazard"), "hazard");
+                    hazard.initialize(directory, x, y, scale, object, constants.get("hazard"), "hazard");
                     activate(hazard);
                     hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     hazard.setDrawScale(scale);
@@ -793,6 +796,10 @@ public class LevelModel {
                 if (distFromPlayer < UPDATE_DIST) {
                     controller.getEnemyStateMachine().update();
                 }
+                // if not updating set next action to no action
+                else{
+                    enemy.setNextAction(InputController.CONTROL_NO_ACTION);
+                }
             }
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
@@ -847,7 +854,8 @@ public class LevelModel {
      * @param canvas the drawing context
      */
     public void draw(GameCanvas canvas, JsonValue levelFormat, TextureRegion
-            gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd) {
+            gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd,
+                     float dt) {
         canvas.begin();
 //        canvas.clear();
 
@@ -862,7 +870,6 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
-        Set<Obstacle> postLaserDraw = new HashSet<>();
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
         for (Obstacle obj : objects) {
@@ -872,7 +879,7 @@ public class LevelModel {
             }
 
         }
-        drawChargeLasers(laserBeam, laserBeamEnd, canvas);
+        drawChargeLasers(laserBeam, laserBeamEnd, canvas, dt);
 
 
 
@@ -900,12 +907,16 @@ public class LevelModel {
         alarms.drawLights(canvas, scale);
     }
 
-    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
+    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas, float dt) {
+
+
 
         //Local variables to scale our laser depending on its phase.
-        final float chargeLaserScale = .5f;
-        final float lockedLaserScale = 1f;
-        final float firingLaserScale = 1.2f;
+        final float chargeLaserScale = 1f;
+        final float lockedLaserScale = 1.2f;
+        final float firingLaserScale = 1.5f;
+
+
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
 
@@ -933,41 +944,95 @@ public class LevelModel {
 
                 //Math calculations for the laser.
                 Vector2 intersect = enemy.getBeamIntersect();
-                Vector2 enemyPos = enemy.getPosition();
+                Vector2 beamStartPos = enemy.getBeamOrigin();
                 Vector2 dir = new Vector2(
-                        intersect.x - enemyPos.x,
-                        intersect.y - enemyPos.y
+                        intersect.x - beamStartPos.x,
+                        intersect.y - beamStartPos.y
                 );
 
-                beam.setRegionWidth(2);
+                beam.setRegionWidth(1);
                 int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
-                numSegments -= (((enemy.getWidth()/2)*scale.x))/beam.getRegionWidth();
                 dir.nor();
+
+                //Offset calculations to match the animation.
+
+                float laserEyeNormalOffsetXLeft = 41 + canvas.getShadowOffset();
+                float laserEyeNormalOffsetYLeft = 20;
+                float laserEyeJettedOffsetXRight = 41 + + canvas.getShadowOffset();
+                float laserEyeJettedOffsetYRight = 20;
+                float jetBoostY = 3;
+
+                boolean jetted = enemy.getCurrentFrameNum() > 0;
+
 
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
 
                     //Calculate the positions and angle of the charging laser.
-                    float enemyOffsetX = enemy.getFaceRight() ? (enemy.getWidth()): -(enemy.getWidth());
-                    float enemyOffsetY = enemy.getHeight()*10;
+                    float enemyOffsetX = enemy.getFaceRight()? laserEyeJettedOffsetXRight : laserEyeNormalOffsetXLeft;
+                    float enemyOffsetY = enemy.getFaceRight()? laserEyeJettedOffsetYRight : laserEyeNormalOffsetYLeft;
+                    if(jetted) enemyOffsetY += jetBoostY;
+                    if(!enemy.getFaceRight()) enemyOffsetX = -enemyOffsetX;
+
+
                     float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
                     float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
-                    float slope = (intersect.y - enemyPos.y)/(intersect.x - enemyPos.x);
-                    float ang = (float) Math.atan(slope);
+                    float scaleX = 1f;
+                    float scaleY = laserThickness;
+                    float ang = (float) Math.atan2(dir.y, dir.x);
 
-                    enemyOffsetX -= (enemy.getWidth()/2)*scale.x;
-                    if(enemy.getFaceRight()) enemyOffsetX *= -1;
+                    //Vibrations
+                    if(enemy.firingLaser()){
+                        if(Math.floor(Math.random()*10) % 2 == 0){
+                            scaleX *= (1f + Math.random());
+                            scaleY *= (1f + Math.random());
+                        }
+                        else if (Math.floor(Math.random()*10) % 3 == 0){
+                            scaleX *= (1f + Math.random());
+                            scaleY *= (1f + Math.random());
+                        }
+                    }
 
                     canvas.draw(
                             beam,
                             laserColor,
-                            beam.getRegionWidth(),
-                            beam.getRegionHeight(),
+                            beam.getRegionWidth()/2f,
+                            beam.getRegionHeight()/2f,
                             x + enemyOffsetX,
-                            y + enemyOffsetY * enemy.getYScale(),
+                            y + (enemyOffsetY * enemy.getYScale()),
                             ang,
-                            1f,
-                            1 * laserThickness);
+                            scaleX,
+                            scaleY);
+
+
+                    if(i == 0){
+                        if(!beamEnd.isFlipX()) beamEnd.flip(true, false);
+                        canvas.draw(
+                                beamEnd,
+                                laserColor,
+                                beamEnd.getRegionWidth()/2f,
+                                beamEnd.getRegionHeight()/2f,
+                                x + enemyOffsetX,
+                                y+ (enemyOffsetY * enemy.getYScale()),
+                                ang,
+                                scaleX,
+                                scaleY);
+
+                    }
+
+                    if(i == numSegments - 1){
+                        if(beamEnd.isFlipX()) beamEnd.flip(true, false);
+                        canvas.draw(
+                                beamEnd,
+                                laserColor,
+                                beamEnd.getRegionWidth()/2f,
+                                beamEnd.getRegionHeight()/2f,
+                                x + enemyOffsetX,
+                                y+ (enemyOffsetY * enemy.getYScale()),
+                                ang,
+                                scaleX,
+                                scaleY);
+                    }
                 }
             }
         }
@@ -1131,6 +1196,9 @@ public class LevelModel {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                 if (!ob.equals(bandit) && ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.getName().equals("gumProjectile")) {
                     if (ob.getName().equals("projectile")) {
+                        return -1;
+                    }
+                    if (ob.getName().equals("hazard")) {
                         return -1;
                     }
                     if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {

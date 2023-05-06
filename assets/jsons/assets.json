@@ -22,7 +22,6 @@
         "unstickIcon" : "textures/tutorial/unstickIcon.png",
         "upIcon" : "textures/tutorial/upIcon.png",
         "downIcon" : "textures/tutorial/downIcon.png",
-
         "terrain": {
             "file": "textures/environment/tileset.png"
         },
@@ -212,7 +211,7 @@
         "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
         "largeEnemy": "textures/largeEnemy/largeEnemy.png",
         "laserBeam": "textures/largeEnemy/laserBeam.png",
-        "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
+        "laserBeamEnd": "textures/largeEnemy/laserRedEnd.png",
         "largeShield": "textures/largeEnemy/bigShield.png",
         "largeWalk":  {
             "file": "textures/largeEnemy/largeAnim.png",
@@ -343,7 +342,8 @@
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
-        "collectItem": "sounds/collectItem.wav"
+        "collectItem": "sounds/collectItem.wav",
+        "error": "sounds/error.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

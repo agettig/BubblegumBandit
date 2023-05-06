@@ -1354,6 +1354,35 @@ public class GameCanvas {
 
     }
 
+    public void drawEnvRays(Color color, Array<Vector2> ends, float x, float y, float scalex, float scaley, boolean faceRight) {
+        if (active != DrawPass.DEBUG) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
+            return;
+        }
+        fovRender.setProjectionMatrix(camera.combined);
+        fovRender.begin(ShapeRenderer.ShapeType.Line);
+        local.applyTo(vertex);
+        fovRender.setColor(color);
+
+        float x2 = 0;
+
+        for (Vector2 end : ends) {
+            x2 = faceRight ? (x + 2) * scalex :  (x - 2) * scalex;
+
+            fovRender.line(x * scalex, (end.y + y) * scaley, x2, (end.y + y) * scaley);
+        }
+
+        fovRender.end();
+
+    }
+
+    /**
+     * Returns the shadow offset for sprites.
+     *
+     * @return the offset for shadows.
+     * */
+    public float getShadowOffset(){return shadowOffset;}
+
     public void drawPhysicsLevel(CircleShape shape, Color color, float x, float y, float sx, float sy) {
         float x0 = x * sx;
         float y0 = y * sy;

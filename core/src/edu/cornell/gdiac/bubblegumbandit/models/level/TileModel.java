@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -25,6 +26,8 @@ public class TileModel extends BoxObstacle {
     private boolean bottomRight;
     /** Whether the tile has a corner in the bottom left */
     private boolean bottomLeft;
+
+    private PolygonShape square;
 
     /**
      * Create a new TileModel with degenerate settings
@@ -89,6 +92,8 @@ public class TileModel extends BoxObstacle {
         debugColor.mul(opacity/255.0f);
         setDebugColor(debugColor);
         setTexture(texture);
+
+
     }
 
     /**
@@ -100,5 +105,13 @@ public class TileModel extends BoxObstacle {
         if (texture != null) {
             canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
         }
+
+    }
+
+    public void drawDebug(GameCanvas canvas){
+        //smaller than grid square
+        square = new PolygonShape();
+        square.setAsBox(0.5f, 0.5f);
+        canvas.drawPhysics(square, Color.GREEN, getX(), getY(), 0, drawScale.x, drawScale.y);
     }
 }

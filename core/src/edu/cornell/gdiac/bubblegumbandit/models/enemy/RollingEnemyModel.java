@@ -13,8 +13,17 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONT
  * */
 public class RollingEnemyModel extends EnemyModel {
 
-    /** Upper bound for how many seconds an attack (charging + rolling) can last */
-    private final int ATTACK_TIME = 60;
+    /**
+     * Upper bound for how many seconds an attack (charging + rolling) can last
+     */
+    private final int ATTACK_TIME = 75;
+
+    /**
+     * Time that rolling enemies take to charge
+     */
+    private final int CHARGE_TIME = 15;
+
+
 
     /** Time a RollingEnemyModel must wait in-between attacks  */
     private final int COOLDOWN = 120;
@@ -153,13 +162,19 @@ public class RollingEnemyModel extends EnemyModel {
         boolean movingRight = (nextAction & CONTROL_MOVE_RIGHT) != 0 && (previousAction & CONTROL_MOVE_RIGHT) != 0;
 
         if (fired() && isRolling && (movingLeft || movingRight) && rollCoolDown <= 0) {
+            float speed = 0;
             if (movingLeft) {
-                setVX(-ROLL_SPEED);
+                speed = -ROLL_SPEED;
                 setFaceRight(false);
             } else {
-                setVX(ROLL_SPEED);
+                speed = ROLL_SPEED;
                 setFaceRight(true);
             }
+            if (attackDuration < CHARGE_TIME){
+                speed = (-speed * .75f);
+            }
+            setVX(speed);
+
         } else {
             updateMovement(nextAction);
         }
@@ -223,5 +238,9 @@ public class RollingEnemyModel extends EnemyModel {
     public void resetAttack() {
         isRolling = false;
         attackDuration = 0;
+    }
+
+    public boolean isRolling(){
+        return isRolling;
     }
 }

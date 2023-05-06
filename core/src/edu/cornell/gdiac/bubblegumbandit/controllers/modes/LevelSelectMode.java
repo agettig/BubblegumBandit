@@ -122,6 +122,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Camera zoom out */
     private final static float ZOOM = 1.5f;
 
+    /**
+     * Whether we should return to the main menu
+     * */
+    private boolean returnToMain;
+
     // music
 
     /** music to play */
@@ -183,6 +188,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         sunfish = new SunfishModel(sunfish_texture, fire, boost, SPACE_GAP, SPACE_HEIGHT - SPACE_GAP);
         sunfish.activatePhysics(world);
+
+        returnToMain = false;
 
         background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
 
@@ -289,7 +296,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
          //y bounds
         if (sunfish.getY() < camHeight) {
             canvas.getCamera().setTargetY(camHeight);
-
         }
         if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
             canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
@@ -341,6 +347,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             // We are ready, notify our listener
             if (isReady() && listener != null) {
                 listener.exitScreen(this, 0);
+            }
+
+            if (returnToMain && listener!=null){
+                listener.exitScreen(this, 1);
             }
         }
     }
@@ -519,6 +529,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         if (keycode == Input.Keys.SPACE){
             sunfish.setBoosting(false);
         }
+
+        if (keycode == Input.Keys.ESCAPE){
+            returnToMain = true;
+        }
         return true;
     }
 
@@ -614,6 +628,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         // Useless if called in outside animation loop
         active = false;
         ready = false;
+        returnToMain = false;
         for (LevelIconModel level: levels){
             level.setPressState(0);
         }
