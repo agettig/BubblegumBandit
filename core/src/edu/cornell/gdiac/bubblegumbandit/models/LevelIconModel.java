@@ -20,8 +20,17 @@ public class LevelIconModel {
     /** texture for the level number to sit in*/
     private TextureRegion marker;
 
+    /** texture to mark a successful npc rescue*/
+    private TextureRegion success;
+
+    /** texture to mark a unsuccessful or incomplete npc rescue*/
+    private TextureRegion fail;
+
     /** the distance between the bottom of the marker and the top of the ship, in pixels*/
     private static final float MARKER_OFFSET = 30;
+
+    /** the distance between each icon for a save, in pixels*/
+    private static final float NPC_SPACE = 20;
 
     /** The level number this icon represents */
     private int level;
@@ -56,9 +65,11 @@ public class LevelIconModel {
     /** The number of collected stars in the level, updated based on save data*/
     private int stars;
 
-    public LevelIconModel (TextureRegion texture, TextureRegion marker, int level, float x, float y) {
+    public LevelIconModel (TextureRegion texture, TextureRegion marker, TextureRegion success, TextureRegion fail, int level, float x, float y) {
         this.texture = texture;
         this.marker = marker;
+        this.success = success;
+        this.fail = fail;
         this.level = level;
         this.x = x;
         this.y = y;
@@ -134,15 +145,46 @@ public class LevelIconModel {
     public void draw(GameCanvas canvas, BitmapFont font){
         Vector2 pos = getCenter();
         Color numTint = Color.WHITE;
+
+        //draw ship icon
         if (SaveData.unlocked(level)){
             canvas.draw(texture, tint, x, y, texture.getRegionWidth(), texture.getRegionHeight());
+
+            //draw npc status
+            drawNPCs(canvas, pos);
         } else {
             canvas.draw(texture, Color.DARK_GRAY, x, y, texture.getRegionWidth(), texture.getRegionHeight());
             numTint = Color.DARK_GRAY;
         }
-//        System.out.println(SaveData.unlocked(level));
+
+        //draw number icons
         canvas.draw(marker, numTint, marker.getRegionWidth()/2, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
         canvas.drawText(valueOf(level), font,numTint, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
+    }
+
+    public void drawNPCs(GameCanvas canvas, Vector2 center){
+        //TODO: replace with calls to SaveData
+        //3 total saves, 2 success, 1 failure
+        int total = 3;
+        int successes = 2;
+
+        //the start x, relative to the center: center.x - the size the icons will take up / 2
+        float start = center.x - (((total-1) * (success.getRegionWidth() + NPC_SPACE))/ 2f);
+        float space = NPC_SPACE + success.getRegionWidth();
+        //note: success and fail icons are the same size
+        TextureRegion icon = success;
+
+        for (int i = 0; i < total; i++){
+
+            if (i == successes){
+                //once drawn all the successes, the rest are failures
+                icon = fail;
+            }
+            canvas.draw(icon, Color.WHITE, success.getRegionWidth()/2, success.getRegionHeight(),
+                    start + space * i, center.y - texture.getRegionHeight()/2f - MARKER_OFFSET, 0,
+                    1, 1);
+
+        }
     }
 
 

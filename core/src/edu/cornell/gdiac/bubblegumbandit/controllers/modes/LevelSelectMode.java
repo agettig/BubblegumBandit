@@ -209,11 +209,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         float flip = 0;
         TextureRegion texture;
         TextureRegion marker = new TextureRegion (directory.getEntry("marker", Texture.class));
+        TextureRegion success = new TextureRegion (directory.getEntry("o", Texture.class));
+        TextureRegion fail = new TextureRegion (directory.getEntry("x", Texture.class));
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
             texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
             flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
-            levels.add(new LevelIconModel(texture, marker, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
+            levels.add(new LevelIconModel(texture, marker,success, fail, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
         }
     }
 

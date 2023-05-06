@@ -13,6 +13,8 @@
         "boost" : "textures/levelSelect/boost.png",
         "point" : "textures/levelSelect/point.png",
         "marker": "textures/levelSelect/marker.png",
+        "x": "textures/levelSelect/x.png",
+        "o": "textures/levelSelect/o.png",
 
         "ship1" : "textures/levelSelect/level1.png",
         "ship2" : "textures/levelSelect/level1.png",
