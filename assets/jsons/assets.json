@@ -60,6 +60,17 @@
                 }
             }
         },
+        "banditReload": {
+            "file": "textures/bandit/banditReload.png",
+            "wrap": false,
+            "sprites": {
+                "reload": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
         "banditIdle":  {
             "file": "textures/bandit/banditIdle.png",
             "wrap": false,
@@ -272,6 +283,12 @@
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
+        "largeGumMidair" : "textures/gum/largeGumMidair.png",
+        "largeGumMidairOutline": "textures/gum/largeGumMidairOutline.png",
+        "medGumMidair" :  "textures/gum/medGumMidair.png",
+        "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
+        "halfStuck" : "textures/gum/halfStuck.png",
+        "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,
@@ -283,7 +300,31 @@
                 }
             }
         },
-
+        "captive" : "textures/environment/captive.png",
+        "captiveIcon": "textures/UI/captiveIcon.png",
+        "captiveIconOutline": "textures/UI/captiveIconOutline.png",
+        "captiveFloat":{
+            "file": "textures/environment/captiveFloat.png",
+            "wrap": false,
+            "sprites": {
+                "float": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "captiveFree":{
+            "file": "textures/environment/captiveFree.png",
+            "wrap": false,
+            "sprites": {
+                "free": {
+                    "size": 13,
+                    "rows": 1,
+                    "cols": 13
+                }
+            }
+        },
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",

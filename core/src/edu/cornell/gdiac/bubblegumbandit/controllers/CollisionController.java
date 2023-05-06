@@ -10,8 +10,8 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
@@ -158,7 +158,7 @@ public class CollisionController implements ContactListener {
             checkProjectileCollision(obstacleA, obstacleB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
-            resolveStarCollision(obstacleA, obstacleB);
+            resolveCaptiveCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
             resolveCrusherCollision(obstacleA, fixA, obstacleB, fixB);
             resolveDoorSensorCollision(obstacleA, fixA, obstacleB, fixB, true);
@@ -802,18 +802,18 @@ public class CollisionController implements ContactListener {
         }
     }
 
-    /**Check if there was a collision between the player and a star, if so have the player collect the star*/
-    public void resolveStarCollision(Obstacle bd1, Obstacle bd2) {
-        if (bd1.getName().equals("star") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()) {
-            ((Collectible) bd1).setCollected(true);
+    /**Check if there was a collision between the player and a captive's cell, if so have the player free the NPC */
+    public void resolveCaptiveCollision(Obstacle bd1, Obstacle bd2) {
+        if (bd1.getName().equals("star") && bd2 == levelModel.getBandit() && !((Captive) bd1).getCollected()) {
+            ((Captive) bd1).setCollected(true);
             levelModel.getBandit().collectStar();
             SoundController.playSound("collectItem", .75f);
-            bd1.markRemoved(true);
-        } else if (bd2.getName().equals("star") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
-            ((Collectible) bd2).setCollected(true);
+
+        } else if (bd2.getName().equals("star") && bd1 == levelModel.getBandit() && !((Captive) bd2).getCollected()) {
+            ((Captive) bd2).setCollected(true);
             levelModel.getBandit().collectStar();
             SoundController.playSound("collectItem", .75f);
-            bd2.markRemoved(true);
+
         }
     }
 

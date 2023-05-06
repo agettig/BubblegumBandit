@@ -32,7 +32,7 @@ import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.*;
  */
 public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Shield {
 
-    private TextureRegion outline;
+    protected TextureRegion outline;
 
     /**
      * EnemyModel's unique ID
@@ -105,8 +105,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     private TextureRegion gummedTexture;
 
-    private TextureRegion squishedGum;
-    private TextureRegion squishedGumOutline;
+    protected TextureRegion squishedGum;
+    protected TextureRegion squishedGumOutline;
 
     private CircleShape sensorShape;
     /**
@@ -124,7 +124,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * Texture of the gum overlay when gummed
      */
-    private TextureRegion gumTexture;
+    protected TextureRegion gumTexture;
 
     private float speed;
 
@@ -159,7 +159,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * texture for the shield surrounding an enemy
      */
-    private TextureRegion shield;
+    protected TextureRegion shield;
 
     /** The GumModel instance that stuck this EnemyModel. */
     private HashSet<GumModel> stuckGum;
@@ -312,11 +312,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         debugColor.mul(opacity / 255.0f);
         setDebugColor(debugColor);
 
-        squishedGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
-        squishedGumOutline = new TextureRegion(directory.getEntry("stuckOutline", Texture.class));
+        String key = constantsJson.get("midairGumTexture").asString();
+        squishedGum = new TextureRegion(directory.getEntry(key, Texture.class));
+
+
+        key = constantsJson.get("midairGumOutlineTexture").asString();
+        squishedGumOutline = new TextureRegion(directory.getEntry(key, Texture.class));
+
+
 
         // Now get the texture from the AssetManager singleton
-        String key = constantsJson.get("texture").asString();
+        key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
 
         gummedTexture = texture;
@@ -386,6 +392,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return (nextAction & CONTROL_FIRE) == CONTROL_FIRE;
     }
 
+
     public RayCastCone getAttacking() {
         return attacking;
     }
@@ -453,6 +460,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             TextureRegion drawn = texture;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
+            float gumY = y;
+            float gumX = x;
 
             if(animationController!=null) {
                 currentFrameNum = animationController.getFrameNum();
@@ -465,13 +474,14 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             //if gummed, overlay with gumTexture
             if (gummed) {
                 //if speed is below threshold, draw static gum
-                if (Math.abs(getVY()) <= 5) {
-                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                            y, getAngle(), 1, yScale);
+                if(stuck) {
+                    //gumY += yScale*gumTexture.getRegionHeight()/2;
+                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
+                            gumY, getAngle(), 1, yScale);
                 } else {
-                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y,
-                            getX() * drawScale.x + (drawn.getRegionWidth() - squishedGum.getRegionWidth()) / 2f,
-                            y - squishedGum.getRegionHeight() * yScale / 2, getAngle(), 1, yScale);
+                   // gumY += yScale*squishedGum.getRegionHeight()/2;
+                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
+                       gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
                 }
 //
             }
@@ -490,22 +500,18 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
-            float x = getX() * drawScale.x;
-            float y = getY() * drawScale.y;
 
-//            float effect = faceRight ? 1.0f : -1.0f;
-//            canvas.drawWithShadow(gummedTexture, Color.WHITE, origin.x, origin.y, x,
-//                    y, getAngle(), effect, yScale);
 
-            //if speed is below threshold, draw static gum
-            if (Math.abs(getVY()) <= 5) {
-                canvas.draw(outline, Color.WHITE, origin.x, origin.y, x - 5,
+
+            if (stuck) {
+                float y = getY() * drawScale.y; //-yScale*outline.getRegionHeight()/2;
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()*drawScale.x-5,
                         y - 5 * yScale, getAngle(), 1, yScale);
             } else {
+                float y = getY() * drawScale.y; //-yScale*squishedGumOutline.getRegionHeight()/2;
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
-                        x + (gummedTexture.getRegionWidth()
-                                - squishedGum.getRegionWidth()) / 2f - 5f,
-                        y - squishedGum.getRegionHeight() * yScale / 2 - 5 * yScale, getAngle(), 1, yScale);
+                    getX()*drawScale.x-5,
+                    y-5*yScale-yScale*squishedGumOutline.getRegionHeight()/2, getAngle(), 1, yScale);
 
             }
         }

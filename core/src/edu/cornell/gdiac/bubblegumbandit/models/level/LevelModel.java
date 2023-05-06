@@ -152,6 +152,9 @@ public class LevelModel {
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
 
+    /** Current number of captives in the level */
+    private int captiveCount;
+
 
 
     /**
@@ -167,6 +170,7 @@ public class LevelModel {
         debug = false;
         aim = new AimModel();
         icons = new Array<>();
+        captiveCount = 0;
     }
 
     /**
@@ -504,6 +508,8 @@ public class LevelModel {
 
 
 
+
+
             switch (objType) {
                 case "tutorial": {
                     int keyCode = object.get("properties").get(0).getInt("value");
@@ -572,13 +578,20 @@ public class LevelModel {
                 case "orb":
                     orbPlaced = true;
                     orbPosition = new Vector2(x,y);
-                case "star":
                 case "floatingGum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
+                    break;
+                case "star":
+                    captiveCount++;
+                    Captive cap =  new Captive();
+                    cap.initialize(directory, x, y, scale, constants.get(objType));
+                    activate(cap);
+                    cap.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+                    cap.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
                 case "doorVLocked":
                 case "doorV":
@@ -617,6 +630,7 @@ public class LevelModel {
             }
             object = object.next();
         }
+
 
 
         postOrb = postOrb.child();
@@ -751,6 +765,11 @@ public class LevelModel {
             world = null;
             alarms.dispose();
         }
+        captiveCount = 0;
+    }
+
+    public int getTotalCaptives() {
+        return captiveCount;
     }
 
     /**
