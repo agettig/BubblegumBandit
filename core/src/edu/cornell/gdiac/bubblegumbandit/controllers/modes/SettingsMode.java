@@ -188,6 +188,8 @@ public class SettingsMode implements Screen {
 
     private int topPadding = 40;
 
+    private SettingsInputProcessor settingsInputProcessor;
+
     /**
      * Bubblegum Pink color
      * used for hover
@@ -286,7 +288,7 @@ public class SettingsMode implements Screen {
         values = SaveData.getKeyBindings();
         bindings = SaveData.getKeyButtons();
 
-        SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
+        settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
         keyToString = new HashMap<>();
 
@@ -605,13 +607,50 @@ public class SettingsMode implements Screen {
         Table c = new Table();
 
         scrollPane = new ScrollPane(c);
-        scrollPane.getVisualScrollX();
+
+        scrollPane.addListener(new InputListener(){
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println(button);
+                ArrayList<Integer> indices = new ArrayList<>(2);
+
+                for (int i = 0; i < values.length; i++) {
+                    if (values[i] == button) {
+                        indices.add(i);
+                        break;
+                    }
+                }
+
+                if (checkedButton != null) {
+                    int buttonIndex = buttonIndexMap.get(checkedButton);
+
+                    int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
+                    int indexGravityDown = buttonIndexMap.get(toggleGravityDownButton);
+
+
+                    // only no duplicates except for gravity
+                    if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                            !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
+                        SoundController.playSound("error", 1);
+                        return;
+                    }
+
+                    values[buttonIndex] = button;
+                    bindings[buttonIndex] = false;
+                    checkedButton.setText(keyToString.get(button));
+                    checkedButton.setChecked(false);
+                    checkedButton = null;
+                }
+            }
+        });
+
         scrollPane.setScrollbarsVisible(true);
-        scrollPane.debug();
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.getStyle().vScroll = scrollBar;
         scrollPane.getStyle().vScrollKnob = scrollKnob;
         scrollPane.setupFadeScrollBars(.5f,.5f);
+
         c.row();
         c.add(moveLeft).pad(topPadding, 0, 32, 0);
         c.add(moveLeftButton).pad(topPadding, 0, 32, 0);
@@ -685,8 +724,7 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             TextButton button = entry.getKey();
-            boolean inBounds = button.getX() > scrollPane.getX() && button.getX() + button.getWidth() < scrollPane.getX() + scrollPane.getScrollWidth()
-                    && button.getY() + scrollPane.getScrollY() > scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() < scrollPane.getY() + scrollPane.getScrollHeight();
+            boolean inBounds = button.getY() + scrollPane.getScrollY() > scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() < scrollPane.getY() + scrollPane.getScrollHeight();
             if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 + button.getWidth() + spacing,
@@ -719,7 +757,7 @@ public class SettingsMode implements Screen {
 //        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
 
         if (active) {
-            stage.act();
+            stage.act(Gdx.graphics.getDeltaTime());
             draw();
             if (backButtonClicked) {
                 listener.exitScreen(this, 0);
@@ -755,7 +793,7 @@ public class SettingsMode implements Screen {
         SoundController.setMusicVolume(musicSlider.getValue());
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
-        PlayerController.changeControls(values);
+        PlayerController.changeControls(values, bindings);
     }
 
     @Override
