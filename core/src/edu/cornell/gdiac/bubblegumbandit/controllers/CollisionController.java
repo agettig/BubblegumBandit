@@ -633,9 +633,11 @@ public class CollisionController implements ContactListener {
             if (Math.abs(bandit.getVY()) > 1) {
                 shouldFlipGravity = true;
                 bandit.setVY(0);
-                applyKnockback(hazard, bandit, true, 0, 0, 5f);
+                applyKnockback(hazard, bandit, true, 0,
+                    0, 5f, true);
             } else { // Bandit colliding on side of hazard
-                applyKnockback(hazard, bandit, true, 0, 15f, 5f);
+                applyKnockback(hazard, bandit, true, 0,
+                    15f, 5f, true);
             }
         }
     }
@@ -689,17 +691,18 @@ public class CollisionController implements ContactListener {
     private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
-            applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f, 1f);
+            applyKnockback(p, (BanditModel) o, false, p.getDamage(),
+                1f, 1f, false);
         }
         p.destroy();
     }
 
     private void applyKnockback(Obstacle other, BanditModel bandit,
-                                boolean yImpact, float damage, float impactX, float impactY) {
+                                boolean yImpact, float damage, float impactX, float impactY, boolean shock) {
         boolean left = (other.getX() < bandit.getX());
         boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
         bandit.hitPlayer(damage, false);
-        bandit.setKnockback(true);
+        bandit.setKnockback(true, shock);
         if(yImpact)  {
             bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
                     knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);
@@ -728,7 +731,7 @@ public class CollisionController implements ContactListener {
                 boolean leftMedium = (bd1.getX() < bd2.getX());
                 boolean knockBackUp = levelModel.getWorld().getGravity().y < 0;
                 bandit.hitPlayer(((RollingEnemyModel)bd1).getDamage(), false);
-                bandit.setKnockback(true);
+                bandit.setKnockback(true, false);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
             }
         } else if (bd2 instanceof RollingEnemyModel && bd1.equals(bandit)) {

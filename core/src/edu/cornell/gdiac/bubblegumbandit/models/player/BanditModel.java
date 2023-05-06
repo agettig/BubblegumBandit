@@ -239,11 +239,19 @@ public class BanditModel extends CapsuleObstacle {
         return isKnockback;
     }
 
+    public void setKnockback(boolean knockback, boolean shock) {
+        isKnockback = knockback;
+       if( health>0) {
+           if(!shock) animationController.setAnimation("knock", false);
+           else animationController.setAnimation("shock", false);
+       }
+    }
+
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
-       if(knockback && health>0) {
-           animationController.setAnimation("knock", false);
-       }
+        if(knockback && health>0) {
+            animationController.setAnimation("knock", false);
+        }
     }
 
 

@@ -1,4 +1,12 @@
 { "compressionlevel":-1,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"json",
+         "target":"level8.json"
+        }
+    },
  "height":58,
  "infinite":false,
  "layers":[
@@ -1400,6 +1408,11 @@
  "nextobjectid":206,
  "orientation":"orthogonal",
  "properties":[
+        {
+         "name":"captives",
+         "type":"int",
+         "value":3
+        }, 
         {
          "name":"gravity",
          "type":"float",
