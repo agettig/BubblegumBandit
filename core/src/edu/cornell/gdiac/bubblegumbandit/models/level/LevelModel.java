@@ -912,8 +912,8 @@ public class LevelModel {
 
 
         //Local variables to scale our laser depending on its phase.
-        final float chargeLaserScale = 1f;
-        final float lockedLaserScale = 1.2f;
+        final float chargeLaserScale = .75f;
+        final float lockedLaserScale = .9f;
         final float firingLaserScale = 1.5f;
 
 

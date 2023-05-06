@@ -25,7 +25,7 @@ import java.util.Set;
 public class LaserController {
 
     /**How long a LaserModel needs to charge up before locking in. */
-    private float chargeTime = .3f;
+    private float chargeTime = .6f;
 
     /** How long a LaserModel needs to lock in before firing. */
     private float lockTime = .6f;
