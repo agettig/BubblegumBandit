@@ -497,8 +497,6 @@ public class LevelModel {
         }
         tiles.clear();
 
-        System.out.println(reactorTiles.size);
-
         bandit = null;
         goalDoor = null;
         boolean orbPlaced = false;
