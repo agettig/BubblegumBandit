@@ -143,7 +143,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB, contact);
             resolveWinCondition(obstacleA, obstacleB);
-            checkProjectileCollision(obstacleA, obstacleB);
+            checkProjectileCollision(obstacleA, fixA, obstacleB, fixB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
             resolveStarCollision(obstacleA, obstacleB);
@@ -205,6 +205,12 @@ public class CollisionController implements ContactListener {
                 updateCamera(ob1);
             } else if (ob2.getName().equals("door") && avatar == bd1) {
                 updateCamera(ob2);
+            }
+
+            if (ob1 instanceof ShockModel && avatar == bd2) {
+                avatar.removeShockFixture(fix1);
+            } else if (ob2 instanceof ShockModel && avatar == bd1) {
+                avatar.removeShockFixture(fix2);
             }
 
         }catch (Exception e){
@@ -509,7 +515,7 @@ public class CollisionController implements ContactListener {
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
-    private void checkProjectileCollision(Obstacle bd1, Obstacle bd2) {
+    private void checkProjectileCollision(Obstacle bd1, Fixture fix1, Obstacle bd2, Fixture fix2) {
 
         // Check that obstacles are not null and not an enemy
         if (bd1 == null || bd2 == null) return;
@@ -518,12 +524,12 @@ public class CollisionController implements ContactListener {
         if (bd1 instanceof ShockModel) {
             ShockModel shock = (ShockModel) bd1;
             if (shock.isValidHit(bd2)) {
-                resolveProjectileCollision(shock, bd2);
+                resolveProjectileCollision(shock, fix1, bd2);
             }
         } else if (bd2 instanceof ShockModel) {
             ShockModel shock = (ShockModel) bd2;
             if ( shock.isValidHit(bd1))  {
-                resolveProjectileCollision(shock, bd1);
+                resolveProjectileCollision(shock, fix2, bd1);
             }
         }
 
@@ -667,14 +673,16 @@ public class CollisionController implements ContactListener {
 
     /**
      * Resolves the effects of a projectile collision
-     * @param p
-     * @param o
+     * @param p the shock model
+     * @param o the obstacle that the shock collided with
+     * @param shockFixture the actual fixture of the shock obstacle in the collision
      */
-    private void resolveProjectileCollision(ShockModel p, Obstacle o) {
+    private void resolveProjectileCollision(ShockModel p, Fixture shockFixture, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f);
             levelModel.makeSpark(o.getX(), o.getY());
+            levelModel.getBandit().addShockFixture(shockFixture);
         } else if (o instanceof WallModel) {
             float grav = levelModel.getWorld().getGravity().y;
             if ((grav < 0 && o.getY() > p.getY()) || (grav > 0 && o.getY() < p.getY())) {

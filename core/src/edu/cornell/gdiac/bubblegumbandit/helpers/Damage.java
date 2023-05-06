@@ -8,4 +8,6 @@ public class Damage {
 
     public static final float SHOCK_DAMAGE = 20f;
 
+    public static final float DPS_ON_SHOCK = 10f;
+
 }

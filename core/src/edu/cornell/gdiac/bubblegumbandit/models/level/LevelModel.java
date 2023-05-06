@@ -757,7 +757,7 @@ public class LevelModel {
         glassEffectController = new EffectController("glass", "shatter",
             directory, true, true, 0);
         sparkEffectController = new EffectController("sparks", "sparks",
-            directory, true, true, 0);
+            directory, true, true, 0.2f);
 
     }
 
@@ -865,6 +865,10 @@ public class LevelModel {
                 entry.remove();
             }
         }
+        if (bandit.shouldSpark()) {
+            makeSpark(bandit.getX(), bandit.getY());
+        }
+
         alarms.update();
     }
 

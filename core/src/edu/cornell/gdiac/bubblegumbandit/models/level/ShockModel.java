@@ -30,7 +30,7 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     private final float TRAVEL_DISTANCE = 5;
 
     /** The percentage of travel at which the wave crest starts decreasing */
-    private final float STARTS_DECREASING = .66f;
+//    private final float STARTS_DECREASING = .66f;
 
     /** Whether the projectile has finished spreading */
     private boolean finishedSpreading;
@@ -162,11 +162,11 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     public void update(float dt) {
         if (!finishedSpreading) {
             float distanceTraveled  = Math.abs(getX() - initialX);
-            float a = TRAVEL_DISTANCE * STARTS_DECREASING;
-            if (distanceTraveled > a && yScale != 0) {
-                // Lerp from yScale 1 to 0 once hit the STARTS_DECREASING threshold
-//                yScale = 1 - ((distanceTraveled - a) / (TRAVEL_DISTANCE * (1 - STARTS_DECREASING)));
-            }
+//            float a = TRAVEL_DISTANCE * STARTS_DECREASING;
+//            if (distanceTraveled > a && yScale != 0) {
+//                // Lerp from yScale 1 to 0 once hit the STARTS_DECREASING threshold
+////                yScale = 1 - ((distanceTraveled - a) / (TRAVEL_DISTANCE * (1 - STARTS_DECREASING)));
+//            }
             if (distanceTraveled > TRAVEL_DISTANCE) {
                 finishedSpreading = true;
                 setVX(0);
