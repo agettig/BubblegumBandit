@@ -134,11 +134,23 @@
 
         },
 
+        "shockArc": {
+            "file": "textures/smallEnemy/shockArc.png",
+            "wrap": false,
+            "sprites": {
+                "shockArc": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
         "shockwave": "textures/smallEnemy/shockwave.png",
         "electricFloor": {
-            "file": "textures/smallEnemy/electricFloor.png",
+            "file": "textures/smallEnemy/shockLow.png",
             "wrapU": "repeated"
         },
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",

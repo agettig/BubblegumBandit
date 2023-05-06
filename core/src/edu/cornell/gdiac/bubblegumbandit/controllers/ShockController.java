@@ -44,6 +44,8 @@ public class ShockController {
     /** The speed of the projectile. */
     private float speed;
 
+    private AssetDirectory directory;
+
     /**
      * Creates a queue of projectiles.
      *
@@ -62,6 +64,7 @@ public class ShockController {
      * @param yScale the y scale of the level
      */
     public void initialize(JsonValue projJV, AssetDirectory directory, float xScale, float yScale) {
+        this.directory = directory;
         this.projJV = projJV;
         drawScale = new Vector2(xScale, yScale);
         String key = projJV.get("texture").asString();
@@ -97,15 +100,11 @@ public class ShockController {
         }
         ShockModel left = new ShockModel();
         ShockModel right = new ShockModel();
-        left.initialize(floorTexture, projJV, e.getX(), projY, radius, isGravDown);
-        right.initialize(floorTexture, projJV, e.getX(), projY, radius, isGravDown);
-        left.setVX(-speed);
-        right.setVX(speed);
+        left.initialize(directory, floorTexture, drawScale, projJV, e.getX(), projY, radius, isGravDown, true);
+        right.initialize(directory, floorTexture, drawScale, projJV, e.getX(), projY, radius, isGravDown, false);
 
         //Physics Constants
-        left.setDrawScale(drawScale);
         left.setTexture(projTexture);
-        right.setDrawScale(drawScale);
         right.setTexture(projTexture);
 
         shockEnemy.setShock(left, right);

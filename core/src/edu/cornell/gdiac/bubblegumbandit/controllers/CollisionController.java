@@ -476,7 +476,6 @@ public class CollisionController implements ContactListener {
             return;
         }
 
-
         Gummable gummable;
 
         if (ob1 instanceof Gummable) {
@@ -516,11 +515,20 @@ public class CollisionController implements ContactListener {
         if (bd1 == null || bd2 == null) return;
         if (bd1.getName().contains("enemy") || bd2.getName().contains("enemy")) return;
 
-        if (bd1.getName().equals("projectile")) {
-            resolveProjectileCollision((ShockModel) bd1, bd2);
-        } else if (bd2.getName().equals("projectile")) {
-            resolveProjectileCollision((ShockModel) bd2, bd1);
+        if (bd1 instanceof ShockModel) {
+            ShockModel shock = (ShockModel) bd1;
+            if (shock.isValidHit(bd2)) {
+                resolveProjectileCollision(shock, bd2);
+            }
+        } else if (bd2 instanceof ShockModel) {
+            ShockModel shock = (ShockModel) bd2;
+            if ( shock.isValidHit(bd1))  {
+                resolveProjectileCollision(shock, bd1);
+            }
         }
+
+
+
     }
 
     /**
@@ -667,6 +675,11 @@ public class CollisionController implements ContactListener {
         if (o.equals(levelModel.getBandit())) {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f);
             levelModel.makeSpark(o.getX(), o.getY());
+        } else if (o instanceof WallModel) {
+            float grav = levelModel.getWorld().getGravity().y;
+            if ((grav < 0 && o.getY() > p.getY()) || (grav > 0 && o.getY() < p.getY())) {
+                p.stopShock();
+            }
         }
     }
 

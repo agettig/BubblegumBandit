@@ -259,7 +259,10 @@
     "speed": 6.5,
     "density": 10.0,
     "texture": "shockwave",
-    "floorTexture": "electricFloor"
+    "floorTexture": "electricFloor",
+    "sensorColor": "red",
+    "sensorOpacity": 200,
+    "sensorName": "shockSensor"
   },
   "box": {
     "name": "box",

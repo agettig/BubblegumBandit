@@ -98,5 +98,11 @@
       "strip": "hazardSparks.sparks",
       "fps": 16
     }
+  },
+  "shockArc": {
+    "shockArc": {
+      "strip": "shockArc.shockArc",
+      "fps": 4
+    }
   }
 }

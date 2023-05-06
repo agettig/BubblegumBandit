@@ -1159,6 +1159,7 @@ public class LevelModel {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
+
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                  if (!canUnstickThrough.contains(ob.getName()) && !ob.getName().equals("door") && !ob.equals(bandit)) {
                     intersect.set(point);
