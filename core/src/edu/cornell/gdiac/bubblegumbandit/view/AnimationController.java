@@ -16,6 +16,9 @@ public class AnimationController {
   /** The FPS of the looping temporary (non-looping) animation */
   private float tempFPS = 8;
 
+  /** Frame number */
+  private int frameNum;
+
   /** Maps animations to their names */
 
   private HashMap<String, FilmStrip> animations;
@@ -95,6 +98,7 @@ public class AnimationController {
     if(timeSinceLastFrame<1f/fps) return strip;
     int frame = strip.getFrame();
     frame = (int) ((frame + timeSinceLastFrame/(1f/fps))% strip.getSize());
+    frameNum = frame;
     strip.setFrame(frame);
     timeSinceLastFrame = 0;
 
@@ -103,7 +107,6 @@ public class AnimationController {
     return strip;
 
   }
-
 
   /**
    * Returns whether the controller has a temporary animation
@@ -126,6 +129,15 @@ public class AnimationController {
     return temp==null ? currentName : tempName;
   }
 
+  /**
+   * Returns the index of the frame that is currently playing.
+   *
+   * @return the index of the frame that is currently playing.
+   * */
+  public int getFrameNum(){
+    return frameNum;
+  }
+
 
   /**
    * Sets the animation
@@ -135,6 +147,7 @@ public class AnimationController {
   public void setAnimation(String name, boolean loop) {
    if(animations.containsKey(name)&&(currentName!=name)) {
       timeSinceLastFrame = 0f;
+      frameNum = 0;
       if(loop) {
         looping = animations.get(name);
         currentName = name;

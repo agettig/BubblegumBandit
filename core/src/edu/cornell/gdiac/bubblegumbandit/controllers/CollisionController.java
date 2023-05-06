@@ -10,6 +10,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.*;
@@ -142,6 +143,15 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA);
             }
 
+            // check to see if laser enemy has landed on floor
+            if (obstacleB instanceof TileModel && obstacleA instanceof LaserEnemyModel){
+                resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleA);
+            }
+
+            if (obstacleA instanceof TileModel && obstacleB instanceof LaserEnemyModel){
+                resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleB);
+            }
+
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB);
             resolveWinCondition(obstacleA, obstacleB);
@@ -225,6 +235,20 @@ public class CollisionController implements ContactListener {
 
     }
 
+    /**
+     * Resolves a collision between the laser enemy and tile
+     * Shakes camera and damages bandit
+     *
+     * @param enemy Laser enemy that landed on the ground
+     */
+    private void resolveLaserEnemyTileCollision(LaserEnemyModel enemy){
+        if (enemy.isJumping()){
+            enemy.hasLanded();
+            int trauma = enemy.isFlipped() ? -2 : 2;
+            camera.addTrauma(enemy.getX() * enemy.getDrawScale().x, enemy.getY() * enemy.getDrawScale().y, trauma);
+        }
+    }
+
     /** Updates the camera based on the collision between the player and the door.
      *
      * @param ob the door */
@@ -305,6 +329,7 @@ public class CollisionController implements ContactListener {
         if (bodyA == null || bodyB == null) return;
         // Gum should destroy projectiles, but not become sticky gum.
         if (bodyA.getName().equals("projectile") || bodyB.getName().equals("projectile")) return;
+        if (bodyA.getName().equals("hazard") || bodyB.getName().equals("hazard")) return;
         if (bodyA.isRemoved() || bodyB.isRemoved()) return;
         if (bodyA.getName().equals("gumProjectile") && bodyB.equals(levelModel.getBandit())) return;
         if (bodyB.getName().equals("gumProjectile") && bodyA.equals(levelModel.getBandit())) return;
@@ -328,6 +353,10 @@ public class CollisionController implements ContactListener {
                     return;
                 }
             }
+            if(bodyB instanceof EnemyModel){
+                EnemyModel enemy = (EnemyModel) bodyB;
+                enemy.stickWithGum(gum);
+            }
         }
 
         if (isGumObstacle(bodyB)) {
@@ -344,6 +373,10 @@ public class CollisionController implements ContactListener {
                 if (door.isOpen()) {
                     return;
                 }
+            }
+            if(bodyA instanceof EnemyModel){
+                EnemyModel enemy = (EnemyModel) bodyA;
+                enemy.stickWithGum(gum);
             }
         }
 
@@ -402,8 +435,6 @@ public class CollisionController implements ContactListener {
             bubblegumController.addToAssemblyQueue(pair);
             gum.addObstacle(body);
             gum.setCollisionFilters();
-
-
         }
     }
 
@@ -595,18 +626,17 @@ public class CollisionController implements ContactListener {
             return;
         }
 
-        levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE, false);
+        boolean wasHit = levelModel.getBandit().hitPlayer(Damage.HAZARD_DAMAGE, false);
         levelModel.makeSpark(hazard.getX(), hazard.getY());
         // Bandit on top or below hazard
-        if ((bandit.getPosition().x <= (hazard.getX() + .5f)) && (bandit.getPosition().x >= (hazard.getX() - .5f))) {
-            shouldFlipGravity = true;
-
-        } else { // Bandit colliding on side of hazard
-            // Apply knockback
-            bandit.setKnockback(true);
-            boolean gravityDown = levelModel.getWorld().getGravity().y < 0;
-            boolean leftOfHazard = bandit.getPosition().x < hazard.getX();
-            bandit.getBody().applyLinearImpulse(leftOfHazard ? -3f : 3f, gravityDown ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+        if (wasHit) {
+            if (Math.abs(bandit.getVY()) > 1) {
+                shouldFlipGravity = true;
+                bandit.setVY(0);
+                applyKnockback(hazard, bandit, true, 0, 0, 5f);
+            } else { // Bandit colliding on side of hazard
+                applyKnockback(hazard, bandit, true, 0, 15f, 5f);
+            }
         }
     }
 
@@ -659,21 +689,23 @@ public class CollisionController implements ContactListener {
     private void resolveProjectileCollision(ProjectileModel p, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
-            applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f);
+            applyKnockback(p, (BanditModel) o, false, p.getDamage(), 1f, 1f);
         }
         p.destroy();
     }
 
     private void applyKnockback(Obstacle other, BanditModel bandit,
-                                boolean yImpact, float damage, float impact) {
+                                boolean yImpact, float damage, float impactX, float impactY) {
         boolean left = (other.getX() < bandit.getX());
         boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
         bandit.hitPlayer(damage, false);
         bandit.setKnockback(true);
-        if(yImpact) bandit.getBody().applyLinearImpulse(left ? impact : -impact,
-            knockbackUp ? impact : -impact, bandit.getX(), bandit.getY(), true);
+        if(yImpact)  {
+            bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
+                    knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);
+        }
         else {
-            bandit.getBody().applyLinearImpulse(left ? impact : -impact,
+            bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
                0, bandit.getX(), bandit.getY(), true);
         }
     }

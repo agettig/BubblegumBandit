@@ -181,7 +181,7 @@
     "wanderSpeed": 3,
     "chaseSpeed": 4,
     "pursueSpeed": 5,
-    "mediumAttack": 8,
+    "mediumAttack": 9,
     "shield": "medShield"
   },
   "smallEnemy": {

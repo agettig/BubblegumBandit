@@ -26,6 +26,11 @@ public class SoundController {
     private static SoundEffect gumSplatSound;
 
     /**
+     * The sound used when an illegal key binding was inputted
+     */
+    private static SoundEffect errorSound;
+
+    /**
      * The sound when enemy is hit with gume.  We only want to play once.
      */
     private static SoundEffect enemySplatSound;
@@ -95,6 +100,7 @@ public class SoundController {
         gumSplatSound = directory.getEntry("gumSplat", SoundEffect.class);
         enemySplatSound = directory.getEntry("enemySplat", SoundEffect.class);
         collectItemSound = directory.getEntry("collectItem", SoundEffect.class);
+        errorSound = directory.getEntry("error", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -102,6 +108,7 @@ public class SoundController {
             put(gumSplatSound, -3);
             put(enemySplatSound, -4);
             put(collectItemSound, -5);
+            put(errorSound, -6);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -110,6 +117,7 @@ public class SoundController {
             put("gumSplat", gumSplatSound);
             put("enemySplat", enemySplatSound);
             put("collectItem", collectItemSound);
+            put("error", errorSound);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -140,8 +148,6 @@ public class SoundController {
         int soundId = soundIds.get(s);
         return playSound(s,soundId, volume * soundEffectsVolume);
     }
-
-
 
 
     /**
@@ -204,7 +210,6 @@ public class SoundController {
     }
 
     public static void setEffectsVolume(float volume){
-
       soundEffectsVolume = volume;
     }
 
