@@ -265,6 +265,12 @@ public class GameController implements Screen {
      * Tick counter for gum reloading
      */
     private long ticks;
+
+    /**
+     * Tick counter for game over screen
+     */
+    private long gameOverTime;
+
     /**
      * Whether the player is reloading gum
      */
@@ -364,6 +370,7 @@ public class GameController implements Screen {
 
         //Technicals
         ticks = 0;
+        gameOverTime = 0;
         complete = false;
         failed = false;
         active = false;
@@ -455,6 +462,7 @@ public class GameController implements Screen {
 
         setComplete(false);
         setFailure(false);
+        gameOverTime = 0;
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
@@ -799,10 +807,10 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
-            if (ticks % 75 == 0) {
+            if (gameOverTime > 100) {
                 listener.exitScreen(this, -1);
             }
-            //listener.exitScreen(this, -1);
+            gameOverTime++;
         } else if (failed) {
             listener.exitScreen(this, -2);
         }

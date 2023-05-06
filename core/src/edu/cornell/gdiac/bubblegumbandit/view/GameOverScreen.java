@@ -148,8 +148,6 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     private int heightY;
 
-    private long ticks;
-
     private float backgroundHeight;
 
     private float backgroundWidth;
@@ -181,6 +179,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         backgroundWidth = background.getRegionWidth();
         fadeFraction = 0;
         fadeRate = 0.01f;
+
     }
 
     public void gameWon(AssetDirectory directory) {
@@ -228,42 +227,19 @@ public class GameOverScreen implements Screen, InputProcessor {
         }
     }
 
-    /**draws fade in/out effect */
-    public void drawFade(Texture image) {
-        float x = canvas.getCamera().viewportWidth;
-        float y = canvas.getCamera().viewportHeight;
-
-        int height = image.getHeight();
-        int width = image.getWidth();
-        int i = (int) x - width;
-
-        while (i >= 0) {
-            if (ticks % 75 == 0) {
-                canvas.draw(image, i, 0);
-                i -= x/width;
-            }
-            ticks++;
-        }
-    }
-
     private void update(float dt) {
-        //if (fadeRate < 1 && ticks % 2 == 0) {
-            fadeFraction += fadeRate;
-        //}
-        //ticks++;
+        fadeFraction += fadeRate;
     }
 
     private void draw() {
         canvas.begin();
 
-        //canvas.clear();
         if (fadeFraction < 1) {
             background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
             //background.setRegionWidth((int) ((fadeFraction) * backgroundWidth));
             canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
         }
         else {
-            //background.setRegionHeight((int) ((fadeFraction) * background.getRegionHeight()));
             canvas.draw(background, 0, 0);
             canvas.drawTextCentered(gameOverMessage, displayFont, 150);
 
