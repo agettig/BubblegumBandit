@@ -27,6 +27,10 @@
     "death": {
       "strip": "banditDeath.death",
       "fps": 8
+    },
+    "reload": {
+      "strip": "banditReload.reload",
+      "fps": 8
     }
   },
   "smallEnemy": {
@@ -102,5 +106,16 @@
       "strip": "hazardSparks.sparks",
       "fps": 16
     }
+  },
+  "captive": {
+    "float": {
+      "strip": "captiveFloat.float",
+      "fps": 1
+    },
+    "free": {
+      "strip": "captiveFree.free",
+      "fps": 12
+    }
+
   }
 }

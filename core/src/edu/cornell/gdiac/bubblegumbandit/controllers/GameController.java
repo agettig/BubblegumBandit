@@ -15,12 +15,8 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -30,7 +26,6 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
@@ -45,8 +40,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -214,7 +208,6 @@ public class GameController implements Screen {
      * A collection of the active projectiles on screen
      */
     private ProjectileController projectileController;
-
     /**
      * Reference to LaserController instance
      */
@@ -448,7 +441,7 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
         collisionController.reset();
-        hud.resetStars();
+        hud.setCaptives(0,0);
 
 
         level.dispose();
@@ -654,6 +647,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
                 reloadSymbolTimer = -1;
@@ -661,6 +655,7 @@ public class GameController implements Screen {
             }
         } else {
             reloadingGum = false;
+            bandit.stopReload();
         }
 
 
@@ -712,6 +707,7 @@ public class GameController implements Screen {
             }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
             boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
+            boolean isRollingEnemy = enemy instanceof RollingEnemyModel;
 
             if (isProjectileEnemy) {
                 if (controller.getEnemy().fired()) {
@@ -722,7 +718,8 @@ public class GameController implements Screen {
                 } else {
                     controller.coolDown(true);
                 }
-            } else if (isLaserEnemy) {
+            }
+            else if (isLaserEnemy) {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
                 if (laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
                 else {
@@ -737,6 +734,23 @@ public class GameController implements Screen {
                     }
                 }
             }
+            else if(isRollingEnemy){
+                RollingEnemyModel rollingEnemy = (RollingEnemyModel) controller.getEnemy();
+                if(rollingEnemy.shouldUnstick()){
+                    if(rollingEnemy.getGummed()){
+                        bubblegumController.removeGummable(rollingEnemy);
+                        rollingEnemy.resetUnstick();
+                    }
+                    else if(rollingEnemy.getStuck()){
+                        HashSet<GumModel> stuckGum = rollingEnemy.getStuckGum();
+                        for(GumModel g : stuckGum){
+                            bubblegumController.removeGum(g);
+                        }
+                        rollingEnemy.resetUnstick();
+                    }
+                }
+            }
+
 
 
         }
@@ -819,8 +833,6 @@ public class GameController implements Screen {
             canvas.drawTextCentered("FAILURE!", displayFont, 150);
             canvas.end();
         }
-
-//        backgrounds.drawDebug(canvas);
     }
 
     /**
