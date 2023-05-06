@@ -151,7 +151,7 @@ public class CollisionController implements ContactListener {
             resolveCrusherCollision(obstacleA, fixA, obstacleB, fixB);
             resolveDoorSensorCollision(obstacleA, fixA, obstacleB, fixB, true);
             checkMediumEnemyCollision(obstacleA, obstacleB);
-            resolveHazardCollision(obstacleA, obstacleB);
+            resolveHazardCollision(obstacleA, fixA, obstacleB, fixB);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -210,6 +210,10 @@ public class CollisionController implements ContactListener {
             if (ob1 instanceof ShockModel && avatar == bd2) {
                 avatar.removeShockFixture(fix1);
             } else if (ob2 instanceof ShockModel && avatar == bd1) {
+                avatar.removeShockFixture(fix2);
+            } else if (ob1.getName().equals("hazard") && avatar == bd2) {
+                avatar.removeShockFixture(fix1);
+            }  else if (ob2.getName().equals("hazard") && avatar == bd1) {
                 avatar.removeShockFixture(fix2);
             }
 
@@ -604,19 +608,20 @@ public class CollisionController implements ContactListener {
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
-    private void resolveHazardCollision(Obstacle bd1, Obstacle bd2) {
+    private void resolveHazardCollision(Obstacle bd1, Fixture fix1, Obstacle bd2, Fixture fix2) {
         if (bd1 == null || bd2 == null) return;
         SpecialTileModel hazard;
         BanditModel bandit = levelModel.getBandit();
 
         if (bd1.getName().equals("hazard") && bd2.equals(bandit)) {
             hazard = (SpecialTileModel) bd1;
+            bandit.addShockFixture(fix1);
         } else if (bd2.getName().equals("hazard") && bd1.equals(bandit)) {
             hazard = (SpecialTileModel) bd2;
+            bandit.addShockFixture(fix2);
         } else {
             return;
         }
-
         levelModel.makeSpark(hazard.getX(), hazard.getY());
         // Bandit on top or below hazard
         if (Math.abs(bandit.getVY()) > 1) {
@@ -683,7 +688,7 @@ public class CollisionController implements ContactListener {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f);
             levelModel.makeSpark(o.getX(), o.getY());
             levelModel.getBandit().addShockFixture(shockFixture);
-        } else if (o instanceof WallModel) {
+        } else if (o instanceof WallModel || o instanceof DoorModel) {
             float grav = levelModel.getWorld().getGravity().y;
             if ((grav < 0 && o.getY() > p.getY()) || (grav > 0 && o.getY() < p.getY())) {
                 p.stopShock();
