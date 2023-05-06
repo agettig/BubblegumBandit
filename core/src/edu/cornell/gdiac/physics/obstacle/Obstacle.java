@@ -1029,6 +1029,7 @@ public abstract class Obstacle {
 		// Allocate the mass information, but turn it off
 		masseffect = false;
 		massdata = new MassData();
+		obstacleMap = new HashMap<>();
 
 		// Set the default drawing scale
 		drawScale = new Vector2(1,1);
