@@ -179,7 +179,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("codygoonRegular", BitmapFont.class);
-        displayFont.getData().setScale(1.5f);
 
         constantsJson = directory.getEntry("constants", JsonValue.class);
 
@@ -321,9 +320,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         drawBackground(canvas);
         drawPaths(canvas);
 
+        displayFont.getData().setScale(1.5f);
         for (LevelIconModel level : levels){
             level.draw(canvas, displayFont);
         }
+        displayFont.getData().setScale(1);
 //        levels.draw(canvas, displayFont);
 
         sunfish.draw(canvas);
