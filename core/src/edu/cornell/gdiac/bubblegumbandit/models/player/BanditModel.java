@@ -257,6 +257,10 @@ public class BanditModel extends CapsuleObstacle {
        knockbackTimer = STUN_TIME;
     }
 
+    public void setAnimation(String anim, boolean isLooping) {
+        animationController.setAnimation(anim, isLooping);
+    }
+
 
     /**
      * Decreases the player's health if not in cooldown. Returns whether the player was hit
@@ -745,6 +749,7 @@ public class BanditModel extends CapsuleObstacle {
         if (shockFixtures.size != 0) {
             hitPlayer(Damage.DPS_ON_SHOCK * dt, true);
             shouldSpark = true;
+//            animationController.setAnimation("knock", false);
         } else {
             shouldSpark = false;
         }

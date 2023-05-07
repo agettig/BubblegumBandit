@@ -688,6 +688,7 @@ public class CollisionController implements ContactListener {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f);
             levelModel.makeSpark(o.getX(), o.getY());
             levelModel.getBandit().addShockFixture(shockFixture);
+            levelModel.getBandit().setAnimation("knock", false);
         } else if (o instanceof WallModel || o instanceof DoorModel) {
             float grav = levelModel.getWorld().getGravity().y;
             if ((grav < 0 && o.getY() > p.getY()) || (grav > 0 && o.getY() < p.getY())) {

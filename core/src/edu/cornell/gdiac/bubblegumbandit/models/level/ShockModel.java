@@ -16,6 +16,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
+import edu.cornell.gdiac.util.FilmStrip;
 import java.lang.reflect.Field;
 
 /**
@@ -66,7 +67,11 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     private PolygonShape debugSensorShape;
     private Vector2 sensorCenter;
 
+    /** Animation controller for the crest */
     private AnimationController animationController;
+
+    /** Animation controller for the floor */
+    private AnimationController floorAnimationController;
 
 
     /**
@@ -84,6 +89,7 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
 
     public void initialize(AssetDirectory directory, TextureRegion electricFloorTexture, Vector2 scale, JsonValue data, float x, float y, float radius, boolean isBottom, boolean isLeft) {
         animationController = new AnimationController(directory, "shockArc");
+//        floorAnimationController = new AnimationController(directory, "shockFloor");
 
         setName("projectile");
         setDrawScale(scale);
@@ -237,10 +243,8 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
         float centerX = (innerX + initialX) / 2f;
         electricFloorTexture.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
-
         float halfFloorHeight = electricFloorTexture.getRegionHeight() / 2f;
         y = getY()*drawScale.y + (isBottom ? -origin.y + halfFloorHeight - 1 : origin.y - halfFloorHeight + 1);
-
         float originX = electricFloorTexture.getRegionWidth() / 2f;
 
         canvas.draw(electricFloorTexture, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? 1 : -1, yScale);
