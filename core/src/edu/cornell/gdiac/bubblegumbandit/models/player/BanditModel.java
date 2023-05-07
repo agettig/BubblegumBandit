@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -161,6 +162,13 @@ public class BanditModel extends CapsuleObstacle {
 
     private Vector2 orbPostion;
 
+    /**
+     * Amount of time to stun player
+     *
+     * Non-positive stunTime means player is not stunned
+     * */
+    private int stunTime = 0;
+
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
         this.orbPostion = orbPostion;
@@ -231,24 +239,35 @@ public class BanditModel extends CapsuleObstacle {
         return isKnockback;
     }
 
+    public void setKnockback(boolean knockback, boolean shock) {
+        isKnockback = knockback;
+       if( health>0) {
+           if(!shock) animationController.setAnimation("knock", false);
+           else animationController.setAnimation("shock", false);
+       }
+    }
+
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
-       if(knockback && health>0) {
-           animationController.setAnimation("knock", false);
-       }
+        if(knockback && health>0) {
+            animationController.setAnimation("knock", false);
+        }
     }
 
 
     /**
-     * Decreases the player's health
+     * Decreases the player's health if not in cooldown. Returns whether the player was hit
      *
      * @param damage The amount of damage done to the player
+     * @param laser Whether the player was hit by a laser
      */
-    public void hitPlayer(float damage, boolean laser) {
+    public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             setCooldown(true);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -702,6 +721,7 @@ public class BanditModel extends CapsuleObstacle {
      */
     public void update(float dt) {
         ticks++;
+        stunTime--;
 
         if (inCooldown) {
             if (ticks >= 60) {
@@ -742,6 +762,15 @@ public class BanditModel extends CapsuleObstacle {
         super.update(dt);
     }
 
+    private boolean playingReload;
+
+    public void startReload() {
+        playingReload = true;
+    }
+
+    public void stopReload() {
+       playingReload = false;
+    }
 
     /**
      * Draws the physics object.
@@ -752,7 +781,8 @@ public class BanditModel extends CapsuleObstacle {
         if (texture != null) {
 
             if(!animationController.hasTemp()&&health>0) {
-                if (!isGrounded) animationController.setAnimation("fall", true);
+                if(playingReload) animationController.setAnimation("reload", true);
+                else if (!isGrounded) animationController.setAnimation("fall", true);
                 else if (getMovement() == 0) animationController.setAnimation("idle", true);
                 else {
                     if(backpedal) {
@@ -791,7 +821,23 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    /**
+     * Stuns player for time t
+     *
+     * @param t Time to stun player for
+     */
+    public void stun(int t){
+        stunTime = t;
+    }
 
+    /**
+     * Stuns player for time t
+     *
+     * @return amount of time remaining for player to be stunned
+     */
+    public int getStunTime() {
+        return stunTime;
+    }
 
     /**
      * Draws the outline of the physics body, including the field of vision
@@ -803,4 +849,5 @@ public class BanditModel extends CapsuleObstacle {
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
     }
+
 }
