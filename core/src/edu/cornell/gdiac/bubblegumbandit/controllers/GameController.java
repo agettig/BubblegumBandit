@@ -31,10 +31,10 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
@@ -207,7 +207,8 @@ public class GameController implements Screen {
     /**
      * A collection of the active projectiles on screen
      */
-    private ProjectileController projectileController;
+    private ShockController projectileController;
+
     /**
      * Reference to LaserController instance
      */
@@ -377,7 +378,7 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
-        projectileController = new ProjectileController();
+        projectileController = new ShockController();
     }
 
     /**
@@ -706,15 +707,19 @@ public class GameController implements Screen {
                 continue;
             }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
-            boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
+            boolean isProjectileEnemy = enemy instanceof ShockEnemyModel;
             boolean isRollingEnemy = enemy instanceof RollingEnemyModel;
 
             if (isProjectileEnemy) {
-                if (controller.getEnemy().fired()) {
-                    ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                    smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
-                    level.activate(newProj);
-                    newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                // Ensure enemy is on the ground
+                if (enemy.fired() && (controller.getTileType() != 0)) {
+                    boolean isGravDown = !enemy.isFlipped();
+                    float halfHeight = (enemy.getHeight() / 2);
+                    float enemyPos = enemy.getY() + (isGravDown ? -halfHeight : halfHeight);
+                    if (Math.abs(enemyPos - Math.round(enemyPos)) < 0.02) { // Check if grounded
+                        projectileController.fireWeapon(level, controller, isGravDown);
+                        smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
+                    }
                 } else {
                     controller.coolDown(true);
                 }
@@ -775,6 +780,7 @@ public class GameController implements Screen {
         //Check to create post-orb enemies
         if (orbCollected && !spawnedPostOrbEnemies) {
             level.spawnPostOrbEnemies();
+            level.postOrbDoors();
             spawnedPostOrbEnemies = true;
         }
 

@@ -17,14 +17,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 
 /**
@@ -34,6 +38,9 @@ import java.lang.reflect.Field;
  * by reading the JSON value.
  */
 public class BanditModel extends CapsuleObstacle {
+
+    /** The time the player can't move after knockback */
+    private final float STUN_TIME = 0.3f;
     // Physics constants
     /**
      * The factor to multiply by the input
@@ -60,6 +67,9 @@ public class BanditModel extends CapsuleObstacle {
      * Whether our feet are on the ground
      */
     private boolean isGrounded;
+
+    /** Knockback timer */
+    private float knockbackTimer;
 
     // SENSOR FIELDS
     /**
@@ -169,6 +179,9 @@ public class BanditModel extends CapsuleObstacle {
      * */
     private int stunTime = 0;
 
+    /** The shock obstacles currently colliding with the player */
+    private ObjectSet<Fixture> shockFixtures;
+
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
         this.orbPostion = orbPostion;
@@ -215,6 +228,11 @@ public class BanditModel extends CapsuleObstacle {
     private float health;
 
     /**
+     * Whether the bandit should be sparking this frame.
+     */
+    private boolean shouldSpark;
+
+    /**
      * Whether the player has flipped in the air.
      */
     public boolean hasFlipped() {
@@ -252,6 +270,11 @@ public class BanditModel extends CapsuleObstacle {
         if(knockback && health>0) {
             animationController.setAnimation("knock", false);
         }
+       knockbackTimer = STUN_TIME;
+    }
+
+    public void setAnimation(String anim, boolean isLooping) {
+        animationController.setAnimation(anim, isLooping);
     }
 
 
@@ -306,6 +329,11 @@ public class BanditModel extends CapsuleObstacle {
     public boolean isOrbCollected() {
         return orbCollected;
     }
+
+    /**
+     * Gets whether the bandit should be sparking.
+     */
+    public boolean shouldSpark() { return shouldSpark; }
 
 
     /**
@@ -528,6 +556,7 @@ public class BanditModel extends CapsuleObstacle {
         numStars = 0;
         orbCollected = false;
         hasFlipped = false;
+        shockFixtures = new ObjectSet<>();
     }
 
     /**
@@ -712,6 +741,17 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    /** Add a shock fixture that the bandit is currently colliding with. */
+    public void addShockFixture(Fixture fix) {
+        shockFixtures.add(fix);
+    }
+
+    /** Remove a shock fixture that the bandit is no longer colliding with. */
+    public void removeShockFixture(Fixture fix) {
+        shockFixtures.remove(fix);
+    }
+
+
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
      * <p>
@@ -722,6 +762,21 @@ public class BanditModel extends CapsuleObstacle {
     public void update(float dt) {
         ticks++;
         stunTime--;
+
+        if (shockFixtures.size != 0) {
+            hitPlayer(Damage.DPS_ON_SHOCK * dt, true);
+            shouldSpark = true;
+//            animationController.setAnimation("knock", false);
+        } else {
+            shouldSpark = false;
+        }
+
+        if (isKnockback) {
+            knockbackTimer -= dt;
+            if (knockbackTimer <= 0) {
+                isKnockback = false;
+            }
+        }
 
         if (inCooldown) {
             if (ticks >= 60) {

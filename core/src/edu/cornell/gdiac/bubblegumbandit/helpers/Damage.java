@@ -6,6 +6,10 @@ public class Damage {
     // TODO: Increase once player is invulnerable for short time period
     public static final float HAZARD_DAMAGE = 20f;
 
+    public static final float SHOCK_DAMAGE = 20f;
+
+    public static final float DPS_ON_SHOCK = 10f;
+
     public static final float JUMP_STUN_DAMAGE = 30f;
 
 }

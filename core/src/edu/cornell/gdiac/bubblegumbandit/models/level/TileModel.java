@@ -72,13 +72,6 @@ public class TileModel extends BoxObstacle {
         setPosition(x,y);
         setDimension(1, 1);
 
-        // Technically, we should do error checking here.
-        // A JSON field might accidentally be missing
-        setBodyType(constants.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
-        setDensity(constants.get("density").asFloat());
-        setFriction(constants.get("friction").asFloat());
-        setRestitution(constants.get("restitution").asFloat());
-
         // Reflection is best way to convert name to color
         Color debugColor;
         try {

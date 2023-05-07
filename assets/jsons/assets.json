@@ -155,8 +155,29 @@
 
         },
 
+        "shockArc": {
+            "file": "textures/smallEnemy/shockArc.png",
+            "wrap": false,
+            "sprites": {
+                "shockArc": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
+        "shockwave": "textures/smallEnemy/shockwave.png",
+        "electricFloor": {
+            "file": "textures/smallEnemy/shockLow1.png",
+            "wrapU": "repeated"
+        },
+        "electricFloor2": {
+            "file": "textures/smallEnemy/shockLow2.png",
+            "wrapU": "repeated"
+        },
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
         "smallShield": "textures/smallEnemy/smallShield.png",
         "smallEnemyPatrol":  {
@@ -293,6 +314,7 @@
         "crushingBlockGum": "textures/gum/blockGum.png",
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
+        "gummedDoorH": "textures/gum/doorGumH.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
         "largeGumMidair" : "textures/gum/largeGumMidair.png",
         "largeGumMidairOutline": "textures/gum/largeGumMidairOutline.png",
@@ -300,6 +322,7 @@
         "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
         "halfStuck" : "textures/gum/halfStuck.png",
         "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
+        "outlineDoorH": "textures/gum/doorGumOutlineH.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,
@@ -340,7 +363,9 @@
 
         "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/halfDoor.png",
+        "doorH":  "textures/objects/halfDoorH.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
+        "lockedDoorH":  "textures/objects/doorLockedH.png",
         "glass":  "textures/objects/glass.png",
         "glassShatter":  {
             "file": "textures/objects/glassShatter.png",
