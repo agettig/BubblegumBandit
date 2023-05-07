@@ -378,13 +378,15 @@ public class LevelModel {
                 gravity = property.getFloat("value");
             }
             if (propName.equals("timer")) {
-                timer = property.getFloat("value");
+                //timer = property.getFloat("value");
+                timer = 5;
             }
             if( propName.equals("captives")) {
                 captiveCount = property.getInt("value");
             }
             property = property.next();
         }
+
 
         float[] pSize = constants.get("physicsSize").asFloatArray();
 

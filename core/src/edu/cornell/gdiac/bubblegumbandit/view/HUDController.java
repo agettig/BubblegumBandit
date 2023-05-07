@@ -193,7 +193,14 @@ public class HUDController {
     view.apply(true);
   }
 
-  public void draw(LevelModel level, BubblegumController bubblegumController, int timer, int fps, boolean showFPS, boolean reloadingGum, float dt) {
+  public void draw(LevelModel level,
+                   BubblegumController bubblegumController,
+                   int timer,
+                   int fps,
+                   boolean showFPS,
+                   boolean reloadingGum,
+                   float dt,
+                   GameCamera camera) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -226,7 +233,7 @@ public class HUDController {
     }
 
     if(timer >= 0){
-      shakeTimer(dt, timer);
+      shakeTimer(dt, timer, camera);
       int orbCountdownValue = orbCountdown.getText().toString().equals("") ? -1 :
               Integer.parseInt(orbCountdown.getText().toString());
 
@@ -288,7 +295,7 @@ public class HUDController {
   }
 
   /** Shakes the timer, lerping quickly it to a random position.*/
-  private void shakeTimer(float dt, float timer){
+  private void shakeTimer(float dt, float timer, GameCamera camera){
     float xShakeRange;
     float yShakeRange;
     float transitionSpeed;
@@ -300,6 +307,8 @@ public class HUDController {
       orbCountdown.setY(centerTimerY);
       return;
     }
+
+
 
     if(timer == 3){
       xShakeRange = 10f;
