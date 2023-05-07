@@ -12,9 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
@@ -41,6 +41,7 @@ public class HUDController {
   /** Allows the health filling to be displayed on top of the health bar, contains both */
   private WidgetGroup health;
 
+
   /** The container for laying out all HUD elements */
   private Table table;
   /** The margin of the current health bar, depends on the current design */
@@ -56,11 +57,13 @@ public class HUDController {
   private Image bubbleIcon;
   private Label orbCountdown;
   private Label fpsLabel;
-  private Image starIcon1;
-  private Image starIcon2;
-  private Image starIcon3;
-  private Image reloadGumIcon;
-  private Label starCount;
+  private Array<Image> captiveIcons;
+
+  private Texture captiveIcon;
+
+  private Texture emptyIcon;
+  private int maxCaptives = 6;
+
 
   private Image[] gumCount = new Image[6];
   private Image[] reloadGumCount = new Image[6];
@@ -81,11 +84,9 @@ public class HUDController {
     healthFillText = directory.getEntry("healthFill", Texture.class);
     healthIcon = new Image(directory.getEntry("healthIcon", Texture.class));
     bubbleIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
-    reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
-    starIcon1 = new Image(directory.getEntry("star", Texture.class));
-    starIcon2 = new Image(directory.getEntry("star", Texture.class));
-    starIcon3 = new Image(directory.getEntry("star", Texture.class));
-    resetStars();
+    captiveIcon = directory.getEntry("captiveIcon", Texture.class);
+    emptyIcon = directory.getEntry("captiveIconOutline", Texture.class);
+
 
     healthFillRegion = new TextureRegion(healthFillText, 0, 0,
             healthFillText.getWidth(), healthFillText.getHeight());
@@ -115,9 +116,15 @@ public class HUDController {
     table.add(new Actor()).padTop(50);
 
     table.row();
-    table.add(starIcon1);
-    table.add(starIcon2);
-    table.add(starIcon3);
+
+    captiveIcons = new Array<>(maxCaptives);
+
+    for(int i =0; i< maxCaptives; i++) {
+      Image icon = new Image(emptyIcon);
+      captiveIcons.add(icon);
+      table.add(icon).padRight(12).padBottom(5);
+    }
+
     table.padLeft(10).padTop(60);
 
 
@@ -144,16 +151,31 @@ public class HUDController {
     fpsLabel = new Label("", new Label.LabelStyle(font, Color.WHITE));
     fpsLabel.setFontScale(0.5f);
     table.row();
-    table.add(fpsLabel);
+    table.add(fpsLabel).padTop(10);
 
     table.padLeft(30).padTop(60);
   }
 
-  public void resetStars(){
-    starIcon1.setVisible(false);
-    starIcon2.setVisible(false);
-    starIcon3.setVisible(false);
+  public void setCaptives(int currentCaptives, int totalCaptives){
+    //ahh
+
+    for(int i = 0; i< maxCaptives; i++) {
+      Image curr = captiveIcons.get(i);
+      if(i<currentCaptives) {
+        curr.setVisible(true);
+        curr.setDrawable(new SpriteDrawable(new Sprite(captiveIcon)));
+      } else if (i<totalCaptives){
+        curr.setVisible(true);
+        curr.setDrawable(new SpriteDrawable(new Sprite(emptyIcon)));
+      } else {
+        curr.setVisible(false);
+      }
+    }
   }
+
+
+
+
 
   public boolean hasViewport() {
     return stage.getViewport() != null;
@@ -178,16 +200,9 @@ public class HUDController {
       }
       lastFrac = healthFraction;
     }
-    int numStars = level.getBandit().getNumStars();
-    if (numStars == 1) {
-      starIcon1.setVisible(true);
-    }
-    else if (numStars == 2) {
-      starIcon2.setVisible(true);
-    }
-    else if (numStars == 3) {
-      starIcon3.setVisible(true);
-    }
+    int numCaptives = level.getBandit().getNumStars();
+    int totalCaptives = level.getTotalCaptives();
+    setCaptives(numCaptives, totalCaptives);
 
     healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));

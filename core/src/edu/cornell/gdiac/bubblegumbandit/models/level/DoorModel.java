@@ -389,7 +389,7 @@ public class DoorModel extends TileModel implements Gummable {
         boolean allDead = true;
         for (Integer id : enemyIds) {
             EnemyModel cur = enemyMap.get(id);
-            if (cur == null || !cur.getStuck() || !cur.getGummed()) {
+            if (cur == null || (!cur.getStuck() && !cur.getGummed())) {
                 allDead = false;
             }
         }

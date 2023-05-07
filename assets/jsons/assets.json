@@ -22,7 +22,6 @@
         "unstickIcon" : "textures/tutorial/unstickIcon.png",
         "upIcon" : "textures/tutorial/upIcon.png",
         "downIcon" : "textures/tutorial/downIcon.png",
-
         "terrain": {
             "file": "textures/environment/tileset.png"
         },
@@ -58,6 +57,28 @@
                     "size": 4,
                     "rows": 1,
                     "cols": 4
+                }
+            }
+        },
+        "banditReload": {
+            "file": "textures/bandit/banditReload.png",
+            "wrap": false,
+            "sprites": {
+                "reload": {
+                    "size": 4,
+                    "rows": 1,
+                    "cols": 4
+                }
+            }
+        },
+        "banditShock":  {
+            "file": "textures/bandit/banditShock.png",
+            "wrap": false,
+            "sprites": {
+                "shock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
                 }
             }
         },
@@ -233,7 +254,7 @@
         "largeEnemyOutline": "textures/largeEnemy/largeEnemyWhite.png",
         "largeEnemy": "textures/largeEnemy/largeEnemy.png",
         "laserBeam": "textures/largeEnemy/laserBeam.png",
-        "laserBeamEnd": "textures/largeEnemy/redLaserEnd.png",
+        "laserBeamEnd": "textures/largeEnemy/laserRedEnd.png",
         "largeShield": "textures/largeEnemy/bigShield.png",
         "largeWalk":  {
             "file": "textures/largeEnemy/largeAnim.png",
@@ -295,6 +316,12 @@
         "gummedDoor": "textures/gum/doorGum.png",
         "gummedDoorH": "textures/gum/doorGumH.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
+        "largeGumMidair" : "textures/gum/largeGumMidair.png",
+        "largeGumMidairOutline": "textures/gum/largeGumMidairOutline.png",
+        "medGumMidair" :  "textures/gum/medGumMidair.png",
+        "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
+        "halfStuck" : "textures/gum/halfStuck.png",
+        "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
         "outlineDoorH": "textures/gum/doorGumOutlineH.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
@@ -307,7 +334,31 @@
                 }
             }
         },
-
+        "captive" : "textures/environment/captive.png",
+        "captiveIcon": "textures/UI/captiveIcon.png",
+        "captiveIconOutline": "textures/UI/captiveIconOutline.png",
+        "captiveFloat":{
+            "file": "textures/environment/captiveFloat.png",
+            "wrap": false,
+            "sprites": {
+                "float": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "captiveFree":{
+            "file": "textures/environment/captiveFree.png",
+            "wrap": false,
+            "sprites": {
+                "free": {
+                    "size": 13,
+                    "rows": 1,
+                    "cols": 13
+                }
+            }
+        },
 
 
         "crushingBlock": "textures/objects/crushingBlock.png",
@@ -368,7 +419,8 @@
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
-        "collectItem": "sounds/collectItem.wav"
+        "collectItem": "sounds/collectItem.wav",
+        "error": "sounds/error.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

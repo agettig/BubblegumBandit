@@ -255,25 +255,6 @@ public class BubblegumController {
         activeGum = 0;
     }
 
-    /**
-     * For every GumJoint pair in the queue of active GumJointPairs,
-     * (1) destroys the joint in the pair,
-     * (2) destroys the body of the gum.
-     * Then, clears the queue.
-     * */
-    public void collectBubblegum(){
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns true if the number of active Bubblegum objects is
-     * equal to or greater than the gum limit.
-     *
-     * @returns true if the gum limit has been reached
-     * */
-    public boolean gumLimitReached(){
-        return gumAmmo == 0;
-    }
 
     /**
      * Adds a new Bubblegum to

@@ -30,7 +30,9 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.assets.*;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
@@ -70,6 +72,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private Texture background;
 
     /**
+     * Background while loading
+     */
+    private Texture loadingBackground;
+
+    /**
      * Button to start the game
      */
     private Texture startButton;
@@ -95,35 +102,46 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private Texture hoverPointer;
 
     /**
-     * Texture atlas to support a progress bar
+     * The background for the progress bar
      */
-    private final Texture statusBar;
+    private final Texture progressBackground;
 
-    // statusBar is a "texture atlas." Break it up into parts.
     /**
-     * Left cap to the status background (grey region)
+     * The fill for the progress bar
      */
-    private TextureRegion statusBkgLeft;
+    private final Texture progressFill;
+
     /**
-     * Middle portion of the status background (grey region)
+     * The current fill for the progress bar
      */
-    private TextureRegion statusBkgMiddle;
+    private TextureRegion progressCurrent;
+
     /**
-     * Right cap to the status background (grey region)
+     * The margin for the progress bar fill against the background
      */
-    private TextureRegion statusBkgRight;
+    private final int FILL_MARGIN = 4;
+
     /**
-     * Left cap to the status forground (colored region)
+     * The sunfish!
      */
-    private TextureRegion statusFrgLeft;
+    private final Texture sunfish;
+
     /**
-     * Middle portion of the status forground (colored region)
+     * The texture for the jet behind the sunfish
      */
-    private TextureRegion statusFrgMiddle;
+    private final Texture jet;
+
     /**
-     * Right cap to the status forground (colored region)
+     * Container for the scales and scaling directions of the jets
      */
-    private TextureRegion statusFrgRight;
+    private float[][] sizes = new float[][] {{.33f,1},{ .66f,1},{1, 1f}};
+
+    /**
+     * The font for the "loading" text displayed
+     */
+    private final BitmapFont font;
+
+
 
     /**
      * Default budget for asset loader (do nothing but load 60 fps)
@@ -144,7 +162,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     /**
      * Ration of the bar height to the screen
      */
-    private static float BAR_HEIGHT_RATIO = 0.25f;
+    private static float BAR_HEIGHT_RATIO = 0.4f;
+
+    private static float BUTTONS_PUSH_DOWN = 50f;
 
     /**
      * Reference to GameCanvas created by the root
@@ -379,16 +399,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         background = internal.getEntry("background", Texture.class);
         background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        statusBar = internal.getEntry("progress", Texture.class);
+
+        loadingBackground= internal.getEntry("loadingBackground", Texture.class);
+        loadingBackground.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+         progressBackground = internal.getEntry("progressBackground", Texture.class);
+         progressFill = internal.getEntry("progressFill", Texture.class);
+         progressCurrent = new TextureRegion(progressFill);
+
+         sunfish = internal.getEntry("spaceship", Texture.class);
+         jet = internal.getEntry("jet", Texture.class);
+
+         font = internal.getEntry("projectSpace", BitmapFont.class);
 
         // Break up the status bar texture into regions
-        statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
+       /* statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
         statusBkgRight = internal.getEntry("progress.backRight", TextureRegion.class);
         statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
 
         statusFrgLeft = internal.getEntry("progress.foreLeft", TextureRegion.class);
         statusFrgRight = internal.getEntry("progress.foreRight", TextureRegion.class);
-        statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class);
+        statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class); */
 
         // No progress so far.
         progress = 0;
@@ -405,12 +436,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         assets = new AssetDirectory(file);
         assets.loadAssets();
 
-        int levelCount = 9; //grab from where?
-        if(!SaveData.saveExists())  {
-            SaveData.makeData(levelCount, false);
-        }
-            //is this a VM thing?
-
         active = true;
 
 
@@ -424,6 +449,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         internal.unloadAssets();
         internal.dispose();
     }
+
+    private boolean dataMade = false;
 
     /**
      * Update the status of this player mode.
@@ -450,6 +477,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
+        if(assets.isFinished()) {
+            if(!SaveData.saveExists()&&!dataMade)  {
+                dataMade = true;
+                SaveData.makeData(false, assets);
+
+            }
+        }
     }
 
     /**
@@ -462,14 +496,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private void draw() {
         canvas.begin();
         resize((int)canvas.getCamera().viewportWidth, (int)canvas.getCamera().viewportHeight);
-        canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+
         if (startButton == null || settingsButton == null || exitButton == null || hoverPointer == null) {
             drawProgress(canvas);
         } else {
-
-            float highestButtonY = canvas.getCamera().viewportHeight / 2;
+            canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+            float highestButtonY = canvas.getCamera().viewportHeight / 2 - BUTTONS_PUSH_DOWN;
             float lowestButtonY = canvas.getCamera().viewportHeight / 6;
-            float buttonSpace = highestButtonY - lowestButtonY;
+            float buttonSpace = highestButtonY+BUTTONS_PUSH_DOWN - lowestButtonY;
             float gap = buttonSpace / 4;
 
 
@@ -642,6 +676,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         return null;
     }
 
+
+
+
     /**
      * Updates the progress bar according to loading progress
      * <p>
@@ -652,26 +689,37 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * @param canvas The drawing context
      */
     private void drawProgress(GameCanvas canvas) {
-        canvas.draw(statusBkgLeft, Color.WHITE, centerX - width / 2, centerY,
-                scale * statusBkgLeft.getRegionWidth(), scale * statusBkgLeft.getRegionHeight());
-        canvas.draw(statusBkgRight, Color.WHITE, centerX + width / 2 - scale * statusBkgRight.getRegionWidth(), centerY,
-                scale * statusBkgRight.getRegionWidth(), scale * statusBkgRight.getRegionHeight());
-        canvas.draw(statusBkgMiddle, Color.WHITE, centerX - width / 2 + scale * statusBkgLeft.getRegionWidth(), centerY,
-                width - scale * (statusBkgRight.getRegionWidth() + statusBkgLeft.getRegionWidth()),
-                scale * statusBkgMiddle.getRegionHeight());
+        canvas.draw(loadingBackground, Color.WHITE, 0, 0,
+            canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+        canvas.draw(progressBackground, Color.WHITE,
+            centerX-progressBackground.getWidth()/2, centerY,
+            scale*progressBackground.getWidth(), scale*progressBackground.getHeight());
+      progressCurrent = new TextureRegion(progressFill, 0, 0,
+          (int) (progressFill.getWidth()*progress), progressFill.getHeight());
+      canvas.draw(progressCurrent, Color.WHITE, 0, 0,
+          centerX-progressFill.getWidth()/2, centerY+FILL_MARGIN,
+          progressCurrent.getRegionWidth(), progressCurrent.getRegionHeight());
+      canvas.draw(sunfish, Color.WHITE, 0f, 0f, (float) centerX+progressBackground.getWidth()/2-
+              sunfish.getHeight(),
+          (float) centerY+progressBackground.getHeight()*3.2f, (float) (-Math.PI/2f), 1f, 1f);
+      for(int i = 0; i<3; i++) {
+          sizes[i][0] +=.02*sizes[i][1];
+          if(sizes[i][0]>1) {
+              sizes[i][0] = 1;
+              sizes[i][1] = sizes[i][1]*-1;
+          } else if (sizes[i][0]<.2) {
+              sizes[i][0] = .2f;
+              sizes[i][1] = sizes[i][1]*-1;
+          }
+          canvas.draw(jet, Color.WHITE, jet.getWidth()*sizes[i][0]/2, jet.getHeight()*sizes[i][0]/2, (float) centerX+progressBackground.getWidth()/2-
+                  sunfish.getHeight()-(jet.getWidth()+8)*(i+.6f),
+              (float) centerY+progressBackground.getHeight()*2.4f, (float) (-Math.PI/2f), sizes[i][0],  sizes[i][0]);
+      }
+      canvas.drawText("loading", font, centerX-progressBackground.getWidth()/2, centerY+progressBackground.getHeight()*2.5f);
 
-        canvas.draw(statusFrgLeft, Color.WHITE, centerX - width / 2, centerY,
-                scale * statusFrgLeft.getRegionWidth(), scale * statusFrgLeft.getRegionHeight());
-        if (progress > 0) {
-            float span = progress * (width - scale * (statusFrgLeft.getRegionWidth() + statusFrgRight.getRegionWidth())) / 2.0f;
-            canvas.draw(statusFrgRight, Color.WHITE, centerX - width / 2 + scale * statusFrgLeft.getRegionWidth() + span, centerY,
-                    scale * statusFrgRight.getRegionWidth(), scale * statusFrgRight.getRegionHeight());
-            canvas.draw(statusFrgMiddle, Color.WHITE, centerX - width / 2 + scale * statusFrgLeft.getRegionWidth(), centerY,
-                    span, scale * statusFrgMiddle.getRegionHeight());
-        } else {
-            canvas.draw(statusFrgRight, Color.WHITE, centerX - width / 2 + scale * statusFrgLeft.getRegionWidth(), centerY,
-                    scale * statusFrgRight.getRegionWidth(), scale * statusFrgRight.getRegionHeight());
-        }
+
+
+
     }
 
     // ADDITIONAL SCREEN METHODS

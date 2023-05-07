@@ -10,4 +10,6 @@ public class Damage {
 
     public static final float DPS_ON_SHOCK = 10f;
 
+    public static final float JUMP_STUN_DAMAGE = 30f;
+
 }
