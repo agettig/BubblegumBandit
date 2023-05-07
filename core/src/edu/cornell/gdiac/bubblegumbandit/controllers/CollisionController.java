@@ -153,7 +153,7 @@ public class CollisionController implements ContactListener {
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB, contact);
             resolveWinCondition(obstacleA, obstacleB);
-            checkProjectileCollision(obstacleA, fixA, obstacleB, fixB);
+            checkShockCollision(obstacleA, fixA, obstacleB, fixB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
             resolveCaptiveCollision(obstacleA, obstacleB);
@@ -559,7 +559,7 @@ public class CollisionController implements ContactListener {
      * @param bd1 The first Obstacle in the collision.
      * @param bd2 The second Obstacle in the collision.
      */
-    private void checkProjectileCollision(Obstacle bd1, Fixture fix1, Obstacle bd2, Fixture fix2) {
+    private void checkShockCollision(Obstacle bd1, Fixture fix1, Obstacle bd2, Fixture fix2) {
 
         // Check that obstacles are not null and not an enemy
         if (bd1 == null || bd2 == null) return;
@@ -568,12 +568,12 @@ public class CollisionController implements ContactListener {
         if (bd1 instanceof ShockModel) {
             ShockModel shock = (ShockModel) bd1;
             if (shock.isValidHit(bd2)) {
-                resolveProjectileCollision(shock, fix1, bd2);
+                resolveShockCollision(shock, fix1, bd2);
             }
         } else if (bd2 instanceof ShockModel) {
             ShockModel shock = (ShockModel) bd2;
             if ( shock.isValidHit(bd1))  {
-                resolveProjectileCollision(shock, fix2, bd1);
+                resolveShockCollision(shock, fix2, bd1);
             }
         }
 
@@ -665,13 +665,13 @@ public class CollisionController implements ContactListener {
         levelModel.makeSpark(hazard.getX(), hazard.getY());
         // Bandit on top or below hazard
         if (Math.abs(bandit.getVY()) > 1) {
-            boolean wasHit = applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 0, 5f);
+            boolean wasHit = applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 0, 5f, true);
             if (wasHit) {
                 shouldFlipGravity = true;
                 bandit.setVY(0);
             }
         } else { // Bandit colliding on side of hazard
-            applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 15f, 5f);
+            applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 15f, 5f, true);
         }
     }
 
@@ -722,13 +722,12 @@ public class CollisionController implements ContactListener {
      * @param o the obstacle that the shock collided with
      * @param shockFixture the actual fixture of the shock obstacle in the collision
      */
-    private void resolveProjectileCollision(ShockModel p, Fixture shockFixture, Obstacle o) {
+    private void resolveShockCollision(ShockModel p, Fixture shockFixture, Obstacle o) {
         if (p.isRemoved()) return;
         if (o.equals(levelModel.getBandit())) {
-            applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f);
+            applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f, true);
             levelModel.makeSpark(o.getX(), o.getY());
             levelModel.getBandit().addShockFixture(shockFixture);
-            levelModel.getBandit().setAnimation("knock", false);
         } else if (o instanceof WallModel || o instanceof DoorModel) {
             boolean isBottom = p.getIsBottom();
             if ((isBottom && o.getY() > p.getY()) || (!isBottom && o.getY() < p.getY())) {
@@ -741,12 +740,12 @@ public class CollisionController implements ContactListener {
      *
      * Returns whether the knockback was applied */
     private boolean applyKnockback(Obstacle other, BanditModel bandit,
-                                boolean yImpact, float damage, float impactX, float impactY) {
+                                boolean yImpact, float damage, float impactX, float impactY, boolean shock) {
         boolean wasHit = bandit.hitPlayer(damage, false);
         if (wasHit) {
             boolean left = (other.getX() < bandit.getX());
             boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
-            bandit.setKnockback(true);
+            bandit.setKnockback(true, shock);
             if(yImpact)  {
                 bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
                         knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);
