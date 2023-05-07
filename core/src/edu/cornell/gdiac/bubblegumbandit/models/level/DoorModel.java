@@ -31,16 +31,16 @@ public class DoorModel extends TileModel implements Gummable {
     /** Whether this is a horizontal camera tile or a vertical camera tile. */
     private boolean isHorizontal;
 
-    /** Upper left point of the camera after exiting top / left of camera tile. */
+    /** Upper left point of the camera after exiting bottom / left of camera tile. */
     private Vector2 firstUpperLeft;
 
-    /** Lower right point of the camera after exiting top / left of camera tile. */
+    /** Lower right point of the camera after exiting bottom / left of camera tile. */
     private Vector2 firstLowerRight;
 
-    /** Upper left point of the camera after exiting bottom / right of camera tile. */
+    /** Upper left point of the camera after exiting top / right of camera tile. */
     private Vector2 secondUpperLeft;
 
-    /** Lower right point of the camera after exiting bottom / right of camera tile. */
+    /** Lower right point of the camera after exiting top / right of camera tile. */
     private Vector2 secondLowerRight;
 
     /** Whether the camera tile first mode fixes the x axis */
@@ -138,6 +138,9 @@ public class DoorModel extends TileModel implements Gummable {
     /** The height of the texture */
     private int textureHeight;
 
+    /** The width of the texture */
+    private int textureWidth;
+
     /** How open the door is */
     private float openFraction;
 
@@ -180,7 +183,7 @@ public class DoorModel extends TileModel implements Gummable {
      */
     public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal, boolean isLocked, HashMap<Integer, EnemyModel> enemyMap) {
         // make the body fixture into a sensor
-        setName("door");
+        setName(isHorizontal ? "doorH" : "door");
 
         setPosition(x,y);
         float width = objectJson.getFloat("width") / scale.x;
@@ -208,6 +211,7 @@ public class DoorModel extends TileModel implements Gummable {
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
         textureHeight = texture.getRegionHeight();
+        textureWidth = texture.getRegionWidth();
 
         key = constants.get("lockedTexture").asString();
         texture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -255,35 +259,43 @@ public class DoorModel extends TileModel implements Gummable {
             if (value != -1) {
                 float yValue = levelHeight - value - 1;
                 switch (name) {
+                    case "bottomx1":
                     case "leftx1":
                         firstUpperLeft.x = value;
                         isFirstFixedX = true;
                         break;
                     case "lefty1":
+                    case "bottomy1":
                         firstUpperLeft.y = yValue + 1;
                         isFirstFixedY = true;
                         break;
                     case "leftx2":
+                    case "bottomx2":
                         firstLowerRight = new Vector2();
                         firstLowerRight.x = value + 1f;
                         break;
                     case "lefty2":
+                    case "bottomy2":
                         firstLowerRight.y = yValue;
                         break;
                     case "rightx1":
+                    case "topx1":
                         secondUpperLeft = new Vector2();
                         secondUpperLeft.x = value;
                         isSecondFixedX = true;
                         break;
                     case "righty1":
+                    case "topy1":
                         secondUpperLeft.y = yValue + 1;
                         isSecondFixedY = true;
                         break;
                     case "rightx2":
+                    case "topx2":
                         secondLowerRight = new Vector2();
                         secondLowerRight.x = value + 1f;
                         break;
                     case "righty2":
+                    case "topy2":
                         secondLowerRight.y = yValue;
                         break;
                     default:
@@ -401,34 +413,65 @@ public class DoorModel extends TileModel implements Gummable {
 
     public void draw(GameCanvas canvas) {
         float halfHeight = textureHeight / 2f;
+        float halfWidth = textureWidth / 2f;
         if (!isLocked) {
+            if (isHorizontal) {
+                texture.setRegionWidth((int) ((1 - openFraction) * textureWidth));
+                float offsetX = textureWidth - texture.getRegionWidth();
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x-offsetX - halfWidth, getY()*drawScale.y, (float) (getAngle()+Math.PI), 1, 1);
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x + offsetX +halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
+            } else {
                 texture.setRegionHeight((int) ((1 - openFraction) * textureHeight));
                 canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
-                    getX()*drawScale.x, getY()*drawScale.y+halfHeight, (float) (getAngle()+Math.PI), 1, 1);
+                        getX()*drawScale.x, getY()*drawScale.y+halfHeight, (float) (getAngle()+Math.PI), 1, 1);
                 canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
-            } else if (!isOpen) {
+            }
+        } else if (!isOpen) {
+            if (isHorizontal) {
                 canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
-                    getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
+                        getX()*drawScale.x-halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
+            } else {
+                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
             }
-            if(!isOpen && gummed) { canvas.draw(gummedTexture, Color.WHITE, 0f, .5f,
-                getX()*drawScale.x-gummedTexture.getRegionWidth()/2f,
-                getY()*drawScale.y-gummedTexture.getRegionHeight()/2f, getAngle(), 1, 1);
-            }
+        }
+        if(!isOpen && gummed) {
+            canvas.draw(gummedTexture, Color.WHITE, 0f, .5f,
+                    getX()*drawScale.x-gummedTexture.getRegionWidth()/2f,
+                    getY()*drawScale.y-gummedTexture.getRegionHeight()/2f, getAngle(), 1, 1);
+        }
     }
 
     @Override
     public void drawWithOutline(GameCanvas canvas) {
         float halfHeight = texture.getRegionHeight() / 2f;
+        float halfWidth = texture.getRegionWidth() / 2f;
         if (!isLocked) {
-            texture.setRegionHeight(textureHeight);
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
-                    getX()*drawScale.x, getY()*drawScale.y+halfHeight, (float) (getAngle()+Math.PI), 1, 1);
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
-                    getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
+            if (isHorizontal) {
+                texture.setRegionWidth(textureWidth);
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x- halfWidth, getY()*drawScale.y, (float) (getAngle()+Math.PI), 1, 1);
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x +halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
+
+            } else {
+                texture.setRegionHeight(textureHeight);
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x, getY()*drawScale.y+halfHeight, (float) (getAngle()+Math.PI), 1, 1);
+                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x, getY()*drawScale.y-halfHeight, getAngle(), 1, 1);
+            }
         } else {
-            canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
-                getX()*drawScale.x, getY()*drawScale.y - halfHeight, getAngle(), 1, 1);
+            if (isHorizontal) {
+                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x - halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
+            } else {
+                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                        getX()*drawScale.x, getY()*drawScale.y - halfHeight, getAngle(), 1, 1);
+            }
         }
         canvas.draw(outlineTexture, Color.WHITE, 0f, 0f,
             getX()*drawScale.x-5-gummedTexture.getRegionWidth()/2,

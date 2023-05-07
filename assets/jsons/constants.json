@@ -135,6 +135,22 @@
     "gummedTexture": "gummedDoor",
     "outlineTexture": "outlineDoor"
   },
+  "doorH": {
+    "debugcolor": "magenta",
+    "debugopacity": 200,
+    "texture": "doorH",
+    "doorOpenRate": 0.1,
+    "sensorsize": [
+      2.1,
+      5
+    ],
+    "sensorname": "doorSensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "lockedTexture": "lockedDoorH",
+    "gummedTexture": "gummedDoorH",
+    "outlineTexture": "outlineDoorH"
+  },
   "glass": {
     "bodytype": "static",
     "density": 0.0,

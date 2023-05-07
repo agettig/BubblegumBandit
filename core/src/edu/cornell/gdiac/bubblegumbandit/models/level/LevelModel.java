@@ -628,9 +628,11 @@ public class LevelModel {
                 case "doorVLocked":
                 case "doorV":
                 case "doorH":
+                case "doorHLocked":
                     DoorModel door = new DoorModel();
                     boolean isLocked = objType.contains("Locked");
-                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
+                    JsonValue doorJv = objType.contains("doorH") ? constants.get("doorH") : constants.get("door");
+                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds);
                     activate(door);
                     break;
                 case "alarm":

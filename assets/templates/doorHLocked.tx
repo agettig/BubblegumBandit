@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <tileset firstgid="1" source="../tilesets/objects.json"/>
+ <object gid="23" width="257" height="65">
+  <properties>
+   <property name="bottomx1" type="int" value="-1"/>
+   <property name="bottomx2" type="int" value="-1"/>
+   <property name="bottomy1" type="int" value="-1"/>
+   <property name="bottomy2" type="int" value="-1"/>
+   <property name="enemy1" type="object" value="0"/>
+   <property name="topx1" type="int" value="-1"/>
+   <property name="topx2" type="int" value="-1"/>
+   <property name="topy1" type="int" value="-1"/>
+   <property name="topy2" type="int" value="-1"/>
+  </properties>
+ </object>
+</template>

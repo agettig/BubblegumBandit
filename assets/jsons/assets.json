@@ -289,7 +289,9 @@
         "crushingBlockGum": "textures/gum/blockGum.png",
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
+        "gummedDoorH": "textures/gum/doorGumH.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
+        "outlineDoorH": "textures/gum/doorGumOutlineH.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,
@@ -306,7 +308,9 @@
 
         "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/halfDoor.png",
+        "doorH":  "textures/objects/halfDoorH.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
+        "lockedDoorH":  "textures/objects/doorLockedH.png",
         "glass":  "textures/objects/glass.png",
         "glassShatter":  {
             "file": "textures/objects/glassShatter.png",
@@ -369,7 +373,7 @@
 
     },
 	"jsons" : {
-        "level1" : "jsons/levels/level1.json",
+        "level1" : "jsons/levels/horizDoor.json",
         "level2":"jsons/levels/level2.json",
         "level3" : "jsons/levels/level3.json",
         "level4": "jsons/levels/level4.json",

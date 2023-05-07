@@ -247,7 +247,7 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         y = getY()*drawScale.y + (isBottom ? -origin.y + halfFloorHeight - 1 : origin.y - halfFloorHeight + 1);
         float originX = electricFloorTexture.getRegionWidth() / 2f;
 
-        canvas.draw(electricFloorTexture, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? 1 : -1, yScale);
+        canvas.draw(electricFloorTexture, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale);
     }
 
     public void drawDebug(GameCanvas canvas) {

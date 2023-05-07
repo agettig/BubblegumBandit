@@ -260,6 +260,8 @@ public class CollisionController implements ContactListener {
         float zoomWidth = 0;
         float zoomHeight = 0;
         boolean fixCamera = false;
+        boolean fixX = false;
+        boolean fixY = false;
 
         if ((isFirst && door.isFirstFixedX()) || (!isFirst && door.isSecondFixedX())) {
             float centerX = (ul.x + lr.x) * scale.x / 2f;
@@ -267,6 +269,7 @@ public class CollisionController implements ContactListener {
             camera.setFixedX(true);
             camera.setTargetX(centerX);
             fixCamera = true;
+            fixX = true;
         }
         if ((isFirst && door.isFirstFixedY()) || (!isFirst && door.isSecondFixedY())) {
             float centerY = (ul.y + lr.y) * scale.y / 2f;
@@ -274,9 +277,16 @@ public class CollisionController implements ContactListener {
             camera.setFixedY(true);
             camera.setTargetY(centerY);
             fixCamera = true;
+            fixY = true;
         }
         if (fixCamera) {
             camera.setZoom(zoomWidth, zoomHeight);
+            if (!fixX) {
+                camera.setFixedX(false);
+            }
+            if (!fixY) {
+                camera.setFixedY(false);
+            }
         }
         else {
             // Change camera to track the player
@@ -765,6 +775,15 @@ public class CollisionController implements ContactListener {
 
         if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && !bodyA.getName().equals("door")) ||
                 (bandit.getSensorName().equals(dataA) && bandit != bodyB && !bodyB.getName().equals("door"))) {
+            DoorModel door = null;
+            if (bodyA.getName().equals("doorH")) {
+                door = (DoorModel) bodyA;
+            } else if (bodyB.getName().equals("doorH")) {
+                door = (DoorModel) bodyB;
+            }
+            if (door != null && door.isOpen()) {
+                return;
+            }
             bandit.setGrounded(true);
             bandit.setKnockback(false);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
