@@ -31,7 +31,7 @@ public class SunfishModel extends WheelObstacle {
     private static final float ANGLE_OFFSET =(float) (90 * (Math.PI / 180));
 
     /** radius of the physics body */
-    private static final float RADIUS = 1f;
+    private static final float RADIUS = 0.1f;
 
     /** The ship's speed */
     private static final float SPEED = 10f;
@@ -95,13 +95,14 @@ public class SunfishModel extends WheelObstacle {
         movement = new Vector2(SPEED, SPEED);
         forceCache = new Vector2();
         lastPos = new Vector2();
-        setMass(0.01f);
+        setMass(0.000001f);
+        setFriction(0);
         exhaust = new Array<Fire>();
         cooldown = 0;
         ship_offset = new Vector2(texture.getRegionWidth()/ 2, texture.getRegionHeight() / 2);
         exhaust_offset = new Vector2(0, ship_offset.y * 1.5f);
 //        setMass(0.1f);
-        pos = new Vector2();
+//        pos = new Vector2();
 
     }
 
@@ -145,21 +146,22 @@ public class SunfishModel extends WheelObstacle {
 
         // damping distance
         if (dst < 100){
-            forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
+//            forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
 
         }
         //boosting distance
          else if (boosting){
-//            forceCache.add(movement.scl(THRUST));
             body.setTransform(body.getPosition().add(movement.scl(1.8f)), 0);
+            System.out.println(body.getLinearVelocity());
         }
         //normal speed distance
         else {
-//            forceCache.add(movement);
             body.setTransform(body.getPosition().add(movement), 0);
+
+//            body.setLinearVelocity(movement);
         }
 
-        body.applyForce(forceCache, getPosition(), true);
+//        body.applyForce(forceCache, getPosition(), true);
 //            body.applyLinearImpulse(movement, getPosition(), true);
         //rotate ship to face cursor
         body.setTransform(body.getPosition(), angle);

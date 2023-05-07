@@ -163,10 +163,8 @@ public class LevelIconModel {
     }
 
     public void drawNPCs(GameCanvas canvas, Vector2 center){
-        //TODO: replace with calls to SaveData
-        //3 total saves, 2 success, 1 failure
-        int total = 3;
-        int successes = 2;
+        int total = SaveData.getCaptiveCount(level);
+        int successes = SaveData.completed(level) ? SaveData.getStars(level) : 0;
 
         //the start x, relative to the center: center.x - the size the icons will take up / 2
         float start = center.x - (((total-1) * (success.getRegionWidth() + NPC_SPACE))/ 2f);
