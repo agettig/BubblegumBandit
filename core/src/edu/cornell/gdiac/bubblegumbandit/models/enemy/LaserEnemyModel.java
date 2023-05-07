@@ -273,7 +273,7 @@ public class LaserEnemyModel extends EnemyModel {
                 boolean isBandit = fixture.getBody().getUserData() instanceof BanditModel;
                 if (isBandit) {
                     BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
-                    bandit.hitPlayer(Damage.JUMP_STUN_DAMAGE, false);
+                    bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
                     int yImpulse = isFlipped ? -10 : 10;
                     int xImpulse = getX() > bandit.getX() ? -5 : 5;
                     bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);

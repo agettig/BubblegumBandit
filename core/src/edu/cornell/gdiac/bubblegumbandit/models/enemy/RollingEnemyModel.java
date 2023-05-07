@@ -34,6 +34,9 @@ public class RollingEnemyModel extends EnemyModel {
     /** How many more seconds until this RollingEnemyModel can roll again */
     private int rollCoolDown;
 
+    /**
+     * If the robot is attacking
+     */
     /** How many seconds this RollingEnemyModel has been trying to unstick
      *  itself */
     private float unstickStopWatch;
@@ -44,6 +47,9 @@ public class RollingEnemyModel extends EnemyModel {
     /** true if this RollingEnemyModel is attacking */
     private boolean isRolling;
 
+    /**
+     * How long the enemy has been attacking for
+     */
     /** How many seconds this RollingEnemyModel has been attacking for  */
     private int attackDuration;
 
