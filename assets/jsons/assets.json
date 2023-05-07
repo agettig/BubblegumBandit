@@ -150,7 +150,11 @@
         "bullet": "textures/smallEnemy/bullet.png",
         "shockwave": "textures/smallEnemy/shockwave.png",
         "electricFloor": {
-            "file": "textures/smallEnemy/shockLow.png",
+            "file": "textures/smallEnemy/shockLow1.png",
+            "wrapU": "repeated"
+        },
+        "electricFloor2": {
+            "file": "textures/smallEnemy/shockLow2.png",
             "wrapU": "repeated"
         },
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",

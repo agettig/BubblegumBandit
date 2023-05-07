@@ -24,6 +24,9 @@ import java.lang.reflect.Field;
  */
 public class ShockModel extends WheelObstacle implements Pool.Poolable {
 
+    /** Floor animation fps */
+    private final int FLOOR_FPS = 4;
+
     /** The time the shock persists */
     private final float PERSIST_TIME = 2.5f;
 
@@ -54,8 +57,15 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     /** Whether the projectile is riding the bottom */
     private boolean isBottom;
 
-    /** The texture for the electrified floor */
+    /** The first texture for the electrified floor */
     private TextureRegion electricFloorTexture;
+
+    /** The second texture for the electrified floor */
+    private TextureRegion electricFloorTexture2;
+
+    /** The current texture for the floor */
+    private TextureRegion curFloor;
+
 
     /** Sensor to detect collisions with the hazard */
     private Fixture sensorFixture;
@@ -69,9 +79,6 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
 
     /** Animation controller for the crest */
     private AnimationController animationController;
-
-    /** Animation controller for the floor */
-    private AnimationController floorAnimationController;
 
     /**
      * Returns whether this shock model is on the bottom
@@ -93,7 +100,7 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         debugSensorShape = new PolygonShape();
     }
 
-    public void initialize(AssetDirectory directory, TextureRegion electricFloorTexture, Vector2 scale, JsonValue data, float x, float y, float radius, boolean isBottom, boolean isLeft) {
+    public void initialize(AssetDirectory directory, Vector2 scale, JsonValue data, float x, float y, float radius, boolean isBottom, boolean isLeft) {
         animationController = new AnimationController(directory, "shockArc");
 //        floorAnimationController = new AnimationController(directory, "shockFloor");
 
@@ -110,7 +117,12 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         setPosition(x, y);
         setSensor(true);
         setRadius(radius);
-        this.electricFloorTexture = electricFloorTexture;
+
+        String key = data.get("floorTexture").asString();
+        electricFloorTexture = new TextureRegion(directory.getEntry(key, Texture.class));
+        key = data.get("floorTexture2").asString();
+        electricFloorTexture2 = new TextureRegion(directory.getEntry(key, Texture.class));
+        curFloor = electricFloorTexture;
 
         // Initialize the sensors used to detect shocking.
         float worldHalfWidth = origin.x / drawScale.x;
@@ -188,6 +200,11 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         if (timeAlive > PERSIST_TIME) {
             destroy();
         }
+        if ((int) (timeAlive * FLOOR_FPS) % 2 == 0) {
+            curFloor = electricFloorTexture;
+        } else {
+            curFloor = electricFloorTexture2;
+        }
     }
 
     /** Returns whether the obstacle colliding with the shock sensor is valid
@@ -248,12 +265,12 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         float worldHalfWidth = origin.x / drawScale.x;
         float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
         float centerX = (innerX + initialX) / 2f;
-        electricFloorTexture.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
-        float halfFloorHeight = electricFloorTexture.getRegionHeight() / 2f;
+        curFloor.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
+        float halfFloorHeight = curFloor.getRegionHeight() / 2f;
         y = getY()*drawScale.y + (isBottom ? -origin.y + halfFloorHeight - 1 : origin.y - halfFloorHeight + 1);
-        float originX = electricFloorTexture.getRegionWidth() / 2f;
+        float originX = curFloor.getRegionWidth() / 2f;
 
-        canvas.draw(electricFloorTexture, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale);
+        canvas.draw(curFloor, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale);
     }
 
     public void drawDebug(GameCanvas canvas) {

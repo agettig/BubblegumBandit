@@ -32,9 +32,6 @@ public class ShockController {
     /** The texture of a projectile */
     private TextureRegion projTexture;
 
-    /** The texture of the electrified floor */
-    private TextureRegion floorTexture;
-
     /** The draw scale of the level. */
     private Vector2 drawScale;
 
@@ -71,10 +68,6 @@ public class ShockController {
         projTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         radius = projTexture.getRegionWidth() / (2.0f * drawScale.x);
         speed = projJV.getFloat("speed", 0);
-
-        key = projJV.get("floorTexture").asString();
-        floorTexture = new TextureRegion(directory.getEntry(key, Texture.class));
-
     }
 
     /**
@@ -100,8 +93,8 @@ public class ShockController {
         }
         ShockModel left = new ShockModel();
         ShockModel right = new ShockModel();
-        left.initialize(directory, floorTexture, drawScale, projJV, e.getX(), projY, radius, isGravDown, true);
-        right.initialize(directory, floorTexture, drawScale, projJV, e.getX(), projY, radius, isGravDown, false);
+        left.initialize(directory, drawScale, projJV, e.getX(), projY, radius, isGravDown, true);
+        right.initialize(directory, drawScale, projJV, e.getX(), projY, radius, isGravDown, false);
 
         //Physics Constants
         left.setTexture(projTexture);

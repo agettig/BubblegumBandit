@@ -276,6 +276,7 @@
     "density": 10.0,
     "texture": "shockwave",
     "floorTexture": "electricFloor",
+    "floorTexture2": "electricFloor2",
     "sensorColor": "red",
     "sensorOpacity": 200,
     "sensorName": "shockSensor"
