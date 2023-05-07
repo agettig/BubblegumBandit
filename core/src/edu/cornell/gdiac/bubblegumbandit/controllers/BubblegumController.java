@@ -11,6 +11,7 @@ import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.GumJointPair;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -254,25 +255,6 @@ public class BubblegumController {
         activeGum = 0;
     }
 
-    /**
-     * For every GumJoint pair in the queue of active GumJointPairs,
-     * (1) destroys the joint in the pair,
-     * (2) destroys the body of the gum.
-     * Then, clears the queue.
-     * */
-    public void collectBubblegum(){
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns true if the number of active Bubblegum objects is
-     * equal to or greater than the gum limit.
-     *
-     * @returns true if the gum limit has been reached
-     * */
-    public boolean gumLimitReached(){
-        return gumAmmo == 0;
-    }
 
     /**
      * Adds a new Bubblegum to
@@ -324,6 +306,39 @@ public class BubblegumController {
         else if (orientation == 3) {
             anchor.set(gum.getX() - ob.getX() - xDiff*0.75f, gum.getY() - ob.getY() - yDiff*0.65f);
         }
+        jointDef.localAnchorB.set(anchor);
+        return jointDef;
+    }
+
+    /**
+     * Returns a WeldJointDef connecting gum and a wall, at a specific tile position.
+     */
+    public WeldJointDef createGumJoint(Obstacle gum, Obstacle ob, int orientation, TileModel tile) {
+        Vector2 gumPos = gum.getPosition();
+        Vector2 tilePos = tile.getPosition();
+        float yDiff = gumPos.y - tilePos.y;
+        float xDiff = gumPos.x - tilePos.x;
+
+        WeldJointDef jointDef = new WeldJointDef();
+        jointDef.bodyA = gum.getBody();
+        jointDef.bodyA.setUserData(gum);
+        jointDef.bodyB = ob.getBody();
+        jointDef.bodyB.setUserData(ob);
+        jointDef.referenceAngle = gum.getAngle() - ob.getAngle();
+
+        Vector2 anchor = new Vector2();
+        jointDef.localAnchorA.set(anchor);
+        anchor.set(gum.getX() - tile.getX(), gum.getY() - tile.getY() - yDiff*0.4f);
+        if (orientation == 1) {
+            anchor.set(gum.getX() - tile.getX() - xDiff*0.4f, gum.getY() - tile.getY());
+        }
+        else if (orientation == 2) {
+            anchor.set(gum.getX() - tile.getX() - xDiff*0.5f, gum.getY() - tile.getY() - yDiff*0.65f);
+        }
+        else if (orientation == 3) {
+            anchor.set(gum.getX() - tile.getX() - xDiff*0.75f, gum.getY() - tile.getY() - yDiff*0.65f);
+        }
+        anchor.add(tile.getX() - ob.getX(), tile.getY() - ob.getY());
         jointDef.localAnchorB.set(anchor);
         return jointDef;
     }

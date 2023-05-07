@@ -8,6 +8,10 @@
       "strip": "banditIdle.idle",
       "fps": 2
     },
+    "shock": {
+      "strip": "banditShock.shock",
+      "fps": 6
+    },
     "fall": {
       "strip": "banditFall.fall",
       "fps": 2
@@ -22,6 +26,10 @@
     },
     "death": {
       "strip": "banditDeath.death",
+      "fps": 8
+    },
+    "reload": {
+      "strip": "banditReload.reload",
       "fps": 8
     }
   },
@@ -97,6 +105,23 @@
     "sparks": {
       "strip": "hazardSparks.sparks",
       "fps": 16
+    }
+  },
+  "captive": {
+    "float": {
+      "strip": "captiveFloat.float",
+      "fps": 1
+    },
+    "free": {
+      "strip": "captiveFree.free",
+      "fps": 12
+    }
+
+  },
+  "shockArc": {
+    "shockArc": {
+      "strip": "shockArc.shockArc",
+      "fps": 4
     }
   }
 }

@@ -29,10 +29,10 @@
     "topSensorName": "dudeTopSensor",
     "deadTexture" : "banditDead"
   },
-  "walls": {
+  "wall": {
     "bodyType": "static",
     "density": 0.0,
-    "friction": 0.2,
+    "friction": 0.4,
     "restitution": 0.0,
     "texture": "earth",
     "debugColor": "yellow",
@@ -113,7 +113,7 @@
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "texture": "star",
+    "texture": "captive",
     "debugColor": "yellow",
     "debugOpacity": 200,
     "bobAmount":  0.1,
@@ -134,6 +134,22 @@
     "lockedTexture": "lockedDoor",
     "gummedTexture": "gummedDoor",
     "outlineTexture": "outlineDoor"
+  },
+  "doorH": {
+    "debugcolor": "magenta",
+    "debugopacity": 200,
+    "texture": "doorH",
+    "doorOpenRate": 0.1,
+    "sensorsize": [
+      2.1,
+      5
+    ],
+    "sensorname": "doorSensor",
+    "sensorcolor": "red",
+    "sensoropacity": 192,
+    "lockedTexture": "lockedDoorH",
+    "gummedTexture": "gummedDoorH",
+    "outlineTexture": "outlineDoorH"
   },
   "glass": {
     "bodytype": "static",
@@ -168,6 +184,8 @@
     "animations" : "mediumEnemy",
     "gumTexture": "medGum",
     "outline": "medGumOutline",
+    "midairGumTexture" : "medGumMidair",
+    "midairGumOutlineTexture" : "medGumMidairOutline",
     "texture": "medEnemy",
     "debugColor": "white",
     "debugOpacity": 192,
@@ -199,11 +217,14 @@
     "outline": "smallGumOutline",
     "gummedTexture": "gummedEnemy",
     "gumTexture": "smallGum",
+    "midairGumTexture" : "splatGum",
+    "midairGumOutlineTexture" : "stuckOutline",
     "debugColor": "white",
     "debugOpacity": 192,
     "sensorColor": "yellow",
     "sensorOpacity": 192,
-    "visionRadius": 3.0,
+    "visionRadius": 9.0,
+    "attackRadius": 8.0,
     "sensorName": "listeningSensor",
     "listeningRadius": 7,
     "wanderSpeed": 3,
@@ -227,6 +248,8 @@
     "texture": "largeEnemy",
     "gumTexture": "largeGum",
     "outline": "largeGumOutline",
+    "midairGumTexture" : "largeGumMidair",
+    "midairGumOutlineTexture" : "largeGumMidairOutline",
     "debugColor": "white",
     "debugOpacity": 192,
     "sensorColor": "yellow",
@@ -255,9 +278,14 @@
   "projectile": {
     "offsetX": 0.6,
     "offsetY": 0.5,
-    "speed": 10.0,
+    "speed": 6.5,
     "density": 10.0,
-    "texture": "bullet"
+    "texture": "shockwave",
+    "floorTexture": "electricFloor",
+    "floorTexture2": "electricFloor2",
+    "sensorColor": "red",
+    "sensorOpacity": 200,
+    "sensorName": "shockSensor"
   },
   "box": {
     "name": "box",

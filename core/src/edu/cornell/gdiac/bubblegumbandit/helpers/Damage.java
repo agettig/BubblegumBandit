@@ -29,10 +29,12 @@ public class Damage {
     /** Damage dealt when a RollingEnemy rolls into the Bandit. */
     public static final float ROLLING_HIT_DAMAGE = 25f;
 
-    /** Damage dealt when a ProjectileEnemy bullet hits the Bandit. */
-    public static final float PROJECTILE_SHOCK_DAMAGE = 12f;
+    /** Initial shock damage*/
+    public static final float SHOCK_DAMAGE = 20f;
+
+    /** Continued shock damage*/
+    public static final float DPS_ON_SHOCK = 10f;
 
     // --- END REGION: ENEMIES ---
-
 
 }
