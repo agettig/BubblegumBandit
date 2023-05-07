@@ -159,6 +159,9 @@ public class LevelModel {
     /** Cache for figuring out which tile is hit */
     private Vector2 tileCache = new Vector2();
 
+    /** Holds a reference to all doors in the level. */
+    private Array<DoorModel> doors;
+
 
     /**
      * Creates a new LevelModel
@@ -339,6 +342,7 @@ public class LevelModel {
         backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
+        doors = new Array<>();
 
         JsonValue boardGravityDownLayer = null;
         JsonValue boardGravityUpLayer = null;
@@ -634,6 +638,7 @@ public class LevelModel {
                     JsonValue doorJv = objType.contains("doorH") ? constants.get("doorH") : constants.get("door");
                     door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds);
                     activate(door);
+                    doors.add(door);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(decorX, decorY));
@@ -787,6 +792,16 @@ public class LevelModel {
             if (world.getGravity().y > 0){
                 e.flipGravity();
             }
+        }
+    }
+
+    /**
+     * Notifies each door in the level that the orb has been collected, in case they are supposed
+     * to lock / unlock.
+     * */
+    public void postOrbDoors() {
+        for (DoorModel doorModel : doors) {
+            doorModel.postOrb();
         }
     }
 

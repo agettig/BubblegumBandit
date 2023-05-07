@@ -746,6 +746,7 @@ public class GameController implements Screen {
         //Check to create post-orb enemies
         if (orbCollected && !spawnedPostOrbEnemies) {
             level.spawnPostOrbEnemies();
+            level.postOrbDoors();
             spawnedPostOrbEnemies = true;
         }
 

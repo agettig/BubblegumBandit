@@ -73,7 +73,13 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     /** Animation controller for the floor */
     private AnimationController floorAnimationController;
 
-
+    /**
+     * Returns whether this shock model is on the bottom
+     * @return Whether this shock model is on the bottom
+     */
+    public boolean getIsBottom() {
+        return isBottom;
+    }
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectileController.
      *

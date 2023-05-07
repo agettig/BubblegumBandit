@@ -7,10 +7,12 @@
    <property name="bottomx2" type="int" value="-1"/>
    <property name="bottomy1" type="int" value="-1"/>
    <property name="bottomy2" type="int" value="-1"/>
+   <property name="lockOnOrb" type="bool" value="false"/>
    <property name="topx1" type="int" value="-1"/>
    <property name="topx2" type="int" value="-1"/>
    <property name="topy1" type="int" value="-1"/>
    <property name="topy2" type="int" value="-1"/>
+   <property name="unlockOnOrb" type="bool" value="false"/>
   </properties>
  </object>
 </template>

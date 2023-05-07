@@ -147,6 +147,15 @@ public class DoorModel extends TileModel implements Gummable {
     /** How fast the door opens */
     private float doorOpenRate;
 
+    /** Whether the door locks when the orb is collected. */
+    private boolean locksOnOrb;
+
+    /** Whether the door unlocks when the orb is collected. */
+    private boolean unlocksOnOrb;
+
+    /** Whether the orb has been collected. */
+    private boolean postOrb;
+
     /** Constructs a new DoorModel
      * Uses generic values to start
      */
@@ -163,13 +172,21 @@ public class DoorModel extends TileModel implements Gummable {
         enemyIds = new ObjectSet<>();
         collidedObs = new ObjectSet<>();
         openFraction = 0;
+
+        locksOnOrb = false;
+        unlocksOnOrb = false;
+        postOrb = false;
     }
 
+    /**
+     * Returns whether the door is open
+     * @return whether the door is open
+     */
     public boolean isOpen() {
         return isOpen;
     }
 
-    /** Initializes the camera tile model.
+    /** Initializes the door model with the camera change information.
      *
      * @param directory the asset directory of the level
      * @param x the x position of the camera tile
@@ -255,66 +272,77 @@ public class DoorModel extends TileModel implements Gummable {
         JsonValue property = objectJson.get("properties").child();
         while (property != null) {
             String name = property.getString("name");
-            float value = property.getFloat("value");
-            if (value != -1) {
-                float yValue = levelHeight - value - 1;
-                switch (name) {
-                    case "bottomx1":
-                    case "leftx1":
-                        firstUpperLeft.x = value;
-                        isFirstFixedX = true;
-                        break;
-                    case "lefty1":
-                    case "bottomy1":
-                        firstUpperLeft.y = yValue + 1;
-                        isFirstFixedY = true;
-                        break;
-                    case "leftx2":
-                    case "bottomx2":
-                        firstLowerRight = new Vector2();
-                        firstLowerRight.x = value + 1f;
-                        break;
-                    case "lefty2":
-                    case "bottomy2":
-                        firstLowerRight.y = yValue;
-                        break;
-                    case "rightx1":
-                    case "topx1":
-                        secondUpperLeft = new Vector2();
-                        secondUpperLeft.x = value;
-                        isSecondFixedX = true;
-                        break;
-                    case "righty1":
-                    case "topy1":
-                        secondUpperLeft.y = yValue + 1;
-                        isSecondFixedY = true;
-                        break;
-                    case "rightx2":
-                    case "topx2":
-                        secondLowerRight = new Vector2();
-                        secondLowerRight.x = value + 1f;
-                        break;
-                    case "righty2":
-                    case "topy2":
-                        secondLowerRight.y = yValue;
-                        break;
-                    default:
-                        if (name.contains("enemy")) {
-                            enemyIds.add((int) value);
-                        } else {
-                            throw new UnsupportedOperationException(name + " is not a valid property for a door");
-                        }
+                float value = property.getFloat("value");
+                if (value != -1) {
+                    float yValue = levelHeight - value - 1;
+                    switch (name) {
+                        case "bottomx1":
+                        case "leftx1":
+                            firstUpperLeft.x = value;
+                            isFirstFixedX = true;
+                            break;
+                        case "lefty1":
+                        case "bottomy1":
+                            firstUpperLeft.y = yValue + 1;
+                            isFirstFixedY = true;
+                            break;
+                        case "leftx2":
+                        case "bottomx2":
+                            firstLowerRight = new Vector2();
+                            firstLowerRight.x = value + 1f;
+                            break;
+                        case "lefty2":
+                        case "bottomy2":
+                            firstLowerRight.y = yValue;
+                            break;
+                        case "rightx1":
+                        case "topx1":
+                            secondUpperLeft = new Vector2();
+                            secondUpperLeft.x = value;
+                            isSecondFixedX = true;
+                            break;
+                        case "righty1":
+                        case "topy1":
+                            secondUpperLeft.y = yValue + 1;
+                            isSecondFixedY = true;
+                            break;
+                        case "rightx2":
+                        case "topx2":
+                            secondLowerRight = new Vector2();
+                            secondLowerRight.x = value + 1f;
+                            break;
+                        case "righty2":
+                        case "topy2":
+                            secondLowerRight.y = yValue;
+                            break;
+                        case "lockOnOrb":
+                            locksOnOrb = (value == 1);
+                            System.out.println("Locks on orb: " + locksOnOrb);
+                            break;
+                        case "unlockOnOrb":
+                            unlocksOnOrb = (value == 1);
+                            System.out.println("Unlocks on orb: " + unlocksOnOrb);
+                            break;
+                        default:
+                            if (name.contains("enemy")) {
+                                enemyIds.add((int) value);
+                            } else {
+                                throw new UnsupportedOperationException(
+                                        name + " is not a valid property for a door");
+                            }
+                    }
                 }
-            }
             property = property.next();
         }
         setDrawScale(scale);
 
         this.isLocked = isLocked;
         this.enemyMap = enemyMap;
+
+        assert !(locksOnOrb && unlocksOnOrb);
     }
 
-    /** Activates physics and sets up filters */
+    /** Activates physics and sets up sensors / filters for the door */
     public boolean activatePhysics(World world) {
         // create the box from our superclass
         if (!super.activatePhysics(world)) {
@@ -354,6 +382,9 @@ public class DoorModel extends TileModel implements Gummable {
         obsInRange.remove(ob);
     }
 
+    /**
+     * Tries to unlock the door by checking if each of the required enemies is stuck
+     */
     private void tryUnlockDoor() {
         boolean allDead = true;
         for (Integer id : enemyIds) {
@@ -366,6 +397,10 @@ public class DoorModel extends TileModel implements Gummable {
             isLocked = false;
         }
     }
+
+    /**
+     * Starts opening the door if it is not locked or gummed
+     */
     private void openDoor() {
         if (!isLocked && !gummed) {
             isOpen = true;
@@ -373,6 +408,9 @@ public class DoorModel extends TileModel implements Gummable {
         }
     }
 
+    /**
+     * Starts closing the door if it is not gummed
+     */
     private void closeDoor() {
         if (!gummed) {
             isOpen = false;
@@ -380,6 +418,22 @@ public class DoorModel extends TileModel implements Gummable {
         }
     }
 
+    /**
+     * Changes the door to its post door state.
+     */
+    public void postOrb() {
+        postOrb = true;
+        if (locksOnOrb) {
+            isLocked = true;
+        } else if (unlocksOnOrb) {
+            isLocked = false;
+        }
+    }
+
+    /**
+     * Updates the door, opening it or closing it as needed.
+     * @param dt Timing values from parent loop
+     */
     public void update(float dt) {
         super.update(dt);
         // Update how open the door is
@@ -393,7 +447,7 @@ public class DoorModel extends TileModel implements Gummable {
         } else if (openFraction < 0) {
             openFraction = 0;
         }
-        if (isLocked) {
+        if (isLocked && !postOrb) {
             tryUnlockDoor();
         }
         if (playerPassed) {
@@ -411,6 +465,10 @@ public class DoorModel extends TileModel implements Gummable {
         }
     }
 
+    /**
+     * Draws the door based on its current status
+     * @param canvas Drawing context
+     */
     public void draw(GameCanvas canvas) {
         float halfHeight = textureHeight / 2f;
         float halfWidth = textureWidth / 2f;
@@ -445,6 +503,10 @@ public class DoorModel extends TileModel implements Gummable {
         }
     }
 
+    /**
+     * Draws the door with an outline around the gum based on its current status
+     * @param canvas Drawing context
+     */
     @Override
     public void drawWithOutline(GameCanvas canvas) {
         float halfHeight = texture.getRegionHeight() / 2f;
