@@ -134,10 +134,10 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
             if (obstacleA instanceof Gummable && !(obstacleB instanceof DoorModel)) {
-                obstacleA.startCollision(obstacleB);
+                obstacleA.startCollision(obstacleB, fixA);
             }
             if (obstacleB instanceof Gummable && !(obstacleA instanceof DoorModel)) {
-                obstacleB.startCollision(obstacleA);
+                obstacleB.startCollision(obstacleA, fixB);
             }
 
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
@@ -193,10 +193,10 @@ public class CollisionController implements ContactListener {
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
             if (ob1 instanceof Gummable) {
-                ob1.endCollision(ob2);
+                ob1.endCollision(ob2, fix1);
             }
             if (ob2 instanceof Gummable) {
-                ob2.endCollision(ob1);
+                ob2.endCollision(ob1, fix2);
             }
 
             resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
@@ -393,9 +393,9 @@ public class CollisionController implements ContactListener {
                 if (!gum.getOnTile()) {
                     gum.markRemoved(true);
                     gummable.setGummed(true);
-                    gummable.endCollision(gum);
+                    gummable.endCollision(gum, null);
                     if (!(gummable instanceof DoorModel)) {
-                        if (gummable.getCollisions().size > 0){
+                        if (gummable.getCollisions().size() > 0){
                             gummable.setStuck(true);
                         }
                         for (Obstacle ob : gummable.getCollisions()) {
