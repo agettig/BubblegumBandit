@@ -442,7 +442,11 @@
         "rolling": "sounds/rolling.wav",
         "clockTick": "sounds/clockTicking.wav",
         "lowStressAlarm": "sounds/lowStressAlarm.wav",
-        "reloadingGum": "sounds/reloadingGum.wav"
+        "reloadingGum": "sounds/reloadingGum.wav",
+        "banditLanding": "sounds/banditLanding.wav",
+        "doorSound": "sounds/doorSound.wav",
+        "keyClick": "sounds/keyClick.wav",
+        "knockback": "sounds/knockback.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

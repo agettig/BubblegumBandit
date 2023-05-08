@@ -778,6 +778,7 @@ public class CollisionController implements ContactListener {
                 bandit.hitPlayer(Damage.ROLLING_HIT_DAMAGE, false);
                 bandit.setKnockback(true, false);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+                SoundController.playSound("knockback", 0.25f);
             }
         } else if (bd2 instanceof RollingEnemyModel && bd1.equals(bandit)) {
             if (!bd2.getGummed() && !bd2.getStuck()) {
@@ -786,6 +787,7 @@ public class CollisionController implements ContactListener {
                 bandit.hitPlayer(Damage.ROLLING_HIT_DAMAGE, false);
                 bandit.setKnockback(true);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+                SoundController.playSound("knockback", 0.25f);
             }
         }
     }
@@ -815,6 +817,7 @@ public class CollisionController implements ContactListener {
             }
             bandit.setGrounded(true);
             bandit.setKnockback(false);
+            SoundController.playSound("banditLanding", 1);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }
