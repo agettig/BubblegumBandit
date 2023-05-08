@@ -1,7 +1,7 @@
 {
 	"textures": {
         "background": "textures/UI/mainMenuBackground.png",
-        "loadingBackground": "textures/environment/spaceSample.png",
+        "loadingBackground": "textures/settings/settingsBackground.png",
         "startButton": "textures/UI/continueGame.png",
         "settingsButton": "textures/UI/settings.png",
         "exitButton": "textures/UI/quitGame.png",

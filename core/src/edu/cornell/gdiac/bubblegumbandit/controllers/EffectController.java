@@ -121,7 +121,7 @@ public class EffectController {
 
     private Effect(float x, float y, Vector2 scale, boolean reflect, String animationName) {
       this.ac = new AnimationController(assets, animationKey);
-      ac.setAnimation(animationName, false);
+      ac.setAnimation(animationName, false, false);
       this.x = x;
       this.y = y;
       this.reflect = reflect;

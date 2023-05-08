@@ -37,7 +37,7 @@ public class Captive extends Collectible {
 
     if (getCollected() && !freed) {
       freed = true;
-      animationController.setAnimation("free", false);
+      animationController.setAnimation("free", false, true);
     }
 
     if (freed && animationController.onLastFrame()) {
