@@ -156,7 +156,7 @@ public class LaserController {
             if (enemy.chargingLaser()) {
                 chargeHitPoint = shootRaycastAt(world, enemy, bandit.getPosition(), bodiesToIgnore);
                 enemy.setBeamIntersect(chargeHitPoint);
-                SoundController.playSound("laserLocking", 0.25f);
+                SoundController.playSound("laserLocking", 0.15f);
             }
 
             /* ---LOCKING AND FIRING PHASE---
@@ -168,6 +168,7 @@ public class LaserController {
                 //We use the most recent charging hit point to shoot our locked laser towards.
                 lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
+                SoundController.playSound("laserLocking", 0.25f);
             }
 
             if(enemy.firingLaser()){
@@ -177,7 +178,7 @@ public class LaserController {
                 enemy.setBeamIntersect(lockHitPoint);
                 SoundController.stopSound("laserCharging");
 
-                if (enemy.getFiringDistance(firingTime) < 1) {
+                if (enemy.getFiringDistance(firingTime) < 0.98) {
                     SoundController.playSound("laserFiring", 1);
                 }
                 else {

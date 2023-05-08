@@ -43,6 +43,7 @@ public class SoundController {
     private static SoundEffect laserFiring;
     private static SoundEffect laserCharging;
     private static SoundEffect laserLocking;
+    private static SoundEffect laserThud;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -108,6 +109,7 @@ public class SoundController {
         laserFiring = directory.getEntry("laserFiring", SoundEffect.class);
         laserCharging = directory.getEntry("laserCharging", SoundEffect.class);
         laserLocking = directory.getEntry("laserLocking", SoundEffect.class);
+        laserThud = directory.getEntry("laserThud", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -119,6 +121,7 @@ public class SoundController {
             put(laserFiring, -7);
             put(laserCharging, -8);
             put(laserLocking, -9);
+            put(laserThud, -10);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -131,6 +134,7 @@ public class SoundController {
             put("laserFiring", laserFiring);
             put("laserCharging", laserCharging);
             put("laserLocking", laserLocking);
+            put("laserThud", laserThud);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -160,6 +164,14 @@ public class SoundController {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
         return playSound(s,soundId, volume * soundEffectsVolume);
+    }
+
+    public static boolean isPlaying(String sound, int soundId) {
+        SoundEffect s = sounds.get(sound);
+        if (s.isPlaying(soundId)) {
+            return true;
+        }
+        return false;
     }
 
 
