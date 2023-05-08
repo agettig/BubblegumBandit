@@ -83,6 +83,12 @@ public class Background {
     /** the center of the polygon region, used to sort the vertices*/
     private Vector2 centroid;
 
+    /** Tile id number representing the centroid of the polygon */
+    private final static int CENTER_ID = 2;
+
+    /** scale of the physics world */
+    private static final float SCALE = 64;
+
     /**
      * Initializes the textures of the background
      *
@@ -141,9 +147,14 @@ public class Background {
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
-//            if (cornerIds.contains(tileVal)) {
-            if (tileVal != 0) {
-
+            //mark the centroid
+            if (tileVal == CENTER_ID) {
+                float x = (i % width) + 1f;
+                float y = height - (i / width) - 1f;
+                centroid = new Vector2(x, y);
+            }
+            //mark the corners
+            else if (tileVal != 0) {
                 float x = (i % width) + 1f;
                 float y = height - (i / width) - 1f;
                 cornerPositions.add(new Vector2(x, y));
@@ -166,11 +177,11 @@ public class Background {
 
         //space polygon is just a large rectangle
         spaceReg = new PolygonRegion(spaceBg,
-                new float[] {      // Four vertices
-                        0, 0,            // Vertex 0         3--2
-                        width*64, 0,          // Vertex 1         | /|
-                        width*64, height*64,        // Vertex 2         |/ |
-                        0, height * 64           // Vertex 3         0--1
+                new float[] {
+                        0, 0,
+                        width*SCALE*3, 0,
+                        width*SCALE*3, height*SCALE*3,
+                        0, height * SCALE*3
                 }, new short[] {
                 0, 1, 2,         // Two triangles using vertex indices.
                 0, 2, 3          // Take care of the counter-clockwise direction.
@@ -199,9 +210,9 @@ public class Background {
      */
     private void sortVertices(){
         //centroid is the middle x and y position
-        float centerX = x_offset + ((x_max - x_offset)/2);
-        float centerY = y_offset + ((y_max - y_offset)/2);
-        centroid = new Vector2(centerX, centerY);
+//        float centerX = x_offset + ((x_max - x_offset)/2);
+//        float centerY = y_offset + ((y_max - y_offset)/2);
+//        centroid = new Vector2(centerX, centerY);
 
         //angles of rotations of all corner positions relative to the centroid
         Vertex[] cwPositions = new Vertex[cornerPositions.size()];
@@ -227,8 +238,8 @@ public class Background {
         vertices = new float[cwPositions.length * 2];
         for (int i = 0; i < vertices.length; i += 2){
 //            System.out.println(cwPositions[i].angle);
-            vertices[i] = ((cwPositions[i/2].coordinates).x - x_offset) * 64;
-            vertices[i + 1] = ((cwPositions[i/2].coordinates).y - y_offset) * 64;
+            vertices[i] = ((cwPositions[i/2].coordinates).x - x_offset) * SCALE;
+            vertices[i + 1] = ((cwPositions[i/2].coordinates).y - y_offset) * SCALE;
 //            System.out.println(vertices[i] + ", " + vertices[i + 1] );
         }
     }
@@ -266,10 +277,8 @@ public class Background {
         if (spaceReg == null || shipReg == null) return;
         canvas.begin();
 
-        canvas.draw(spaceReg, 0, 0);
-        canvas.draw(shipReg, x_offset * 64, y_offset * 64);
-
-//        drawDebug(canvas);
+        canvas.draw(spaceReg, -width * SCALE, -height * SCALE);
+        canvas.draw(shipReg, x_offset * SCALE, y_offset * SCALE);
 
         canvas.end();
 
@@ -277,11 +286,13 @@ public class Background {
     }
 
     /** Draws the number associated to each vertex and marks the centroid with an 'X' */
-    private void drawDebug(GameCanvas canvas){
+    public void drawDebug(GameCanvas canvas){
+        canvas.begin();
         for (int i = 0; i < vertices.length; i += 2) {
-            canvas.drawText(valueOf(i / 2), debugFont, vertices[i] + x_offset * 64, vertices[i + 1] + y_offset * 64);
+            canvas.drawText(valueOf(i / 2), debugFont, vertices[i] + x_offset * SCALE, vertices[i + 1] + y_offset * SCALE);
         }
-        canvas.drawText("X", debugFont, centroid.x * 64, centroid.y * 64);
+        canvas.drawText("X", debugFont, centroid.x * SCALE, centroid.y * SCALE);
+        canvas.end();
     }
 
 

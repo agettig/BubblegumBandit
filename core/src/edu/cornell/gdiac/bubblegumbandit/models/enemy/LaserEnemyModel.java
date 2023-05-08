@@ -1,14 +1,21 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 
 /**
@@ -29,9 +36,10 @@ public class LaserEnemyModel extends EnemyModel {
      */
     private Vector2 beamIntersect;
 
-    /**
-     * Current phase of this LaserEnemyModel.
-     */
+    /** The point at which the laser beam starts.*/
+    private Vector2 beamOrigin;
+
+    /**Current phase of this LaserEnemyModel. */
     private LASER_PHASE phase;
 
     /**
@@ -58,15 +66,79 @@ public class LaserEnemyModel extends EnemyModel {
      */
     private float age;
 
+    /**Timer for the firing phase. */
     private float firingTimer;
+
     /**
      * Amount of gum needed to stick the robot
      */
     private int gumToStick;
+
     /**
      * Amount of gum currently stuck to robot
      */
     private int gumStuck;
+
+    /**
+     * Whether the laser enemy has jumped
+     * Used to determine whether or not to apply linear impulse
+     */
+    private boolean hasJumped;
+
+    /**
+     * Whether the laser enemy is currently jumping
+     */
+    private boolean isJumping;
+
+    /**
+     * Jump cooldown
+     */
+    private int jumpCooldown = 0;
+
+    /**
+     * Range in damage for bandit
+     */
+    private int stompRange = 5;
+
+
+    /**
+     * Jump cooldown time
+     */
+    private final int JUMP_COOLDOWN = 120;
+
+    /**
+     * Vector to represent start of ray cast for jumping damage
+     */
+    private Vector2 beginVector = new Vector2();
+
+    /**
+     * Vector to represent end of ray cast for jumping damage
+     */
+    private Vector2 endVector = new Vector2();
+
+    public boolean isShouldJumpAttack() {
+        return shouldJumpAttack;
+    }
+
+    public void setShouldJumpAttack(boolean shouldJumpAttack) {
+        this.shouldJumpAttack = shouldJumpAttack;
+    }
+
+    /**
+     * Whether the laser enemy is jumping or laser shooting
+     */
+    private boolean shouldJumpAttack = true;
+    /** Texture for gum after just one shot */
+    private TextureRegion halfStuck;
+
+    /** Texture for gum after just one shot, with outline
+     * currently draw with outline is never called unless the enemy is gummed, however
+     * */
+    private TextureRegion halfStuckOutline;
+
+
+
+
 
 
     /**
@@ -94,6 +166,8 @@ public class LaserEnemyModel extends EnemyModel {
         shape.setAsBox(.5f, .5f);
         gumToStick = 1;
         gumStuck = 0;
+        isJumping = false;
+        hasJumped = false;
     }
 
     /**
@@ -104,15 +178,52 @@ public class LaserEnemyModel extends EnemyModel {
      * @param x             the x position to set this ProjectileEnemyModel
      * @param y             the y position to set this ProjectileEnemyModel
      * @param constantsJson the constants json
-     */
+     * @param isFacingRight whether the enemy spawns facing right
+     * */
     public void initialize(AssetDirectory directory, float x, float y,
-                           JsonValue constantsJson) {
-        super.initialize(directory, x, y, constantsJson);
+                           JsonValue constantsJson, boolean isFacingRight){
+        super.initialize(directory, x, y, constantsJson, isFacingRight);
+        halfStuck = new TextureRegion(directory.getEntry("halfStuck", Texture.class));
+        halfStuckOutline = new TextureRegion(directory.getEntry("halfStuckOutline", Texture.class));
         setName("laserEnemy");
         setPhase(LASER_PHASE.INACTIVE);
     }
 
+    public boolean isJumping() {
+        return isJumping;
+    }
+
     public void update(float dt) {
+        // laser enemy can no longer jump set attack to laser
+        if (getGummed() || getStuck()){
+            setShouldJumpAttack(false);
+        }
+
+        // if jumping
+        if (isJumping){
+            // apply linear impulse
+            if (!hasJumped && jumpCooldown <=0){
+               int impulse = isFlipped ? -30 : 30;
+                getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
+                hasJumped = true;
+            }
+
+            if (!isFlipped && yScale < 1) {
+                if (yScale != -1 || !stuck) {
+                    yScale += 0.1f;
+                }
+            } else if (isFlipped && yScale > -1) {
+                if (yScale != 1 || !stuck) {
+                    yScale -= 0.1f;
+                }
+            }
+            updateRayCasts();
+
+            return;
+        }
+        if (shouldJumpAttack){
+            jumpCooldown --;
+        }
         if (phase == LASER_PHASE.INACTIVE) super.update(dt);
         else {
             if (!isFlipped && yScale < 1) {
@@ -129,15 +240,56 @@ public class LaserEnemyModel extends EnemyModel {
         // attack animations
         if (chargingLaser()) {
             animationController.setAnimation("charge", true);
-        } else if (lockingLaser()) {
-            animationController.setAnimation("lock", true);
-        } else if (firingLaser()) {
-            animationController.setAnimation("fire", true);
-        } else if (stuck || gummed) {
+        }
+        else if (stuck || gummed){
             animationController.setAnimation("stuck", true);
         } else {
             animationController.setAnimation("patrol", true);
         }
+    }
+
+    /**
+     * Sets laser enemy to jump
+     */
+    public void jump(){
+        if (jumpCooldown <= 0) isJumping = true;
+    }
+
+    /**
+     * Resolves laser enemy landing after jump attack
+     */
+    public void hasLanded(){
+        isJumping = false;
+        hasJumped = false;
+        jumpCooldown = JUMP_COOLDOWN;
+        setShouldJumpAttack(false);
+
+        // damage bandit if in range
+        RayCastCallback rayPass = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point,
+                                          Vector2 normal, float fraction) {
+
+                boolean isBandit = fixture.getBody().getUserData() instanceof BanditModel;
+                if (isBandit) {
+                    BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
+                    bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
+                    int yImpulse = isFlipped ? -10 : 10;
+                    int xImpulse = getX() > bandit.getX() ? -5 : 5;
+                    bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);
+                    bandit.stun(180);
+                };
+                return -1;
+            }
+        };
+
+        beginVector.x = getX() - stompRange;
+        beginVector.y = getYFeet();
+
+        endVector.x = getX() + stompRange;
+        endVector.y = getYFeet();
+
+        world.rayCast(rayPass, beginVector, endVector);
     }
 
     /**
@@ -215,7 +367,6 @@ public class LaserEnemyModel extends EnemyModel {
         beamIntersect = intersect;
     }
 
-
     /**
      * Returns the Vector2 at which this LaserEnemyModel's laser
      * beam intersected with an object of interest.
@@ -228,6 +379,28 @@ public class LaserEnemyModel extends EnemyModel {
     }
 
     /**
+     * Sets the Vector2 at which this LaserEnemyModel's laser
+     * beam started firing.
+     *
+     * @param origin  the Vector2 at which this LaserEnemyModel's
+     *                   laser beam started firing.
+     * */
+    public void setBeamOrigin(Vector2 origin){
+        beamOrigin = origin;
+    }
+
+    /**
+     * Returns the Vector2 at which this LaserEnemyModel's laser
+     * beam started firing.
+     *
+     * @return the Vector2 at which this LaserEnemyModel's
+     *         laser beam started firing.
+     * */
+    public Vector2 getBeamOrigin(){
+        return beamOrigin;
+    }
+
+    /**
      * Resets the attack cycle of this LaserEnemyModel. This can be
      * called in any phase.
      */
@@ -236,6 +409,7 @@ public class LaserEnemyModel extends EnemyModel {
         firingTimer = 0;
         phase = LASER_PHASE.INACTIVE;
         cooldownTimer = LASER_COOLDOWN;
+        setShouldJumpAttack(true);
     }
 
 
@@ -309,10 +483,22 @@ public class LaserEnemyModel extends EnemyModel {
      * see the Bandit's model.
      *
      * @return true if this LaserEnemyModel's vision component can
-     * see the Bandit's model; otherwise, false.
-     */
-    public boolean canSeeBandit(BanditModel bandit) {
-        return vision.canSee(bandit);
+     *         see the Bandit's model; otherwise, false.
+     * */
+    public boolean canSeeBandit(BanditModel bandit){
+        Vector2 enemyPosition = getPosition();
+        Vector2 banditPosition = bandit.getPosition();
+        float minAngle = 310;
+        float maxAngle = 50;
+
+        Vector2 directionToBandit = banditPosition.cpy().sub(enemyPosition);
+        Vector2 referenceDirection = getFaceRight() ?
+                new Vector2(1, 0) : new Vector2(-1, 0);
+        float angle = directionToBandit.angleDeg(referenceDirection);
+
+        return ((angle >= minAngle && angle <= 360) ||
+                (angle >= 0 && angle <= maxAngle)) &&
+                vision.canSee(bandit);
     }
 
 
@@ -353,6 +539,7 @@ public class LaserEnemyModel extends EnemyModel {
      */
     public void ageLaser(float amount, float chargeTime, float lockTime, float fireTime) {
 
+        if (shouldJumpAttack) return;
         //Return if invalid values or if this Enemy is cooling down.
         if (amount < 0) return;
         if (chargeTime < 0) return;
@@ -366,10 +553,18 @@ public class LaserEnemyModel extends EnemyModel {
         float timeToReset = chargeTime + lockTime + fireTime;
         float timeToFire = chargeTime + lockTime;
 
-        if (age >= timeToReset) resetLaserCycle();
-        else if (age >= timeToFire) processFiringPhase(amount);
-        else if (age >= chargeTime) processLockedPhase();
-        else processChargingPhase();
+        if (age >= timeToReset) {
+            resetLaserCycle();
+        }
+        else if (age >= timeToFire) {
+            processFiringPhase(amount);
+        }
+        else if (age >= chargeTime) {
+            processLockedPhase();
+        }
+        else {
+            processChargingPhase();
+        }
     }
 
     /**
@@ -415,8 +610,52 @@ public class LaserEnemyModel extends EnemyModel {
 
     @Override
     public void setFaceRight(boolean isRight) {
-        if (chargingLaser() || lockingLaser() || firingLaser()) return;
+        if (chargingLaser() || lockingLaser() || firingLaser() || getStuck() || getGummed()) return;
         super.setFaceRight(isRight);
     }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        if (texture != null) {
+            float effect = getFaceRight() ? 1.0f : -1.0f;
+            TextureRegion drawn = texture;
+            float x = getX() * drawScale.x;
+            float y = getY() * drawScale.y;
+            float gumY = y;
+            float gumX = x;
+
+            if(animationController!=null) {
+                drawn = animationController.getFrame();
+                x-=(getWidth()/2)*drawScale.x*effect;
+            }
+
+            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+
+            //if gummed, overlay with gumTexture
+
+            if (gummed) {
+                if(stuck) {
+                    canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
+                        gumY, getAngle(), 1, yScale);
+                } else {
+                    canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
+                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
+                }
+//
+            } else if (gumStuck>0){
+                    canvas.draw(halfStuck, Color.WHITE,
+                        origin.x, origin.y, (getX() - (getDimension().x/2))* drawScale.x, y, getAngle(), 1, yScale);
+            }
+
+            //if shielded, overlay shield
+            if (isShielded()){
+                canvas.draw(shield, Color.WHITE, origin.x , origin.y, (getX() - (getDimension().x/2))* drawScale.x ,
+                    y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale);
+            }
+        }
+    }
+
+
+
 
 }

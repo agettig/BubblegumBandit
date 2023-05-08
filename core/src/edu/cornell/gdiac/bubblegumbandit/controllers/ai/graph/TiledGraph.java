@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 public class TiledGraph implements IndexedGraph<TiledNode>{
 	protected int width;

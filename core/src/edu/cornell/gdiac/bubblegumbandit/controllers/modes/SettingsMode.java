@@ -219,6 +219,12 @@ public class SettingsMode implements Screen {
      */
     private InputMultiplexer inputMultiplexer;
 
+    private boolean accessedFromMain;
+
+    public void setAccessedFromMain(boolean b){
+        accessedFromMain = b;
+    }
+
     /**
      * Array of booleans represented if buttons are hovered over
      */
@@ -285,6 +291,7 @@ public class SettingsMode implements Screen {
         stage.addActor(settingsTable);
         values = SaveData.getKeyBindings();
         bindings = SaveData.getKeyButtons();
+        accessedFromMain = true;
 
         settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
@@ -757,7 +764,8 @@ public class SettingsMode implements Screen {
             stage.act(Gdx.graphics.getDeltaTime());
             draw();
             if (backButtonClicked) {
-                listener.exitScreen(this, 0);
+                int exit = accessedFromMain ? Screens.LOADING_SCREEN : Screens.PAUSE;
+                listener.exitScreen(this, exit);
             }
         }
     }

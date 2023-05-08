@@ -189,8 +189,11 @@ public enum EnemyState implements State<AIController> {
             BanditModel banditModel = aiController.getBandit();
             int move = CONTROL_NO_ACTION;
 
+            boolean isRollingEnemy = aiController.enemy instanceof RollingEnemyModel;
+
             // set state to wander if enemy can not hear bandit
-            if (!aiController.enemyHeardBandit()) {
+            // don't change state if enemy is currently rolling
+            if (!aiController.enemyHeardBandit() && (!(isRollingEnemy && ((RollingEnemyModel) aiController.enemy).isRolling()) || !isRollingEnemy)) {
                 aiController.getEnemyStateMachine().changeState(WANDER);
             }
 
@@ -203,8 +206,11 @@ public enum EnemyState implements State<AIController> {
                         (int) banditModel.getY());
             }
 
+//            if (move == CONTROL_NO_ACTION && (aiController.getEnemy() instanceof RollingEnemyModel )){
+//                aiController.getEnemyStateMachine().changeState(WANDER);
+//            }
             // shoot player
-            if (aiController.canShootTarget()) {
+            if (aiController.canShootTarget() ||(isRollingEnemy && ((RollingEnemyModel) aiController.enemy).isRolling())) {
                 move = move | CONTROL_FIRE;
             }
 
@@ -377,7 +383,7 @@ public enum EnemyState implements State<AIController> {
         public void setAction(AIController aiController) {
             Vector2 target = aiController.getEnemy().getHelpingTarget();
 
-            // get move to enemy in neede
+            // get move to enemy in needed
             int move = aiController.getEnemyStateMachine().getNextMove((int) target.x, (int) target.y);
             if (move != CONTROL_NO_ACTION) {
                 aiController.getEnemy().setNextAction(move);

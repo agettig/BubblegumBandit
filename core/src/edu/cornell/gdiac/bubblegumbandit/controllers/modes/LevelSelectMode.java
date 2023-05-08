@@ -122,6 +122,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Camera zoom out */
     private final static float ZOOM = 1.5f;
 
+    /**
+     * Whether we should return to the main menu
+     * */
     private boolean returnToMain;
 
     // music
@@ -226,6 +229,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        canvas.resetCamera();
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
         canvas.getCamera().setZoom(ZOOM);
@@ -293,7 +297,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
          //y bounds
         if (sunfish.getY() < camHeight) {
             canvas.getCamera().setTargetY(camHeight);
-
         }
         if (sunfish.getY() > SPACE_HEIGHT - camHeight) {
             canvas.getCamera().setTargetY(SPACE_HEIGHT- camHeight);
@@ -344,7 +347,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
             // We are ready, notify our listener
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, Screens.CONTROLLER);
+            }
+
+            if (returnToMain && listener!=null){
+                listener.exitScreen(this, Screens.LOADING_SCREEN);
             }
 
             if (returnToMain && listener!=null){

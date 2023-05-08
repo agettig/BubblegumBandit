@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import edu.cornell.gdiac.assets.AssetDirectory;
 
 public class SaveData {
 
@@ -24,22 +27,43 @@ public class SaveData {
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
     return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
+
   }
 
   /** Makes a new save with defaults
-   * @param levelCount the total number of levels in-game
    * @param lockLevels whether this save should start with levels initially locked or not
    * */
 
-  public static void makeData(int levelCount, boolean lockLevels) {
+  public static void makeData(boolean lockLevels, AssetDirectory directory) {
     Preferences prefs =  Gdx.app.getPreferences(prefsName);
 
     prefs.putFloat("music", .5f);
     prefs.putFloat("sfx", 1f);
 
-    prefs.putInteger("level1", -1);
-    for(int i = 2; i<levelCount+1; i++) {
-      prefs.putInteger("level"+i, lockLevels? LOCKED : INCOMPLETE);
+    prefs.putInteger("level1", INCOMPLETE);
+    JsonValue level;
+    int i = 1;
+    while (true) {
+      level = directory.getEntry("level" + i, JsonValue.class);
+      if (level != null) {
+        prefs.putInteger("level" + (i), lockLevels ? LOCKED : INCOMPLETE);
+        JsonValue prop = level.get("properties").child;
+        int count = 0;
+        while (prop != null) {
+          String propName = prop.get("name").asString();
+          if( propName.equals("captives")) {
+            count = prop.getInt("value");
+          }
+          prop = prop.next();
+        }
+
+        prefs.putInteger("level"+i+"Captives", count);
+        if(i>1) prefs.putInteger("level" + i, lockLevels ? LOCKED : INCOMPLETE);
+        i++;
+
+
+      } else break;
+
     }
 
     /*the key bindings are as follows:
@@ -55,9 +79,9 @@ public class SaveData {
     int[] defaultKeys = SettingsMode.defaultVals;
     boolean[] defaultBindings = SettingsMode.defaultBindings;
 
-    for (int i = 0; i < keyCount; i++){
-      prefs.putInteger("key" + i, defaultKeys[i]);
-      prefs.putBoolean("key"+i+"bool", defaultBindings[i]);
+    for (int j = 0; i < keyCount; j++){
+      prefs.putInteger("key" + j, defaultKeys[j]);
+      prefs.putBoolean("key"+j+"bool", defaultBindings[j]);
     }
 
     prefs.putBoolean("save created", true);
@@ -69,10 +93,20 @@ public class SaveData {
    * @param level the level number
    */
   private static int getLevelStatus(int level) {
-    int status =  Gdx.app.getPreferences(prefsName).getInteger("level"+level, NOT_FOUND);
-    if(status == NOT_FOUND) System.err.println("Could not find level "+level+" when retrieving save data. ");
+    int status =  Gdx.app.getPreferences(prefsName).
+        getInteger("level"+level, NOT_FOUND);
+    if(status == NOT_FOUND) System.err.println("Could not find level" +
+        " "+level+" when retrieving save data. ");
     return status;
 
+  }
+
+  public static int getCaptiveCount(int level) {
+    int count =  Gdx.app.getPreferences(prefsName).
+        getInteger("level"+level+"Captives", NOT_FOUND);
+    if(count == NOT_FOUND) System.err.println("Could not find level" +
+        " "+level+" when retrieving save data. ");
+    return count;
   }
 
   /** Returns whether a level has been completed

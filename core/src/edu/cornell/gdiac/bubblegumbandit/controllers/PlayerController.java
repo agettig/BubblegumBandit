@@ -111,6 +111,10 @@ public class PlayerController{
     private boolean unstickPressed;
     private boolean unstickPrevious;
 
+    private boolean pausePressed;
+
+    private boolean pausePrevious;
+
     /** If gum was collected */
     private boolean collect;
 
@@ -226,6 +230,10 @@ public class PlayerController{
         return Gdx.input.getY();
     }
 
+    public boolean didPause() {
+        return pausePressed && !pausePrevious;
+    }
+
     /**
      * Returns true if the reset button was pressed.
      *
@@ -339,6 +347,7 @@ public class PlayerController{
         controlTogglePrevious = controlTogglePressed;
         gravityDownPrevious = gravityDown;
         gravityUpPrevious = gravityUp;
+        pausePrevious = pausePressed;
 
         // Check to see if a GamePad is connected
         if (xbox != null && xbox.isConnected()) {
@@ -449,6 +458,7 @@ public class PlayerController{
         // Mouse results
         shootPressed = (secondary && shootPressed) || shoot;
         unstickPressed = (secondary && unstickPressed) || unstick;
+        pausePressed  = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }
