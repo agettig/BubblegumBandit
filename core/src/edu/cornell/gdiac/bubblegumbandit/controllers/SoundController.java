@@ -56,6 +56,7 @@ public class SoundController {
     private static SoundEffect victory;
     private static SoundEffect rolling;
     private static SoundEffect clockTick;
+    private static SoundEffect lowStressAlarm;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -132,6 +133,7 @@ public class SoundController {
         noGum = directory.getEntry("noGum", SoundEffect.class);
         rolling = directory.getEntry("rolling", SoundEffect.class);
         clockTick = directory.getEntry("clockTick", SoundEffect.class);
+        lowStressAlarm = directory.getEntry("lowStressAlarm", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -151,6 +153,7 @@ public class SoundController {
             put(noGum, -15);
             put(rolling, -16);
             put(clockTick, -17);
+            put(lowStressAlarm, -18);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -171,6 +174,7 @@ public class SoundController {
             put("noGum", noGum);
             put("rolling", rolling);
             put("clockTick", clockTick);
+            put("lowStressAlarm", lowStressAlarm);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
