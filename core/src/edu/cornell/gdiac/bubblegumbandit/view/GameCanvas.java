@@ -144,6 +144,7 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -168,6 +169,7 @@ public class GameCanvas {
         local = new Affine2();
         global = new Matrix4();
         vertex = new Vector2();
+
     }
 
     public void resetCamera() {

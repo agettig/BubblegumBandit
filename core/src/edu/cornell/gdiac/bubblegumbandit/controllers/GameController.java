@@ -21,10 +21,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.Screens;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
@@ -264,6 +267,11 @@ public class GameController implements Screen {
      */
     private boolean reloadingGum;
 
+    private boolean paused;
+
+    public void setPaused(boolean paused) {this.paused = paused;}
+
+    public boolean getPaused() {return paused; }
 
     /**
      * Returns true if the level is completed.
@@ -365,6 +373,7 @@ public class GameController implements Screen {
         orbCountdown = -1;
         levelNum = SaveData.getContinueLevel();
         reloadingGum = false;
+        paused = false;
         reloadSymbolTimer = -1;
         setComplete(false);
         setFailure(false);
@@ -453,6 +462,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
+        paused = false;
         spawnedPostOrbEnemies = false;
         bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
@@ -536,24 +546,13 @@ public class GameController implements Screen {
             reset();
         }
 
-        // Switch screens if necessary.
-        if (input.didExit()) {
-            listener.exitScreen(this, EXIT_QUIT);
+        if (input.didPause()) {
+            setPaused(true);
             return false;
-        } else if (countdown > 0) {
-            countdown--;
-        } else if (countdown == 0) {
+        }
 
-            // TODO fix with post orb enemies
-            if (level.getPostOrbEnemies().size() == 0) {
-                if (orbCollected && !complete) {
-                    respawn();
-                } else {
-                    reset();
-                }
-            } else {
-                reset();
-            }
+        if (countdown > 0) {
+            countdown--;
         }
 
         if (orbCountdown > 0 && !complete) {
@@ -831,18 +830,8 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
-        // Final message
         if (complete && !failed) {
-            displayFont.setColor(Color.YELLOW);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("VICTORY!", displayFont, 150);
             level.getBandit().setAnimation("victory", true, false);
-            canvas.end();
-        } else if (failed) {
-            displayFont.setColor(Color.RED);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 150);
-            canvas.end();
         }
     }
 
@@ -868,11 +857,23 @@ public class GameController implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     public void render(float delta) {
-        if (active) {
+        if (active && !paused) {
             if (preUpdate(delta)) {
                 update(delta);
             }
             draw(delta);
+            // Final message
+            if (countdown == 0){
+                if (complete && !failed) {
+                    listener.exitScreen(this, Screens.GAME_WON);
+                }
+                else {
+                    listener.exitScreen(this, Screens.GAME_LOST);
+                }
+            }
+
+        } else if (paused) {
+            listener.exitScreen(this, Screens.PAUSE);
         }
     }
 

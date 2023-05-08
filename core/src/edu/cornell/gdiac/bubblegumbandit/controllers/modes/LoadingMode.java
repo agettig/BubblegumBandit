@@ -755,24 +755,22 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             // If the player hits the start/play button
             // We are ready, notify our listener
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 1);
+                listener.exitScreen(this, Screens.CONTROLLER);
             }
 
             shipTime+=delta;
 
             if (isLevelSelect() && listener != null) {
-                listener.exitScreen(this, 6);
+                listener.exitScreen(this, Screens.LEVEL_SELECT);
             }
 
             if (switchSettings() && listener != null){
-                listener.exitScreen(this, 7);
+                listener.exitScreen(this, Screens.SETTINGS);
             }
             // If the player hits the quit button
             if (shouldQuit()) {
-                listener.exitScreen(this, GameController.EXIT_QUIT);
+                listener.exitScreen(this, Screens.EXIT_CODE);
             }
-
-
         }
     }
 
