@@ -245,27 +245,40 @@ public class HUDController {
           orbCountdown.setColor(Color.WHITE);
           orbCountdown.setFontScale(1f);
         }
-        if(timer <= 10 && timer >= 3){
+        else if(timer > 5){
           orbCountdown.setColor(Color.YELLOW);
-          orbCountdown.setFontScale(1.2f);
+          orbCountdown.setFontScale(1.4f);
         }
+        else if(timer > 1){
+          orbCountdown.setColor(Color.ORANGE);
+        }
+        else{
+          orbCountdown.setColor(Color.RED);
+          orbCountdown.setFontScale(1.9f);
+        }
+
+
         if(timer == 3){
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
-                  .5f);
+                  .75f);
         }
         if(timer == 2){
-          orbCountdown.setColor(Color.ORANGE);
-          orbCountdown.setFontScale(1.4f);
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
                   1f);
         }
+
         if(timer == 1){
-          orbCountdown.setColor(Color.RED);
-          orbCountdown.setFontScale(1.9f);
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  2f);
+        }
+
+        if(timer == 0){
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
