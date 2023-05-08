@@ -65,7 +65,7 @@ public class GameCamera  extends OrthographicCamera {
     private Vector2 basePos;
 
     /** The scale of the bandit's "shock" trauma */
-    private float SHOCK_TRAUMA = 1f;
+    private float SHOCK_TRAUMA = 5f;
 
 
     /** Constructs a new GameCamera, using the given viewport width and height. For pixel perfect 2D rendering just supply

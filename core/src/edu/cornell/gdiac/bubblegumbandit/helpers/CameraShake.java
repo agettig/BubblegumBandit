@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.bubblegumbandit.helpers;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.RandomController;
 
@@ -35,13 +36,15 @@ public class CameraShake {
 
     private boolean shocking;
 
-    private float SHOCK_TIME = 4f;
+    private float SHOCK_TIME = 5f;
 
     private Vector2 BLOCK_VEC = Vector2.Y;
 
     private float shockTimer = 0f;
 
-    private float shockTrauma = 0f;
+    private float shockScale = 0f;
+
+    private Vector2 shakeAdjust = Vector2.Zero;
 
     private float timeSinceLastShake = 0f;
 
@@ -94,19 +97,44 @@ public class CameraShake {
         addTrauma(dir, trauma);
     }
 
-    public void addShockTrauma(float trauma){
-        addRandTrauma(trauma);
+    public void addShockTrauma(float scale){
         shocking = true;
-        shockTrauma = trauma;
+        shockScale = scale;
+        shakeAdjust = new Vector2(
+            MathUtils.random(-shockScale, shockScale),
+            MathUtils.random(-shockScale, shockScale)
+        );
     }
 
     public void update(float dt, float viewportWidth, float viewportHeight) {
         float maxOffset = MAX_OFFSET_PERCENT * viewportHeight;
         Vector2 traumaVec = new Vector2(traumaDir).scl(trauma);
-        if(trauma>=1)   System.out.println(traumaVec);
-        offsetY = (float) (Math.sin(time) * maxOffset * traumaVec.y);
-        offsetX = (float) (Math.sin(time) * maxOffset * traumaVec.x);
 
+        if(!shocking) {
+            offsetY = (float) (Math.sin(time) * maxOffset * traumaVec.y);
+            offsetX = (float) (Math.sin(time) * maxOffset * traumaVec.x);
+        } else {
+            offsetX = MathUtils.lerp(0, shakeAdjust.x, 5 * timeSinceLastShake);
+            offsetY = MathUtils.lerp(0, shakeAdjust.y, 5 * timeSinceLastShake);
+
+            shockTimer += dt * DT_FACTOR;
+            timeSinceLastShake  += dt * DT_FACTOR;
+
+            if(shockTimer>SHOCK_TIME) {
+                shocking = false;
+                shockTimer = 0f;
+                timeSinceLastShake = 0f;
+                traumaDir = BLOCK_VEC;
+            }
+            else if(timeSinceLastShake>1f) {
+                shakeAdjust = new Vector2(
+                    MathUtils.random(-shockScale, shockScale),
+                    MathUtils.random(-shockScale, shockScale)
+                );
+                timeSinceLastShake = 0f;
+            }
+
+        }
 
         // Reduce trauma
         if (trauma > 0) {
@@ -118,21 +146,9 @@ public class CameraShake {
             time -= Float.MAX_VALUE;
         }
 
-        if(shocking) {
-            shockTimer += dt * DT_FACTOR;
-            timeSinceLastShake  += dt * DT_FACTOR;
-            if(shockTimer>SHOCK_TIME) {
-                shocking = false;
-                shockTimer = 0f;
-                timeSinceLastShake = 0f;
-                trauma = 0f;
-                traumaDir = BLOCK_VEC;
-            }
-            else if(timeSinceLastShake>.5f) {
-                addRandTrauma(shockTrauma);
-                timeSinceLastShake = 0f;
-            }
-        }
+
+
+
 
     }
 
