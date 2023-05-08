@@ -44,6 +44,11 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "gameOverBg": {
+            "file": "textures/environment/failWinBackground.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
         "exit": "textures/environment/shipDoor.png",
         "alarmOn": "textures/environment/alarmOn.png",
         "alarmOff": "textures/environment/alarmOff.png",

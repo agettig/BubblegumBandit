@@ -854,7 +854,7 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("floatingGum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
-            SoundController.playSound("collectItem", 0.75f);
+            SoundController.playSound("collectItem", 0.25f);
         } else if (bd2.getName().equals("floatingGum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);
