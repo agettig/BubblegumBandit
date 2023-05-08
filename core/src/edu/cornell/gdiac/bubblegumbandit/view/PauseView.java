@@ -119,9 +119,9 @@ public class PauseView {
 
     resumeButton = new TextButton("Resume", style);
     retryButton = new TextButton("Retry", style);
-    levelSelectButton = new TextButton("Level Select", style);
     settingsButton = new TextButton("Settings", style);
-    quitButton = new TextButton("Quit", style);
+    levelSelectButton = new TextButton("Exit to Level Select", style);
+    quitButton = new TextButton("Quit to Title", style);
 
     resumeButton.addListener(new ClickListener() {
       public void clicked(InputEvent event, float x, float y) {
@@ -208,9 +208,9 @@ public class PauseView {
     pauseTable.row();
     pauseTable.add(retryButton).pad(0, 160, 32, 455);
     pauseTable.row();
-    pauseTable.add(levelSelectButton).pad(0, 160, 32, 455);
-    pauseTable.row();
     pauseTable.add(settingsButton).pad(0, 160, 32, 455);
+    pauseTable.row();
+    pauseTable.add(levelSelectButton).pad(0, 160, 32, 455);
     pauseTable.row();
     pauseTable.add(quitButton).pad(0, 160, 32, 455);
     pauseTable.row();

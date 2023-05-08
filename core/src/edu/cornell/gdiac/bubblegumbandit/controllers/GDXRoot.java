@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.*;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.GameOverScreen;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -70,6 +71,8 @@ public class GDXRoot extends Game implements ScreenListener {
     private Cursor mouseCursor;
 
     private Cursor crosshairCursor;
+
+    private GameCamera oldCamera;
 
     /**
      * Creates a new game from the configuration settings.
@@ -170,6 +173,7 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(loading);
         } else if (exitCode == Screens.SETTINGS) {
             settingsMode.setAccessedFromMain(screen == loading);
+            oldCamera = canvas.getCamera();
             canvas.resetCamera();
             settingsMode.setScreenListener(this);
             BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
@@ -186,6 +190,7 @@ public class GDXRoot extends Game implements ScreenListener {
         } else if (exitCode == Screens.CONTROLLER) {
             setScreen(controller);
             if (screen == settingsMode) {
+                canvas.setCamera(oldCamera);
                 controller.setPaused(true);
             } else {
                 directory = loading.getAssets();
