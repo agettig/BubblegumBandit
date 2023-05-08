@@ -1,21 +1,21 @@
 {
 	"textures": {
         "background": "textures/UI/mainMenuBackground.png",
+        "loadingBackground": "textures/environment/spaceSample.png",
         "startButton": "textures/UI/continueGame.png",
         "settingsButton": "textures/UI/settings.png",
         "exitButton": "textures/UI/quitGame.png",
         "levelSelectButton": "textures/UI/levelSelect.png",
         "hoverPointer": "textures/UI/hoverPointer.png",
-        "progress": {
-            "file":      "textures/UI/progressBar.png",
-            "atlas":     {
-                "background" : [16,   0, 216, 30],
-                "backLeft"   : [0,    0,  15, 30],
-                "backRight"  : [384,  0, 400, 30],
-                "foreground" : [16,  40, 216, 70],
-                "foreLeft"   : [0,   40,  16, 70],
-                "foreRight"  : [384, 40, 400, 70]
-            }
+        "progressBackground": "textures/UI/progressBackground.png",
+        "progressFill": "textures/UI/progressFill.png",
+        "spaceship":     "textures/levelSelect/sunfish.png",
+         "jet" : "textures/UI/jet.png"
+    },
+        "fonts": {
+                "projectSpace" : {
+                        "file" : "fonts/ProjectSpace.ttf",
+                        "size": 25
+                }
         }
-	}
 }

@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,6 +21,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
+
+import static edu.cornell.gdiac.bubblegumbandit.controllers.GameController.EXIT_QUIT;
 
 public class PauseMode implements Screen {
     private Stage stage;
@@ -71,7 +75,7 @@ public class PauseMode implements Screen {
 
     private BitmapFont font;
 
-    private shapeRenderer shape;
+    private ShapeRenderer shape;
 
     private TextButton.TextButtonStyle style;
 
@@ -251,9 +255,22 @@ public class PauseMode implements Screen {
         if (active) {
             stage.act();
             draw();
-//            if (quitClicked) {
-//                listener.exitScreen(this, 0);
-//            }
+
+            if (getQuitClicked()) {
+                listener.exitScreen(this, Screens.EXIT_CODE);
+            }
+            if (getResumeClicked()) {
+                listener.exitScreen(this, Screens.RESUME_CONTROLLER);
+            }
+            if (getRetryClicked()) {
+                listener.exitScreen(this, Screens.CONTROLLER);
+            }
+            if (getLevelSelectClicked()) {
+                listener.exitScreen(this, Screens.LEVEL_SELECT);
+            }
+            if (getSettingsClicked()) {
+                listener.exitScreen(this, Screens.SETTINGS);
+            }
         }
     }
 

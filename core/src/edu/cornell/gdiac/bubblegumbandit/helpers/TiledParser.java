@@ -2,11 +2,13 @@ package edu.cornell.gdiac.bubblegumbandit.helpers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class TiledParser {
@@ -87,5 +89,78 @@ public class TiledParser {
             levelTilesetJson = levelTilesetJson.next();
         }
         return tileset;
+    }
+
+    private static Comparator<TileRect> compareRect = new Comparator<TileRect>() {
+        @Override
+        public int compare(TileRect o1, TileRect o2) {
+            return Integer.compare(o1.startX, o2.startX);
+        }
+    };
+
+    public class TileRect {
+        public int startX;
+        public int startY;
+        public int endX;
+        public int endY;
+
+        public TileRect(int startX, int startY, int endX, int endY) {
+            this.startX = startX;
+            this.startY = startY;
+            this.endX = endX;
+            this.endY = endY;
+        }
+
+        public String toString() {
+            return "StartX: " + startX + " StartY: " + startY + " EndX: " + endX + " EndY: " + endY;
+        }
+    }
+
+    public Array<TileRect> mergeTiles(int mapWidth, int mapHeight, int[] worldData) {
+        Array<TileRect> rectangles = new Array<>();
+
+        // This pass merges rectangles on the x-axis
+        for (int y = 0; y <= mapHeight - 1; y++) {
+            int startX = -1;
+            int endX = -1;
+            for (int x = 0; x <= mapWidth - 1; x++) {
+                if (worldData[y * mapWidth + x] != 0) {
+                    if (startX == -1) {
+                        startX = x;
+                    }
+                    endX = x;
+                } else if (startX != -1) {
+                    TileRect newRect = new TileRect(startX, y, endX, y);
+                    rectangles.add(newRect);
+                    startX = -1;
+                    endX = -1;
+                }
+            }
+            if (startX != -1) {
+                TileRect newRect = new TileRect(startX, y, endX, y);
+                rectangles.add(newRect);
+            }
+        }
+
+        Array<TileRect> mergedRects = new Array<>();
+        rectangles.sort(compareRect);
+
+        // This pass merges rectangles of equal width on the y-axis
+        TileRect newRect = new TileRect(-1, -1, -1, -1);
+        for (TileRect r : rectangles) {
+            if (newRect.startY == -1) {
+                newRect.startX = r.startX;
+                newRect.startY = r.startY;
+                newRect.endX = r.endX;
+                newRect.endY = r.endY;
+            } else if (r.startX == newRect.startX && r.endX == newRect.endX && r.startY == newRect.endY + 1) {
+                newRect.endY = r.endY;
+            } else {
+                mergedRects.add(newRect);
+                newRect = new TileRect(r.startX, r.startY, r.endX, r.endY);
+            }
+        }
+        mergedRects.add(newRect);
+        return mergedRects;
     }
 }

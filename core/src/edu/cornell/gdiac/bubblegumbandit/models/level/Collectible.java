@@ -30,8 +30,16 @@ public class Collectible extends WheelObstacle {
     /** The speed the gum bobs */
     private float bobSpeed;
 
+    public Collectible(float radius) {
+        super(0, 0, radius);
+        setSensor(true);
+        collected = false;
+        // Start at random time so gum doesn't always bob together
+        counter = (float) (Math.random() * Math.PI * 2);
+    }
+
     public Collectible() {
-        super(0, 0, 1f);
+        super(0, 0, 1);
         setSensor(true);
         collected = false;
         // Start at random time so gum doesn't always bob together

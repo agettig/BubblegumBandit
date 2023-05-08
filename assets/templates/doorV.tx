@@ -7,10 +7,12 @@
    <property name="leftx2" type="int" value="-1"/>
    <property name="lefty1" type="int" value="-1"/>
    <property name="lefty2" type="int" value="-1"/>
+   <property name="lockOnOrb" type="bool" value="false"/>
    <property name="rightx1" type="int" value="-1"/>
    <property name="rightx2" type="int" value="-1"/>
    <property name="righty1" type="int" value="-1"/>
    <property name="righty2" type="int" value="-1"/>
+   <property name="unlockOnOrb" type="bool" value="false"/>
   </properties>
  </object>
 </template>

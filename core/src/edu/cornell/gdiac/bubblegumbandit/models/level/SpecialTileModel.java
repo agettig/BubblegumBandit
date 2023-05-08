@@ -3,23 +3,35 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import java.lang.reflect.Field;
+import javax.swing.Box;
 
 /**
- * A class representing a glass tile on the screen
+ * A class representing a glass tile / hazard on the screen
  **/
-public class SpecialTileModel extends TileModel {
+public class SpecialTileModel extends BoxObstacle {
 
-    public void initialize(AssetDirectory directory, float x, float y, JsonValue constants, String name) {
+    public SpecialTileModel() {
+        super(0, 0, 1, 1);
+    }
+
+    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, JsonValue objectJson, JsonValue constants, String name) {
         setName(name);
-
+        if(getName().equals("hazard")) {
+            setSensor(true);
+        } else {
+            setSensor(false);
+        }
         setPosition(x,y);
-        setDimension(1, 1);
-        setSensor(false);
+        float width = objectJson.getFloat("width") / scale.x;
+        float height = objectJson.getFloat("height") / scale.y;
+        setDimension(width, height);
 
         setBodyType(constants.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
         setDensity(constants.get("density").asFloat());
