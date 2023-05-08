@@ -245,11 +245,11 @@ public class HUDController {
           orbCountdown.setColor(Color.WHITE);
           orbCountdown.setFontScale(1f);
         }
-        if(timer < 10 && timer > 3){
+        if(timer <= 10 && timer >= 3){
           orbCountdown.setColor(Color.YELLOW);
+          orbCountdown.setFontScale(1.2f);
         }
         if(timer == 3){
-          orbCountdown.setFontScale(1.2f);
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
@@ -261,7 +261,7 @@ public class HUDController {
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
-                  .75f);
+                  1f);
         }
         if(timer == 1){
           orbCountdown.setColor(Color.RED);
@@ -269,7 +269,7 @@ public class HUDController {
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
-                  1.5f);
+                  2f);
         }
         orbCountdown.setText(timer);
       }
@@ -316,7 +316,7 @@ public class HUDController {
     final float centerTimerX = stage.getWidth() / 2;
     final float centerTimerY = stage.getHeight() / 8;
 
-    if(timer > 3){
+    if(timer > 10){
       orbCountdown.setX(centerTimerX);
       orbCountdown.setY(centerTimerY);
       return;
@@ -324,7 +324,7 @@ public class HUDController {
 
 
 
-    if(timer == 3){
+    if(timer >= 3){
       xShakeRange = 10f;
       yShakeRange = 2f;
       transitionSpeed = 7f;
