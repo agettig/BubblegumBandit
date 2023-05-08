@@ -23,11 +23,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
-import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.Screens;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
@@ -270,7 +270,14 @@ public class GameController implements Screen {
 
     private boolean paused;
 
-    public void setPaused(boolean paused) {this.paused = paused;}
+    /** The pause screen */
+    private PauseView pauseScreen;
+
+    public void setPaused(boolean paused) {this.paused = paused;
+    if (paused) {
+        pause();
+    }
+    }
 
     public boolean getPaused() {return paused; }
 
@@ -388,6 +395,8 @@ public class GameController implements Screen {
         laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ShockController();
+
+        pauseScreen = new PauseView();
     }
 
     /**
@@ -427,6 +436,8 @@ public class GameController implements Screen {
         laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
+        pauseScreen = new PauseView();
+        pauseScreen.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
         minimap = new Minimap();
         backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
@@ -815,6 +826,12 @@ public class GameController implements Screen {
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
         hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
+        if (paused) {
+            if (!pauseScreen.hasViewport()) {
+                pauseScreen.setViewport(canvas.getUIViewport());
+            }
+            pauseScreen.draw();
+        }
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
@@ -869,9 +886,18 @@ public class GameController implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     public void render(float delta) {
-        if (active && !paused) {
-            if (preUpdate(delta)) {
-                update(delta);
+        if (active) {
+            if (!paused) {
+                if (preUpdate(delta)) {
+                    update(delta);
+                }
+            } else {
+                pauseScreen.update(this);
+                if (pauseScreen.getResumeClicked()) {
+                    paused = false;
+                } else if (pauseScreen.getRetryClicked()) {
+                    reset();
+                }
             }
             draw(delta);
             // Final message
@@ -884,8 +910,6 @@ public class GameController implements Screen {
                 }
             }
 
-        } else if (paused) {
-            listener.exitScreen(this, Screens.PAUSE);
         }
     }
 
@@ -898,6 +922,7 @@ public class GameController implements Screen {
     public void pause() {
         // We need this method to stop all sounds when we pause.
         SoundController.pause();
+        pauseScreen.show();
     }
 
     /**
@@ -932,6 +957,7 @@ public class GameController implements Screen {
      */
     public void setScreenListener(ScreenListener listener) {
         this.listener = listener;
+        pauseScreen.setScreenListener(listener);
     }
 
 

@@ -193,11 +193,15 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(pause);
         } else if (exitCode == Screens.CONTROLLER) {
             setScreen(controller);
-            directory = loading.getAssets();
-            controller.gatherAssets(directory);
-            controller.setScreenListener(this);
-            controller.setCanvas(canvas);
-            controller.reset();
+            if (screen == settingsMode) {
+                controller.setPaused(true);
+            } else {
+                directory = loading.getAssets();
+                controller.gatherAssets(directory);
+                controller.setScreenListener(this);
+                controller.setCanvas(canvas);
+                controller.reset();
+            }
         } else if (exitCode == Screens.GAME_WON) {
             directory = loading.getAssets();
             gameOver.initialize(directory, canvas);

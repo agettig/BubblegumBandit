@@ -81,6 +81,10 @@ public class PauseMode implements Screen {
 
     public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public PauseMode() {
         internal = new AssetDirectory("jsons/pause.json");
         internal.loadAssets();
@@ -291,11 +295,11 @@ public class PauseMode implements Screen {
 
     @Override
     public void hide() {
-        active = false;
+
     }
 
     @Override
     public void dispose() {
-        internal.dispose();
+
     }
 }
