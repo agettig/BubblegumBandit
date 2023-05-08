@@ -34,18 +34,22 @@ public class CameraShake {
     /** The direction of the trauma */
     private Vector2 traumaDir;
 
-    private boolean shocking;
-
+    /** How long a shock effect plays for */
     private float SHOCK_TIME = 5f;
 
+    /** The direction of the block effect */
     private Vector2 BLOCK_VEC = Vector2.Y;
 
+    /** How long the shock has left to play for */
     private float shockTimer = 0f;
 
+    /** Basically the max offset of the shock effect */
     private float shockScale = 0f;
 
+    /** The current lerping objective during shocking */
     private Vector2 shakeAdjust = Vector2.Zero;
 
+    /** Time since the lerping changed locations */
     private float timeSinceLastShake = 0f;
 
 
@@ -58,7 +62,6 @@ public class CameraShake {
         shockTimer = 0;
         timeSinceLastShake = 0;
         traumaDir = BLOCK_VEC;
-        shocking = false;
     }
 
     public float getAngle() {
@@ -98,7 +101,7 @@ public class CameraShake {
     }
 
     public void addShockTrauma(float scale){
-        shocking = true;
+        shockTimer = SHOCK_TIME;
         shockScale = scale;
         shakeAdjust = new Vector2(
             MathUtils.random(-shockScale, shockScale),
@@ -110,21 +113,19 @@ public class CameraShake {
         float maxOffset = MAX_OFFSET_PERCENT * viewportHeight;
         Vector2 traumaVec = new Vector2(traumaDir).scl(trauma);
 
-        if(!shocking) {
+        if(shockTimer<=0) {
             offsetY = (float) (Math.sin(time) * maxOffset * traumaVec.y);
             offsetX = (float) (Math.sin(time) * maxOffset * traumaVec.x);
         } else {
             offsetX = MathUtils.lerp(0, shakeAdjust.x, 5 * timeSinceLastShake);
             offsetY = MathUtils.lerp(0, shakeAdjust.y, 5 * timeSinceLastShake);
 
-            shockTimer += dt * DT_FACTOR;
+            shockTimer -= dt * DT_FACTOR;
             timeSinceLastShake  += dt * DT_FACTOR;
 
-            if(shockTimer>SHOCK_TIME) {
-                shocking = false;
+            if(shockTimer<=0) {
                 shockTimer = 0f;
                 timeSinceLastShake = 0f;
-                traumaDir = BLOCK_VEC;
             }
             else if(timeSinceLastShake>1f) {
                 shakeAdjust = new Vector2(
