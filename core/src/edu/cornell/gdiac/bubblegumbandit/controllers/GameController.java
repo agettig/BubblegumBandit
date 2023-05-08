@@ -34,7 +34,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
@@ -364,7 +363,7 @@ public class GameController implements Screen {
         active = false;
         countdown = -1;
         orbCountdown = -1;
-        levelNum = 1;
+        levelNum = SaveData.getContinueLevel();
         reloadingGum = false;
         reloadSymbolTimer = -1;
         setComplete(false);
@@ -421,6 +420,7 @@ public class GameController implements Screen {
         minimap = new Minimap();
         backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
+
     }
 
 
@@ -429,6 +429,7 @@ public class GameController implements Screen {
      */
     public void setLevelNum(int num) {
         levelNum = num;
+        SaveData.setLevel(num);
     }
 
     /**
@@ -520,6 +521,7 @@ public class GameController implements Screen {
             canvas.getCamera().toggleDebug();
         }
         if (input.didAdvance()) {
+            SaveData.setLevel(levelNum);
             levelNum++;
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;
@@ -580,15 +582,18 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        System.out.println(SaveData.getContinueLevel());
         ticks++;
         if (collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
+
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
             SaveData.unlock(levelNum);
 
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;
             }
+            SaveData.setLevel(levelNum);
             setComplete(true);
         }
 

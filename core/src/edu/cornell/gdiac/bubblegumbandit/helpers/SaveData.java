@@ -3,7 +3,6 @@ package edu.cornell.gdiac.bubblegumbandit.helpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 
@@ -38,6 +37,7 @@ public class SaveData {
 
     prefs.putFloat("music", .5f);
     prefs.putFloat("sfx", 1f);
+    prefs.putInteger("lastFinished", 1);
 
     prefs.putInteger("level1", INCOMPLETE);
     JsonValue level;
@@ -218,6 +218,32 @@ public class SaveData {
   public static void setSFXVolume(float val) {
     Preferences prefs = Gdx.app.getPreferences(prefsName);
     prefs.putFloat("sfx", val);
+    prefs.flush();
+  }
+
+  public static int getContinueLevel() {
+    Preferences prefs = Gdx.app.getPreferences(prefsName);
+    int levels = 1;
+    while(true) {
+      int status = prefs.getInteger(("level"+levels), -10);
+      if(status == -10) break;
+      levels++;
+    }
+    int current = prefs.getInteger("lastFinished", -10);
+    if(current==-1) return 1;
+    if(current==-10) {
+      prefs.putInteger("lastFinished", levels);
+      prefs.flush();
+      return 1;
+    }
+    if(current==levels) return 1;
+    else return current;
+
+  }
+
+  public static void setLevel(int level) {
+    Preferences prefs = Gdx.app.getPreferences(prefsName);
+    prefs.putInteger("lastFinished", level);
     prefs.flush();
   }
 
