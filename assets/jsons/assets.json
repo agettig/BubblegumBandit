@@ -151,7 +151,6 @@
             }
 
         },
-        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
