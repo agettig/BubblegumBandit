@@ -27,7 +27,7 @@ public class ReactorModel {
     private PolygonRegion beamReg;
 
     /** How fast the lights on the reactor turn off after orb is collected, per tick */
-    private static final float FADE_RATE = 0.05f;
+    private static final float FADE_RATE = 0.005f;
 
     /** the number of ticks that have passed */
     private float ticks;
@@ -41,6 +41,8 @@ public class ReactorModel {
     private float beamScale = 1;
 
     private Color fadeTint = Color.WHITE.cpy();
+
+    private boolean vertical;
 
 
 
@@ -57,10 +59,12 @@ public class ReactorModel {
         //vertically aligned around orb
         if (reactor1.x == reactor2.x) {
             reactor1.x = reactor2.x = orbPos.x;
+            vertical = true;
         }
         //horizontally aligned around orb
         else {
             reactor1.y = reactor2.y = orbPos.y;
+            vertical = false;
         }
 
         System.out.println(beam.getRegionHeight());
@@ -83,14 +87,26 @@ public class ReactorModel {
         fadeTint.set(1, 1, 1, beamScale);
     }
     public void draw(GameCanvas canvas){
-        canvas.draw(beam, Color.WHITE, beam.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, beamScale, 1);
+
+//        if(vertical) {
+            canvas.draw(beam, Color.WHITE, beam.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, beamScale, 1);
 //        canvas.drawWithShadow(computer, Color.WHITE, 0, 0,(reactor1.x - 10 )* SCALE, reactor1.y * SCALE,  0, 1, 1);
 //        canvas.draw(casing, Color.WHITE, casing.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, 1, 1);
 
-        canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, 1, 1);
-        canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(), 0, 1, -1f);
+            canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, 1, 1);
+            canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(), 0, 1, -1f);
 
-        canvas.draw(reactor, fadeTint, reactor.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, 1, 1);
-        canvas.draw(reactor, fadeTint, reactor.getRegionWidth()/2f,0,reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(),  0, 1, -1f);
+            canvas.draw(reactor, fadeTint, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, 1, 1);
+            canvas.draw(reactor, fadeTint, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(), 0, 1, -1f);
+//        }
+//        else {
+//            canvas.draw(beam, Color.WHITE, beam.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, beamScale, 1);
+//
+//            canvas.draw(reactorOff, fadeTint, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, (float)-Math.PI/2, 1, 1);
+//            canvas.draw(reactorOff, fadeTint, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE + reactorOff.getRegionWidth(), reactor2.y * SCALE, (float)-Math.PI/2, 1, -1f);
+//
+//            canvas.draw(reactor, fadeTint, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, (float)-Math.PI/2, 1, 1);
+//            canvas.draw(reactor, fadeTint, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE + reactorOff.getRegionWidth(), reactor2.y * SCALE, (float)-Math.PI/2, 1, -1f);
+//        }
     }
 }
