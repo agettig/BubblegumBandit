@@ -111,10 +111,16 @@ public class PlayerController{
     private boolean unstickPressed;
     private boolean unstickPrevious;
 
+    private boolean pausePressed;
+
+    private boolean pausePrevious;
+
     /** If gum was collected */
     private boolean collect;
 
     private static int[] keyBindings;
+
+    private static boolean[] isKeyControl;
 
     /** An X-Box controller (if it is connected) */
     XBoxController xbox;
@@ -183,8 +189,9 @@ public class PlayerController{
     /**
      *
      * */
-    public static void changeControls(int[] v){
+    public static void changeControls(int[] v, boolean[] controls){
         keyBindings = v;
+        isKeyControl = controls;
     }
 
     /**
@@ -221,6 +228,10 @@ public class PlayerController{
     /**Returns y coordinate of mouse click */
     public int getY() {
         return Gdx.input.getY();
+    }
+
+    public boolean didPause() {
+        return pausePressed && !pausePrevious;
     }
 
     /**
@@ -307,6 +318,7 @@ public class PlayerController{
         crosshair = new Vector2();
         crosscache = new Vector2();
         keyBindings = SaveData.getKeyBindings();
+        isKeyControl = SaveData.getKeyButtons();
         //change + fetch keyBindings from save data
     }
 
@@ -335,6 +347,7 @@ public class PlayerController{
         controlTogglePrevious = controlTogglePressed;
         gravityDownPrevious = gravityDown;
         gravityUpPrevious = gravityUp;
+        pausePrevious = pausePressed;
 
         // Check to see if a GamePad is connected
         if (xbox != null && xbox.isConnected()) {
@@ -416,25 +429,36 @@ public class PlayerController{
 
         // Directional controls
         horizontal = (secondary ? horizontal : 0.0f);
-        if (Gdx.input.isKeyPressed(keyBindings[1])) {
+
+        boolean moveLeft = isKeyControl[0] ? Gdx.input.isKeyPressed(keyBindings[0]) : Gdx.input.isButtonPressed(keyBindings[0]);
+        boolean moveRight = isKeyControl[1] ? Gdx.input.isKeyPressed(keyBindings[1]) : Gdx.input.isButtonPressed(keyBindings[1]);
+        boolean gUp = isKeyControl[2] ? Gdx.input.isKeyPressed(keyBindings[2]) : Gdx.input.isButtonPressed(keyBindings[2]);
+        boolean gDown = isKeyControl[3] ? Gdx.input.isKeyPressed(keyBindings[3]) : Gdx.input.isButtonPressed(keyBindings[3]);
+        boolean mini = isKeyControl[4] ? Gdx.input.isKeyPressed(keyBindings[4]) : Gdx.input.isButtonPressed(keyBindings[4]);
+        boolean reload = isKeyControl[5] ? Gdx.input.isKeyPressed(keyBindings[5]) : Gdx.input.isButtonPressed(keyBindings[5]);
+        boolean shoot = isKeyControl[6] ? Gdx.input.isKeyPressed(keyBindings[6]) : Gdx.input.isButtonPressed(keyBindings[6]);
+        boolean unstick = isKeyControl[7] ? Gdx.input.isKeyPressed(keyBindings[7]) : Gdx.input.isButtonPressed(keyBindings[7]);
+
+        if (moveRight) {
             horizontal += 1.0f;
         }
-        if (Gdx.input.isKeyPressed(keyBindings[0])) {
+        if (moveLeft) {
             horizontal -= 1.0f;
         }
-        reloadPressed = Gdx.input.isKeyPressed(keyBindings[5]) && !primePressed && !Gdx.input.isKeyPressed(
-            keyBindings[1]) && !Gdx.input.isKeyPressed(keyBindings[0]);
+
+        reloadPressed = reload && !moveLeft && !moveRight;
 
 
-        minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(keyBindings[4]));
+        minimapPressed = (secondary && minimapPressed) || mini;
         exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-        gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(keyBindings[2]));
-        gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(keyBindings[3]));
+        gravityUp = (secondary && gravityUp) || gUp;
+        gravityDown = (secondary && gravityDown) || gDown;
 
 
         // Mouse results
-        shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(keyBindings[6]));
-        unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(keyBindings[7]));
+        shootPressed = (secondary && shootPressed) || shoot;
+        unstickPressed = (secondary && unstickPressed) || unstick;
+        pausePressed  = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }

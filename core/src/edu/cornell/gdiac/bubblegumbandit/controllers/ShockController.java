@@ -1,4 +1,7 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_PROJECTILE;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_PROJECTILE;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -7,13 +10,15 @@ import com.badlogic.gdx.utils.Queue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 
 
 /**
  * Manages the projectiles fired by the enemies
  */
-public class ProjectileController{
+public class ShockController {
 
     /** The maximum number of projectile objects we support */
     private static final int MAX_PROJECTILE = 1024;
@@ -22,7 +27,7 @@ public class ProjectileController{
     private JsonValue projJV;
 
     /** The queue of active projectiles */
-    protected Queue<ProjectileModel> queue;
+    protected Queue<ShockModel> queue;
 
     /** The texture of a projectile */
     private TextureRegion projTexture;
@@ -36,12 +41,14 @@ public class ProjectileController{
     /** The speed of the projectile. */
     private float speed;
 
+    private AssetDirectory directory;
+
     /**
      * Creates a queue of projectiles.
      *
      * The game will never support more than MAX_PROJECTILES projectiles on screen at a time.
      */
-    public ProjectileController(){
+    public ShockController(){
         queue = new Queue<>();
     }
 
@@ -54,6 +61,7 @@ public class ProjectileController{
      * @param yScale the y scale of the level
      */
     public void initialize(JsonValue projJV, AssetDirectory directory, float xScale, float yScale) {
+        this.directory = directory;
         this.projJV = projJV;
         drawScale = new Vector2(xScale, yScale);
         String key = projJV.get("texture").asString();
@@ -63,34 +71,51 @@ public class ProjectileController{
     }
 
     /**
-     * Creates a projectile and updates the enemy's cooldown.
+     * Creates the shock, adds it to the world, and updates the enemy's cooldown.
+     * Precondition: controller's enemy is a ShockEnemy
      *
      * @param controller The AIController that is firing
+     * @param level the level model of the game
+     * @param isGravDown whether gravity is down
      */
-    public ProjectileModel fireWeapon(AIController controller, float targetX, float targetY){
+    public void fireWeapon(LevelModel level, AIController controller, boolean isGravDown){
         EnemyModel e = controller.getEnemy();
-        ProjectileModel p = new ProjectileModel(projJV, e.getX(),
-            e.getY()+e.getHeight()*e.getYScale()*1/3, radius);
-        //set velocity
-        Vector2 vel = new Vector2(targetX - e.getX(), targetY - e.getY());
-        vel.nor();
-        vel.scl(speed);
-        p.setVX(vel.x);
-        p.setVY(vel.y);
+        assert (e instanceof ShockEnemyModel);
+        ShockEnemyModel shockEnemy = (ShockEnemyModel) e;
+        // Snap position to floor / ceiling
+        float projY;
+        if (isGravDown) {
+            float ground = e.getY() - (e.getHeight() / 2);
+            projY = ground + radius + 0.01f;
+        } else {
+            float ground = e.getY() + (e.getHeight() / 2);
+            projY = ground - radius - 0.01f;
+        }
+        ShockModel left = new ShockModel();
+        ShockModel right = new ShockModel();
+        left.initialize(directory, drawScale, projJV, e.getX(), projY, radius, isGravDown, true);
+        right.initialize(directory, drawScale, projJV, e.getX(), projY, radius, isGravDown, false);
 
         //Physics Constants
-        p.setDrawScale(drawScale);
-        p.setTexture(projTexture);
+        left.setTexture(projTexture);
+        right.setTexture(projTexture);
 
-        addToQueue(p);
+        shockEnemy.setShock(left, right);
+
+        addToQueue(left);
+        addToQueue(right);
         controller.coolDown(false);
-        return p;
+
+        level.activate(left);
+        level.activate(right);
+        left.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+        right.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
     }
 
     /**
      * Added given projectile to the queue
      */
-    public void addToQueue(ProjectileModel p) {
+    public void addToQueue(ShockModel p) {
         // Check if any room in queue.
         // If maximum is reached, no projectile is created.
         if (queue.size == MAX_PROJECTILE) {

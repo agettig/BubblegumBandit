@@ -8,12 +8,18 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import java.lang.reflect.Field;
+import javax.swing.Box;
 
 /**
- * A class representing a glass tile on the screen
+ * A class representing a glass tile / hazard on the screen
  **/
-public class SpecialTileModel extends TileModel {
+public class SpecialTileModel extends BoxObstacle {
+
+    public SpecialTileModel() {
+        super(0, 0, 1, 1);
+    }
 
     public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, JsonValue objectJson, JsonValue constants, String name) {
         setName(name);

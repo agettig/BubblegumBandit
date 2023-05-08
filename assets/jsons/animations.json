@@ -117,5 +117,11 @@
       "fps": 12
     }
 
+  },
+  "shockArc": {
+    "shockArc": {
+      "strip": "shockArc.shockArc",
+      "fps": 4
+    }
   }
 }

@@ -178,10 +178,11 @@ public class LaserEnemyModel extends EnemyModel {
      * @param x             the x position to set this ProjectileEnemyModel
      * @param y             the y position to set this ProjectileEnemyModel
      * @param constantsJson the constants json
-     */
+     * @param isFacingRight whether the enemy spawns facing right
+     * */
     public void initialize(AssetDirectory directory, float x, float y,
-                           JsonValue constantsJson) {
-        super.initialize(directory, x, y, constantsJson);
+                           JsonValue constantsJson, boolean isFacingRight){
+        super.initialize(directory, x, y, constantsJson, isFacingRight);
         halfStuck = new TextureRegion(directory.getEntry("halfStuck", Texture.class));
         halfStuckOutline = new TextureRegion(directory.getEntry("halfStuckOutline", Texture.class));
         setName("laserEnemy");
@@ -272,7 +273,7 @@ public class LaserEnemyModel extends EnemyModel {
                 boolean isBandit = fixture.getBody().getUserData() instanceof BanditModel;
                 if (isBandit) {
                     BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
-                    bandit.hitPlayer(Damage.JUMP_STUN_DAMAGE, false);
+                    bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
                     int yImpulse = isFlipped ? -10 : 10;
                     int xImpulse = getX() > bandit.getX() ? -5 : 5;
                     bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);
