@@ -656,6 +656,7 @@ public class GameController implements Screen {
                 bubblegumController.addAmmo(1);
                 reloadSymbolTimer = -1;
                 reloadingGum = true;
+                SoundController.playSound("reloadingGum", 1);
             }
         } else {
             reloadingGum = false;

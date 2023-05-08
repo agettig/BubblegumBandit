@@ -144,6 +144,8 @@ public class GameOverScreen implements Screen, InputProcessor {
     /** How fast the screen fades in */
     private float fadeRate;
 
+    private int continueGameOffset;
+
     /**
      * The height of the canvas window (necessary since sprite origin != screen origin)
      */
@@ -189,6 +191,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("victory", 1);
+        continueGameOffset = 145;
     }
 
     public void gameLost(AssetDirectory directory) {
@@ -197,6 +200,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("failure", 1);
+        continueGameOffset = 165;
     }
 
     @Override
@@ -267,7 +271,7 @@ public class GameOverScreen implements Screen, InputProcessor {
             titleScreenButtonPositionX = (int) coords.x;
             titleScreenButtonPositionY = (int) lowestButtonY - 75;
 
-            float pointerX = startButtonPositionX / 4f;
+            float pointerX = startButtonPositionX / 2;
 
             //Draw continue game options
             canvas.draw(
@@ -287,7 +291,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
                         hoverPointer.getHeight() / 2f,
-                        pointerX,
+                        pointerX + continueGameOffset,
                         startButtonPositionY,
                         0,
                         scale,
@@ -313,7 +317,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
                         hoverPointer.getHeight() / 2f,
-                        pointerX,
+                        pointerX + 120,
                         levelSelectButtonPositionY,
                         0,
                         scale,

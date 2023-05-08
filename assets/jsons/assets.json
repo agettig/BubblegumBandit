@@ -441,7 +441,8 @@
         "failure": "sounds/failure.wav",
         "rolling": "sounds/rolling.wav",
         "clockTick": "sounds/clockTicking.wav",
-        "lowStressAlarm": "sounds/lowStressAlarm.wav"
+        "lowStressAlarm": "sounds/lowStressAlarm.wav",
+        "reloadingGum": "sounds/reloadingGum.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",
