@@ -161,6 +161,9 @@ public class LevelModel {
     /** represents the reactor around the orb */
     private ReactorModel reactorModel;
 
+    /** Number of total captives in the level */
+    private int captiveCount;
+
 
 
     /**
@@ -176,6 +179,7 @@ public class LevelModel {
         debug = false;
         aim = new AimModel();
         icons = new Array<>();
+        captiveCount = 0;
     }
 
     /**
@@ -187,6 +191,9 @@ public class LevelModel {
     public AimModel getAim() {
         return aim;
     }
+
+    /** Returns the total amount of captives in the level */
+    public int getCaptiveCount() {return captiveCount; }
 
     /**
      * Returns an Array of all AIControllers in this level.
@@ -387,6 +394,9 @@ public class LevelModel {
             }
             if (propName.equals("timer")) {
                 timer = property.getFloat("value");
+            }
+            if( propName.equals("captives")) {
+                captiveCount = property.getInt("value");
             }
             property = property.next();
         }
@@ -601,13 +611,19 @@ public class LevelModel {
                 case "orb":
                     orbPlaced = true;
                     orbPosition = new Vector2(x,y);
-                case "star":
                 case "floatingGum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
                     activate(coll);
                     coll.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
                     coll.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
+                    break;
+                case "star":
+                    Captive cap =  new Captive();
+                    cap.initialize(directory, x, y, scale, constants.get(objType));
+                    activate(cap);
+                    cap.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+                    cap.getFilterData().categoryBits = CATEGORY_COLLECTIBLE; // Do this for ID purposes
                     break;
                 case "doorVLocked":
                 case "doorV":
@@ -650,7 +666,6 @@ public class LevelModel {
             }
             object = object.next();
         }
-
 
         postOrb = postOrb.child();
         while (postOrb != null){
@@ -789,6 +804,11 @@ public class LevelModel {
             world = null;
             alarms.dispose();
         }
+        captiveCount = 0;
+    }
+
+    public int getTotalCaptives() {
+        return captiveCount;
     }
 
     /**

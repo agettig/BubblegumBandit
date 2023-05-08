@@ -70,11 +70,15 @@
          "type":"alarm"
         }, 
         {
+         "height":128,
          "id":11,
-         "image":"..\/textures\/environment\/star.png",
-         "imageheight":48,
-         "imagewidth":48,
-         "type":"star"
+         "image":"..\/textures\/environment\/captive.png",
+         "imageheight":152,
+         "imagewidth":109,
+         "type":"star",
+         "width":92,
+         "x":0,
+         "y":0
         }, 
         {
          "id":12,

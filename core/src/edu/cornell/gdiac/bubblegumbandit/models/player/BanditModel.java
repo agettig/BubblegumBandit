@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
@@ -238,11 +239,19 @@ public class BanditModel extends CapsuleObstacle {
         return isKnockback;
     }
 
+    public void setKnockback(boolean knockback, boolean shock) {
+        isKnockback = knockback;
+       if( health>0) {
+           if(!shock) animationController.setAnimation("knock", false);
+           else animationController.setAnimation("shock", false);
+       }
+    }
+
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
-       if(knockback && health>0) {
-           animationController.setAnimation("knock", false);
-       }
+        if(knockback && health>0) {
+            animationController.setAnimation("knock", false);
+        }
     }
 
 
@@ -753,6 +762,15 @@ public class BanditModel extends CapsuleObstacle {
         super.update(dt);
     }
 
+    private boolean playingReload;
+
+    public void startReload() {
+        playingReload = true;
+    }
+
+    public void stopReload() {
+       playingReload = false;
+    }
 
     /**
      * Draws the physics object.
@@ -763,7 +781,8 @@ public class BanditModel extends CapsuleObstacle {
         if (texture != null) {
 
             if(!animationController.hasTemp()&&health>0) {
-                if (!isGrounded) animationController.setAnimation("fall", true);
+                if(playingReload) animationController.setAnimation("reload", true);
+                else if (!isGrounded) animationController.setAnimation("fall", true);
                 else if (getMovement() == 0) animationController.setAnimation("idle", true);
                 else {
                     if(backpedal) {
