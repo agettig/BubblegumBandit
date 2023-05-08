@@ -554,23 +554,24 @@ public class GameController implements Screen {
             return false;
         } else if (countdown > 0) {
             countdown--;
-        } else if (countdown == 0) {
-
-            // TODO fix with post orb enemies
-            if (level.getPostOrbEnemies().size() == 0) {
-                if (orbCollected && !complete) {
-                    respawn();
-                } else {
-                    reset();
-                }
-            } else {
-                reset();
-            }
         }
+//        else if (countdown == 0) {
+//
+//            // TODO fix with post orb enemies
+//            if (level.getPostOrbEnemies().size() == 0) {
+//                if (orbCollected && !complete) {
+//                    respawn();
+//                } else {
+//                    reset();
+//                }
+//            } else {
+//                reset();
+//            }
+//        }
 
         if (orbCountdown > 0 && !complete) {
             orbCountdown -= dt;
-        } else if (orbCollected && orbCountdown <= 0) {
+        } else if (orbCollected && orbCountdown <= 0 && !failed) {
             level.getBandit().kill();
         }
 
@@ -805,16 +806,6 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
-        // Final message
-        if (complete && !failed) {
-            if (gameOverTime > 100) {
-                listener.exitScreen(this, -1);
-            }
-            gameOverTime++;
-        } else if (failed) {
-            listener.exitScreen(this, -2);
-        }
-
 //        backgrounds.drawDebug(canvas);
     }
 
@@ -845,6 +836,16 @@ public class GameController implements Screen {
                 update(delta);
             }
             draw(delta);
+            // Final message
+            if (countdown == 0){
+                if (complete && !failed) {
+                    listener.exitScreen(this, -1);
+                }
+                else {
+                    listener.exitScreen(this, -2);
+                }
+            }
+
         }
     }
 
