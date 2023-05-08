@@ -836,7 +836,7 @@ public class GameController implements Screen {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
-            level.getBandit().setAnimation("victory", true);
+            level.getBandit().setAnimation("victory", true, false);
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
