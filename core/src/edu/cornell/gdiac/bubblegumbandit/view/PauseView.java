@@ -244,7 +244,7 @@ public class PauseView {
     stage.act();
 
     if (getQuitClicked()) {
-      listener.exitScreen(curScreen, Screens.EXIT_CODE);
+      listener.exitScreen(curScreen, Screens.LOADING_SCREEN);
     }
 
     if (getLevelSelectClicked()) {
