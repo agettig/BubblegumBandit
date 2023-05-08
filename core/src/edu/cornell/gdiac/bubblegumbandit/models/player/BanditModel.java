@@ -663,6 +663,7 @@ public class BanditModel extends CapsuleObstacle {
     }
 
     public void setFacingDirection(float cursorX) {
+
         if(!faceRight) {
             backpedal = (cursorX>getX());
         } else {

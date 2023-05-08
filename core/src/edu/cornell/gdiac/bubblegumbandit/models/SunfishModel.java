@@ -145,7 +145,7 @@ public class SunfishModel extends WheelObstacle {
         float dst = getPosition().dst(lastPos);
 
         // damping distance
-        if (dst < 100){
+        if (dst < 150){
 //            forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
 
         }
@@ -162,7 +162,7 @@ public class SunfishModel extends WheelObstacle {
         }
 
 //        body.applyForce(forceCache, getPosition(), true);
-//            body.applyLinearImpulse(movement, getPosition(), true);
+//        body.applyLinearImpulse(movement, getPosition(), true);
         //rotate ship to face cursor
         body.setTransform(body.getPosition(), angle);
 
