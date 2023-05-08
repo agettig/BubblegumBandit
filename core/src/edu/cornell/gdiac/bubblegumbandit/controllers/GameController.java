@@ -16,6 +16,7 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -718,7 +719,6 @@ public class GameController implements Screen {
                     float enemyPos = enemy.getY() + (isGravDown ? -halfHeight : halfHeight);
                     if (Math.abs(enemyPos - Math.round(enemyPos)) < 0.02) { // Check if grounded
                         projectileController.fireWeapon(level, controller, isGravDown);
-                        smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                     }
                 } else {
                     controller.coolDown(true);
@@ -818,6 +818,7 @@ public class GameController implements Screen {
 
         if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
+            SoundController.playSound("noGum", 1);
         }
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
@@ -829,11 +830,15 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
+            if (!SoundController.isPlaying("victory", -14)) {
+                SoundController.playSound("victory", 1);
+            }
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
+            SoundController.playSound("failure", 1);
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("FAILURE!", displayFont, 150);

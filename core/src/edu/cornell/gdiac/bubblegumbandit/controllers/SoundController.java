@@ -45,6 +45,16 @@ public class SoundController {
     private static SoundEffect laserLocking;
     private static SoundEffect laserThud;
 
+    /**The sound the robot makes when letting out the shock*/
+    private static SoundEffect shockAttack;
+
+    /**sound for when the bandit is shocked*/
+    private static SoundEffect banditShock;
+
+    private static SoundEffect failure;
+    private static SoundEffect noGum;
+    private static SoundEffect victory;
+
 
     /**Hashmap holding sounds and corresponding Id*/
     private static HashMap<SoundEffect, Integer> soundIds;
@@ -57,7 +67,6 @@ public class SoundController {
     private static float musicVolume;
 
     private static float soundEffectsVolume;
-
 
 
     // music
@@ -110,6 +119,11 @@ public class SoundController {
         laserCharging = directory.getEntry("laserCharging", SoundEffect.class);
         laserLocking = directory.getEntry("laserLocking", SoundEffect.class);
         laserThud = directory.getEntry("laserThud", SoundEffect.class);
+        shockAttack = directory.getEntry("shockAttack", SoundEffect.class);
+        banditShock = directory.getEntry("electricShock", SoundEffect.class);
+        failure = directory.getEntry("failure", SoundEffect.class);
+        victory = directory.getEntry("victory", SoundEffect.class);
+        noGum = directory.getEntry("noGum", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -122,6 +136,11 @@ public class SoundController {
             put(laserCharging, -8);
             put(laserLocking, -9);
             put(laserThud, -10);
+            put(shockAttack, -11);
+            put(banditShock, -12);
+            put(failure, -13);
+            put(victory, -14);
+            put(noGum, -15);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -135,6 +154,11 @@ public class SoundController {
             put("laserCharging", laserCharging);
             put("laserLocking", laserLocking);
             put("laserThud", laserThud);
+            put("shockAttack", shockAttack);
+            put("banditShock", banditShock);
+            put("failure", failure);
+            put("victory", victory);
+            put("noGum", noGum);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );

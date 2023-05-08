@@ -424,7 +424,12 @@
         "laserFiring": "sounds/laserFiring.wav",
         "laserCharging": "sounds/laserCharging.wav",
         "laserLocking": "sounds/laserLocking.wav",
-        "laserThud": "sounds/laserThud.wav"
+        "laserThud": "sounds/laserThud.wav",
+        "shockAttack": "sounds/shockAttack.wav",
+        "electricShock": "sounds/electricShock.wav",
+        "noGum": "sounds/noGum.wav",
+        "victory": "sounds/victory.wav",
+        "failure": "sounds/failure.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",
