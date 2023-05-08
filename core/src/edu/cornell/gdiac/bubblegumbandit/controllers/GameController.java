@@ -852,18 +852,8 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
-        // Final message
         if (complete && !failed) {
-            displayFont.setColor(Color.YELLOW);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("VICTORY!", displayFont, 150);
             level.getBandit().setAnimation("victory", true, false);
-            canvas.end();
-        } else if (failed) {
-            displayFont.setColor(Color.RED);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 150);
-            canvas.end();
         }
     }
 

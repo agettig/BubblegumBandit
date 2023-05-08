@@ -10,7 +10,8 @@
         "progressBackground": "textures/UI/progressBackground.png",
         "progressFill": "textures/UI/progressFill.png",
         "spaceship":     "textures/levelSelect/sunfish.png",
-         "jet" : "textures/UI/jet.png"
+         "jet" : "textures/UI/jet.png",
+        "bigShip" : "textures/UI/ship.png"
     },
         "fonts": {
                 "projectSpace" : {

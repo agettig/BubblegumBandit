@@ -122,7 +122,7 @@ public class TutorialIcon {
     canvas.drawText(getKeyText(), font, bubblePink,
         x * scale.x,
         y * scale.y - margin, icon.getRegionWidth(), Align.center, true);
-    canvas.drawText(getDescription(), fontSmall, bubblePink,
+    canvas.drawText(getDescription().toUpperCase(), fontSmall, bubblePink,
         x * scale.x,
         y * scale.y - margin*4, icon.getRegionWidth(), Align.center, true);
 
