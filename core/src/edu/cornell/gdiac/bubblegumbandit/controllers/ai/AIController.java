@@ -7,11 +7,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
 
 public class AIController implements Telegraph {
+
+    /**
+     * Cooldown in ticks for shocking
+     */
+    private final int SHOCK_COOLDOWN = 180;
+
     /**
      * ticks in update loop
      */
@@ -31,6 +38,8 @@ public class AIController implements Telegraph {
      * reference to player / target
      */
     private BanditModel bandit;
+
+
 
     /**
      * Horizontal distance that enemies will not move towards the player
@@ -54,7 +63,7 @@ public class AIController implements Telegraph {
     /**
      * How long an enemy must wait until it can fire its weapon again
      */
-    private static final int COOLDOWN = 120; //in ticks
+    private int cooldown = 120; //in ticks
 
     /**
      * The number of frames until we can fire again
@@ -89,6 +98,10 @@ public class AIController implements Telegraph {
         firecool = 0;
         target = null;
         MessageManager.getInstance().addListener(this, MessageType.NEED_BACKUP);
+
+        if (enemy instanceof ShockEnemyModel) {
+            cooldown = SHOCK_COOLDOWN;
+        }
     }
 
     /**
@@ -157,7 +170,7 @@ public class AIController implements Telegraph {
         if (flag && firecool > 0) {
             firecool--;
         } else if (!flag) {
-            firecool = COOLDOWN;
+            firecool = cooldown;
         }
     }
 

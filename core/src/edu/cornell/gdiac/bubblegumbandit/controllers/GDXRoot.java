@@ -74,8 +74,8 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		Pixmap mouse = new Pixmap(Gdx.files.internal("textures/UI/pinkMouse.png"));
 		Pixmap crosshair = new Pixmap(Gdx.files.internal("textures/UI/crosshair2.png"));
-		mouseCursor = Gdx.graphics.newCursor(mouse, 16, 16);
-		crosshairCursor = Gdx.graphics.newCursor(crosshair, 16,16);
+		mouseCursor = Gdx.graphics.newCursor(mouse, 9, 2);
+		crosshairCursor = Gdx.graphics.newCursor(crosshair, 15,15);
 		mouse.dispose();
 		crosshair.dispose();
 		Gdx.graphics.setCursor(mouseCursor);
@@ -142,6 +142,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 
+		if (screen != controller){
+				Gdx.graphics.setCursor(mouseCursor);
+		}
 		if (screen == controller && exitCode == -1) {
 			directory = loading.getAssets();
 			gameOver.initialize(directory, canvas);
@@ -158,10 +161,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			canvas.resetCamera();
 			setScreen(gameOver);
 		}
-		else if (screen == controller){
-			Gdx.graphics.setCursor(mouseCursor);
-		}
-		else if (screen == levels) {
+		else if (screen == levels && exitCode == 0) {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setLevelNum(levels.getSelectedLevel());
@@ -195,7 +195,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.setScreenListener(this);
 			setScreen(loading);
 
-		} else if (exitCode == GameController.EXIT_QUIT && screen==controller) {
+		} else if ((exitCode == GameController.EXIT_QUIT && screen==controller) || (screen == levels && exitCode == 1)) {
 			// We quit the main application
 			canvas.resetCamera();
 			loading.setScreenListener(this);
@@ -205,9 +205,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			canvas.resetCamera();
 			loading.setScreenListener(this);
 			setScreen(loading);
-		}
-		else if (screen == gameOver) {
-			Gdx.graphics.setCursor(mouseCursor);
 		}
 		else{
 			Gdx.app.exit();

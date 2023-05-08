@@ -15,12 +15,8 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -31,23 +27,21 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
-import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ProjectileEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ProjectileModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -96,7 +90,9 @@ public class GameController implements Screen {
 
     private long reloadSymbolTimer;
 
-    /** represents the ship and space backgrounds */
+    /**
+     * represents the ship and space backgrounds
+     */
     private Background backgrounds;
 
     /**
@@ -212,7 +208,7 @@ public class GameController implements Screen {
     /**
      * A collection of the active projectiles on screen
      */
-    private ProjectileController projectileController;
+    private ShockController projectileController;
 
     /**
      * Reference to LaserController instance
@@ -265,12 +261,6 @@ public class GameController implements Screen {
      * Tick counter for gum reloading
      */
     private long ticks;
-
-    /**
-     * Tick counter for game over screen
-     */
-    private long gameOverTime;
-
     /**
      * Whether the player is reloading gum
      */
@@ -370,7 +360,6 @@ public class GameController implements Screen {
 
         //Technicals
         ticks = 0;
-        gameOverTime = 0;
         complete = false;
         failed = false;
         active = false;
@@ -390,7 +379,7 @@ public class GameController implements Screen {
         bubblegumController = new BubblegumController();
         laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
-        projectileController = new ProjectileController();
+        projectileController = new ShockController();
     }
 
     /**
@@ -431,7 +420,6 @@ public class GameController implements Screen {
         stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
         minimap = new Minimap();
-
         backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
     }
@@ -455,14 +443,13 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
         collisionController.reset();
-        hud.resetStars();
+        hud.setCaptives(0,0);
 
 
         level.dispose();
 
         setComplete(false);
         setFailure(false);
-        gameOverTime = 0;
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
@@ -620,7 +607,15 @@ public class GameController implements Screen {
         BanditModel bandit = level.getBandit();
 
         //move bandit
-        if (bandit.getHealth() > 0) {
+
+        // bandit can't move
+        if (bandit.getStunTime() > 0) {
+            // if bandit stunned knockback and hit ground set
+            if (bandit.isGrounded() && bandit.getStunTime() < 100) {
+                bandit.setVY(0);
+                bandit.setVX(.1f);
+            }
+        } else if (bandit.getHealth() > 0) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
@@ -655,6 +650,7 @@ public class GameController implements Screen {
         }
 
         if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+            bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
                 bubblegumController.addAmmo(1);
                 reloadSymbolTimer = -1;
@@ -662,6 +658,7 @@ public class GameController implements Screen {
             }
         } else {
             reloadingGum = false;
+            bandit.stopReload();
         }
 
 
@@ -694,7 +691,10 @@ public class GameController implements Screen {
                         // Ungum it
                         bubblegumController.removeGummable(gummable);
                         SoundController.playSound("enemySplat", 1f); // Temp sound
+                    }
 
+                    if (gummable instanceof LaserEnemyModel) {
+                        ((LaserEnemyModel) gummable).resetGumStuck();
                     }
                 }
             }
@@ -709,33 +709,55 @@ public class GameController implements Screen {
                 continue;
             }
             boolean isLaserEnemy = enemy instanceof LaserEnemyModel;
-            boolean isProjectileEnemy = enemy instanceof ProjectileEnemyModel;
+            boolean isProjectileEnemy = enemy instanceof ShockEnemyModel;
+            boolean isRollingEnemy = enemy instanceof RollingEnemyModel;
 
             if (isProjectileEnemy) {
-                if (controller.getEnemy().fired()) {
-                    ProjectileModel newProj = projectileController.fireWeapon(controller, level.getBandit().getX(), level.getBandit().getY());
-                    smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
-                    level.activate(newProj);
-                    newProj.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+                // Ensure enemy is on the ground
+                if (enemy.fired() && (controller.getTileType() != 0)) {
+                    boolean isGravDown = !enemy.isFlipped();
+                    float halfHeight = (enemy.getHeight() / 2);
+                    float enemyPos = enemy.getY() + (isGravDown ? -halfHeight : halfHeight);
+                    if (Math.abs(enemyPos - Math.round(enemyPos)) < 0.02) { // Check if grounded
+                        projectileController.fireWeapon(level, controller, isGravDown);
+                        smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
+                    }
                 } else {
                     controller.coolDown(true);
                 }
-            } else if (isLaserEnemy) {
+            }
+            else if (isLaserEnemy) {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
                 if (laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
                 else {
-                    boolean sameSide = false;
-                    if (enemy.getFaceRight() && enemy.getX() < bandit.getX())
-                        sameSide = true;
-                    if (!enemy.getFaceRight() && enemy.getX() > bandit.getX())
-                        sameSide = true;
-                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser() && sameSide;
+                    boolean canFire = laserEnemy.canSeeBandit(bandit) && laserEnemy.inactiveLaser();
                     if (canFire) {
                         enemy.isShielded(false);
-                        laserController.fireLaser(controller);
+                        if (laserEnemy.isShouldJumpAttack()) {
+                            laserEnemy.jump();
+                        } else {
+                            laserController.fireLaser(controller);
+                        }
                     }
                 }
             }
+            else if(isRollingEnemy){
+                RollingEnemyModel rollingEnemy = (RollingEnemyModel) controller.getEnemy();
+                if(rollingEnemy.shouldUnstick()){
+                    if(rollingEnemy.getGummed()){
+                        bubblegumController.removeGummable(rollingEnemy);
+                        rollingEnemy.resetUnstick();
+                    }
+                    else if(rollingEnemy.getStuck()){
+                        HashSet<GumModel> stuckGum = rollingEnemy.getStuckGum();
+                        for(GumModel g : stuckGum){
+                            bubblegumController.removeGum(g);
+                        }
+                        rollingEnemy.resetUnstick();
+                    }
+                }
+            }
+
 
 
         }
@@ -760,6 +782,7 @@ public class GameController implements Screen {
         //Check to create post-orb enemies
         if (orbCollected && !spawnedPostOrbEnemies) {
             level.spawnPostOrbEnemies();
+            level.postOrbDoors();
             spawnedPostOrbEnemies = true;
         }
 
@@ -785,7 +808,7 @@ public class GameController implements Screen {
         backgrounds.draw(canvas);
 
         PlayerController inputResults = PlayerController.getInstance();
-        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd);
+        level.draw(canvas, constantsJson, trajectoryProjectile, laserBeam, laserBeamEnd, delta);
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
@@ -805,8 +828,6 @@ public class GameController implements Screen {
             canvas.end();
             reloadSymbolTimer++;
         }
-
-//        backgrounds.drawDebug(canvas);
     }
 
     /**
