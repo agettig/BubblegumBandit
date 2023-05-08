@@ -582,7 +582,6 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-        System.out.println(SaveData.getContinueLevel());
         ticks++;
         if (collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;

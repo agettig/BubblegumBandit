@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.bubblegumbandit.helpers.CameraShake;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 public class GameCamera  extends OrthographicCamera {
@@ -62,6 +63,10 @@ public class GameCamera  extends OrthographicCamera {
 
     /** The base position of the camera before screen shake. */
     private Vector2 basePos;
+
+    /** The scale of the bandit's "shock" trauma */
+    private float SHOCK_TRAUMA = 1f;
+
 
     /** Constructs a new GameCamera, using the given viewport width and height. For pixel perfect 2D rendering just supply
      * the screen size, for other unit scales (e.g. meters for box2d) proceed accordingly. The camera will show the region
@@ -253,6 +258,11 @@ public class GameCamera  extends OrthographicCamera {
         if (yPos >= lowerYBound && yPos <= upperYBound && xPos >= lowerXBound && xPos <= upperXBound) {
             shake.addTrauma(trauma);
         }
+    }
+
+
+    public void startShockTrauma() {
+        shake.addShockTrauma(SHOCK_TRAUMA);
     }
 
     /**
