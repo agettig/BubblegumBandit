@@ -5,6 +5,8 @@
     "knob": "textures/settings/bubbleUI.png",
     "sliderBeforeKnob": "textures/settings/sliderwhite.png",
     "arrow" : "textures/settings/arrow.png",
-    "backgroundButton": "textures/settings/selectButtonBackground.png"
+    "backgroundButton": "textures/settings/selectButtonBackground.png",
+    "scrollBar": "textures/settings/scrollBar.png",
+    "scrollBarFill": "textures/settings/scrollFill.png"
   }
 }

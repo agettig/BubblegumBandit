@@ -274,12 +274,12 @@ public class SettingsMode implements Screen {
         background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
         sliderBeforeKnob = new TextureRegionDrawable(new TextureRegion(slider));
         sliderKnob = new TextureRegionDrawable(new TextureRegion(knob));
-        scrollKnob =  new TextureRegionDrawable(sliderBeforeKnobTexture);
+        scrollKnob =  new TextureRegionDrawable(internal.getEntry("scrollBarFill", Texture.class));
         sliderTexture = new TextureRegionDrawable(sliderBeforeKnobTexture);
         arrow = new TextureRegion(internal.getEntry("arrow", Texture.class));
-        scrollBar = new TextureRegionDrawable(new TextureRegion(slider));
-        scrollBar.setMinWidth(10);
-        scrollKnob.setMinWidth(10);
+        scrollBar = new TextureRegionDrawable(internal.getEntry("scrollBar", Texture.class));
+        scrollBar.setMinWidth(13);
+        scrollKnob.setMinWidth(20);
 
         stage = new Stage();
         settingsTable = new Table();
@@ -653,7 +653,6 @@ public class SettingsMode implements Screen {
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.getStyle().vScroll = scrollBar;
         scrollPane.getStyle().vScrollKnob = scrollKnob;
-        scrollPane.setupFadeScrollBars(.5f,.5f);
 
         c.row();
         c.add(moveLeft).pad(topPadding, 0, 32, 0);
