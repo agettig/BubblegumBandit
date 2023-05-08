@@ -438,7 +438,9 @@
         "electricShock": "sounds/electricShock.wav",
         "noGum": "sounds/noGum.wav",
         "victory": "sounds/victory.wav",
-        "failure": "sounds/failure.wav"
+        "failure": "sounds/failure.wav",
+        "rolling": "sounds/rolling.wav",
+        "clockTick": "sounds/clockTicking.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

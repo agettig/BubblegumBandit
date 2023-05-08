@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation.SwingOut;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 
@@ -132,7 +133,7 @@ public class RollingEnemyModel extends EnemyModel {
             animationController.setAnimation("roll", true);
         }
         else if (stuck || gummed){
-            //TODO: Replace the if() animation to an unsticking one
+            //TODO: Replace the if() animation to an unsticking one;
             if(unsticking) animationController.setAnimation("stuck", true);
             else animationController.setAnimation("stuck", true);
         }
@@ -156,6 +157,7 @@ public class RollingEnemyModel extends EnemyModel {
             } else {
                 attackDuration = 0;
                 isRolling = true;
+                SoundController.playSound("rolling", 0.75f);
             }
         }
         rollCoolDown--;

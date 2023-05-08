@@ -54,6 +54,8 @@ public class SoundController {
     private static SoundEffect failure;
     private static SoundEffect noGum;
     private static SoundEffect victory;
+    private static SoundEffect rolling;
+    private static SoundEffect clockTick;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -128,6 +130,8 @@ public class SoundController {
         failure = directory.getEntry("failure", SoundEffect.class);
         victory = directory.getEntry("victory", SoundEffect.class);
         noGum = directory.getEntry("noGum", SoundEffect.class);
+        rolling = directory.getEntry("rolling", SoundEffect.class);
+        clockTick = directory.getEntry("clockTick", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -145,6 +149,8 @@ public class SoundController {
             put(failure, -13);
             put(victory, -14);
             put(noGum, -15);
+            put(rolling, -16);
+            put(clockTick, -17);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -163,6 +169,8 @@ public class SoundController {
             put("failure", failure);
             put("victory", victory);
             put("noGum", noGum);
+            put("rolling", rolling);
+            put("clockTick", clockTick);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -188,13 +196,22 @@ public class SoundController {
 
     }
 
+    public static void pauseMusic() {
+        musicPlayer.stop();
+    }
+
+    public static void loopSound(String sound, int soundId) {
+        SoundEffect s = sounds.get(sound);
+        s.setLooping(soundId, true);
+    }
+
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
-        if (soundId == lastPlayed && soundId == -14) {
-            s.stop();
+        if (!(soundId == lastPlayed)) {
+            return playSound(s,soundId, volume * soundEffectsVolume);
         }
-        return playSound(s,soundId, volume * soundEffectsVolume);
+        return 0;
     }
 
     public static void lastPlayed(int soundId) {
