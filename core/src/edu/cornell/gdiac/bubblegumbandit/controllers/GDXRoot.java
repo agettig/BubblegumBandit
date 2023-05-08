@@ -67,8 +67,6 @@ public class GDXRoot extends Game implements ScreenListener {
 
     private SettingsMode settingsMode;
 
-    private PauseMode pause;
-
     private Cursor mouseCursor;
 
     private Cursor crosshairCursor;
@@ -100,7 +98,6 @@ public class GDXRoot extends Game implements ScreenListener {
 
         levels = new LevelSelectMode();
         settingsMode = new SettingsMode();
-        pause = new PauseMode();
         settingsMode.setViewport(canvas.getUIViewport());
         gameOver = new GameOverScreen();
 
@@ -186,11 +183,6 @@ public class GDXRoot extends Game implements ScreenListener {
             levels.setCanvas(canvas);
             levels.setScreenListener(this);
             setScreen(levels);
-        } else if (exitCode == Screens.PAUSE) {
-            pause.setScreenListener(this);
-            BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
-            pause.initialize(codygoonRegular);
-            setScreen(pause);
         } else if (exitCode == Screens.CONTROLLER) {
             setScreen(controller);
             if (screen == settingsMode) {
