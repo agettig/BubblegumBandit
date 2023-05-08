@@ -37,6 +37,8 @@ public class CameraShake {
 
     private float SHOCK_TIME = 4f;
 
+    private Vector2 BLOCK_VEC = Vector2.Y;
+
     private float shockTimer = 0f;
 
     private float shockTrauma = 0f;
@@ -52,7 +54,7 @@ public class CameraShake {
         time = 0;
         shockTimer = 0;
         timeSinceLastShake = 0;
-        traumaDir = Vector2.Y;
+        traumaDir = BLOCK_VEC;
         shocking = false;
     }
 
@@ -124,6 +126,7 @@ public class CameraShake {
                 shockTimer = 0f;
                 timeSinceLastShake = 0f;
                 trauma = 0f;
+                traumaDir = BLOCK_VEC;
             }
             else if(timeSinceLastShake>.5f) {
                 addRandTrauma(shockTrauma);
