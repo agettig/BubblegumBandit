@@ -438,12 +438,25 @@
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3",
+  		"jump" : "sounds/jump.wav",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav",
-        "error": "sounds/error.wav"
+        "error": "sounds/error.wav",
+        "laserFiring": "sounds/laserFiring.wav",
+        "laserCharging": "sounds/laserCharging.wav",
+        "laserLocking": "sounds/laserLocking.wav",
+        "laserThud": "sounds/laserThud.wav",
+        "shockAttack": "sounds/shockAttack.wav",
+        "electricShock": "sounds/electricShock.wav",
+        "noGum": "sounds/noGum.wav",
+        "victory": "sounds/victory.wav",
+        "failure": "sounds/failure.wav",
+        "rolling": "sounds/rolling.wav",
+        "clockTick": "sounds/clockTicking.wav",
+        "lowStressAlarm": "sounds/lowStressAlarm.wav",
+        "reloadingGum": "sounds/reloadingGum.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

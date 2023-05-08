@@ -40,6 +40,25 @@ public class SoundController {
      */
     private static SoundEffect collectItemSound;
 
+    private static SoundEffect laserFiring;
+    private static SoundEffect laserCharging;
+    private static SoundEffect laserLocking;
+    private static SoundEffect laserThud;
+
+    /**The sound the robot makes when letting out the shock*/
+    private static SoundEffect shockAttack;
+
+    /**sound for when the bandit is shocked*/
+    private static SoundEffect banditShock;
+
+    private static SoundEffect failure;
+    private static SoundEffect noGum;
+    private static SoundEffect victory;
+    private static SoundEffect rolling;
+    private static SoundEffect clockTick;
+    private static SoundEffect lowStressAlarm;
+    private static SoundEffect reloadingGum;
+
 
     /**Hashmap holding sounds and corresponding Id*/
     private static HashMap<SoundEffect, Integer> soundIds;
@@ -52,7 +71,6 @@ public class SoundController {
     private static float musicVolume;
 
     private static float soundEffectsVolume;
-
 
 
     // music
@@ -74,6 +92,10 @@ public class SoundController {
 
     /**Hashmap holding sounds and corresponding string */
     private static HashMap<String, AudioSource> music ;
+
+    /**last played soundId, for tracking */
+    private static int lastPlayed;
+
     public SoundController() {}
 
 
@@ -101,6 +123,19 @@ public class SoundController {
         enemySplatSound = directory.getEntry("enemySplat", SoundEffect.class);
         collectItemSound = directory.getEntry("collectItem", SoundEffect.class);
         errorSound = directory.getEntry("error", SoundEffect.class);
+        laserFiring = directory.getEntry("laserFiring", SoundEffect.class);
+        laserCharging = directory.getEntry("laserCharging", SoundEffect.class);
+        laserLocking = directory.getEntry("laserLocking", SoundEffect.class);
+        laserThud = directory.getEntry("laserThud", SoundEffect.class);
+        shockAttack = directory.getEntry("shockAttack", SoundEffect.class);
+        banditShock = directory.getEntry("electricShock", SoundEffect.class);
+        failure = directory.getEntry("failure", SoundEffect.class);
+        victory = directory.getEntry("victory", SoundEffect.class);
+        noGum = directory.getEntry("noGum", SoundEffect.class);
+        rolling = directory.getEntry("rolling", SoundEffect.class);
+        clockTick = directory.getEntry("clockTick", SoundEffect.class);
+        lowStressAlarm = directory.getEntry("lowStressAlarm", SoundEffect.class);
+        reloadingGum = directory.getEntry("reloadingGum", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -109,6 +144,19 @@ public class SoundController {
             put(enemySplatSound, -4);
             put(collectItemSound, -5);
             put(errorSound, -6);
+            put(laserFiring, -7);
+            put(laserCharging, -8);
+            put(laserLocking, -9);
+            put(laserThud, -10);
+            put(shockAttack, -11);
+            put(banditShock, -12);
+            put(failure, -13);
+            put(victory, -14);
+            put(noGum, -15);
+            put(rolling, -16);
+            put(clockTick, -17);
+            put(lowStressAlarm, -18);
+            put(reloadingGum, -19);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -118,6 +166,19 @@ public class SoundController {
             put("enemySplat", enemySplatSound);
             put("collectItem", collectItemSound);
             put("error", errorSound);
+            put("laserFiring", laserFiring);
+            put("laserCharging", laserCharging);
+            put("laserLocking", laserLocking);
+            put("laserThud", laserThud);
+            put("shockAttack", shockAttack);
+            put("banditShock", banditShock);
+            put("failure", failure);
+            put("victory", victory);
+            put("noGum", noGum);
+            put("rolling", rolling);
+            put("clockTick", clockTick);
+            put("lowStressAlarm", lowStressAlarm);
+            put("reloadingGum", reloadingGum);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -143,10 +204,26 @@ public class SoundController {
 
     }
 
+    public static void pauseMusic() {
+        musicPlayer.stop();
+    }
+
+    public static void loopSound(String sound, int soundId) {
+        SoundEffect s = sounds.get(sound);
+        s.setLooping(soundId, true);
+    }
+
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
-        return playSound(s,soundId, volume * soundEffectsVolume);
+        if (!(soundId == lastPlayed)) {
+            return playSound(s,soundId, volume * soundEffectsVolume);
+        }
+        return 0;
+    }
+
+    public static void lastPlayed(int soundId) {
+        lastPlayed = soundId;
     }
 
 
@@ -182,11 +259,18 @@ public class SoundController {
      * @return the new sound instance for this asset.
      */
     public static long playSound(SoundEffect sound, long soundId, float volume) {
-        if (soundId != -1 && sound.isPlaying(soundId)) {
+        if (sound.isPlaying(soundId)) {
             sound.stop(soundId);
         }
         return sound.play(volume);
     }
+
+    /** Stop sound that is playing */
+    public static void stopSound(String sound) {
+        SoundEffect effect = sounds.get(sound);
+        effect.stop();
+    }
+
 
     /**
      * Called when the Screen is paused.

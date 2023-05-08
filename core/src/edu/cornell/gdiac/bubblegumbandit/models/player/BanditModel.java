@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
@@ -260,7 +261,10 @@ public class BanditModel extends CapsuleObstacle {
         isKnockback = knockback;
        if( health>0) {
            if(!shock) animationController.setAnimation("knock", false, false);
-           else animationController.setAnimation("shock", false, false);
+           else {
+               animationController.setAnimation("shock", false, false);
+               SoundController.playSound("banditShock", 1);
+           }
        }
     }
 
@@ -822,8 +826,6 @@ public class BanditModel extends CapsuleObstacle {
     public void stopReload() {
        playingReload = false;
     }
-
-
 
     /**
      * Draws the physics object.
