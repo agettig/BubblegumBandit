@@ -187,7 +187,8 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     public void gameWon(AssetDirectory directory) {
         gameOverMessage = "VICTORY";
-        displayFont.setColor(Color.GREEN);
+        Color green = new Color(10/255f, 199/255f, 152/255f, 1);
+        displayFont.setColor(green);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("victory", 1);
@@ -196,7 +197,7 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
-        displayFont.setColor(Color.RED);
+        displayFont.setColor(new Color(252/255f, 97/255f, 89/255f, 1));
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("failure", 1);
@@ -224,12 +225,15 @@ public class GameOverScreen implements Screen, InputProcessor {
             update(delta);
             draw();
             if (continueGame() && listener != null) {
+                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, 1);
             }
             if (levelSelect() && listener != null) {
+                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, 6);
             }
             if (returnToTitle() && listener != null) {
+                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, 7);
             }
         }

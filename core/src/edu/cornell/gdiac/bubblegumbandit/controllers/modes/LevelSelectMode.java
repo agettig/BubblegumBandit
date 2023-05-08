@@ -435,6 +435,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                 if (level.onIcon(target.x, target.y) && level.getState() == 2){
                     ready = true;
                     selectedLevel = level.getLevel();
+                    SoundController.playSound("keyClick", 1);
                 }
                 else{
                     level.setPressState(0);
