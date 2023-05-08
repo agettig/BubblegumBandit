@@ -152,7 +152,7 @@ public class SunfishModel extends WheelObstacle {
         //boosting distance
          else if (boosting){
             body.setTransform(body.getPosition().add(movement.scl(1.8f)), 0);
-            System.out.println(body.getLinearVelocity());
+//            System.out.println(body.getLinearVelocity());
         }
         //normal speed distance
         else {
