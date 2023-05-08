@@ -88,6 +88,10 @@ public class SoundController {
 
     /**Hashmap holding sounds and corresponding string */
     private static HashMap<String, AudioSource> music ;
+
+    /**last played soundId, for tracking */
+    private static int lastPlayed;
+
     public SoundController() {}
 
 
@@ -187,15 +191,14 @@ public class SoundController {
     public static long playSound(String sound, float volume) {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
+        if (soundId == lastPlayed && soundId == -14) {
+            s.stop();
+        }
         return playSound(s,soundId, volume * soundEffectsVolume);
     }
 
-    public static boolean isPlaying(String sound, int soundId) {
-        SoundEffect s = sounds.get(sound);
-        if (s.isPlaying(soundId)) {
-            return true;
-        }
-        return false;
+    public static void lastPlayed(int soundId) {
+        lastPlayed = soundId;
     }
 
 

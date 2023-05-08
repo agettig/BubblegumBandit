@@ -830,15 +830,11 @@ public class GameController implements Screen {
 
         // Final message
         if (complete && !failed) {
-            if (!SoundController.isPlaying("victory", -14)) {
-                SoundController.playSound("victory", 1);
-            }
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("VICTORY!", displayFont, 150);
             canvas.end();
         } else if (failed) {
-            SoundController.playSound("failure", 1);
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
             canvas.drawTextCentered("FAILURE!", displayFont, 150);

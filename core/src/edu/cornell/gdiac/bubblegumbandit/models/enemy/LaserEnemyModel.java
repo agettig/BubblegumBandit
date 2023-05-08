@@ -263,9 +263,8 @@ public class LaserEnemyModel extends EnemyModel {
         isJumping = false;
         hasJumped = false;
         jumpCooldown = JUMP_COOLDOWN;
-        if (!SoundController.isPlaying("laserThud", -10)) {
-            SoundController.playSound("laserThud", 1);
-        }
+        SoundController.playSound("laserThud", 1);
+
 
         setShouldJumpAttack(false);
 
