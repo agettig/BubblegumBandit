@@ -309,11 +309,10 @@ public class LevelModel {
 //    public void startAlarms() {
 //        alarms.setAlarms(true);
 //    }
-
-
-    public void endAlarms(){
-        alarms.setAlarms(false);
-    }
+//
+//    public void endAlarms(){
+//        alarms.setAlarms(false);
+//    }
 
     /**
      * Lays out the game geography from the given JSON file. Spawns

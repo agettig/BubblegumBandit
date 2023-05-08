@@ -71,7 +71,7 @@ public class ReactorModel {
 
     public void orbCollected (boolean value){
         orbCollected = value;
-        if (value) beamScale = 1;
+        if (!value) beamScale = 1;
     }
 
     public void update (){
@@ -87,10 +87,8 @@ public class ReactorModel {
 //        canvas.drawWithShadow(computer, Color.WHITE, 0, 0,(reactor1.x - 10 )* SCALE, reactor1.y * SCALE,  0, 1, 1);
 //        canvas.draw(casing, Color.WHITE, casing.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, 1, 1);
 
-
         canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, 1, 1);
         canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(), 0, 1, -1f);
-
 
         canvas.draw(reactor, fadeTint, reactor.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, 1, 1);
         canvas.draw(reactor, fadeTint, reactor.getRegionWidth()/2f,0,reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(),  0, 1, -1f);
