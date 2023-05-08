@@ -803,6 +803,7 @@ public class LevelModel {
             world.dispose();
             world = null;
             alarms.dispose();
+            reactorModel = null;
         }
         captiveCount = 0;
     }
