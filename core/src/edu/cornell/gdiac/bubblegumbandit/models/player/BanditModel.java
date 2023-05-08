@@ -126,7 +126,7 @@ public class BanditModel extends CapsuleObstacle {
     /**
      * Cooldown (in animation frames) for shooting
      */
-    private final int shotLimit;
+    private final int shotLimit = 30;
 
     /**
      * Cache for flipping player orientation
@@ -542,7 +542,6 @@ public class BanditModel extends CapsuleObstacle {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
 
-        shotLimit = 6;
         // Gameplay attributes
         isGrounded = false;
         isShooting = false;
@@ -692,10 +691,14 @@ public class BanditModel extends CapsuleObstacle {
     }
 
     public void setFacingDirection(float cursorX) {
-        if(!faceRight) {
-            backpedal = (cursorX>getX());
+        if (shootCooldown > 0) {
+            if(!faceRight) {
+                backpedal = (cursorX>getX());
+            } else {
+                backpedal = (cursorX<getX());
+            }
         } else {
-            backpedal = (cursorX<getX());
+            backpedal = false;
         }
     }
 
@@ -760,6 +763,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        System.out.println("Shoot cooldown: " + shootCooldown);
         ticks++;
         stunTime--;
 

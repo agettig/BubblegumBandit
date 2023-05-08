@@ -677,6 +677,7 @@ public class GameController implements Screen {
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth() > 0) {
+            bandit.setShooting(true);
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -690,6 +691,8 @@ public class GameController implements Screen {
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
+        } else {
+            bandit.setShooting(false);
         }
         if (inputResults.didUnstick() && bandit.getHealth() > 0) {
             Unstickable unstickable = level.getAim().getSelected();
