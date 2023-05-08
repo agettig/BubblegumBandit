@@ -18,12 +18,15 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.*;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.GameOverScreen;
 import edu.cornell.gdiac.util.ScreenListener;
+import edu.cornell.gdiac.util.*;
+import edu.cornell.gdiac.assets.*;
 
 /**
  * Root class for a LibGDX.
@@ -154,6 +157,13 @@ public class GDXRoot extends Game implements ScreenListener {
      * @param exitCode The state of the screen upon exit
      */
     public void exitScreen(Screen screen, int exitCode) {
+
+		if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
+			Gdx.graphics.setCursor(crosshairCursor);
+		}
+		else{
+			Gdx.graphics.setCursor(mouseCursor);
+		}
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();

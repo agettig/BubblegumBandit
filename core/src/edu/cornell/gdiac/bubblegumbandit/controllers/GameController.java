@@ -43,7 +43,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
 import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
@@ -557,19 +556,6 @@ public class GameController implements Screen {
         } else if (countdown > 0) {
             countdown--;
         }
-//        else if (countdown == 0) {
-//
-//            // TODO fix with post orb enemies
-//            if (level.getPostOrbEnemies().size() == 0) {
-//                if (orbCollected && !complete) {
-//                    respawn();
-//                } else {
-//                    reset();
-//                }
-//            } else {
-//                reset();
-//            }
-//        }
 
         if (orbCountdown > 0 && !complete) {
             orbCountdown -= dt;

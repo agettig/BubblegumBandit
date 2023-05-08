@@ -353,6 +353,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             if (returnToMain && listener!=null){
                 listener.exitScreen(this, Screens.LOADING_SCREEN);
             }
+
+            if (returnToMain && listener!=null){
+                listener.exitScreen(this, 1);
+            }
         }
     }
 
