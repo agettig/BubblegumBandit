@@ -549,11 +549,7 @@ public class GameController implements Screen {
             return false;
         }
 
-        // Switch screens if necessary.
-        if (input.didExit()) {
-            listener.exitScreen(this, EXIT_QUIT);
-            return false;
-        } else if (countdown > 0) {
+        if (countdown > 0) {
             countdown--;
         }
 

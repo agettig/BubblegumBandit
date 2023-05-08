@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.helpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -75,17 +76,13 @@ public class SaveData {
         6: shoot
         7: unstick */
 
-    //basic controls here
-    prefs.putInteger("key0", Input.Keys.A);
-    prefs.putInteger("key1", Input.Keys.D);
-    prefs.putInteger("key2", Input.Keys.SPACE);
-    prefs.putInteger("key3", Input.Keys.SPACE);
-    prefs.putInteger("key4", Input.Keys.SHIFT_LEFT);
-    prefs.putInteger("key5", Input.Keys.R);
-    prefs.putInteger("key6", Input.Buttons.LEFT); //as in click
-    prefs.putInteger("key7", Input.Buttons.RIGHT);
+    int[] defaultKeys = SettingsMode.defaultVals;
+    boolean[] defaultBindings = SettingsMode.defaultBindings;
 
-
+    for (int j = 0; i < keyCount; j++){
+      prefs.putInteger("key" + j, defaultKeys[j]);
+      prefs.putBoolean("key"+j+"bool", defaultBindings[j]);
+    }
 
     prefs.putBoolean("save created", true);
     prefs.flush();
@@ -175,17 +172,26 @@ public class SaveData {
     }
     return keys;
 
+  }
 
+  public static boolean[] getKeyButtons() {
+    boolean[] keys = new boolean[keyCount];
+    Preferences prefs = Gdx.app.getPreferences(prefsName);
+    for(int i = 0; i<keyCount; i++) {
+      keys[i] = prefs.getBoolean("key"+i +"bool");
+    }
+    return keys;
   }
 
   /** Sets the current key bindings
    * @param keyBindings the new bindings
    */
-  public static void setKeyBindings(int[] keyBindings) {
+  public static void setKeyBindings(int[] keyBindings, boolean[] buttons) {
     Preferences prefs = Gdx.app.getPreferences(prefsName);
     assert keyBindings.length == keyCount;
     for(int i = 0; i< keyBindings.length; i++) {
       prefs.putInteger("key"+i, keyBindings[i]);
+      prefs.putBoolean("key"+i+"bool", buttons[i]);
     }
     prefs.flush();
   }
@@ -220,9 +226,5 @@ public class SaveData {
     prefs.putFloat("sfx", val);
     prefs.flush();
   }
-
-
-
-
 
 }
