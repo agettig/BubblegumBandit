@@ -91,6 +91,17 @@
                 }
             }
         },
+        "banditVictory":  {
+            "file": "textures/bandit/banditVictory.png",
+            "wrap": false,
+            "sprites": {
+                "victory": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
         "banditIdle":  {
             "file": "textures/bandit/banditIdle.png",
             "wrap": false,
@@ -149,7 +160,6 @@
             }
 
         },
-        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
@@ -421,6 +431,10 @@
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
             "size": 30
+        },
+        "sedgwickAveSmall" : {
+            "file" : "fonts/SedgwickAve-Regular.ttf",
+            "size": 20
         }
     },
 	"soundfx": {
