@@ -229,6 +229,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
+        canvas.resetCamera();
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
         canvas.getCamera().setZoom(ZOOM);
@@ -346,7 +347,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
             // We are ready, notify our listener
             if (isReady() && listener != null) {
-                listener.exitScreen(this, 0);
+                listener.exitScreen(this, Screens.CONTROLLER);
+            }
+
+            if (returnToMain && listener!=null){
+                listener.exitScreen(this, Screens.LOADING_SCREEN);
             }
 
             if (returnToMain && listener!=null){

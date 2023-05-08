@@ -111,6 +111,10 @@ public class PlayerController{
     private boolean unstickPressed;
     private boolean unstickPrevious;
 
+    private boolean pausePressed;
+
+    private boolean pausePrevious;
+
     /** If gum was collected */
     private boolean collect;
 
@@ -221,6 +225,10 @@ public class PlayerController{
     /**Returns y coordinate of mouse click */
     public int getY() {
         return Gdx.input.getY();
+    }
+
+    public boolean didPause() {
+        return pausePressed && !pausePrevious;
     }
 
     /**
@@ -335,6 +343,7 @@ public class PlayerController{
         controlTogglePrevious = controlTogglePressed;
         gravityDownPrevious = gravityDown;
         gravityUpPrevious = gravityUp;
+        pausePrevious = pausePressed;
 
         // Check to see if a GamePad is connected
         if (xbox != null && xbox.isConnected()) {
@@ -427,7 +436,6 @@ public class PlayerController{
 
 
         minimapPressed = (secondary && minimapPressed) || (Gdx.input.isKeyPressed(keyBindings[4]));
-        exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         gravityUp = (secondary && gravityUp) || (Gdx.input.isKeyPressed(keyBindings[2]));
         gravityDown = (secondary && gravityDown) || (Gdx.input.isKeyPressed(keyBindings[3]));
 
@@ -435,6 +443,7 @@ public class PlayerController{
         // Mouse results
         shootPressed = (secondary && shootPressed) || (Gdx.input.isButtonPressed(keyBindings[6]));
         unstickPressed = (secondary && unstickPressed) || (Gdx.input.isButtonPressed(keyBindings[7]));
+        pausePressed  = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }
