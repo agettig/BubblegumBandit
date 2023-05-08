@@ -16,12 +16,10 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.util.ScreenListener;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class SettingsMode implements Screen {
 
@@ -608,24 +606,9 @@ public class SettingsMode implements Screen {
 
         scrollPane = new ScrollPane(c);
 
-        scrollPane.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println(event.toString());
-            }
-        });
-
         scrollPane.addListener(new InputListener(){
-
             @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                System.out.println(keycode);
-                return super.keyDown(event, keycode);
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println(button);
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 ArrayList<Integer> indices = new ArrayList<>(2);
 
                 for (int i = 0; i < values.length; i++) {
@@ -646,7 +629,7 @@ public class SettingsMode implements Screen {
                     if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
                             !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
                         SoundController.playSound("error", 1);
-                        return;
+                        return false;
                     }
 
                     values[buttonIndex] = button;
@@ -655,6 +638,7 @@ public class SettingsMode implements Screen {
                     checkedButton.setChecked(false);
                     checkedButton = null;
                 }
+                return true;
             }
         });
 
