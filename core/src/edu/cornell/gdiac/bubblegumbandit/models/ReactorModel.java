@@ -13,7 +13,9 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
 /** class to represent the dual reactors around an orb */
 public class ReactorModel {
-    private TextureRegion texture;
+    private TextureRegion reactor;
+
+    private TextureRegion reactorOff;
 
     private TextureRegion beam;
     private TextureRegion casing;
@@ -24,8 +26,27 @@ public class ReactorModel {
 
     private PolygonRegion beamReg;
 
+    /** How fast the lights on the reactor turn off after orb is collected, per tick */
+    private static final float FADE_RATE = 0.05f;
+
+    /** the number of ticks that have passed */
+    private float ticks;
+
+    private boolean orbCollected;
+
+    /** World scale */
+    private static final float SCALE = 64;
+
+    /** the x drawing scale of the beam of light between the reactor cores, decreases after orb is collected */
+    private float beamScale = 1;
+
+    private Color fadeTint = Color.WHITE.cpy();
+
+
+
     public ReactorModel(Array<Vector2> pos, Vector2 orbPos, AssetDirectory directory) {
-        texture = new TextureRegion (directory.getEntry("reactorCore", Texture.class));
+        reactor = new TextureRegion (directory.getEntry("reactorCore", Texture.class));
+        reactorOff = new TextureRegion (directory.getEntry("reactorCoreOff", Texture.class));
         beam = new TextureRegion (directory.getEntry("beam", Texture.class));
         casing = new TextureRegion (directory.getEntry("case", Texture.class));
         computer = new TextureRegion (directory.getEntry("computer", Texture.class));
@@ -44,14 +65,34 @@ public class ReactorModel {
 
         System.out.println(beam.getRegionHeight());
 
-        beam.setRegionHeight((int) ((reactor2.y + 1 - reactor1.y) *64));
+        beam.setRegionHeight((int) ((reactor2.y + 1 - reactor1.y) *SCALE));
         System.out.println(beam.getRegionHeight());
     }
+
+    public void orbCollected (boolean value){
+        orbCollected = value;
+        if (value) beamScale = 1;
+    }
+
+    public void update (){
+        if (orbCollected && beamScale > 0){
+            beamScale -= 0.1f;
+        }
+        if (beamScale < 0) beamScale = 0;
+
+        fadeTint.set(1, 1, 1, beamScale);
+    }
     public void draw(GameCanvas canvas){
-        canvas.draw(beam, Color.WHITE, beam.getRegionWidth()/2f, 0,reactor1.x * 64, reactor1.y * 64,  0, 1, 1);
-//        canvas.drawWithShadow(computer, Color.WHITE, 0, 0,(reactor1.x - 10 )* 64, reactor1.y * 64,  0, 1, 1);
-//        canvas.draw(casing, Color.WHITE, casing.getRegionWidth()/2f, 0,reactor1.x * 64, reactor1.y * 64,  0, 1, 1);
-        canvas.drawWithShadow(texture, Color.WHITE, texture.getRegionWidth()/2f, 0,reactor1.x * 64, reactor1.y * 64,  0, 1, 1);
-        canvas.drawWithShadow(texture, Color.WHITE, texture.getRegionWidth()/2f,0,reactor2.x * 64, reactor2.y * 64 + texture.getRegionHeight(),  0, 1, -1f);
+        canvas.draw(beam, Color.WHITE, beam.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, beamScale, 1);
+//        canvas.drawWithShadow(computer, Color.WHITE, 0, 0,(reactor1.x - 10 )* SCALE, reactor1.y * SCALE,  0, 1, 1);
+//        canvas.draw(casing, Color.WHITE, casing.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, 1, 1);
+
+
+        canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor1.x * SCALE, reactor1.y * SCALE, 0, 1, 1);
+        canvas.drawWithShadow(reactorOff, Color.WHITE, reactor.getRegionWidth() / 2f, 0, reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(), 0, 1, -1f);
+
+
+        canvas.draw(reactor, fadeTint, reactor.getRegionWidth()/2f, 0,reactor1.x * SCALE, reactor1.y * SCALE,  0, 1, 1);
+        canvas.draw(reactor, fadeTint, reactor.getRegionWidth()/2f,0,reactor2.x * SCALE, reactor2.y * SCALE + reactor.getRegionHeight(),  0, 1, -1f);
     }
 }

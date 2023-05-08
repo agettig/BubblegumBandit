@@ -48,6 +48,7 @@
         "backgroundTiles" : "textures/environment/backgroundTiles.png",
         "reactor": "textures/environment/pipes.png",
         "reactorCore": "textures/environment/reactor.png",
+        "reactorCoreOff": "textures/environment/reactorOff.png",
         "beam" :  "textures/environment/glowBeam.png",
         "case" : "textures/environment/case.png",
         "computer": "textures/environment/computer.png",

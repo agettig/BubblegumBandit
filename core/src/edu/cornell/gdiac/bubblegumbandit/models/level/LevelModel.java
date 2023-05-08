@@ -289,16 +289,28 @@ public class LevelModel {
         debug = value;
     }
 
-    /**
-     * Sets off every alarm in this level.
-     */
-    public void startAlarms() {
+    /** Sets off every alarm in this level and deactivates reactor after orb is collected */
+    public void startPostOrb(){
         alarms.setAlarms(true);
+        if (reactorModel != null) reactorModel.orbCollected(true);
     }
 
     /**
-     * Disables every alarm in this level.
+     * Disables every alarm in this level and resets reactor.
      */
+    public void endPostOrb(){
+        alarms.setAlarms(false);
+        if (reactorModel != null) reactorModel.orbCollected(false);
+    }
+
+//    /**
+//     * Sets off every alarm in this level.
+//     */
+//    public void startAlarms() {
+//        alarms.setAlarms(true);
+//    }
+
+
     public void endAlarms(){
         alarms.setAlarms(false);
     }
@@ -881,6 +893,7 @@ public class LevelModel {
             }
         }
         alarms.update();
+        if (reactorModel != null) reactorModel.update();
     }
 
     public float getXTrajectory(float ox, float vx, float t) {

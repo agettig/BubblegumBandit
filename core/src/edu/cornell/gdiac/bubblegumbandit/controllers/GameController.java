@@ -480,7 +480,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
-        level.endAlarms();
+        level.endPostOrb();
         for (EnemyModel enemy : level.getPostOrbEnemies()) {
             enemy.markRemoved(true);
         }
@@ -594,7 +594,7 @@ public class GameController implements Screen {
         if (!orbCollected && level.getBandit().isOrbCollected()) {
             orbCollected = true;
             orbCountdown = level.getOrbCountdown();
-            level.startAlarms();
+            level.startPostOrb();
             SoundController.playMusic("escape");
         }
 
@@ -777,6 +777,7 @@ public class GameController implements Screen {
             level.spawnPostOrbEnemies();
             spawnedPostOrbEnemies = true;
         }
+
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);

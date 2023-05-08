@@ -1,11 +1,11 @@
 { "columns":6,
  "image":"..\/textures\/environment\/pipes.png",
- "imageheight":256,
+ "imageheight":320,
  "imagewidth":384,
  "margin":0,
  "name":"reactor",
  "spacing":0,
- "tilecount":24,
+ "tilecount":30,
  "tiledversion":"1.10.0",
  "tileheight":64,
  "tiles":[
@@ -103,6 +103,30 @@
         }, 
         {
          "id":23,
+         "type":"reactor"
+        }, 
+        {
+         "id":24,
+         "type":"reactor"
+        }, 
+        {
+         "id":25,
+         "type":"reactor"
+        }, 
+        {
+         "id":26,
+         "type":"reactor"
+        }, 
+        {
+         "id":27,
+         "type":"reactor"
+        }, 
+        {
+         "id":28,
+         "type":"reactor"
+        }, 
+        {
+         "id":29,
          "type":"reactor"
         }],
  "tilewidth":64,
