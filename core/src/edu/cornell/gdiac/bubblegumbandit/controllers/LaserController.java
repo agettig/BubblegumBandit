@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -155,6 +156,7 @@ public class LaserController {
             if (enemy.chargingLaser()) {
                 chargeHitPoint = shootRaycastAt(world, enemy, bandit.getPosition(), bodiesToIgnore);
                 enemy.setBeamIntersect(chargeHitPoint);
+                SoundController.playSound("laserLocking", 0.25f);
             }
 
             /* ---LOCKING AND FIRING PHASE---
@@ -173,11 +175,18 @@ public class LaserController {
                 bodiesToIgnore.remove("bandit");
                 lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
+                SoundController.stopSound("laserCharging");
+
+                if (enemy.getFiringDistance(firingTime) < 1) {
+                    SoundController.playSound("laserFiring", 1);
+                }
+                else {
+                    SoundController.stopSound("laserFiring");
+                }
 
                 //If we're hitting the bandit, take some damage.
                 if (enemy.isHittingBandit()) bandit.hitPlayer(Damage.LASER_TICK_DAMAGE, true);
             }
-
         }
     }
 

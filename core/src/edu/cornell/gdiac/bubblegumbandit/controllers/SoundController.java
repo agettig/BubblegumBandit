@@ -40,6 +40,10 @@ public class SoundController {
      */
     private static SoundEffect collectItemSound;
 
+    private static SoundEffect laserFiring;
+    private static SoundEffect laserCharging;
+    private static SoundEffect laserLocking;
+
 
     /**Hashmap holding sounds and corresponding Id*/
     private static HashMap<SoundEffect, Integer> soundIds;
@@ -101,6 +105,9 @@ public class SoundController {
         enemySplatSound = directory.getEntry("enemySplat", SoundEffect.class);
         collectItemSound = directory.getEntry("collectItem", SoundEffect.class);
         errorSound = directory.getEntry("error", SoundEffect.class);
+        laserFiring = directory.getEntry("laserFiring", SoundEffect.class);
+        laserCharging = directory.getEntry("laserCharging", SoundEffect.class);
+        laserLocking = directory.getEntry("laserLocking", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -109,6 +116,9 @@ public class SoundController {
             put(enemySplatSound, -4);
             put(collectItemSound, -5);
             put(errorSound, -6);
+            put(laserFiring, -7);
+            put(laserCharging, -8);
+            put(laserLocking, -9);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -118,6 +128,9 @@ public class SoundController {
             put("enemySplat", enemySplatSound);
             put("collectItem", collectItemSound);
             put("error", errorSound);
+            put("laserFiring", laserFiring);
+            put("laserCharging", laserCharging);
+            put("laserLocking", laserLocking);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -182,11 +195,18 @@ public class SoundController {
      * @return the new sound instance for this asset.
      */
     public static long playSound(SoundEffect sound, long soundId, float volume) {
-        if (soundId != -1 && sound.isPlaying(soundId)) {
+        if (sound.isPlaying(soundId)) {
             sound.stop(soundId);
         }
         return sound.play(volume);
     }
+
+    /** Stop sound that is playing */
+    public static void stopSound(String sound) {
+        SoundEffect effect = sounds.get(sound);
+        effect.stop();
+    }
+
 
     /**
      * Called when the Screen is paused.

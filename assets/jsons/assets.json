@@ -415,12 +415,15 @@
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3",
+  		"jump" : "sounds/jump.wav",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav",
-        "error": "sounds/error.wav"
+        "error": "sounds/error.wav",
+        "laserFiring": "sounds/laserFiring.wav",
+        "laserCharging": "sounds/laserCharging.wav",
+        "laserLocking": "sounds/laserLocking.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",
