@@ -7,6 +7,12 @@
         "emptyGum": "textures/UI/emptyGum.png",
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
+        "hoverPointer": "textures/UI/hoverPointer.png",
+        "continueGameButton": "textures/UI/nextLevel.png",
+        "levelSelectButton": "textures/UI/levelSelect.png",
+        "nextLevelButton": "textures/UI/nextLevel.png",
+        "titleScreenButton": "textures/UI/returnToTitleScreen.png",
+        "tryAgainButton": "textures/UI/tryAgain.png",
 
         "sunfish" : "textures/levelSelect/sunfish.png",
         "ship1" : "textures/levelSelect/level1.png",
@@ -22,6 +28,9 @@
         "unstickIcon" : "textures/tutorial/unstickIcon.png",
         "upIcon" : "textures/tutorial/upIcon.png",
         "downIcon" : "textures/tutorial/downIcon.png",
+
+        "blackSquare": "textures/environment/black_square.png",
+
         "terrain": {
             "file": "textures/environment/tileset.png"
         },
