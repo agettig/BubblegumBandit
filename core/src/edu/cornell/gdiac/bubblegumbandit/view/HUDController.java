@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
 public class HUDController {
 
@@ -200,7 +201,8 @@ public class HUDController {
                    boolean showFPS,
                    boolean reloadingGum,
                    float dt,
-                   GameCamera camera) {
+                   GameCamera camera,
+                   BanditModel bandit) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -233,7 +235,7 @@ public class HUDController {
     }
 
     if(timer >= 0){
-      shakeTimer(dt, timer, camera);
+      shakeTimer(dt, timer, camera, bandit);
       int orbCountdownValue = orbCountdown.getText().toString().equals("") ? -1 :
               Integer.parseInt(orbCountdown.getText().toString());
 
@@ -248,14 +250,26 @@ public class HUDController {
         }
         if(timer == 3){
           orbCountdown.setFontScale(1.2f);
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  .5f);
         }
         if(timer == 2){
           orbCountdown.setColor(Color.ORANGE);
           orbCountdown.setFontScale(1.4f);
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  .75f);
         }
         if(timer == 1){
           orbCountdown.setColor(Color.RED);
           orbCountdown.setFontScale(1.9f);
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  1.5f);
         }
         orbCountdown.setText(timer);
       }
@@ -295,7 +309,7 @@ public class HUDController {
   }
 
   /** Shakes the timer, lerping quickly it to a random position.*/
-  private void shakeTimer(float dt, float timer, GameCamera camera){
+  private void shakeTimer(float dt, float timer, GameCamera camera, BanditModel bandit){
     float xShakeRange;
     float yShakeRange;
     float transitionSpeed;
@@ -330,6 +344,8 @@ public class HUDController {
             centerTimerX + MathUtils.random(-xShakeRange, xShakeRange),
             centerTimerY + MathUtils.random(-yShakeRange, yShakeRange)
     );
+
+
 
     orbCountdown.setX(MathUtils.lerp(orbCountdown.getX(), shakeAdjust.x, transitionSpeed * dt));
     orbCountdown.setY(MathUtils.lerp(orbCountdown.getY(), shakeAdjust.y, transitionSpeed * dt));
