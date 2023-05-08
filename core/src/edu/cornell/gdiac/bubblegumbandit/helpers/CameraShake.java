@@ -35,7 +35,7 @@ public class CameraShake {
     private Vector2 traumaDir;
 
     /** How long a shock effect plays for */
-    private float SHOCK_TIME = 5f;
+    private float SHOCK_TIME = 10f;
 
     /** The direction of the block effect */
     private Vector2 BLOCK_VEC = Vector2.Y;
@@ -124,10 +124,10 @@ public class CameraShake {
             timeSinceLastShake  += dt * DT_FACTOR;
 
             if(shockTimer<=0) {
-                shockTimer = 0f;
                 timeSinceLastShake = 0f;
             }
-            else if(timeSinceLastShake>1f) {
+
+             if(timeSinceLastShake>1f) {
                 shakeAdjust = new Vector2(
                     MathUtils.random(-shockScale, shockScale),
                     MathUtils.random(-shockScale, shockScale)

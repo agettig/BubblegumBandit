@@ -82,6 +82,17 @@
                 }
             }
         },
+        "banditVictory":  {
+            "file": "textures/bandit/banditVictory.png",
+            "wrap": false,
+            "sprites": {
+                "victory": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
         "banditIdle":  {
             "file": "textures/bandit/banditIdle.png",
             "wrap": false,

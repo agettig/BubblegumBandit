@@ -827,6 +827,8 @@ public class BanditModel extends CapsuleObstacle {
        playingReload = false;
     }
 
+
+
     /**
      * Draws the physics object.
      *
@@ -835,7 +837,8 @@ public class BanditModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
 
-            if(!animationController.hasTemp()&&health>0) {
+            if(!animationController.hasTemp()&&health>0
+                &&!animationController.getCurrentAnimation().equals("victory")) {
                 if(playingReload) animationController.setAnimation("reload", true);
                 else if (!isGrounded) animationController.setAnimation("fall", true);
                 else if (getMovement() == 0) animationController.setAnimation("idle", true);
