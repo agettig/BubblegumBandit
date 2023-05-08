@@ -47,6 +47,9 @@
         "supports": "textures/environment/supports.png",
         "backgroundTiles" : "textures/environment/backgroundTiles.png",
         "reactor": "textures/environment/pipes.png",
+        "reactorCore": "textures/environment/reactor.png",
+        "beam" :  "textures/environment/glowBeam.png",
+        "case" : "textures/environment/case.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",

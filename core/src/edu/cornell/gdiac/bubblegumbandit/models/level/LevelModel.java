@@ -37,6 +37,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
+import edu.cornell.gdiac.bubblegumbandit.models.ReactorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
@@ -156,6 +157,9 @@ public class LevelModel {
 
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
+
+    /** represents the reactor around the orb */
+    private ReactorModel reactorModel;
 
 
 
@@ -508,6 +512,8 @@ public class LevelModel {
         EnemyModel enemy;
         Array<EnemyModel> newEnemies = new Array<>();
 
+        Array<Vector2> reactorPos = new Array<>();
+
         HashMap<Integer, EnemyModel> enemyIds = new HashMap<>();
 
         while (object != null) {
@@ -526,8 +532,6 @@ public class LevelModel {
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
             float decorX = object.getFloat("x")/scale.x;
             float decorY = levelHeight - object.getFloat("y")/scale.y;
-
-
 
             switch (objType) {
                 case "tutorial": {
@@ -637,6 +641,10 @@ public class LevelModel {
                     hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     hazard.setDrawScale(scale);
                     break;
+                case "reactor":
+                    System.out.println("reactor");
+                    reactorPos.add(new Vector2(decorX, decorY));
+                    break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
@@ -729,6 +737,11 @@ public class LevelModel {
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
         alarms = new AlarmController(alarmPos, directory, world);
+
+        if (reactorPos.size >= 2) {
+            reactorModel = new ReactorModel(reactorPos, orbPosition, directory);
+        }
+
         //gumEffectController = new EffectController("gum",
         //    "splat", directory, true, true, 1);
         glassEffectController = new EffectController("glass", "shatter",
@@ -898,6 +911,10 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
+        if (reactorModel != null){
+            reactorModel.draw(canvas);
+        }
+
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
         for (Obstacle obj : objects) {
@@ -908,6 +925,8 @@ public class LevelModel {
 
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas, dt);
+
+
 
 
 
