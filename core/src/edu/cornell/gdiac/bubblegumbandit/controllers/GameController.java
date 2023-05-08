@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
@@ -541,19 +542,20 @@ public class GameController implements Screen {
             return false;
         } else if (countdown > 0) {
             countdown--;
-        } else if (countdown == 0) {
-
-            // TODO fix with post orb enemies
-            if (level.getPostOrbEnemies().size() == 0) {
-                if (orbCollected && !complete) {
-                    respawn();
-                } else {
-                    reset();
-                }
-            } else {
-                reset();
-            }
         }
+//        else if (countdown == 0) {
+//
+//            // TODO fix with post orb enemies
+//            if (level.getPostOrbEnemies().size() == 0) {
+//                if (orbCollected && !complete) {
+//                    respawn();
+//                } else {
+//                    reset();
+//                }
+//            } else {
+//                reset();
+//            }
+//        }
 
         if (orbCountdown > 0 && !complete) {
             orbCountdown -= dt;
@@ -827,19 +829,6 @@ public class GameController implements Screen {
             canvas.end();
             reloadSymbolTimer++;
         }
-
-        // Final message
-        if (complete && !failed) {
-            displayFont.setColor(Color.YELLOW);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("VICTORY!", displayFont, 150);
-            canvas.end();
-        } else if (failed) {
-            displayFont.setColor(Color.RED);
-            canvas.begin(); // DO NOT SCALE
-            canvas.drawTextCentered("FAILURE!", displayFont, 150);
-            canvas.end();
-        }
     }
 
     /**
@@ -869,6 +858,16 @@ public class GameController implements Screen {
                 update(delta);
             }
             draw(delta);
+            // Final message
+            if (countdown == 0){
+                if (complete && !failed) {
+                    listener.exitScreen(this, -1);
+                }
+                else {
+                    listener.exitScreen(this, -2);
+                }
+            }
+
         }
     }
 

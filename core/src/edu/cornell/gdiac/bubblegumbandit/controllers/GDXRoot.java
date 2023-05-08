@@ -18,11 +18,13 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LevelSelectMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.LoadingMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.bubblegumbandit.view.GameOverScreen;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
 
@@ -47,6 +49,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private GameController controller;
+
+	/**Won/Lost screen */
+	private GameOverScreen gameOver;
 
 	private SettingsMode settingsMode;
 
@@ -75,13 +80,13 @@ public class GDXRoot extends Game implements ScreenListener {
 		crosshair.dispose();
 		Gdx.graphics.setCursor(mouseCursor);
 
-
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("jsons/assets.json",canvas,1);
 
 		levels = new LevelSelectMode();
 		settingsMode = new SettingsMode();
 		settingsMode.setViewport(canvas.getUIViewport());
+		gameOver = new GameOverScreen();
 
 		// Initialize the three game worlds
 		controller = new GameController();
@@ -137,27 +142,41 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 
-		if (screen == controller){
-			Gdx.graphics.setCursor(mouseCursor);
+		if (screen != controller){
+				Gdx.graphics.setCursor(mouseCursor);
 		}
-
-		if (screen == levels && exitCode == 0) {
+		if (screen == controller && exitCode == -1) {
+			directory = loading.getAssets();
+			gameOver.initialize(directory, canvas);
+			gameOver.gameWon(directory);
+			gameOver.setScreenListener(this);
+			canvas.resetCamera();
+			setScreen(gameOver);
+		}
+		else if (screen == controller && exitCode == -2) {
+			directory = loading.getAssets();
+			gameOver.initialize(directory, canvas);
+			gameOver.gameLost(directory);
+			gameOver.setScreenListener(this);
+			canvas.resetCamera();
+			setScreen(gameOver);
+		}
+		else if (screen == levels && exitCode == 0) {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setLevelNum(levels.getSelectedLevel());
 			controller.reset();
 			Gdx.graphics.setCursor(crosshairCursor);
 			setScreen(controller);
-		} else if (screen == loading && exitCode == 1) {
+		} else if ((screen == loading || screen == gameOver) && exitCode == 1) {
 			Gdx.graphics.setCursor(crosshairCursor);
-			directory = loading.getAssets();
 			setScreen(controller);
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.reset();
-		} else if(screen == loading && exitCode == 6){
+		} else if((screen == loading || screen == gameOver) && exitCode == 6){
 			directory = loading.getAssets();
 			controller.gatherAssets(directory);
 			levels.gatherAssets(directory);
@@ -178,6 +197,11 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if ((exitCode == GameController.EXIT_QUIT && screen==controller) || (screen == levels && exitCode == 1)) {
 			// We quit the main application
+			canvas.resetCamera();
+			loading.setScreenListener(this);
+			setScreen(loading);
+		}
+		else if (screen == gameOver && exitCode == 7) {
 			canvas.resetCamera();
 			loading.setScreenListener(this);
 			setScreen(loading);
