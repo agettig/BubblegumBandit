@@ -31,6 +31,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
@@ -951,6 +952,8 @@ public class LevelModel {
         canvas.begin();
 //        canvas.clear();
 
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
+
         for(BackgroundTileModel tile: backgroundTiles) {
             tile.draw(canvas);
         }
@@ -965,8 +968,6 @@ public class LevelModel {
         for(BackgroundTileModel tile: supportTiles) {
             tile.draw(canvas);
         }
-
-        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
         for (Obstacle obj : objects) {
             obj.draw(canvas);

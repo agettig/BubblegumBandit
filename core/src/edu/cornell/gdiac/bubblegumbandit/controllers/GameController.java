@@ -16,17 +16,18 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
-import edu.cornell.gdiac.bubblegumbandit.controllers.modes.PauseMode;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.Screens;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
@@ -269,7 +270,14 @@ public class GameController implements Screen {
 
     private boolean paused;
 
-    public void setPaused(boolean paused) {this.paused = paused;}
+    /** The pause screen */
+    private PauseView pauseScreen;
+
+    public void setPaused(boolean paused) {this.paused = paused;
+    if (paused) {
+        pause();
+    }
+    }
 
     public boolean getPaused() {return paused; }
 
@@ -387,6 +395,8 @@ public class GameController implements Screen {
         laserController = new LaserController();
         collisionController = new CollisionController(level, bubblegumController);
         projectileController = new ShockController();
+
+        pauseScreen = new PauseView();
     }
 
     /**
@@ -426,6 +436,8 @@ public class GameController implements Screen {
         laserBeamEnd = new TextureRegion(directory.getEntry("laserBeamEnd", Texture.class));
         stuckGum = new TextureRegion(directory.getEntry("splatGum", Texture.class));
         hud = new HUDController(directory);
+        pauseScreen = new PauseView();
+        pauseScreen.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
         minimap = new Minimap();
         backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
@@ -656,6 +668,7 @@ public class GameController implements Screen {
                 bubblegumController.addAmmo(1);
                 reloadSymbolTimer = -1;
                 reloadingGum = true;
+                SoundController.playSound("reloadingGum", 1);
             }
         } else {
             reloadingGum = false;
@@ -664,6 +677,7 @@ public class GameController implements Screen {
 
 
         if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth() > 0) {
+            bandit.setShooting(true);
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
             BanditModel avatar = level.getBandit();
@@ -677,6 +691,8 @@ public class GameController implements Screen {
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
+        } else {
+            bandit.setShooting(false);
         }
         if (inputResults.didUnstick() && bandit.getHealth() > 0) {
             Unstickable unstickable = level.getAim().getSelected();
@@ -721,7 +737,6 @@ public class GameController implements Screen {
                     float enemyPos = enemy.getY() + (isGravDown ? -halfHeight : halfHeight);
                     if (Math.abs(enemyPos - Math.round(enemyPos)) < 0.02) { // Check if grounded
                         projectileController.fireWeapon(level, controller, isGravDown);
-                        smallEnemyShootingId = SoundController.playSound("smallEnemyShooting", 1);
                     }
                 } else {
                     controller.coolDown(true);
@@ -814,6 +829,12 @@ public class GameController implements Screen {
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
         hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
+        if (paused) {
+            if (!pauseScreen.hasViewport()) {
+                pauseScreen.setViewport(canvas.getUIViewport());
+            }
+            pauseScreen.draw();
+        }
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
@@ -821,6 +842,7 @@ public class GameController implements Screen {
 
         if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
+            SoundController.playSound("noGum", 1);
         }
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
@@ -857,9 +879,18 @@ public class GameController implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     public void render(float delta) {
-        if (active && !paused) {
-            if (preUpdate(delta)) {
-                update(delta);
+        if (active) {
+            if (!paused) {
+                if (preUpdate(delta)) {
+                    update(delta);
+                }
+            } else {
+                pauseScreen.update(this);
+                if (pauseScreen.getResumeClicked()) {
+                    paused = false;
+                } else if (pauseScreen.getRetryClicked()) {
+                    reset();
+                }
             }
             draw(delta);
             // Final message
@@ -872,8 +903,6 @@ public class GameController implements Screen {
                 }
             }
 
-        } else if (paused) {
-            listener.exitScreen(this, Screens.PAUSE);
         }
     }
 
@@ -886,6 +915,7 @@ public class GameController implements Screen {
     public void pause() {
         // We need this method to stop all sounds when we pause.
         SoundController.pause();
+        pauseScreen.show();
     }
 
     /**
@@ -920,6 +950,7 @@ public class GameController implements Screen {
      */
     public void setScreenListener(ScreenListener listener) {
         this.listener = listener;
+        pauseScreen.setScreenListener(listener);
     }
 
 
