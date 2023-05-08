@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":18,
+ "tilecount":19,
  "tiledversion":"1.10.0",
  "tileheight":258,
  "tiles":[
@@ -153,15 +153,22 @@
                  "value":"move right"
                 }],
          "type":"tutorial"
-        }, 
+        },
         {
          "id":21,
-         "image":"..\/textures\/environment\/reactor.png",
-         "imageheight":92,
-         "imagewidth":115,
-         "type":"reactor"
+         "image":"..\/textures\/objects\/doorUnlocked_h.png",
+         "imageheight":65,
+         "imagewidth":258,
+         "type":"doorH"
+        },
+        {
+         "id":22,
+         "image":"..\/textures\/objects\/doorLocked_h.png",
+         "imageheight":65,
+         "imagewidth":257,
+         "type":"doorHLocked"
         }],
- "tilewidth":257,
+ "tilewidth":258,
  "type":"tileset",
  "version":"1.10"
 }

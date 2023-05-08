@@ -66,9 +66,6 @@ public class ReactorModel {
             reactor1.y = reactor2.y = orbPos.y;
             vertical = false;
         }
-
-        System.out.println(beam.getRegionHeight());
-
         beam.setRegionHeight((int) ((reactor2.y + 1 - reactor1.y) *SCALE));
         System.out.println(beam.getRegionHeight());
     }

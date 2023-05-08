@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "background": "textures/settings/settingsBackground.png",
+    "pointer" : "textures/settings/arrow.png"
+  }
+}

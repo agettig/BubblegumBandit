@@ -36,6 +36,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
+import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser.TileRect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.ReactorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
@@ -76,6 +77,12 @@ public class LevelModel {
 
     /** The Box2D world  */
     protected World world;
+
+    /** Map from tile id in worldData to tile in the world. */
+    private HashMap<Integer, TileModel> worldTileMap;
+
+    /** Array holding all the tiles in the world. */
+    private Array<TileModel> worldTiles;
 
     /** The boundary of the world */
     protected Rectangle bounds;
@@ -139,8 +146,6 @@ public class LevelModel {
     /** All support tile objects in the level.  */
     private Array<BackgroundTileModel> supportTiles;
 
-    /** All reactor tile objects in the level.  */
-    private Array<BackgroundTileModel> reactorTiles;
 
     /** All background tile objects in the level */
     private Array<BackgroundTileModel> backgroundTiles;
@@ -161,6 +166,11 @@ public class LevelModel {
     /** represents the reactor around the orb */
     private ReactorModel reactorModel;
 
+    /** Cache for figuring out which tile is hit */
+    private Vector2 tileCache = new Vector2();
+
+    /** Holds a reference to all doors in the level. */
+    private Array<DoorModel> doors;
     /** Number of total captives in the level */
     private int captiveCount;
 
@@ -303,16 +313,31 @@ public class LevelModel {
         if (reactorModel != null) reactorModel.orbCollected(false);
     }
 
-//    /**
-//     * Sets off every alarm in this level.
-//     */
-//    public void startAlarms() {
-//        alarms.setAlarms(true);
-//    }
-//
-//    public void endAlarms(){
-//        alarms.setAlarms(false);
-//    }
+    /**
+     * Returns the TileModel that an object at (x, y) collided with when colliding with WallModel wall
+     * @param x the x position of the object
+     * @param y the y position of the object
+     * @param contactX the x position of the contact
+     * @param contactY the y position of the contact
+     * @return the TileModel at the collision spot
+     */
+    public TileModel getTile(float x, float y, float contactX, float contactY) {
+        tileCache.set(contactX - x, contactY - y);
+        tileCache.scl(0.1f); // Scoot in direction of contact
+
+        // Figure out which tile is there
+        int tileX = (int) (contactX + tileCache.x);
+        int tileY = (int) (contactY + tileCache.y);
+        tileY = levelHeight - tileY - 1;
+//        System.out.println("Tile X: " + tileX + " Tile Y: " + tileY + " Contact X: " + contactX + " Contact Y: " + contactY);
+
+        TileModel selectedTile = worldTileMap.get(tileY * levelWidth + tileX);
+//        System.out.println("Selected Tile X: " + selectedTile.getX() + " Selected Tile Y: " + (levelHeight - selectedTile.getY() - 1));
+        if (selectedTile == null) {
+            throw new RuntimeException("The tile was not found successfully. Please tell Ben about this and he will try to fix it");
+        }
+        return selectedTile;
+    }
 
     /**
      * Lays out the game geography from the given JSON file. Spawns
@@ -334,7 +359,7 @@ public class LevelModel {
         backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
-        reactorTiles = new Array<>();
+        doors = new Array<>();
 
         JsonValue boardGravityDownLayer = null;
         JsonValue boardGravityUpLayer = null;
@@ -343,7 +368,6 @@ public class LevelModel {
         JsonValue supports = null;
         JsonValue backgroundLayer = null;
         JsonValue postOrb = null;
-        JsonValue reactor = null;
         JsonValue layer = levelFormat.get("layers").child();
         while (layer != null) {
             String layerName = layer.getString("name");
@@ -369,15 +393,11 @@ public class LevelModel {
                 case "PostOrb":
                     postOrb = layer.get("Objects");
                     break;
-                case "Reactor":
-                    //for populating the environment around the orb
-                    reactor = layer;
-                    break;
                 case "Corners":
                     //for creating the background
                     break;
                 default:
-                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, Background, Corners, Reactor, and Objects.");
+                    throw new RuntimeException("Invalid layer name. Valid names: BoardGravityDown, BoardGravityUp, Terrain, Supports, Background, Corners, and Objects.");
             }
             layer = layer.next();
         }
@@ -429,6 +449,8 @@ public class LevelModel {
         tiledGraphGravityUp = new TiledGraph(boardGravityUpLayer, boardIdOffset, scale, 3f / 8);
         tiledGraphGravityDown = new TiledGraph(boardGravityDownLayer, boardIdOffset, scale, 2f / 8);
 
+        worldTiles = new Array<>();
+        worldTileMap = new HashMap<>();
         // Iterate over each tile in the world and create if it exists
         for (int i = 0; i < worldData.length; i++) {
             int tileVal = worldData[i];
@@ -442,9 +464,20 @@ public class LevelModel {
                 newTile.initialize(textures.get(tileVal), x, y, constants.get("tiles"));
                 tiles.put(new Vector2(x, y), newTile);
                 newTile.setDrawScale(scale);
-                activate(newTile);
-                newTile.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                worldTileMap.put(i, newTile);
+                worldTiles.add(newTile);
             }
+        }
+
+        // Aggregated tiles for seaming fixes.
+        TiledParser parser = new TiledParser();
+        Array<TileRect> rects = parser.mergeTiles(levelWidth, levelHeight, worldData);
+        for (TileRect rect : rects) {
+            WallModel newWall = new WallModel();
+            newWall.initialize(rect.startX, levelHeight - rect.endY - 1, rect.endX, levelHeight - rect.startY - 1, constants.get("wall"));
+            newWall.setDrawScale(scale);
+            activate(newWall);
+            newWall.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
         }
 
         if (supports != null) {
@@ -475,21 +508,6 @@ public class LevelModel {
                     newTile.initialize(textures.get(tileVal), x, y, scale);
                     backgroundTiles.add(newTile);
 
-                }
-            }
-        }
-
-        if (reactor != null) {
-            int[] reactorData = reactor.get("data").asIntArray();
-            // Iterate over each reactor tile in the world and create if it exists
-            for (int i = 0; i < reactorData.length; i++) {
-                int tileVal = reactorData[i];
-                if (tileVal != 0) {
-                    BackgroundTileModel newTile = new BackgroundTileModel();
-                    float x = (i % levelWidth) + 0.5f;
-                    float y = levelHeight - (i / levelWidth) - 0.5f;
-                    newTile.initialize(textures.get(tileVal), x, y, scale);
-                    reactorTiles.add(newTile);
                 }
             }
         }
@@ -549,6 +567,8 @@ public class LevelModel {
                 objType = objType.substring(substringStart, substringEnd);
             }
             int objId = (object.getInt("id"));
+            int objGid = (object.getInt("gid"));
+            boolean isFacingRight = (objGid & (1 << 31)) == 0; // Check if bit 31 of gid is 1
             float x = (object.getFloat("x") + (object.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((object.getFloat("y") - (object.getFloat("height") / 2)) / scale.y);
             float decorX = object.getFloat("x")/scale.x;
@@ -588,11 +608,11 @@ public class LevelModel {
                 case "shieldedSmallEnemy":
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
-                    enemy = new ProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy = new ShockEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
-                    //if shielded add shield
-                    if (objType.contains("shielded")) enemy.hasShield(true);
+                    //if shielded add shield - DISABLED for now
+//                    if (objType.contains("shielded")) enemy.hasShield(true);
                     newEnemies.add(enemy);
                     enemyIds.put(objId, enemy);
                     break;
@@ -601,7 +621,7 @@ public class LevelModel {
                     enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -612,7 +632,7 @@ public class LevelModel {
                 case "largeEnemy":
                     enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -639,10 +659,13 @@ public class LevelModel {
                 case "doorVLocked":
                 case "doorV":
                 case "doorH":
+                case "doorHLocked":
                     DoorModel door = new DoorModel();
                     boolean isLocked = objType.contains("Locked");
-                    door.initialize(directory, x, y, scale, levelHeight, object, constants.get("door"), objType.equals("door_h"), isLocked, enemyIds);
+                    JsonValue doorJv = objType.contains("doorH") ? constants.get("doorH") : constants.get("door");
+                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds);
                     activate(door);
+                    doors.add(door);
                     break;
                 case "alarm":
                     alarmPos.add(new Vector2(decorX, decorY));
@@ -669,7 +692,6 @@ public class LevelModel {
                     hazard.setDrawScale(scale);
                     break;
                 case "reactor":
-                    System.out.println("reactor");
                     reactorPos.add(new Vector2(decorX, decorY));
                     break;
                 default:
@@ -691,6 +713,9 @@ public class LevelModel {
                 objType = objType.substring(substringStart, substringEnd);
             }
             int objId = (postOrb.getInt("id"));
+            int objGid = (postOrb.getInt("gid"));
+            boolean isFacingRight = !((objGid & 0x40000000) == 0x40000000); // Check if bit 30 of gid is 1
+
             float x = (postOrb.getFloat("x") + (postOrb.getFloat("width") / 2)) / scale.x;
             float y = levelHeight - ((postOrb.getFloat("y") - (postOrb.getFloat("height") / 2)) / scale.y);
 
@@ -700,8 +725,8 @@ public class LevelModel {
                 case "shieldedSmallEnemy":
                     enemyConstants = constants.get("smallEnemy");
                     x = (float) ((int) x + .5);
-                    enemy = new ProjectileEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy = new ShockEnemyModel(world, enemyCount);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -713,7 +738,7 @@ public class LevelModel {
                     enemyConstants = constants.get("mediumEnemy");
                     x = (float) ((int) x + .5);
                     enemy = new RollingEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -724,7 +749,7 @@ public class LevelModel {
                 case "largeEnemy":
                     enemyConstants = constants.get("largeEnemy");
                     enemy = new LaserEnemyModel(world, enemyCount);
-                    enemy.initialize(directory, x, y, enemyConstants);
+                    enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
                     if (objType.contains("shielded")) enemy.hasShield(true);
@@ -773,7 +798,7 @@ public class LevelModel {
         glassEffectController = new EffectController("glass", "shatter",
             directory, true, true, 0);
         sparkEffectController = new EffectController("sparks", "sparks",
-            directory, true, true, 0);
+            directory, true, true, 0.2f);
 
     }
 
@@ -801,6 +826,16 @@ public class LevelModel {
             if (world.getGravity().y > 0){
                 e.flipGravity();
             }
+        }
+    }
+
+    /**
+     * Notifies each door in the level that the orb has been collected, in case they are supposed
+     * to lock / unlock.
+     * */
+    public void postOrbDoors() {
+        for (DoorModel doorModel : doors) {
+            doorModel.postOrb();
         }
     }
 
@@ -891,6 +926,10 @@ public class LevelModel {
                 entry.remove();
             }
         }
+        if (bandit.shouldSpark()) {
+            makeSpark(bandit.getX(), bandit.getY());
+        }
+
         alarms.update();
         if (reactorModel != null) reactorModel.update();
     }
@@ -929,11 +968,11 @@ public class LevelModel {
                      float dt) {
         canvas.begin();
 
-        for(BackgroundTileModel tile: reactorTiles) {
+        for(BackgroundTileModel tile: backgroundTiles) {
             tile.draw(canvas);
         }
 
-        for(BackgroundTileModel tile: backgroundTiles) {
+        for (TileModel tile : worldTiles) {
             tile.draw(canvas);
         }
 
@@ -992,8 +1031,8 @@ public class LevelModel {
 
 
         //Local variables to scale our laser depending on its phase.
-        final float chargeLaserScale = 1f;
-        final float lockedLaserScale = 1.2f;
+        final float chargeLaserScale = .75f;
+        final float lockedLaserScale = .9f;
         final float firingLaserScale = 1.5f;
 
 
@@ -1249,8 +1288,9 @@ public class LevelModel {
             @Override
             public float reportRayFixture(Fixture fixture, Vector2 point,
                                           Vector2 normal, float fraction) {
+
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
-                 if (!ob.getName().equals("gumProjectile") && !ob.getName().equals("door") && !ob.equals(bandit)) {
+                 if (!canUnstickThrough.contains(ob.getName()) && !ob.getName().equals("door") && !ob.equals(bandit)) {
                     intersect.set(point);
                     return fraction;
                 }
@@ -1275,10 +1315,7 @@ public class LevelModel {
                                           Vector2 normal, float fraction) {
                 Obstacle ob = (Obstacle) fixture.getBody().getUserData();
                 if (!ob.equals(bandit) && ob.getFilterData().categoryBits != CATEGORY_COLLECTIBLE && !ob.getName().equals("gumProjectile")) {
-                    if (ob.getName().equals("projectile")) {
-                        return -1;
-                    }
-                    if (ob.getName().equals("hazard")) {
+                    if (canUnstickThrough.contains(ob.getName())) {
                         return -1;
                     }
                     if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
@@ -1310,8 +1347,9 @@ public class LevelModel {
             directionCache = new Vector2();
             endCache = new Vector2();
             originCache = new Vector2();
-//            canUnstickThrough.add("gumProjectile");
-//            canUnstickThrough.add("door");
+            canUnstickThrough.add("projectile");
+            canUnstickThrough.add("hazard");
+            canUnstickThrough.add("exit");
         }
 
         /**
