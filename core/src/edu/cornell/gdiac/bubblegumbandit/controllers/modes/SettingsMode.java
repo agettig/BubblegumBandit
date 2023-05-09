@@ -764,7 +764,7 @@ public class SettingsMode implements Screen {
             stage.act(Gdx.graphics.getDeltaTime());
             draw();
             if (backButtonClicked) {
-                int exit = accessedFromMain ? Screens.LOADING_SCREEN : Screens.PAUSE;
+                int exit = accessedFromMain ? Screens.LOADING_SCREEN : Screens.CONTROLLER;
                 listener.exitScreen(this, exit);
             }
         }

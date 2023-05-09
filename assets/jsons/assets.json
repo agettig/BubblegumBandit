@@ -103,6 +103,17 @@
                 }
             }
         },
+        "banditVictory":  {
+            "file": "textures/bandit/banditVictory.png",
+            "wrap": false,
+            "sprites": {
+                "victory": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
         "banditIdle":  {
             "file": "textures/bandit/banditIdle.png",
             "wrap": false,
@@ -161,7 +172,6 @@
             }
 
         },
-        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
@@ -433,15 +443,32 @@
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
             "size": 30
+        },
+        "sedgwickAveSmall" : {
+            "file" : "fonts/SedgwickAve-Regular.ttf",
+            "size": 20
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3",
+  		"jump" : "sounds/jump.wav",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav",
-        "error": "sounds/error.wav"
+        "error": "sounds/error.wav",
+        "laserFiring": "sounds/laserFiring.wav",
+        "laserCharging": "sounds/laserCharging.wav",
+        "laserLocking": "sounds/laserLocking.wav",
+        "laserThud": "sounds/laserThud.wav",
+        "shockAttack": "sounds/shockAttack.wav",
+        "electricShock": "sounds/electricShock.wav",
+        "noGum": "sounds/noGum.wav",
+        "victory": "sounds/victory.wav",
+        "failure": "sounds/failure.wav",
+        "rolling": "sounds/rolling.wav",
+        "clockTick": "sounds/clockTicking.wav",
+        "lowStressAlarm": "sounds/lowStressAlarm.wav",
+        "reloadingGum": "sounds/reloadingGum.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

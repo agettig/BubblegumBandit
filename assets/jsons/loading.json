@@ -1,7 +1,7 @@
 {
 	"textures": {
         "background": "textures/UI/mainMenuBackground.png",
-        "loadingBackground": "textures/environment/spaceSample.png",
+        "loadingBackground": "textures/settings/settingsBackground.png",
         "startButton": "textures/UI/continueGame.png",
         "settingsButton": "textures/UI/settings.png",
         "exitButton": "textures/UI/quitGame.png",
@@ -10,7 +10,8 @@
         "progressBackground": "textures/UI/progressBackground.png",
         "progressFill": "textures/UI/progressFill.png",
         "spaceship":     "textures/levelSelect/sunfish.png",
-         "jet" : "textures/UI/jet.png"
+         "jet" : "textures/UI/jet.png",
+        "bigShip" : "textures/UI/ship.png"
     },
         "fonts": {
                 "projectSpace" : {

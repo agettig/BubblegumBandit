@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
@@ -239,12 +240,12 @@ public class LaserEnemyModel extends EnemyModel {
         }
         // attack animations
         if (chargingLaser()) {
-            animationController.setAnimation("charge", true);
+            animationController.setAnimation("charge", true, false);
         }
         else if (stuck || gummed){
-            animationController.setAnimation("stuck", true);
+            animationController.setAnimation("stuck", true, false);
         } else {
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 
@@ -262,6 +263,9 @@ public class LaserEnemyModel extends EnemyModel {
         isJumping = false;
         hasJumped = false;
         jumpCooldown = JUMP_COOLDOWN;
+        SoundController.playSound("laserThud", 1);
+
+
         setShouldJumpAttack(false);
 
         // damage bandit if in range

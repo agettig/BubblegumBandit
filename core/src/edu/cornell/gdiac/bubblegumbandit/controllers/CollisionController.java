@@ -746,6 +746,7 @@ public class CollisionController implements ContactListener {
             boolean left = (other.getX() < bandit.getX());
             boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
             bandit.setKnockback(true, shock);
+            if(shock) camera.startShockTrauma(); //move float out
             if(yImpact)  {
                 bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
                         knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);

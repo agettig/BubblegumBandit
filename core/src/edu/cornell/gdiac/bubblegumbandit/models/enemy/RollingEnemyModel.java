@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation.SwingOut;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 
@@ -129,15 +130,15 @@ public class RollingEnemyModel extends EnemyModel {
      * */
     private void updateAnimations(){
         if (isRolling && !stuck && !gummed){
-            animationController.setAnimation("roll", true);
+            animationController.setAnimation("roll", true, false);
         }
         else if (stuck || gummed){
             //TODO: Replace the if() animation to an unsticking one
-            if(unsticking) animationController.setAnimation("stuck", true);
-            else animationController.setAnimation("stuck", true);
+            if(unsticking) animationController.setAnimation("stuck", true, false);
+            else animationController.setAnimation("stuck", true, false);
         }
         else{
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 
@@ -156,6 +157,7 @@ public class RollingEnemyModel extends EnemyModel {
             } else {
                 attackDuration = 0;
                 isRolling = true;
+                SoundController.playSound("rolling", 0.75f);
             }
         }
         rollCoolDown--;
@@ -198,7 +200,7 @@ public class RollingEnemyModel extends EnemyModel {
         if(getStuck() || getGummed()){
             unsticking = true;
             unstickStopWatch += dt;
-            System.out.println(unstickStopWatch);
+           // System.out.println(unstickStopWatch);
         }
         else{
             unsticking = false;
