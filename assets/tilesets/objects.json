@@ -16,7 +16,7 @@
  "margin":0,
  "name":"objects",
  "spacing":0,
- "tilecount":19,
+ "tilecount":20,
  "tiledversion":"1.10.0",
  "tileheight":258,
  "tiles":[
@@ -51,8 +51,8 @@
         {
          "id":5,
          "image":"..\/textures\/environment\/shipdoor.png",
-         "imageheight":176,
-         "imagewidth":144,
+         "imageheight":177,
+         "imagewidth":136,
          "type":"exit"
         }, 
         {
@@ -153,20 +153,27 @@
                  "value":"move right"
                 }],
          "type":"tutorial"
-        },
+        }, 
         {
          "id":21,
          "image":"..\/textures\/objects\/doorUnlockedH.png",
          "imageheight":65,
          "imagewidth":258,
          "type":"doorH"
-        },
+        }, 
         {
          "id":22,
          "image":"..\/textures\/objects\/doorLockedH.png",
          "imageheight":65,
          "imagewidth":257,
          "type":"doorHLocked"
+        }, 
+        {
+         "id":23,
+         "image":"..\/textures\/environment\/reactor.png",
+         "imageheight":92,
+         "imagewidth":115,
+         "type":"reactor"
         }],
  "tilewidth":258,
  "type":"tileset",
