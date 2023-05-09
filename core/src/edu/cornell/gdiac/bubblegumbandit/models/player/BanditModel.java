@@ -393,10 +393,6 @@ public class BanditModel extends CapsuleObstacle {
      * @param value left/right movement of this character.
      */
     public void setMovement(float value) {
-        if(health<=0||animationController.getCurrentAnimation().equals("victory")) {
-            movement = 0;
-            return;
-        }
         movement = value;
         // Change facing if appropriate
         if (movement < 0) {

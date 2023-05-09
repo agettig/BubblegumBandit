@@ -628,7 +628,7 @@ public class GameController implements Screen {
                 bandit.setVY(0);
                 bandit.setVX(.1f);
             }
-        } else if (bandit.getHealth() > 0) {
+        } else if (!failed&&!complete) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
@@ -643,7 +643,7 @@ public class GameController implements Screen {
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
-        if (shouldFlip) {
+        if (shouldFlip&&!complete&&!failed) {
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = SoundController.playSound("jump", 0.25f);
