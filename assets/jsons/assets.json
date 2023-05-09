@@ -72,6 +72,12 @@
         "star": "textures/environment/star.png",
         "supports": "textures/environment/supports.png",
         "backgroundTiles" : "textures/environment/backgroundTiles.png",
+        "reactor": "textures/environment/pipes.png",
+        "reactorCore": "textures/environment/reactor.png",
+        "reactorCoreOff": "textures/environment/reactorOff.png",
+        "beam" :  "textures/environment/glowBeam.png",
+        "case" : "textures/environment/case.png",
+        "computer": "textures/environment/computer.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",
@@ -500,6 +506,7 @@
         "supports" : "tilesets/supports.json",
         "backgroundTiles" : "tilesets/backgroundTiles.json",
         "terrain" : "tilesets/terrain.json",
-        "objects" : "tilesets/objects.json"
+        "objects" : "tilesets/objects.json",
+        "reactor" : "tilesets/reactor.json"
     }
 }

@@ -26,6 +26,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
@@ -38,6 +39,7 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser;
 import edu.cornell.gdiac.bubblegumbandit.helpers.TiledParser.TileRect;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
+import edu.cornell.gdiac.bubblegumbandit.models.ReactorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
@@ -144,6 +146,7 @@ public class LevelModel {
     /** All support tile objects in the level.  */
     private Array<BackgroundTileModel> supportTiles;
 
+
     /** All background tile objects in the level */
     private Array<BackgroundTileModel> backgroundTiles;
 
@@ -159,6 +162,9 @@ public class LevelModel {
 
     /** Holds all tutorial wall decor. */
     private Array<TutorialIcon> icons;
+
+    /** represents the reactor around the orb */
+    private ReactorModel reactorModel;
 
     /** Cache for figuring out which tile is hit */
     private Vector2 tileCache = new Vector2();
@@ -293,18 +299,18 @@ public class LevelModel {
         debug = value;
     }
 
-    /**
-     * Sets off every alarm in this level.
-     */
-    public void startAlarms() {
+    /** Sets off every alarm in this level and deactivates reactor after orb is collected */
+    public void startPostOrb(){
         alarms.setAlarms(true);
+        if (reactorModel != null) reactorModel.orbCollected(true);
     }
 
     /**
-     * Disables every alarm in this level.
+     * Disables every alarm in this level and resets reactor.
      */
-    public void endAlarms(){
+    public void endPostOrb(){
         alarms.setAlarms(false);
+        if (reactorModel != null) reactorModel.orbCollected(false);
     }
 
     /**
@@ -506,7 +512,6 @@ public class LevelModel {
             }
         }
 
-
         // Iterate over each tile in the world, find and mark open corners of tiles that have them
         for (Map.Entry<Vector2, TileModel> entry : tiles.entrySet()) {
             Vector2 c = entry.getKey();
@@ -545,6 +550,8 @@ public class LevelModel {
         JsonValue enemyConstants;
         EnemyModel enemy;
         Array<EnemyModel> newEnemies = new Array<>();
+
+        Array<Vector2> reactorPos = new Array<>();
 
         HashMap<Integer, EnemyModel> enemyIds = new HashMap<>();
 
@@ -684,6 +691,9 @@ public class LevelModel {
                     hazard.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
                     hazard.setDrawScale(scale);
                     break;
+                case "reactor":
+                    reactorPos.add(new Vector2(decorX, decorY));
+                    break;
                 default:
                     throw new UnsupportedOperationException(objType + " is not a valid object");
             }
@@ -778,6 +788,11 @@ public class LevelModel {
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
         alarms = new AlarmController(alarmPos, directory, world);
+
+        if (reactorPos.size >= 2) {
+            reactorModel = new ReactorModel(reactorPos, orbPosition, directory);
+        }
+
         //gumEffectController = new EffectController("gum",
         //    "splat", directory, true, true, 1);
         glassEffectController = new EffectController("glass", "shatter",
@@ -834,6 +849,7 @@ public class LevelModel {
             world.dispose();
             world = null;
             alarms.dispose();
+            reactorModel = null;
         }
         captiveCount = 0;
     }
@@ -915,6 +931,7 @@ public class LevelModel {
         }
 
         alarms.update();
+        if (reactorModel != null) reactorModel.update();
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
@@ -950,7 +967,6 @@ public class LevelModel {
             gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd,
                      float dt) {
         canvas.begin();
-//        canvas.clear();
 
         bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
@@ -969,6 +985,12 @@ public class LevelModel {
             tile.draw(canvas);
         }
 
+        if (reactorModel != null){
+            reactorModel.draw(canvas);
+        }
+
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
+
         for (Obstacle obj : objects) {
             obj.draw(canvas);
             if (obj.equals(aim.highlighted)) { // Probably inefficient, but the draw order needs to be maintained.
@@ -977,6 +999,8 @@ public class LevelModel {
 
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas, dt);
+
+
 
 
 
