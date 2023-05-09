@@ -121,7 +121,7 @@ public class GameOverScreen implements Screen, InputProcessor {
     /**
      * Scale of continue game, back to level select buttons.
      */
-    private final float BUTTON_SCALE = .3f;
+    private final float BUTTON_SCALE = .25f;
 
     /**
      * true if the player is hovering over the start button
@@ -153,6 +153,9 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     private float backgroundWidth;
 
+    private Color green = new Color(10f/255f, 199f/255f, 152f/255f, 1f);
+    private Color red = new Color(252f/255f, 97f/255f, 89/255f, 1f);
+
 
     public GameOverScreen() {}
 
@@ -169,8 +172,8 @@ public class GameOverScreen implements Screen, InputProcessor {
         // Compute the dimensions from the canvas
         resize(canvas.getWidth(), canvas.getHeight());
 
-        background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
-        displayFont = directory.getEntry("projectSpace", BitmapFont.class).newFontCache().getFont();
+        background = new TextureRegion(directory.getEntry("settingsBackground", Texture.class));
+        displayFont = directory.getEntry("projectSpaceLarge", BitmapFont.class).newFontCache().getFont();
 
         hoverPointer = directory.getEntry("hoverPointer", Texture.class);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
@@ -185,13 +188,13 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     public void gameWon(AssetDirectory directory) {
         gameOverMessage = "VICTORY";
-        displayFont.setColor(Color.GREEN);
+        displayFont.setColor(green);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
     }
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
-        displayFont.setColor(Color.RED);
+        displayFont.setColor(red);
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
     }
 
@@ -237,31 +240,34 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.begin();
 
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
+
         if (fadeFraction < 1) {
             background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
-            //background.setRegionWidth((int) ((fadeFraction) * backgroundWidth));
             canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
         }
         else {
-            canvas.draw(background, 0, 0);
-            canvas.drawTextCentered(gameOverMessage, displayFont, 150);
+            canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth,
+                canvas.getCamera().viewportHeight);
+            canvas.drawTextCentered(gameOverMessage, displayFont, 100);
 
-            float x = (canvas.getWidth()) / 2.0f;
-            float y = (canvas.getHeight())/ 2.0f;
-            Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
+            float x = (canvas.getCamera().viewportWidth) / 2.0f;
+            float y = (canvas.getCamera().viewportHeight)/ 2.0f;
+          //  Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
 
-            float highestButtonY = coords.y;
-            float lowestButtonY = coords.y - 75;
+            float highestButtonY = y;
+            float lowestButtonY = y - 60;
 
 
-            startButtonPositionX = (int) coords.x;
+            startButtonPositionX = (int) x;
             startButtonPositionY = (int) highestButtonY;
 
-            levelSelectButtonPositionX = (int) coords.x;
+            levelSelectButtonPositionX = (int) x;
             levelSelectButtonPositionY = (int) lowestButtonY;
 
-            titleScreenButtonPositionX = (int) coords.x;
-            titleScreenButtonPositionY = (int) lowestButtonY - 75;
+            titleScreenButtonPositionX = (int) x;
+            titleScreenButtonPositionY = (int) lowestButtonY - 60;
 
             float pointerX = startButtonPositionX / 4f;
 
@@ -274,22 +280,10 @@ public class GameOverScreen implements Screen, InputProcessor {
                     startButtonPositionX,
                     startButtonPositionY,
                     0,
-                    scale * BUTTON_SCALE,
-                    scale * BUTTON_SCALE
+                     BUTTON_SCALE,
+                     BUTTON_SCALE
             );
-            if (hoveringStart) {
-                canvas.draw(
-                        hoverPointer,
-                        Color.WHITE,
-                        hoverPointer.getWidth() / 2f,
-                        hoverPointer.getHeight() / 2f,
-                        pointerX,
-                        startButtonPositionY,
-                        0,
-                        scale,
-                        scale
-                );
-            }
+
 
             //Draw Level Select
             canvas.draw(
@@ -300,22 +294,10 @@ public class GameOverScreen implements Screen, InputProcessor {
                     levelSelectButtonPositionX,
                     levelSelectButtonPositionY,
                     0,
-                    scale * BUTTON_SCALE,
-                    scale * BUTTON_SCALE
+                     BUTTON_SCALE,
+                     BUTTON_SCALE
             );
-            if (hoveringLevelSelect) {
-                canvas.draw(
-                        hoverPointer,
-                        Color.WHITE,
-                        hoverPointer.getWidth() / 2f,
-                        hoverPointer.getHeight() / 2f,
-                        pointerX,
-                        levelSelectButtonPositionY,
-                        0,
-                        scale,
-                        scale
-                );
-            }
+
             //Draw Continue Game
             canvas.draw(
                     titleScreenButton,
@@ -325,22 +307,10 @@ public class GameOverScreen implements Screen, InputProcessor {
                     titleScreenButtonPositionX,
                     titleScreenButtonPositionY,
                     0,
-                    scale * BUTTON_SCALE,
-                    scale * BUTTON_SCALE
+                    BUTTON_SCALE,
+                    BUTTON_SCALE
             );
-            if (hoveringReturnTitleScreen) {
-                canvas.draw(
-                        hoverPointer,
-                        Color.WHITE,
-                        hoverPointer.getWidth() / 2f,
-                        hoverPointer.getHeight() / 2f,
-                        pointerX,
-                        titleScreenButtonPositionY,
-                        0,
-                        scale,
-                        scale
-                );
-            }
+
         }
         canvas.end();
     }
@@ -414,7 +384,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
         leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
         rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
-        topY = levelSelectButtonPositionY - rectHeight / 2.0f;
+        topY = levelSelectButtonPositionY - rectHeight /2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
         hoveringLevelSelect = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
