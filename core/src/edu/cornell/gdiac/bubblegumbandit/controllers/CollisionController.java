@@ -45,7 +45,7 @@ public class CollisionController implements ContactListener {
     public static final short MASK_EXIT = CATEGORY_PLAYER;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_doorSensor = CATEGORY_PLAYER | CATEGORY_ENEMY;
-    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN;
+    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -728,9 +728,14 @@ public class CollisionController implements ContactListener {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f, true);
             levelModel.makeSpark(o.getX(), o.getY());
             levelModel.getBandit().addShockFixture(shockFixture);
-        } else if (o instanceof WallModel || o instanceof DoorModel) {
+        } else if (o instanceof WallModel) {
             boolean isBottom = p.getIsBottom();
             if ((isBottom && o.getY() > p.getY()) || (!isBottom && o.getY() < p.getY())) {
+                p.stopShock();
+            }
+        } else if (o instanceof DoorModel) {
+            DoorModel door = (DoorModel) o;
+            if (!door.isOpen()) { // Closed doors stop shocks
                 p.stopShock();
             }
         }
