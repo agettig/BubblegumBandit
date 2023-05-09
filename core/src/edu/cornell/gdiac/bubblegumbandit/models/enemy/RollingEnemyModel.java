@@ -151,6 +151,7 @@ public class RollingEnemyModel extends EnemyModel {
                 if (attackDuration == ATTACK_TIME) {
                     isRolling = false;
                     rollCoolDown = COOLDOWN;
+                    SoundController.stopSound("rolling");
                 } else {
                     attackDuration++;
                 }

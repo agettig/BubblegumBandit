@@ -15,10 +15,22 @@
         "tryAgainButton": "textures/UI/tryAgain.png",
 
         "sunfish" : "textures/levelSelect/sunfish.png",
-        "ship1" : "textures/levelSelect/level1.png",
-        "ship2" : "textures/levelSelect/level2.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
+        "point" : "textures/levelSelect/point.png",
+        "marker": "textures/levelSelect/marker.png",
+        "x": "textures/levelSelect/x.png",
+        "o": "textures/levelSelect/o.png",
+
+        "ship1" : "textures/levelSelect/level1.png",
+        "ship2" : "textures/levelSelect/level1.png",
+        "ship3" : "textures/levelSelect/level1.png",
+        "ship4" : "textures/levelSelect/level1.png",
+        "ship5" : "textures/levelSelect/level1.png",
+        "ship6" : "textures/levelSelect/level1.png",
+        "ship7" : "textures/levelSelect/level1.png",
+        "ship8" : "textures/levelSelect/level1.png",
+        "ship9" : "textures/levelSelect/level1.png",
 
         "mapIcon" : "textures/tutorial/mapIcon.png",
         "shootIcon" : "textures/tutorial/gumIcon.png",
@@ -44,6 +56,11 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "gameOverBg": {
+            "file": "textures/environment/failWinBackground.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
         "exit": "textures/environment/shipDoor.png",
         "alarmOn": "textures/environment/alarmOn.png",
         "alarmOff": "textures/environment/alarmOff.png",
@@ -55,6 +72,12 @@
         "star": "textures/environment/star.png",
         "supports": "textures/environment/supports.png",
         "backgroundTiles" : "textures/environment/backgroundTiles.png",
+        "reactor": "textures/environment/pipes.png",
+        "reactorCore": "textures/environment/reactor.png",
+        "reactorCoreOff": "textures/environment/reactorOff.png",
+        "beam" :  "textures/environment/glowBeam.png",
+        "case" : "textures/environment/case.png",
+        "computer": "textures/environment/computer.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",
@@ -456,7 +479,11 @@
         "rolling": "sounds/rolling.wav",
         "clockTick": "sounds/clockTicking.wav",
         "lowStressAlarm": "sounds/lowStressAlarm.wav",
-        "reloadingGum": "sounds/reloadingGum.wav"
+        "reloadingGum": "sounds/reloadingGum.wav",
+        "banditLanding": "sounds/banditLanding.wav",
+        "doorSound": "sounds/doorSound.wav",
+        "keyClick": "sounds/keyClick.wav",
+        "knockback": "sounds/knockback.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",
@@ -479,6 +506,7 @@
         "supports" : "tilesets/supports.json",
         "backgroundTiles" : "tilesets/backgroundTiles.json",
         "terrain" : "tilesets/terrain.json",
-        "objects" : "tilesets/objects.json"
+        "objects" : "tilesets/objects.json",
+        "reactor" : "tilesets/reactor.json"
     }
 }

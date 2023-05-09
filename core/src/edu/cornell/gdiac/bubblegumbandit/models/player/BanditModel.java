@@ -108,6 +108,10 @@ public class BanditModel extends CapsuleObstacle {
 
     private Texture reloadSymbol;
 
+    private int healthCountdown;
+
+    private final int HEALTH_REGEN_COOLDOWN = 180;
+
     /**
      * Whether we are actively shooting
      */
@@ -290,6 +294,7 @@ public class BanditModel extends CapsuleObstacle {
     public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
+            healthCountdown = HEALTH_REGEN_COOLDOWN;
             setCooldown(true);
             return true;
         }
@@ -559,6 +564,7 @@ public class BanditModel extends CapsuleObstacle {
         orbCollected = false;
         hasFlipped = false;
         shockFixtures = new ObjectSet<>();
+        healthCountdown = 0;
     }
 
     /**
@@ -763,7 +769,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-        System.out.println("Shoot cooldown: " + shootCooldown);
+        healthCountdown--;
         ticks++;
         stunTime--;
 
@@ -787,8 +793,8 @@ public class BanditModel extends CapsuleObstacle {
                 setCooldown(false);
             }
         } else {
-            if (ticks % 3 == 0 && health>0) {
-                healPlayer((float)0.25);
+            if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
+                healPlayer(0.25f);
             }
         }
 

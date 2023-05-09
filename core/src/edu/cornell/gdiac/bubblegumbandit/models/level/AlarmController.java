@@ -115,16 +115,16 @@ public class AlarmController {
 
       float time = TimeUtils.timeSinceMillis(timeStamp);
       if(time>pulseTime/3f&&time<pulseTime) {
-        SoundController.playSound("lowStressAlarm", 0.5f);
-        SoundController.lastPlayed(-18);
+        //SoundController.playSound("lowStressAlarm", 0.5f);
+        //SoundController.lastPlayed(-18);
         for(PointLight light : lights) {
           light.setDistance(time<= pulseTime*(2f/3f) ? light.getDistance()+.15f
               : light.getDistance()-.15f);
         }
 
       } else if (time>pulseTime) { {
-        SoundController.lastPlayed(0);
-        SoundController.stopSound("lowStressAlarm");
+        //SoundController.lastPlayed(0);
+        //SoundController.stopSound("lowStressAlarm");
         timeStamp = TimeUtils.millis();
         for(PointLight light : lights) {
           light.setDistance(0);

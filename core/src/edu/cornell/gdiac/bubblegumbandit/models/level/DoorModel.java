@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
@@ -403,6 +404,7 @@ public class DoorModel extends TileModel implements Gummable {
      */
     private void openDoor() {
         if (!isLocked && !gummed) {
+            SoundController.playSound("doorSound", 0.5f);
             isOpen = true;
             body.getFixtureList().get(0).setSensor(true);
         }
@@ -413,6 +415,7 @@ public class DoorModel extends TileModel implements Gummable {
      */
     private void closeDoor() {
         if (!gummed) {
+            SoundController.playSound("doorSound", 0.5f);
             isOpen = false;
             body.getFixtureList().get(0).setSensor(false);
         }
