@@ -130,15 +130,15 @@ public class RollingEnemyModel extends EnemyModel {
      * */
     private void updateAnimations(){
         if (isRolling && !stuck && !gummed){
-            animationController.setAnimation("roll", true);
+            animationController.setAnimation("roll", true, false);
         }
         else if (stuck || gummed){
-            //TODO: Replace the if() animation to an unsticking one;
-            if(unsticking) animationController.setAnimation("stuck", true);
-            else animationController.setAnimation("stuck", true);
+            //TODO: Replace the if() animation to an unsticking one
+            if(unsticking) animationController.setAnimation("stuck", true, false);
+            else animationController.setAnimation("stuck", true, false);
         }
         else{
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 
@@ -201,7 +201,7 @@ public class RollingEnemyModel extends EnemyModel {
         if(getStuck() || getGummed()){
             unsticking = true;
             unstickStopWatch += dt;
-            System.out.println(unstickStopWatch);
+           // System.out.println(unstickStopWatch);
         }
         else{
             unsticking = false;

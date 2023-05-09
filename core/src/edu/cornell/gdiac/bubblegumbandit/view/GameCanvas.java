@@ -185,6 +185,19 @@ public class GameCanvas {
         }
     }
 
+    public void setCamera(GameCamera cam) {
+        camera = cam;
+        camera.setToOrtho(false);
+        spriteBatch.setProjectionMatrix(camera.combined);
+        debugRender.setProjectionMatrix(camera.combined);
+        fovRender.setProjectionMatrix(camera.combined);
+        if (viewport != null) {
+            viewport.setCamera(camera);
+            viewport.update(getWidth(), getHeight(), true);
+            viewport.apply(true);
+        }
+    }
+
     public FitViewport getUIViewport() {return viewport;}
     /**
      * Eliminate any resources that should be garbage collected manually.

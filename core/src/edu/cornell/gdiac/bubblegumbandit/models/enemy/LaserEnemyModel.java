@@ -240,12 +240,12 @@ public class LaserEnemyModel extends EnemyModel {
         }
         // attack animations
         if (chargingLaser()) {
-            animationController.setAnimation("charge", true);
+            animationController.setAnimation("charge", true, false);
         }
         else if (stuck || gummed){
-            animationController.setAnimation("stuck", true);
+            animationController.setAnimation("stuck", true, false);
         } else {
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 

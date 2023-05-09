@@ -77,13 +77,14 @@ public class ShockEnemyModel extends EnemyModel {
             super.update(dt);
         }
         if(fired()){
-            animationController.setAnimation("fire", false);
+            animationController.setAnimation("fire", false, false);
+            SoundController.playSound("shockAttack", 1);
         }
         else if (stuck || gummed){
-            animationController.setAnimation("stuck", true);
+            animationController.setAnimation("stuck", true, false);
         }
         else {
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 }

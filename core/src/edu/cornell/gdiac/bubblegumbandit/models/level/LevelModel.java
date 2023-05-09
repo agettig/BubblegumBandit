@@ -952,6 +952,8 @@ public class LevelModel {
         canvas.begin();
 //        canvas.clear();
 
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
+
         for(BackgroundTileModel tile: backgroundTiles) {
             tile.draw(canvas);
         }
@@ -966,8 +968,6 @@ public class LevelModel {
         for(BackgroundTileModel tile: supportTiles) {
             tile.draw(canvas);
         }
-
-        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
         for (Obstacle obj : objects) {
             obj.draw(canvas);

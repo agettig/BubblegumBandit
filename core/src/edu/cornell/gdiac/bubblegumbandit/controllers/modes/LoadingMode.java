@@ -141,6 +141,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private final BitmapFont font;
 
+    /**
+     * The texture for the big ship illustration
+     */
+    private final Texture ship;
+
 
 
     /**
@@ -288,6 +293,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private boolean active;
 
+    private float shipTime;
+
     /**
      * Returns the budget for the asset loader.
      * <p>
@@ -411,6 +418,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
          jet = internal.getEntry("jet", Texture.class);
 
          font = internal.getEntry("projectSpace", BitmapFont.class);
+         ship = internal.getEntry("bigShip", Texture.class);
+         ship.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
         // Break up the status bar texture into regions
        /* statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
@@ -626,6 +635,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 );
             }
 
+           float offsetY = (float) (Math.sin(shipTime) * 10 )+20;
+
+            canvas.draw(ship, Color.WHITE, 0, 0,
+                canvas.getCamera().viewportWidth-ship.getWidth(),
+                canvas.getCamera().viewportHeight-ship.getHeight()+offsetY,
+                ship.getWidth(), ship.getHeight());
+
         }
         canvas.end();
     }
@@ -740,25 +756,25 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             // We are ready, notify our listener
             if (isReady() && listener != null) {
                 SoundController.playSound("keyClick", 1);
-                listener.exitScreen(this, 1);
+                listener.exitScreen(this, Screens.CONTROLLER);
             }
+
+            shipTime+=delta;
 
             if (isLevelSelect() && listener != null) {
                 SoundController.playSound("keyClick", 1);
-                listener.exitScreen(this, 6);
+                listener.exitScreen(this, Screens.LEVEL_SELECT);
             }
 
             if (switchSettings() && listener != null){
                 SoundController.playSound("keyClick", 1);
-                listener.exitScreen(this, 7);
+                listener.exitScreen(this, Screens.SETTINGS);
             }
             // If the player hits the quit button
             if (shouldQuit()) {
                 SoundController.playSound("keyClick", 1);
-                listener.exitScreen(this, GameController.EXIT_QUIT);
+                listener.exitScreen(this, Screens.EXIT_CODE);
             }
-
-
         }
     }
 

@@ -126,7 +126,7 @@ public class BanditModel extends CapsuleObstacle {
     /**
      * Cooldown (in animation frames) for shooting
      */
-    private final int shotLimit;
+    private final int shotLimit = 30;
 
     /**
      * Cache for flipping player orientation
@@ -169,7 +169,6 @@ public class BanditModel extends CapsuleObstacle {
     /** Reference to PoofController, which renders player particle effects */
     private EffectController poofController;
 
-    private TextureRegion deadText;
 
     private Vector2 orbPostion;
 
@@ -261,9 +260,9 @@ public class BanditModel extends CapsuleObstacle {
     public void setKnockback(boolean knockback, boolean shock) {
         isKnockback = knockback;
        if( health>0) {
-           if(!shock) animationController.setAnimation("knock", false);
+           if(!shock) animationController.setAnimation("knock", false, false);
            else {
-               animationController.setAnimation("shock", false);
+               animationController.setAnimation("shock", false, false);
                SoundController.playSound("banditShock", 1);
            }
        }
@@ -272,13 +271,13 @@ public class BanditModel extends CapsuleObstacle {
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
         if(knockback && health>0) {
-            animationController.setAnimation("knock", false);
+            animationController.setAnimation("knock", false, false);
         }
        knockbackTimer = STUN_TIME;
     }
 
-    public void setAnimation(String anim, boolean isLooping) {
-        animationController.setAnimation(anim, isLooping);
+    public void setAnimation(String anim, boolean isLooping, boolean ending) {
+        animationController.setAnimation(anim, isLooping, ending);
     }
 
 
@@ -522,7 +521,7 @@ public class BanditModel extends CapsuleObstacle {
     /** Kills the bandit! Officially. Drains health and triggers death animation. */
     public void kill() {
         health = 0;
-        animationController.setAnimation("death", false);
+        animationController.setAnimation("death", false, true);
     }
 
     /**
@@ -543,7 +542,6 @@ public class BanditModel extends CapsuleObstacle {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
 
-        shotLimit = 6;
         // Gameplay attributes
         isGrounded = false;
         isShooting = false;
@@ -614,9 +612,6 @@ public class BanditModel extends CapsuleObstacle {
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
-
-        String deadKey = constantsJson.get("deadTexture").asString();
-        deadText = new TextureRegion(directory.getEntry(deadKey, Texture.class));
 
 
         // Get the sensor information
@@ -696,10 +691,14 @@ public class BanditModel extends CapsuleObstacle {
     }
 
     public void setFacingDirection(float cursorX) {
-        if(!faceRight) {
-            backpedal = (cursorX>getX());
+        if (shootCooldown > 0) {
+            if(!faceRight) {
+                backpedal = (cursorX>getX());
+            } else {
+                backpedal = (cursorX<getX());
+            }
         } else {
-            backpedal = (cursorX<getX());
+            backpedal = false;
         }
     }
 
@@ -764,6 +763,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        System.out.println("Shoot cooldown: " + shootCooldown);
         ticks++;
         stunTime--;
 
@@ -839,15 +839,16 @@ public class BanditModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
 
-            if(!animationController.hasTemp()&&health>0) {
-                if(playingReload) animationController.setAnimation("reload", true);
-                else if (!isGrounded) animationController.setAnimation("fall", true);
-                else if (getMovement() == 0) animationController.setAnimation("idle", true);
+            if(!animationController.hasTemp()&&!animationController.isEnding()
+                &&!animationController.getCurrentAnimation().equals("victory")) {
+                if(playingReload) animationController.setAnimation("reload", true, false);
+                else if (!isGrounded) animationController.setAnimation("fall", true, false);
+                else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
                 else {
                     if(backpedal) {
-                        animationController.setAnimation("back", true);
+                        animationController.setAnimation("back", true, false);
                     } else {
-                        animationController.setAnimation("run", true);
+                        animationController.setAnimation("run", true, false);
                     }
 
                 }
@@ -857,9 +858,6 @@ public class BanditModel extends CapsuleObstacle {
             if(backpedal&&health>0) effect *= -1f;
 
             TextureRegion text = animationController.getFrame();
-            if(!animationController.hasTemp()&&health<=0) {
-                text = deadText;
-            }
 
 
             canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,
