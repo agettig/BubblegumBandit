@@ -393,6 +393,10 @@ public class BanditModel extends CapsuleObstacle {
      * @param value left/right movement of this character.
      */
     public void setMovement(float value) {
+        if(health<=0||animationController.getCurrentAnimation().equals("victory")) {
+            movement = 0;
+            return;
+        }
         movement = value;
         // Change facing if appropriate
         if (movement < 0) {
@@ -732,7 +736,7 @@ public class BanditModel extends CapsuleObstacle {
         if (isKnockback) {
             return;
         }
-        if(health<=0||animationController.getCurrentAnimation().equals("victory")) return;
+
         if (getMovement() == 0f) {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);
