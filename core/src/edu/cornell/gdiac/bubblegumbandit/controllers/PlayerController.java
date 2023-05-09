@@ -437,8 +437,9 @@ public class PlayerController{
         boolean mini = isKeyControl[4] ? Gdx.input.isKeyPressed(keyBindings[4]) : Gdx.input.isButtonPressed(keyBindings[4]);
         boolean reload = isKeyControl[5] ? Gdx.input.isKeyPressed(keyBindings[5]) : Gdx.input.isButtonPressed(keyBindings[5]);
         boolean shoot = isKeyControl[6] ? Gdx.input.isKeyPressed(keyBindings[6]) : Gdx.input.isButtonPressed(keyBindings[6]);
-        boolean unstick = isKeyControl[7] ? Gdx.input.isKeyPressed(keyBindings[7]) : Gdx.input.isButtonPressed(keyBindings[7]);
-
+//        boolean unstick = isKeyControl[7] ? Gdx.input.isKeyPressed(keyBindings[7]) : Gdx.input.isButtonPressed(keyBindings[7]);
+        boolean unstick = shoot && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+        if (unstick) shoot = false;
         if (moveRight) {
             horizontal += 1.0f;
         }
