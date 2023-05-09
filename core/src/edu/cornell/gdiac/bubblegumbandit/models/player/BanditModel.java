@@ -763,7 +763,6 @@ public class BanditModel extends CapsuleObstacle {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-        System.out.println("Shoot cooldown: " + shootCooldown);
         ticks++;
         stunTime--;
 
