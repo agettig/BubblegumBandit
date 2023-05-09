@@ -170,7 +170,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         resize(canvas.getWidth(), canvas.getHeight());
 
         background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
-        displayFont = directory.getEntry("projectSpace", BitmapFont.class);
+        displayFont = directory.getEntry("projectSpace", BitmapFont.class).newFontCache().getFont();
 
         hoverPointer = directory.getEntry("hoverPointer", Texture.class);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
