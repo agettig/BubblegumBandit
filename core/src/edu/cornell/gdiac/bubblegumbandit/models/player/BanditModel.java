@@ -19,17 +19,13 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
-import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
-import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 
 /**
@@ -209,6 +205,10 @@ public class BanditModel extends CapsuleObstacle {
         ticks = 0;
     }
 
+    public boolean wasHit;
+
+    public void setWasHit(boolean wasHit) {this.wasHit = wasHit;}
+
     /**
      * Returns the camera target for the player.
      * <p>
@@ -295,7 +295,7 @@ public class BanditModel extends CapsuleObstacle {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
-            setCooldown(true);
+            setWasHit(true);
             return true;
         }
         return false;
@@ -788,9 +788,9 @@ public class BanditModel extends CapsuleObstacle {
             }
         }
 
-        if (inCooldown) {
-            if (ticks >= 60) {
-                setCooldown(false);
+        if (wasHit) {
+            if (ticks % 200 == 0) {
+                setWasHit(false);
             }
         } else {
             if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
