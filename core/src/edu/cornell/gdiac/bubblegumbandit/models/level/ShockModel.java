@@ -9,11 +9,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
@@ -22,7 +24,7 @@ import java.lang.reflect.Field;
 /**
  * Class to represent a projectile object.
  */
-public class ShockModel extends WheelObstacle implements Pool.Poolable {
+public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
     /** Floor animation fps */
     private final int FLOOR_FPS = 4;
@@ -66,7 +68,6 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     /** The current texture for the floor */
     private TextureRegion curFloor;
 
-
     /** Sensor to detect collisions with the hazard */
     private Fixture sensorFixture;
     private PolygonShape sensorShape;
@@ -80,6 +81,9 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     /** Animation controller for the crest */
     private AnimationController animationController;
 
+    /** Maintains a set of collided walls */
+    private ObjectSet<WallModel> collisions;
+
     /**
      * Returns whether this shock model is on the bottom
      * @return Whether this shock model is on the bottom
@@ -92,12 +96,29 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
      *
      */
     public ShockModel(){
-        super(0, 0, 1);
+        super(0, 0, 1, 1);
         alive = true;
         yScale = 1;
         finishedSpreading = false;
         timeAlive = 0;
         debugSensorShape = new PolygonShape();
+        collisions = new ObjectSet<>();
+    }
+
+    /**
+     * Marks that a collision has started between the shock model and obstacle ob
+     * @param wall the wall in the collision
+     */
+    public void startCollision(WallModel wall) {
+        collisions.add(wall);
+    }
+
+    /**
+     * Marks that a collision has ended between the shock model and obstacle ob
+     * @param wall the wall in the collision
+     */
+    public void endCollision(WallModel wall) {
+        collisions.remove(wall);
     }
 
     public void initialize(AssetDirectory directory, Vector2 scale, JsonValue data, float x, float y, float radius, boolean isBottom, boolean isLeft) {
@@ -114,9 +135,10 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
         this.isBottom = isBottom;
         this.setFixedRotation(true);
 
-        setPosition(x, y);
+        setPosition(x, y + (isBottom ? -.02f : .02f));
         setSensor(true);
-        setRadius(radius);
+        setWidth(radius / 2);
+        setHeight(radius * 2);
 
         String key = data.get("floorTexture").asString();
         electricFloorTexture = new TextureRegion(directory.getEntry(key, Texture.class));
@@ -184,6 +206,10 @@ public class ShockModel extends WheelObstacle implements Pool.Poolable {
     }
 
     public void update(float dt) {
+        if (collisions.size == 0) {
+            stopShock();
+        }
+
         if (!finishedSpreading) {
             float distanceTraveled  = Math.abs(getX() - initialX);
 //            float a = TRAVEL_DISTANCE * STARTS_DECREASING;

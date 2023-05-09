@@ -141,6 +141,17 @@ public class CollisionController implements ContactListener {
                 obstacleB.startCollision(obstacleA, fixB);
             }
 
+            if (obstacleA instanceof ShockModel && (obstacleB instanceof WallModel)) {
+                if (fixA == (obstacleA.getBody().getFixtureList().get(0))) {
+                    ((ShockModel) obstacleA).startCollision((WallModel) obstacleB);
+                }
+            }
+            else if (obstacleB instanceof ShockModel && (obstacleA instanceof WallModel)) {
+                if (fixB == (obstacleB.getBody().getFixtureList().get(0))) {
+                    ((ShockModel) obstacleB).startCollision((WallModel) obstacleA);
+                }
+            }
+
             // check to see if laser enemy has landed on floor
             if (obstacleB instanceof WallModel && obstacleA instanceof LaserEnemyModel){
                 resolveLaserEnemyTileCollision((LaserEnemyModel) obstacleA);
@@ -207,6 +218,17 @@ public class CollisionController implements ContactListener {
             }
             if (ob2 instanceof Gummable) {
                 ob2.endCollision(ob1, fix2);
+            }
+
+            if (ob1 instanceof ShockModel && (ob2 instanceof WallModel)) {
+                if (fix1.equals(ob1.getBody().getFixtureList().get(0))) {
+                    ((ShockModel) ob1).endCollision((WallModel) ob2);
+                }
+            }
+            else if (ob2 instanceof ShockModel && (ob1 instanceof WallModel)) {
+                if (fix2.equals(ob2.getBody().getFixtureList().get(0))) {
+                    ((ShockModel) ob2).endCollision((WallModel) ob1);
+                }
             }
 
             resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
