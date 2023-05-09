@@ -805,8 +805,8 @@ public class GameController implements Screen {
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum, delta,
-                canvas.getCamera(), level.getBandit());
+
+
 
         Vector2 banditPosition = level.getBandit().getPosition();
 
@@ -815,6 +815,10 @@ public class GameController implements Screen {
         if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
         }
+
+
+        hud.draw(level, bubblegumController, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
+        hud.drawCountdownText((int)orbCountdown, delta, canvas.getCamera(), level.getBandit());
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
             canvas.begin();

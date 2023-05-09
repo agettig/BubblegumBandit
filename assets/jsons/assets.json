@@ -300,6 +300,7 @@
         "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
         "halfStuck" : "textures/gum/halfStuck.png",
         "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
+        "escapeIcon" : "textures/UI/escapeIcon.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,

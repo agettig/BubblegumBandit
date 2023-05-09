@@ -58,11 +58,19 @@ public class HUDController {
    */
   private float lastFrac = 1f;
 
+  private int timerStart = -1;
+
   private Image healthIcon;
   private Image bubbleIcon;
   private Label orbCountdown;
   private Label fpsLabel;
   private Array<Image> captiveIcons;
+
+  /** Texture for the Escape icon after the Bandit picks up the orb. */
+  private Image escapeIcon;
+
+  /** Text that tells the player to get OUT! */
+  private Label escapeText;
 
   /** Position that the timer "shakes" to */
   private Vector2 shakeAdjust;
@@ -136,10 +144,18 @@ public class HUDController {
     table.padLeft(10).padTop(60);
 
 
-    orbCountdown = new Label("00", new Label.LabelStyle(font, Color.WHITE));
+    orbCountdown = new Label("", new Label.LabelStyle(font, Color.WHITE));
+    escapeText = new Label("ESCAPE!", new Label.LabelStyle(font, Color.RED));
+    escapeIcon = new Image(directory.getEntry("escapeIcon", Texture.class));
     orbCountdown.setFontScale(1f);
-    orbCountdown.setPosition(stage.getWidth() / 2, stage.getHeight() / 8, Align.center);
+    escapeText.setFontScale(2f);
+    escapeText.setPosition(stage.getWidth()/2 - escapeText.getWidth(), stage.getHeight() * .75f);
+    escapeIcon.setPosition(stage.getWidth()/2 - escapeIcon.getWidth()/2, stage.getHeight() / 8);
+    timerStart = -1;
+    orbCountdown.setPosition(escapeIcon.getWidth() - escapeIcon.getWidth()/2, escapeIcon.getY() + escapeIcon.getHeight()/2);
     stage.addActor(orbCountdown);
+    stage.addActor(escapeIcon);
+    stage.addActor(escapeText);
 
 
     for (int i = 0; i < 6; i++) {
@@ -194,15 +210,72 @@ public class HUDController {
     view.apply(true);
   }
 
+  public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
+    if(timer >= 0){
+      if(timerStart < 0) timerStart = timer;
+      if(timerStart - timer >= 3) escapeText.setText("");
+      else escapeText.setText("ESCAPE!");
+      shakeTimer(dt, timer, camera, bandit);
+      orbCountdown.setFontScale(1f);
+      orbCountdown.setColor(Color.WHITE);
+
+      int orbCountdownValue = orbCountdown.getText().toString().equals("") ? -1 :
+              Integer.parseInt(orbCountdown.getText().toString());
+
+      //If we need to "tick"
+      if(orbCountdownValue != timer){
+
+        int shakeChance = 5;
+        boolean shouldShake = MathUtils.random(1, 10) <= shakeChance;
+
+        if(shouldShake && timer > 3){
+          float randomTrauma = MathUtils.random(1f, 2f);
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  randomTrauma);
+        }
+
+        if(timer == 3){
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  .75f);
+        }
+        if(timer == 2){
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  1f);
+        }
+
+        if(timer == 1){
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  2f);
+        }
+
+        if(timer == 0){
+          camera.addTrauma(
+                  bandit.getX() * bandit.getDrawScale().x,
+                  bandit.getY() * bandit.getDrawScale().y,
+                  2f);
+        }
+        orbCountdown.setText(timer);
+      }
+    } else{
+      orbCountdown.setText("");
+      escapeText.setText("");
+    }
+  }
+
   public void draw(LevelModel level,
                    BubblegumController bubblegumController,
-                   int timer,
                    int fps,
+                   int timer,
                    boolean showFPS,
-                   boolean reloadingGum,
-                   float dt,
-                   GameCamera camera,
-                   BanditModel bandit) {
+                   boolean reloadingGum) {
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -234,61 +307,6 @@ public class HUDController {
       gumImage.setVisible(false);
     }
 
-    if(timer >= 0){
-      shakeTimer(dt, timer, camera, bandit);
-      int orbCountdownValue = orbCountdown.getText().toString().equals("") ? -1 :
-              Integer.parseInt(orbCountdown.getText().toString());
-
-      //If we need to "tick"
-      if(orbCountdownValue != timer){
-        if(timer > 10){
-          orbCountdown.setColor(Color.WHITE);
-          orbCountdown.setFontScale(1f);
-        }
-        else if(timer > 5){
-          orbCountdown.setColor(Color.YELLOW);
-          orbCountdown.setFontScale(1.4f);
-        }
-        else if(timer > 1){
-          orbCountdown.setColor(Color.ORANGE);
-        }
-        else{
-          orbCountdown.setColor(Color.RED);
-          orbCountdown.setFontScale(1.9f);
-        }
-
-
-        if(timer == 3){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  .75f);
-        }
-        if(timer == 2){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  1f);
-        }
-
-        if(timer == 1){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  2f);
-        }
-
-        if(timer == 0){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  2f);
-        }
-        orbCountdown.setText(timer);
-      }
-    } else orbCountdown.setText("");
-
-
 
     if (reloadingGum) {
       for (int i = 0; i < 6; i++) {
@@ -317,6 +335,11 @@ public class HUDController {
       fpsLabel.setText("");
     }
 
+    if(timer >= 0){
+      escapeIcon.setVisible(true);
+    }
+    else escapeIcon.setVisible(false);
+
 
     stage.draw();
   }
@@ -326,40 +349,23 @@ public class HUDController {
     float xShakeRange;
     float yShakeRange;
     float transitionSpeed;
-    final float centerTimerX = stage.getWidth() / 2;
-    final float centerTimerY = stage.getHeight() / 8;
+    final float centerTimerX = escapeIcon.getX() + escapeIcon.getWidth()/2;
+    final float centerTimerY = escapeIcon.getY() + escapeIcon.getHeight()/2;
 
     if(timer > 10){
+      escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth()/2);
+      escapeIcon.setY(stage.getHeight() / 8f);
       orbCountdown.setX(centerTimerX);
       orbCountdown.setY(centerTimerY);
       return;
     }
-
-
-
-    if(timer >= 3){
-      xShakeRange = 10f;
-      yShakeRange = 2f;
-      transitionSpeed = 7f;
-    }
-    else if (timer == 2){
-      xShakeRange = 20f;
-      yShakeRange = 10f;
-      transitionSpeed = 7f;
-    }
-    else{
-      xShakeRange = 70f;
-      yShakeRange = 30f;
-      transitionSpeed = 7f;
-    }
-
+    xShakeRange = 10f;
+    yShakeRange = 2f;
+    transitionSpeed = 7f;
     shakeAdjust = new Vector2(
             centerTimerX + MathUtils.random(-xShakeRange, xShakeRange),
             centerTimerY + MathUtils.random(-yShakeRange, yShakeRange)
     );
-
-
-
     orbCountdown.setX(MathUtils.lerp(orbCountdown.getX(), shakeAdjust.x, transitionSpeed * dt));
     orbCountdown.setY(MathUtils.lerp(orbCountdown.getY(), shakeAdjust.y, transitionSpeed * dt));
 
