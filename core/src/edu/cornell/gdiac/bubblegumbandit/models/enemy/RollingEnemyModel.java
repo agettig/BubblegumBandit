@@ -134,7 +134,7 @@ public class RollingEnemyModel extends EnemyModel {
         }
         else if (stuck || gummed){
             //TODO: Replace the if() animation to an unsticking one
-            if(unsticking) animationController.setAnimation("stuck", true, false);
+            if(unsticking) animationController.setAnimation("roll", true, false);
             else animationController.setAnimation("stuck", true, false);
         }
         else{
