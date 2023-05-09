@@ -1,9 +1,11 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 
 public class ShockEnemyModel extends EnemyModel {
@@ -75,13 +77,14 @@ public class ShockEnemyModel extends EnemyModel {
             super.update(dt);
         }
         if(fired()){
-            animationController.setAnimation("fire", false);
+            animationController.setAnimation("fire", false, false);
+            SoundController.playSound("shockAttack", 1);
         }
         else if (stuck || gummed){
-            animationController.setAnimation("stuck", true);
+            animationController.setAnimation("stuck", true, false);
         }
         else {
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 }

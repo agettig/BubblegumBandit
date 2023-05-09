@@ -185,6 +185,19 @@ public class GameCanvas {
         }
     }
 
+    public void setCamera(GameCamera cam) {
+        camera = cam;
+        camera.setToOrtho(false);
+        spriteBatch.setProjectionMatrix(camera.combined);
+        debugRender.setProjectionMatrix(camera.combined);
+        fovRender.setProjectionMatrix(camera.combined);
+        if (viewport != null) {
+            viewport.setCamera(camera);
+            viewport.update(getWidth(), getHeight(), true);
+            viewport.apply(true);
+        }
+    }
+
     public FitViewport getUIViewport() {return viewport;}
     /**
      * Eliminate any resources that should be garbage collected manually.
@@ -1343,6 +1356,7 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
             return;
         }
+
         fovRender.setProjectionMatrix(camera.combined);
         fovRender.begin(ShapeRenderer.ShapeType.Line);
         local.applyTo(vertex);

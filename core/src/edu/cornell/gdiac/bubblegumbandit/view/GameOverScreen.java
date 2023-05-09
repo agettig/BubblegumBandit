@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.util.ScreenListener;
 import org.w3c.dom.Text;
 
@@ -143,6 +144,8 @@ public class GameOverScreen implements Screen, InputProcessor {
     /** How fast the screen fades in */
     private float fadeRate;
 
+    private int continueGameOffset;
+
     /**
      * The height of the canvas window (necessary since sprite origin != screen origin)
      */
@@ -184,14 +187,21 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     public void gameWon(AssetDirectory directory) {
         gameOverMessage = "VICTORY";
-        displayFont.setColor(Color.GREEN);
+        Color green = new Color(10/255f, 199/255f, 152/255f, 1);
+        displayFont.setColor(green);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
+        SoundController.pauseMusic();
+        SoundController.playSound("victory", 1);
+        continueGameOffset = 145;
     }
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
-        displayFont.setColor(Color.RED);
+        displayFont.setColor(new Color(252/255f, 97/255f, 89/255f, 1));
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
+        SoundController.pauseMusic();
+        SoundController.playSound("failure", 1);
+        continueGameOffset = 165;
     }
 
     @Override
@@ -215,12 +225,15 @@ public class GameOverScreen implements Screen, InputProcessor {
             update(delta);
             draw();
             if (continueGame() && listener != null) {
+                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, 1);
             }
             if (levelSelect() && listener != null) {
+                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, 6);
             }
             if (returnToTitle() && listener != null) {
+                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, 7);
             }
         }
@@ -262,7 +275,7 @@ public class GameOverScreen implements Screen, InputProcessor {
             titleScreenButtonPositionX = (int) coords.x;
             titleScreenButtonPositionY = (int) lowestButtonY - 75;
 
-            float pointerX = startButtonPositionX / 4f;
+            float pointerX = startButtonPositionX / 2;
 
             //Draw continue game options
             canvas.draw(
@@ -282,7 +295,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
                         hoverPointer.getHeight() / 2f,
-                        pointerX,
+                        pointerX + continueGameOffset,
                         startButtonPositionY,
                         0,
                         scale,
@@ -308,7 +321,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
                         hoverPointer.getHeight() / 2f,
-                        pointerX,
+                        pointerX + 120,
                         levelSelectButtonPositionY,
                         0,
                         scale,

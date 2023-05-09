@@ -15,10 +15,22 @@
         "tryAgainButton": "textures/UI/tryAgain.png",
 
         "sunfish" : "textures/levelSelect/sunfish.png",
-        "ship1" : "textures/levelSelect/level1.png",
-        "ship2" : "textures/levelSelect/level2.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
+        "point" : "textures/levelSelect/point.png",
+        "marker": "textures/levelSelect/marker.png",
+        "x": "textures/levelSelect/x.png",
+        "o": "textures/levelSelect/o.png",
+
+        "ship1" : "textures/levelSelect/level1.png",
+        "ship2" : "textures/levelSelect/level1.png",
+        "ship3" : "textures/levelSelect/level1.png",
+        "ship4" : "textures/levelSelect/level1.png",
+        "ship5" : "textures/levelSelect/level1.png",
+        "ship6" : "textures/levelSelect/level1.png",
+        "ship7" : "textures/levelSelect/level1.png",
+        "ship8" : "textures/levelSelect/level1.png",
+        "ship9" : "textures/levelSelect/level1.png",
 
         "mapIcon" : "textures/tutorial/mapIcon.png",
         "shootIcon" : "textures/tutorial/gumIcon.png",
@@ -41,6 +53,11 @@
         },
         "spaceBg": {
             "file": "textures/environment/spaceSample.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "gameOverBg": {
+            "file": "textures/environment/failWinBackground.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -91,6 +108,17 @@
             "wrap": false,
             "sprites": {
                 "shock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "banditVictory":  {
+            "file": "textures/bandit/banditVictory.png",
+            "wrap": false,
+            "sprites": {
+                "victory": {
                     "size": 2,
                     "rows": 1,
                     "cols": 2
@@ -155,7 +183,6 @@
             }
 
         },
-        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
@@ -427,15 +454,36 @@
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
             "size": 30
+        },
+        "sedgwickAveSmall" : {
+            "file" : "fonts/SedgwickAve-Regular.ttf",
+            "size": 20
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3",
+  		"jump" : "sounds/jump.wav",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav",
-        "error": "sounds/error.wav"
+        "error": "sounds/error.wav",
+        "laserFiring": "sounds/laserFiring.wav",
+        "laserCharging": "sounds/laserCharging.wav",
+        "laserLocking": "sounds/laserLocking.wav",
+        "laserThud": "sounds/laserThud.wav",
+        "shockAttack": "sounds/shockAttack.wav",
+        "electricShock": "sounds/electricShock.wav",
+        "noGum": "sounds/noGum.wav",
+        "victory": "sounds/victory.wav",
+        "failure": "sounds/failure.wav",
+        "rolling": "sounds/rolling.wav",
+        "clockTick": "sounds/clockTicking.wav",
+        "lowStressAlarm": "sounds/lowStressAlarm.wav",
+        "reloadingGum": "sounds/reloadingGum.wav",
+        "banditLanding": "sounds/banditLanding.wav",
+        "doorSound": "sounds/doorSound.wav",
+        "keyClick": "sounds/keyClick.wav",
+        "knockback": "sounds/knockback.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

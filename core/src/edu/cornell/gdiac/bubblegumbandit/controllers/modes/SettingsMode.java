@@ -370,6 +370,7 @@ public class SettingsMode implements Screen {
         backButtonSettings.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 backButtonClicked = true;
+                SoundController.playSound("keyClick", 1);
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -764,7 +765,7 @@ public class SettingsMode implements Screen {
             stage.act(Gdx.graphics.getDeltaTime());
             draw();
             if (backButtonClicked) {
-                int exit = accessedFromMain ? Screens.LOADING_SCREEN : Screens.PAUSE;
+                int exit = accessedFromMain ? Screens.LOADING_SCREEN : Screens.CONTROLLER;
                 listener.exitScreen(this, exit);
             }
         }

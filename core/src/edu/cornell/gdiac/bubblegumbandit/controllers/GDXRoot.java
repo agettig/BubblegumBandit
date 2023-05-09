@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.*;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.GameOverScreen;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -67,11 +68,11 @@ public class GDXRoot extends Game implements ScreenListener {
 
     private SettingsMode settingsMode;
 
-    private PauseMode pause;
-
     private Cursor mouseCursor;
 
     private Cursor crosshairCursor;
+
+    private GameCamera oldCamera;
 
     /**
      * Creates a new game from the configuration settings.
@@ -100,7 +101,6 @@ public class GDXRoot extends Game implements ScreenListener {
 
         levels = new LevelSelectMode();
         settingsMode = new SettingsMode();
-        pause = new PauseMode();
         settingsMode.setViewport(canvas.getUIViewport());
         gameOver = new GameOverScreen();
 
@@ -173,6 +173,7 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(loading);
         } else if (exitCode == Screens.SETTINGS) {
             settingsMode.setAccessedFromMain(screen == loading);
+            oldCamera = canvas.getCamera();
             canvas.resetCamera();
             settingsMode.setScreenListener(this);
             BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
@@ -186,18 +187,19 @@ public class GDXRoot extends Game implements ScreenListener {
             levels.setCanvas(canvas);
             levels.setScreenListener(this);
             setScreen(levels);
-        } else if (exitCode == Screens.PAUSE) {
-            pause.setScreenListener(this);
-            BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
-            pause.initialize(codygoonRegular);
-            setScreen(pause);
         } else if (exitCode == Screens.CONTROLLER) {
             setScreen(controller);
-            directory = loading.getAssets();
-            controller.gatherAssets(directory);
-            controller.setScreenListener(this);
-            controller.setCanvas(canvas);
-            controller.reset();
+            if (screen == settingsMode) {
+                canvas.setCamera(oldCamera);
+                controller.setPaused(true);
+            } else {
+                directory = loading.getAssets();
+                controller.gatherAssets(directory);
+                controller.setScreenListener(this);
+                controller.setCanvas(canvas);
+                if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
+                controller.reset();
+            }
         } else if (exitCode == Screens.GAME_WON) {
             directory = loading.getAssets();
             gameOver.initialize(directory, canvas);

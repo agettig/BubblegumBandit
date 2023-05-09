@@ -746,6 +746,7 @@ public class CollisionController implements ContactListener {
             boolean left = (other.getX() < bandit.getX());
             boolean knockbackUp = levelModel.getWorld().getGravity().y < 0;
             bandit.setKnockback(true, shock);
+            if(shock) camera.startShockTrauma(); //move float out
             if(yImpact)  {
                 bandit.getBody().applyLinearImpulse(left ? impactX : -impactX,
                         knockbackUp ? impactY : -impactY, bandit.getX(), bandit.getY(), true);
@@ -778,6 +779,7 @@ public class CollisionController implements ContactListener {
                 bandit.hitPlayer(Damage.ROLLING_HIT_DAMAGE, false);
                 bandit.setKnockback(true, false);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+                SoundController.playSound("knockback", 0.25f);
             }
         } else if (bd2 instanceof RollingEnemyModel && bd1.equals(bandit)) {
             if (!bd2.getGummed() && !bd2.getStuck()) {
@@ -786,6 +788,7 @@ public class CollisionController implements ContactListener {
                 bandit.hitPlayer(Damage.ROLLING_HIT_DAMAGE, false);
                 bandit.setKnockback(true);
                 bandit.getBody().applyLinearImpulse(leftMedium ? 2f : -2f, knockBackUp ? 2f : -2f, bandit.getX(), bandit.getY(), true);
+                SoundController.playSound("knockback", 0.25f);
             }
         }
     }
@@ -815,6 +818,7 @@ public class CollisionController implements ContactListener {
             }
             bandit.setGrounded(true);
             bandit.setKnockback(false);
+            SoundController.playSound("banditLanding", 1);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }
@@ -851,7 +855,7 @@ public class CollisionController implements ContactListener {
         if (bd1.getName().equals("floatingGum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
             collectGum(bd1);
             ((Collectible) bd1).setCollected(true);
-            SoundController.playSound("collectItem", 0.75f);
+            SoundController.playSound("collectItem", 0.25f);
         } else if (bd2.getName().equals("floatingGum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
             collectGum(bd2);
             ((Collectible) bd2).setCollected(true);

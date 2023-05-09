@@ -156,14 +156,14 @@
         },
         {
          "id":21,
-         "image":"..\/textures\/objects\/doorUnlocked_h.png",
+         "image":"..\/textures\/objects\/doorUnlockedH.png",
          "imageheight":65,
          "imagewidth":258,
          "type":"doorH"
         },
         {
          "id":22,
-         "image":"..\/textures\/objects\/doorLocked_h.png",
+         "image":"..\/textures\/objects\/doorLockedH.png",
          "imageheight":65,
          "imagewidth":257,
          "type":"doorHLocked"

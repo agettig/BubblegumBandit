@@ -32,6 +32,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.graph.TiledGraph;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
@@ -49,7 +50,6 @@ import edu.cornell.gdiac.util.PooledList;
 import java.util.*;
 
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
-import jdk.jfr.internal.tool.PrettyWriter;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
 
@@ -967,6 +967,8 @@ public class LevelModel {
             gumProjectile, TextureRegion laserBeam, TextureRegion laserBeamEnd,
                      float dt) {
         canvas.begin();
+
+        bandit.setFacingDirection(getAim().getProjTarget(canvas).x);
 
         for(BackgroundTileModel tile: backgroundTiles) {
             tile.draw(canvas);
