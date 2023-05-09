@@ -732,6 +732,7 @@ public class BanditModel extends CapsuleObstacle {
         if (isKnockback) {
             return;
         }
+
         if (getMovement() == 0f) {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);

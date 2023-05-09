@@ -1046,10 +1046,10 @@ public class GameCanvas {
         }
         font.getData().setScale(camera.zoom);
         GlyphLayout layout = new GlyphLayout(font, text);
-        float x = (getWidth() - layout.width) / 2.0f;
-        float y = (getHeight() + layout.height)/ 2.0f;
-        Vector3 coords = camera.unproject(new Vector3(x, y, 0));
-        font.draw(spriteBatch, layout, coords.x, coords.y + offset);
+        float x = (viewport.getWorldWidth() - layout.width) / 2.0f;
+        float y = (viewport.getWorldHeight() + layout.height)/ 2.0f;
+       // Vector3 coords = camera.unproject(new Vector3(x, y, 0));
+        font.draw(spriteBatch, layout, x, y + offset);
     }
 
     /**
