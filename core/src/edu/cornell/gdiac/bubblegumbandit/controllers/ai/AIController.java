@@ -18,17 +18,7 @@ public class AIController implements Telegraph {
      * Cooldown in ticks for shocking
      */
     private final int SHOCK_COOLDOWN = 180;
-
-    /**
-     * ticks in update loop
-     */
-    private int ticks;
-
-    /**
-     * move for enemy to make
-     */
-    private int move;
-
+    
     /**
      * reference to enemy
      */
@@ -57,7 +47,6 @@ public class AIController implements Telegraph {
 
     private EnemyStateMachine<AIController, EnemyState> enemyfsm;
 
-    private Vector2 target;
     // Shooting Attributes & Constants
 
     /**
@@ -93,10 +82,7 @@ public class AIController implements Telegraph {
         this.enemyfsm = new EnemyStateMachine(this, EnemyState.WANDER, EnemyState.PERCEIVE, tiledGraphGravityUp, tiledGraphGravityDown);
         this.bandit = bandit;
         this.tiledGraphGravityDown = tiledGraphGravityDown;
-        move = CONTROL_NO_ACTION;
-        ticks = 0;
         firecool = 0;
-        target = null;
         MessageManager.getInstance().addListener(this, MessageType.NEED_BACKUP);
 
         if (enemy instanceof ShockEnemyModel) {
