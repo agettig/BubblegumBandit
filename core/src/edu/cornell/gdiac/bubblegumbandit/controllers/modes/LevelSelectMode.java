@@ -184,6 +184,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("codygoonRegular", BitmapFont.class);
+        displayFont.setColor(Color.WHITE);
 
         constantsJson = directory.getEntry("constants", JsonValue.class);
 

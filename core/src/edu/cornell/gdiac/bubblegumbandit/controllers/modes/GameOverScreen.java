@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.ScreenListener;
 import org.w3c.dom.Text;
@@ -190,12 +191,16 @@ public class GameOverScreen implements Screen, InputProcessor {
         gameOverMessage = "VICTORY";
         displayFont.setColor(green);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
+        SoundController.pauseMusic();
+        SoundController.playSound("victory", 1);
     }
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
         displayFont.setColor(red);
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
+        SoundController.pauseMusic();
+        SoundController.playSound("failure", 1);
     }
 
     @Override
