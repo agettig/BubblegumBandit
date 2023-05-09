@@ -56,6 +56,11 @@
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
+        "gameOverBg": {
+            "file": "textures/environment/failWinBackground.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
         "exit": "textures/environment/shipDoor.png",
         "alarmOn": "textures/environment/alarmOn.png",
         "alarmOff": "textures/environment/alarmOff.png",
@@ -468,7 +473,11 @@
         "rolling": "sounds/rolling.wav",
         "clockTick": "sounds/clockTicking.wav",
         "lowStressAlarm": "sounds/lowStressAlarm.wav",
-        "reloadingGum": "sounds/reloadingGum.wav"
+        "reloadingGum": "sounds/reloadingGum.wav",
+        "banditLanding": "sounds/banditLanding.wav",
+        "doorSound": "sounds/doorSound.wav",
+        "keyClick": "sounds/keyClick.wav",
+        "knockback": "sounds/knockback.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",

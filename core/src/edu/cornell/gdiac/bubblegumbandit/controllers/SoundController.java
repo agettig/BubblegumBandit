@@ -58,6 +58,10 @@ public class SoundController {
     private static SoundEffect clockTick;
     private static SoundEffect lowStressAlarm;
     private static SoundEffect reloadingGum;
+    private static SoundEffect banditLanding;
+    private static SoundEffect doorSound;
+    private static SoundEffect keyClick;
+    private static SoundEffect knockback;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -136,6 +140,10 @@ public class SoundController {
         clockTick = directory.getEntry("clockTick", SoundEffect.class);
         lowStressAlarm = directory.getEntry("lowStressAlarm", SoundEffect.class);
         reloadingGum = directory.getEntry("reloadingGum", SoundEffect.class);
+        banditLanding = directory.getEntry("banditLanding", SoundEffect.class);
+        doorSound = directory.getEntry("doorSound", SoundEffect.class);
+        keyClick = directory.getEntry("keyClick", SoundEffect.class);
+        knockback = directory.getEntry("knockback", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -157,6 +165,10 @@ public class SoundController {
             put(clockTick, -17);
             put(lowStressAlarm, -18);
             put(reloadingGum, -19);
+            put(banditLanding, -20);
+            put(doorSound, -21);
+            put(keyClick, -22);
+            put(knockback, -23);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -179,6 +191,10 @@ public class SoundController {
             put("clockTick", clockTick);
             put("lowStressAlarm", lowStressAlarm);
             put("reloadingGum", reloadingGum);
+            put("banditLanding", banditLanding);
+            put("doorSound", doorSound);
+            put("keyClick", keyClick);
+            put("knockback", knockback);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
