@@ -24,7 +24,7 @@ public class Damage {
     public static final float LASER_JUMP_DAMAGE = 30f;
 
     /** Damage dealt when the Bandit touches a LaserEnemy's laser. */
-    public static final float LASER_TICK_DAMAGE = .75f;
+    public static final float LASER_TICK_DAMAGE = .5f;
 
     /** Damage dealt when a RollingEnemy rolls into the Bandit. */
     public static final float ROLLING_HIT_DAMAGE = 25f;
