@@ -63,6 +63,9 @@ public class GameCamera  extends OrthographicCamera {
     /** The base position of the camera before screen shake. */
     private Vector2 basePos;
 
+    /** if in level select, directly follow camera */
+    private boolean levelSelect;
+
     /** Constructs a new GameCamera, using the given viewport width and height. For pixel perfect 2D rendering just supply
      * the screen size, for other unit scales (e.g. meters for box2d) proceed accordingly. The camera will show the region
      * [-viewportWidth/2, -(viewportHeight/2-1)] - [(viewportWidth/2-1), viewportHeight/2]
@@ -262,6 +265,12 @@ public class GameCamera  extends OrthographicCamera {
         update(true, dt);
     }
 
+
+    /** Tell the game camera if we are on level select or not */
+    public void isLevelSelect (boolean value) {
+        levelSelect = value;
+    }
+
     /**
      * Updates this camera based on its target.
      */
@@ -291,11 +300,15 @@ public class GameCamera  extends OrthographicCamera {
             newTargetY = target.y * (1 - secondaryWeight) + secondaryTarget.y * secondaryWeight;
         }
 
-        basePos.x += (newTargetX - basePos.x) * xSpeed * dt;
-        basePos.y += (newTargetY - basePos.y) * ySpeed * dt;
+        if (levelSelect){
+            basePos.x = newTargetX;
+            basePos.y = newTargetY;
+        }
+        else {
+            basePos.x += (newTargetX - basePos.x) * xSpeed * dt;
+            basePos.y += (newTargetY - basePos.y) * ySpeed * dt;
+        }
 
-//        basePos.x = newTargetX;
-//        basePos.y = newTargetY;
 
         // Adjust y clamp
         if (!isFixedY) {

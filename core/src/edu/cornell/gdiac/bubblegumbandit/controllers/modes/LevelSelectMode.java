@@ -242,6 +242,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         camWidth = canvas.getCamera().viewportWidth;
         camHeight = canvas.getCamera().viewportHeight;
+
+        canvas.getCamera().isLevelSelect(true);
     }
 
     /**
@@ -254,6 +256,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         levels = null;
     }
 
+
+    int ticks = 0;
     /**
      * Update the status of this player mode.
      *
@@ -265,6 +269,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     private void update(float dt) {
         world.step(dt, 8, 3);
+
+        //check framerate
+//        if (ticks == 10) {
+//            System.out.println((int) (1/dt));
+//            ticks = 0;
+//        }
+//        else ticks ++;
 
         Vector2 mousePos = canvas.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
 
@@ -354,14 +365,17 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
             // We are ready, notify our listener
             if (isReady() && listener != null) {
+                canvas.getCamera().isLevelSelect(false);
                 listener.exitScreen(this, Screens.CONTROLLER);
             }
 
             if (returnToMain && listener!=null){
+                canvas.getCamera().isLevelSelect(false);
                 listener.exitScreen(this, Screens.LOADING_SCREEN);
             }
 
             if (returnToMain && listener!=null){
+                canvas.getCamera().isLevelSelect(false);
                 listener.exitScreen(this, 1);
             }
         }
