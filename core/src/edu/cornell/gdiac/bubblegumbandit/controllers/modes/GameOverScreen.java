@@ -243,11 +243,11 @@ public class GameOverScreen implements Screen, InputProcessor {
         int width = Gdx.graphics.getWidth();
         int height = Gdx.graphics.getHeight();
 
-        if (fadeFraction < 1) {
-            background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
-            canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
-        }
-        else {
+       // if (fadeFraction < 1) {
+           // background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
+           // canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
+       // }
+       // else {
             canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth,
                 canvas.getCamera().viewportHeight);
             canvas.drawTextCentered(gameOverMessage, displayFont, 100);
@@ -311,7 +311,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                     BUTTON_SCALE
             );
 
-        }
+        //}
         canvas.end();
     }
 
