@@ -225,11 +225,11 @@ public class HUDController {
       //If we need to "tick"
       if(orbCountdownValue != timer){
 
-        int shakeChance = 5;
+        int shakeChance = 3;
         boolean shouldShake = MathUtils.random(1, 10) <= shakeChance;
 
         if(shouldShake && timer > 3){
-          float randomTrauma = MathUtils.random(1f, 2f);
+          float randomTrauma = MathUtils.random(0f, .75f);
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
@@ -253,7 +253,7 @@ public class HUDController {
           camera.addTrauma(
                   bandit.getX() * bandit.getDrawScale().x,
                   bandit.getY() * bandit.getDrawScale().y,
-                  2f);
+                  1.5f);
         }
 
         if(timer == 0){
