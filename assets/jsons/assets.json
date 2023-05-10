@@ -44,7 +44,7 @@
         "blackSquare": "textures/environment/black_square.png",
 
         "terrain": {
-            "file": "textures/environment/tileset.png"
+            "file": "textures/environment/tileSet.png"
         },
         "background": {
             "file": "textures/environment/background.png",
@@ -497,13 +497,13 @@
 
     },
 	"jsons" : {
-        "level1" : "jsons/levels/emLevel1.json",
-        "level2":"jsons/levels/level1.json",
-        "level3" : "jsons/levels/emLevel3.json",
-        "level4": "jsons/levels/emLevel4.json",
-        "level5" : "jsons/levels/level5bella.json",
-        "level6":"jsons/levels/level6bella.json",
-        "level7" : "jsons/levels/emlevel7.json",
+        "level1" : "jsons/levels/level1.json",
+        "level2":"jsons/levels/level2.json",
+        "level3" : "jsons/levels/level3.json",
+        "level4": "jsons/levels/level4.json",
+        "level5" : "jsons/levels/level5.json",
+        "level6":"jsons/levels/level6.json",
+        "level7" : "jsons/levels/level7.json",
         "level8": "jsons/levels/level8.json",
         "level9": "jsons/levels/level9.json",
         "constants": "jsons/constants.json",
