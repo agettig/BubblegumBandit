@@ -432,6 +432,7 @@ public class LevelModel {
             property = property.next();
         }
 
+
         float[] pSize = constants.get("physicsSize").asFloatArray();
 
         levelWidth = levelFormat.getInt("width");
