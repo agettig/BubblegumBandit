@@ -257,7 +257,6 @@ public class GameCamera  extends OrthographicCamera {
         float lowerXBound = basePos.x - halfWidth;
         float upperXBound = basePos.x + halfWidth;
 
-
         if (yPos >= lowerYBound && yPos <= upperYBound && xPos >= lowerXBound && xPos <= upperXBound) {
             shake.addTrauma(trauma);
         }

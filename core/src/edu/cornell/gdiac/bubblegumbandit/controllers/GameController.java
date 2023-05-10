@@ -829,7 +829,7 @@ public class GameController implements Screen {
 
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
-        hud.draw(level, bubblegumController, (int) orbCountdown, (int) (1 / delta), level.getDebug(), reloadingGum);
+
         if (paused) {
             if (!pauseScreen.hasViewport()) {
                 pauseScreen.setViewport(canvas.getUIViewport());
@@ -845,6 +845,10 @@ public class GameController implements Screen {
             reloadSymbolTimer = 0;
             SoundController.playSound("noGum", 1);
         }
+
+
+        hud.draw(level, bubblegumController, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
+        hud.drawCountdownText((int)orbCountdown, delta, canvas.getCamera(), level.getBandit());
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
             canvas.begin();

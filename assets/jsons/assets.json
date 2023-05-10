@@ -365,6 +365,7 @@
         "halfStuck" : "textures/gum/halfStuck.png",
         "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
         "outlineDoorH": "textures/gum/doorGumOutlineH.png",
+        "escapeIcon" : "textures/UI/escapeIcon.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
             "wrap": false,
