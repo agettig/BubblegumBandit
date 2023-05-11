@@ -210,7 +210,7 @@ public class HUDController {
 
   public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
 
-
+    if(timer < 0 && orbCountdown != null) orbCountdown.setText("");
     if(timer < 0) return; //We aren't ticking down.
 
     //We need to instantiate the label here in order to draw the text over the UI
@@ -233,7 +233,8 @@ public class HUDController {
 
 
     //Did we tick down one second?
-    if(Integer.parseInt(orbCountdown.getText().toString()) != timer){
+    String countdownText = orbCountdown.getText().toString();
+    if(countdownText.equals("") || Integer.parseInt(countdownText) != timer){
       orbCountdown.setText(timer);
 
       //Should we SHAKE??
