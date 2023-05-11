@@ -827,6 +827,8 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
+
+
         // Final message
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
