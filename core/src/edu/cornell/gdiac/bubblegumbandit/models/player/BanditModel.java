@@ -788,15 +788,15 @@ public class BanditModel extends CapsuleObstacle {
             }
         }
 
-        if (wasHit) {
-            if (ticks % 200 == 0) {
-                setWasHit(false);
-            }
-        } else {
-            if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
-                healPlayer(0.25f);
-            }
-        }
+//        if (wasHit) {
+//            if (ticks % 200 == 0) {
+//                setWasHit(false);
+//            }
+//        } else {
+//            if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
+//                healPlayer(0.25f);
+//            }
+//        }
 
         if (isShooting()) {
             shootCooldown = shotLimit;

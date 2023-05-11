@@ -154,7 +154,7 @@ public class CollisionController implements ContactListener {
             resolveGumCollision(obstacleA, obstacleB, contact);
             resolveWinCondition(obstacleA, obstacleB);
             checkShockCollision(obstacleA, fixA, obstacleB, fixB);
-            resolveFloatingGumCollision(obstacleA, obstacleB);
+            resolveHealthPackCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
             resolveCaptiveCollision(obstacleA, obstacleB);
             resolveOrbCollision(obstacleA, obstacleB);
@@ -851,13 +851,13 @@ public class CollisionController implements ContactListener {
         sensorFixtures.clear();
     }
 
-    public void resolveFloatingGumCollision(Obstacle bd1, Obstacle bd2){
-        if (bd1.getName().equals("floatingGum") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
-            collectGum(bd1);
+    public void resolveHealthPackCollision(Obstacle bd1, Obstacle bd2){
+        if (bd1.getName().equals("healthPack") && bd2 == levelModel.getBandit() && !((Collectible) bd1).getCollected()){
+            levelModel.getBandit().healPlayer(10);
             ((Collectible) bd1).setCollected(true);
             SoundController.playSound("collectItem", 0.25f);
-        } else if (bd2.getName().equals("floatingGum") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
-            collectGum(bd2);
+        } else if (bd2.getName().equals("healthPack") && bd1 == levelModel.getBandit() && !((Collectible) bd2).getCollected()) {
+            levelModel.getBandit().healPlayer(10);
             ((Collectible) bd2).setCollected(true);
             SoundController.playSound("collectItem", 0.75f);
         }

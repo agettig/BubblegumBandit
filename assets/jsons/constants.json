@@ -89,11 +89,11 @@
     "bottomLeftStuckTextureOutline": "bottomLeftGum",
     "topLeftStuckTextureOutline": "topLeftGum"
   },
-  "floatingGum": {
+  "healthPack": {
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "texture": "floatingGum",
+    "texture": "healthPack",
     "debugColor": "yellow",
     "debugOpacity": 200,
     "bobAmount": 0.1,
