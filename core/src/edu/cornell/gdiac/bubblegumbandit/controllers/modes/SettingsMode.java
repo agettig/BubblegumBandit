@@ -752,12 +752,12 @@ public class SettingsMode implements Screen {
             if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 + button.getWidth() + spacing,
-                        button.getY() + scrollPane.getScrollY() + 40, arrow.getRegionWidth() / 2,
+                        button.getY() + scrollPane.getScrollY() - 20, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 180);
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 - arrow.getRegionWidth() - spacing,
-                        button.getY() + scrollPane.getScrollY() + 40, arrow.getRegionWidth() / 2,
+                        button.getY() + scrollPane.getScrollY() - 20, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 0);
             }
@@ -856,7 +856,7 @@ public class SettingsMode implements Screen {
 
 
                 // only no duplicates except for gravity
-                if (indices.size() == 2 || keycode == Input.Keys.ESCAPE || (indices.size() == 1 &&
+                if (indices.size() == 2 || (indices.size() == 1 &&
                         (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
                         !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
                     SoundController.playSound("error", 1);
