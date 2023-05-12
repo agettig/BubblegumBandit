@@ -860,6 +860,9 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
+
+
+        // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
            // level.getBandit().setVX(0);

@@ -144,16 +144,14 @@ public class HUDController {
     table.padLeft(10).padTop(60);
 
 
-    orbCountdown = new Label("", new Label.LabelStyle(font, Color.WHITE));
-    escapeText = new Label("ESCAPE!", new Label.LabelStyle(font, Color.RED));
+    escapeText = new Label("ESCAPE", new Label.LabelStyle(font, Color.RED));
     escapeIcon = new Image(directory.getEntry("escapeIcon", Texture.class));
-    orbCountdown.setFontScale(1f);
-    escapeText.setFontScale(2f);
-    escapeText.setPosition(stage.getWidth()/2 - escapeText.getWidth(), stage.getHeight() * .75f);
+    escapeText.setFontScale(1.75f);
+    escapeText.setAlignment(Align.center, Align.center);
+    escapeText.setVisible(false);
+    escapeText.setPosition(stage.getWidth()/2 - escapeText.getWidth()/2, stage.getHeight() * .6f);
     escapeIcon.setPosition(stage.getWidth()/2 - escapeIcon.getWidth()/2, stage.getHeight() / 8);
     timerStart = -1;
-    orbCountdown.setPosition(escapeIcon.getWidth() - escapeIcon.getWidth()/2, escapeIcon.getY() + escapeIcon.getHeight()/2);
-    stage.addActor(orbCountdown);
     stage.addActor(escapeIcon);
     stage.addActor(escapeText);
 
@@ -211,62 +209,55 @@ public class HUDController {
   }
 
   public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
-    if(timer >= 0){
-      if(timerStart < 0) timerStart = timer;
-      if(timerStart - timer >= 3) escapeText.setText("");
-      else escapeText.setText("ESCAPE!");
-      shakeTimer(dt, timer, camera, bandit);
+
+    if(timer < 0 && orbCountdown != null) orbCountdown.setText("");
+    if(timer < 0) timerStart = -1;
+    if(timer < 0) return; //We aren't ticking down.
+
+    //We need to instantiate the label here in order to draw the text over the UI
+    if(orbCountdown == null){
+      orbCountdown = new Label("", new Label.LabelStyle(font, Color.WHITE));
       orbCountdown.setFontScale(1f);
       orbCountdown.setColor(Color.WHITE);
+      orbCountdown.setPosition(escapeIcon.getWidth() - escapeIcon.getWidth()/2,
+              escapeIcon.getY() + escapeIcon.getHeight()/2);
+      orbCountdown.setText(timer);
+      stage.addActor(orbCountdown);
+    }
 
-      int orbCountdownValue = orbCountdown.getText().toString().equals("") ? -1 :
-              Integer.parseInt(orbCountdown.getText().toString());
+    shakeTimer(dt, timer, camera, bandit);
 
-      //If we need to "tick"
-      if(orbCountdownValue != timer){
+    //Should we draw "ESCAPE!" ?
+    final int escapeTextDuration = 3;
+    if(timerStart < 0) timerStart = timer;
+    escapeText.setVisible(timerStart - timer < escapeTextDuration);
 
-        int shakeChance = 3;
-        boolean shouldShake = MathUtils.random(1, 10) <= shakeChance;
 
-        if(shouldShake && timer > 3){
-          float randomTrauma = MathUtils.random(0f, .75f);
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  randomTrauma);
-        }
+    //Did we tick down one second?
+    String countdownText = orbCountdown.getText().toString();
+    if(countdownText.equals("") || Integer.parseInt(countdownText) != timer){
+      orbCountdown.setText(timer);
 
-        if(timer == 3){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  .75f);
-        }
-        if(timer == 2){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  1f);
-        }
-
-        if(timer == 1){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  1.5f);
-        }
-
-        if(timer == 0){
-          camera.addTrauma(
-                  bandit.getX() * bandit.getDrawScale().x,
-                  bandit.getY() * bandit.getDrawScale().y,
-                  2f);
-        }
-        orbCountdown.setText(timer);
+      //Should we SHAKE??
+      int shakeChance = 45;
+      boolean shouldShake = MathUtils.random(1, 100) <= shakeChance;
+      if(shouldShake && timer > 3){
+        float randomTrauma = MathUtils.random(.25f, 1f);
+        camera.addTrauma(
+                bandit.getX() * bandit.getDrawScale().x,
+                bandit.getY() * bandit.getDrawScale().y,
+                randomTrauma
+        );
       }
-    } else{
-      orbCountdown.setText("");
-      escapeText.setText("");
+
+      //Final shakes
+      if(timer <= 3){
+        camera.addTrauma(
+                bandit.getX() * bandit.getDrawScale().x,
+                bandit.getY() * bandit.getDrawScale().y,
+                4 - timer
+        );
+      }
     }
   }
 
@@ -351,15 +342,14 @@ public class HUDController {
     float transitionSpeed;
     final float centerTimerX = escapeIcon.getX() + escapeIcon.getWidth()/2;
     final float centerTimerY = escapeIcon.getY() + escapeIcon.getHeight()/2;
+    orbCountdown.setX(centerTimerX);
+    orbCountdown.setY(centerTimerY);
+    escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth()/2);
+    escapeIcon.setY(stage.getHeight() / 8f);
 
-    if(timer > 10){
-      escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth()/2);
-      escapeIcon.setY(stage.getHeight() / 8f);
-      orbCountdown.setX(centerTimerX);
-      orbCountdown.setY(centerTimerY);
-      return;
-    }
-    xShakeRange = 5f;
+    if(timer > 10) return;
+
+    xShakeRange = 10f;
     yShakeRange = 2f;
     transitionSpeed = 7f;
     shakeAdjust = new Vector2(
