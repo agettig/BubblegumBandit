@@ -211,8 +211,9 @@ public class SoundController {
     }
 
     public static void playMusic(String sound){
-        musicPlayer.clearSources();
         AudioSource sample = music.get(sound);
+        if (musicPlayer.getCurrent() == sample) return;
+        musicPlayer.clearSources();
         musicPlayer.setLooping(true);
         musicPlayer.addSource(sample);
         musicPlayer.setVolume(musicVolume);
