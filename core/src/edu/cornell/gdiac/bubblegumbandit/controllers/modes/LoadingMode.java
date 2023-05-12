@@ -474,7 +474,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         if (startButton == null) {
             assets.update(budget);
             this.progress = assets.getProgress();
-            System.out.println(progress);
             if (progress >= 1.0f) {
                 SoundController.getInstance().initialize(assets);
                 this.progress = 1.0f;

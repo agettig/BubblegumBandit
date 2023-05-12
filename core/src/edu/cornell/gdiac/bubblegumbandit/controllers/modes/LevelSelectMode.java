@@ -46,7 +46,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private final static int NUM_LEVELS = 9;
 
     /** the gap between level icons */
-    private final static float LEVEL_GAP = 800;
+    private final static float LEVEL_GAP = 700;
 
     /** the gap between level icons and the center of space */
     private final static float SPACE_GAP = 100;
@@ -110,8 +110,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     /** dashes used to draw the paths between levels*/
     private TextureRegion path;
-
-
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -179,7 +177,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public void gatherAssets(AssetDirectory directory) {
         // Access the assets used directly by this controller
-        active = true;
         this.directory = directory;
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
@@ -188,7 +185,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         constantsJson = directory.getEntry("constants", JsonValue.class);
 
-        Gdx.input.setInputProcessor( this );
+//        Gdx.input.setInputProcessor( this );
 
         world = new World(new Vector2(0, 0), false);
 
@@ -196,6 +193,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
         TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
 
+//        if (selectedLevel )
         sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP * 0.7f, SPACE_HEIGHT * 0.8f);
         sunfish.activatePhysics(world);
 
@@ -207,8 +205,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         createIcons(directory);
         //music
-        SoundController.playMusic("menu");
-
+//        SoundController.playMusic("menu");
     }
 
     /** Creates NUM_LEVELS number of level icons and adds them to the levels array */
@@ -257,8 +254,16 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         levels = null;
     }
 
+    /** setup restates the level select mode without reinitializing everything.
+     * Should only be called after gatherAssets */
+    public void setup() {
+        active = true;
+        Gdx.input.setInputProcessor( this );
+        SoundController.playMusic("menu");
+        startMove = false;
+        sunfish.setBoosting(false);
+    }
 
-    int ticks = 0;
     /**
      * Update the status of this player mode.
      *
@@ -296,8 +301,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         //only start sunfish movement when player starts interacting with screen
         if (startMove) {
             sunfish.setMovement(mousePos);
-            sunfish.update(dt);
+
         }
+        sunfish.update(dt, startMove);
 
         //move camera, while keeping view in bounds
         canvas.getCamera().setTarget(sunfish.getPosition());
@@ -368,16 +374,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             if (isReady() && listener != null) {
                 canvas.getCamera().isLevelSelect(false);
                 listener.exitScreen(this, Screens.CONTROLLER);
+                active = false;
             }
 
             if (returnToMain && listener!=null){
                 canvas.getCamera().isLevelSelect(false);
                 listener.exitScreen(this, Screens.LOADING_SCREEN);
-            }
-
-            if (returnToMain && listener!=null){
-                canvas.getCamera().isLevelSelect(false);
-                listener.exitScreen(this, 1);
+                active = false;
             }
         }
     }
@@ -610,6 +613,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         if (keycode == Input.Keys.ESCAPE){
             returnToMain = true;
+            active = false;
         }
         return true;
     }

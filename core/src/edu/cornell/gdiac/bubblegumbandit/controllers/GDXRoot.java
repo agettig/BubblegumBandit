@@ -74,6 +74,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
     private GameCamera oldCamera;
 
+    /** Whether the game controller and the level select have already gathered assets. */
+    private boolean initialized;
+
     /**
      * Creates a new game from the configuration settings.
      */
@@ -158,6 +161,14 @@ public class GDXRoot extends Game implements ScreenListener {
      */
     public void exitScreen(Screen screen, int exitCode) {
 
+        // gathering assets only happens once
+        if (screen == loading && !initialized) {
+            directory = loading.getAssets();
+            controller.gatherAssets(directory);
+            levels.gatherAssets(directory);
+            initialized = true;
+        }
+
 		if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
 			Gdx.graphics.setCursor(crosshairCursor);
 		}
@@ -181,9 +192,9 @@ public class GDXRoot extends Game implements ScreenListener {
             settingsMode.initialize(codygoonRegular, projectSpace);
             setScreen(settingsMode);
         } else if (exitCode == Screens.LEVEL_SELECT) {
-            directory = loading.getAssets();
-            controller.gatherAssets(directory);
-            levels.gatherAssets(directory);
+//            controller.gatherAssets(directory);
+//            levels.gatherAssets(directory);
+            levels.setup();
             levels.setCanvas(canvas);
             levels.setScreenListener(this);
             setScreen(levels);
@@ -193,22 +204,19 @@ public class GDXRoot extends Game implements ScreenListener {
                 canvas.setCamera(oldCamera);
                 controller.setPaused(true);
             } else {
-                directory = loading.getAssets();
-                controller.gatherAssets(directory);
+//                controller.gatherAssets(directory);
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
                 if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
                 controller.reset();
             }
         } else if (exitCode == Screens.GAME_WON) {
-            directory = loading.getAssets();
             gameOver.initialize(directory, canvas);
             gameOver.gameWon(directory);
             gameOver.setScreenListener(this);
             canvas.resetCamera();
             setScreen(gameOver);
         } else if (exitCode == Screens.GAME_LOST) {
-            directory = loading.getAssets();
             gameOver.initialize(directory, canvas);
             gameOver.gameLost(directory);
             gameOver.setScreenListener(this);

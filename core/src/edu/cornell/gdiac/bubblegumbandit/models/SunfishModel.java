@@ -83,8 +83,6 @@ public class SunfishModel extends WheelObstacle {
     /** How long we can draw flame again */
     private int cooldown;
 
-    private Vector2 pos;
-
     // endRegion
 
     public SunfishModel (TextureRegion texture, TextureRegion fire_texture, TextureRegion boost_texture, float x, float y){
@@ -139,8 +137,20 @@ public class SunfishModel extends WheelObstacle {
     }
 
 
-    public void update(float dt){
-//        System.out.println(getVX());
+    /** updates the ship's position and its exhaust,
+     * ship only follows cursor once startMove is true.*/
+    public void update(float dt, boolean startMove){
+
+        if (startMove) {
+            updateMovement();
+        }
+        updateFires(dt);
+
+    }
+
+    /** moves the ship based on player input */
+    private void updateMovement(){
+        //        System.out.println(getVX());
 
         float dst = getPosition().dst(lastPos);
 
@@ -150,7 +160,7 @@ public class SunfishModel extends WheelObstacle {
 
         }
         //boosting distance
-         else if (boosting){
+        else if (boosting){
             body.setTransform(body.getPosition().add(movement.scl(1.8f)), 0);
 //            System.out.println(body.getLinearVelocity());
         }
@@ -165,7 +175,12 @@ public class SunfishModel extends WheelObstacle {
 //        body.applyLinearImpulse(movement, getPosition(), true);
         //rotate ship to face cursor
         body.setTransform(body.getPosition(), angle);
+    }
 
+
+
+    /** updates the fires coming from the ship's exhaust */
+    private void updateFires(float dt){
         //add exhaust
         if (cooldown <= 0 ) {
 
@@ -189,8 +204,6 @@ public class SunfishModel extends WheelObstacle {
             }
         }
 
-
-        pos = getPosition();
     }
 
 
