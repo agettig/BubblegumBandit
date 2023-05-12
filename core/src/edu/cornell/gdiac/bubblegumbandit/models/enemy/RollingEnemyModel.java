@@ -1,8 +1,11 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
+import com.badlogic.gdx.math.Interpolation.SwingOut;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_LEFT;
@@ -23,23 +26,18 @@ public class RollingEnemyModel extends EnemyModel {
      */
     private final int CHARGE_TIME = 15;
 
-
+    /** Damage taken from bumping into a RollingEnemyModel */
+    private final float DAMAGE = 10;
 
     /** Time a RollingEnemyModel must wait in-between attacks  */
     private final int COOLDOWN = 120;
 
-    /** Damage taken from bumping into a RollingEnemyModel */
-    private final float DAMAGE = 10;
-
-    /** How many seconds it takes for a RollingEnemyModel to unstick itself*/
-    private final float UNSTICK_TIME = 3f;
-
-    /** Velocity at which a RollingEnemyModel rolls. */
-    private int ROLL_SPEED;
-
     /** How many more seconds until this RollingEnemyModel can roll again */
     private int rollCoolDown;
 
+    /**
+     * If the robot is attacking
+     */
     /** How many seconds this RollingEnemyModel has been trying to unstick
      *  itself */
     private float unstickStopWatch;
@@ -50,8 +48,17 @@ public class RollingEnemyModel extends EnemyModel {
     /** true if this RollingEnemyModel is attacking */
     private boolean isRolling;
 
+    /**
+     * How long the enemy has been attacking for
+     */
     /** How many seconds this RollingEnemyModel has been attacking for  */
     private int attackDuration;
+
+    /** Velocity at which a RollingEnemyModel rolls. */
+    private int ROLL_SPEED;
+
+    /** How many seconds it takes for a RollingEnemyModel to unstick itself*/
+    private final float UNSTICK_TIME = 3f;
 
     /**
      * Returns the damage a RollingEnemyModel deals when it bumps into
@@ -82,10 +89,11 @@ public class RollingEnemyModel extends EnemyModel {
      * @param x             the x position to set this ProjectileEnemyModel
      * @param y             the y position to set this ProjectileEnemyModel
      * @param constantsJson the constants json
+     * @param isFacingRight whether the enemy spawns facing right
      */
     public void initialize(AssetDirectory directory, float x, float y,
-                           JsonValue constantsJson) {
-        super.initialize(directory, x, y+.01f, constantsJson);
+                           JsonValue constantsJson, boolean isFacingRight) {
+        super.initialize(directory, x, y+.01f, constantsJson, isFacingRight);
         ROLL_SPEED = constantsJson.get("mediumAttack").asInt();
         setName("mediumEnemy");
         attackDuration = 0;
@@ -122,15 +130,15 @@ public class RollingEnemyModel extends EnemyModel {
      * */
     private void updateAnimations(){
         if (isRolling && !stuck && !gummed){
-            animationController.setAnimation("roll", true);
+            animationController.setAnimation("roll", true, false);
         }
         else if (stuck || gummed){
             //TODO: Replace the if() animation to an unsticking one
-            if(unsticking) animationController.setAnimation("stuck", true);
-            else animationController.setAnimation("stuck", true);
+            if(unsticking) animationController.setAnimation("roll", true, false);
+            else animationController.setAnimation("stuck", true, false);
         }
         else{
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 
@@ -143,12 +151,14 @@ public class RollingEnemyModel extends EnemyModel {
                 if (attackDuration == ATTACK_TIME) {
                     isRolling = false;
                     rollCoolDown = COOLDOWN;
+                    SoundController.stopSound("rolling");
                 } else {
                     attackDuration++;
                 }
             } else {
                 attackDuration = 0;
                 isRolling = true;
+                SoundController.playSound("rolling", 0.75f);
             }
         }
         rollCoolDown--;
@@ -191,7 +201,7 @@ public class RollingEnemyModel extends EnemyModel {
         if(getStuck() || getGummed()){
             unsticking = true;
             unstickStopWatch += dt;
-            System.out.println(unstickStopWatch);
+           // System.out.println(unstickStopWatch);
         }
         else{
             unsticking = false;

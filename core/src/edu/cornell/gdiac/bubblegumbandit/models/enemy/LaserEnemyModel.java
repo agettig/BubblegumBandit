@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
@@ -178,10 +179,11 @@ public class LaserEnemyModel extends EnemyModel {
      * @param x             the x position to set this ProjectileEnemyModel
      * @param y             the y position to set this ProjectileEnemyModel
      * @param constantsJson the constants json
-     */
+     * @param isFacingRight whether the enemy spawns facing right
+     * */
     public void initialize(AssetDirectory directory, float x, float y,
-                           JsonValue constantsJson) {
-        super.initialize(directory, x, y, constantsJson);
+                           JsonValue constantsJson, boolean isFacingRight){
+        super.initialize(directory, x, y, constantsJson, isFacingRight);
         halfStuck = new TextureRegion(directory.getEntry("halfStuck", Texture.class));
         halfStuckOutline = new TextureRegion(directory.getEntry("halfStuckOutline", Texture.class));
         setName("laserEnemy");
@@ -238,12 +240,12 @@ public class LaserEnemyModel extends EnemyModel {
         }
         // attack animations
         if (chargingLaser()) {
-            animationController.setAnimation("charge", true);
+            animationController.setAnimation("charge", true, false);
         }
         else if (stuck || gummed){
-            animationController.setAnimation("stuck", true);
+            animationController.setAnimation("stuck", true, false);
         } else {
-            animationController.setAnimation("patrol", true);
+            animationController.setAnimation("patrol", true, false);
         }
     }
 
@@ -261,6 +263,9 @@ public class LaserEnemyModel extends EnemyModel {
         isJumping = false;
         hasJumped = false;
         jumpCooldown = JUMP_COOLDOWN;
+        SoundController.playSound("laserThud", 1);
+
+
         setShouldJumpAttack(false);
 
         // damage bandit if in range
@@ -272,7 +277,7 @@ public class LaserEnemyModel extends EnemyModel {
                 boolean isBandit = fixture.getBody().getUserData() instanceof BanditModel;
                 if (isBandit) {
                     BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
-                    bandit.hitPlayer(Damage.JUMP_STUN_DAMAGE, false);
+                    bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
                     int yImpulse = isFlipped ? -10 : 10;
                     int xImpulse = getX() > bandit.getX() ? -5 : 5;
                     bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);

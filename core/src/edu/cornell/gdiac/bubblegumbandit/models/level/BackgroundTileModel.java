@@ -53,5 +53,9 @@ public class BackgroundTileModel {
             x*drawScale.x, y*drawScale.y, 0, 1, 1);
       }
     }
+
+    public boolean hasTile(){
+        return tileTexture != null;
+    }
   }
 

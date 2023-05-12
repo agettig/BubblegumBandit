@@ -144,6 +144,7 @@ public class GameCanvas {
 
     private FitViewport viewport;
 
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>
@@ -168,10 +169,24 @@ public class GameCanvas {
         local = new Affine2();
         global = new Matrix4();
         vertex = new Vector2();
+
     }
 
     public void resetCamera() {
         camera = new GameCamera(getWidth(), getHeight());
+        camera.setToOrtho(false);
+        spriteBatch.setProjectionMatrix(camera.combined);
+        debugRender.setProjectionMatrix(camera.combined);
+        fovRender.setProjectionMatrix(camera.combined);
+        if (viewport != null) {
+            viewport.setCamera(camera);
+            viewport.update(getWidth(), getHeight(), true);
+            viewport.apply(true);
+        }
+    }
+
+    public void setCamera(GameCamera cam) {
+        camera = cam;
         camera.setToOrtho(false);
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
@@ -1031,10 +1046,10 @@ public class GameCanvas {
         }
         font.getData().setScale(camera.zoom);
         GlyphLayout layout = new GlyphLayout(font, text);
-        float x = (getWidth() - layout.width) / 2.0f;
-        float y = (getHeight() + layout.height)/ 2.0f;
-        Vector3 coords = camera.unproject(new Vector3(x, y, 0));
-        font.draw(spriteBatch, layout, coords.x, coords.y + offset);
+        float x = (viewport.getWorldWidth() - layout.width) / 2.0f;
+        float y = (viewport.getWorldHeight() + layout.height)/ 2.0f;
+       // Vector3 coords = camera.unproject(new Vector3(x, y, 0));
+        font.draw(spriteBatch, layout, x, y + offset);
     }
 
     /**
@@ -1341,6 +1356,7 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active beginDebug()", new IllegalStateException());
             return;
         }
+
         fovRender.setProjectionMatrix(camera.combined);
         fovRender.begin(ShapeRenderer.ShapeType.Line);
         local.applyTo(vertex);

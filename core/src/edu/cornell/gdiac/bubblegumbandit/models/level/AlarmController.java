@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 
@@ -114,14 +115,17 @@ public class AlarmController {
 
       float time = TimeUtils.timeSinceMillis(timeStamp);
       if(time>pulseTime/3f&&time<pulseTime) {
-
+        //SoundController.playSound("lowStressAlarm", 0.5f);
+        //SoundController.lastPlayed(-18);
         for(PointLight light : lights) {
           light.setDistance(time<= pulseTime*(2f/3f) ? light.getDistance()+.15f
               : light.getDistance()-.15f);
         }
 
       } else if (time>pulseTime) { {
-       timeStamp = TimeUtils.millis();
+        //SoundController.lastPlayed(0);
+        //SoundController.stopSound("lowStressAlarm");
+        timeStamp = TimeUtils.millis();
         for(PointLight light : lights) {
           light.setDistance(0);
         }

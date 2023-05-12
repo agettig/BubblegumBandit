@@ -4,6 +4,8 @@
     "sliderTexture": "textures/settings/slider.png",
     "knob": "textures/settings/bubbleUI.png",
     "sliderBeforeKnob": "textures/settings/sliderwhite.png",
-    "arrow" : "textures/settings/arrow.png"
+    "arrow" : "textures/settings/arrow.png",
+    "scrollBar": "textures/settings/sliderBackground.png",
+    "scrollFill": "textures/settings/sliderFill.png"
   }
 }

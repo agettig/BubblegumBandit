@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,12 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.PlayerController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.util.ScreenListener;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +38,8 @@ public class SettingsMode implements Screen {
      * Background texture for settings
      */
     private TextureRegionDrawable background;
+
+    private TextureRegionDrawable scrollBar;
 
     /**
      * Hover arrow texture
@@ -76,16 +77,6 @@ public class SettingsMode implements Screen {
     private TextButton toggleMinimapButton;
 
     /**
-     * Unstick gum button
-     */
-    private TextButton unstickGumButton;
-
-    /**
-     * Shoot gum button
-     */
-    private TextButton shootGumButton;
-
-    /**
      * Controls button
      * Takes the player to controls settings screen
      */
@@ -107,6 +98,21 @@ public class SettingsMode implements Screen {
      * Reload gum button
      */
     private TextButton reloadGumButton;
+
+    /**
+     * Unstick gum button
+     */
+    private TextButton unstickGumButton;
+
+    /**
+     * Pause button
+     * */
+    private TextButton pauseButton;
+
+    /**
+     * Shoot gum button
+     */
+    private TextButton shootGumButton;
 
     /**
      * Whether back butotn to main menu was clicked
@@ -164,20 +170,29 @@ public class SettingsMode implements Screen {
      */
     private Drawable sliderKnob;
 
+    private Drawable scrollKnob;
+
     /**
      * Texture for not filled slider (white)
      */
     private Drawable sliderBeforeKnob;
+
 
     /**
      * Style used for headings
      */
     private Label.LabelStyle headingsStyle;
 
+    private ScrollPane scrollPane;
+
     /**
      * Style used for labels
      */
     private Label.LabelStyle labelStyle;
+
+    private int topPadding = 0;
+
+    private SettingsInputProcessor settingsInputProcessor;
 
     /**
      * Bubblegum Pink color
@@ -202,32 +217,54 @@ public class SettingsMode implements Screen {
      */
     private HashMap<TextButton, Integer> buttonIndexMap = new HashMap<>();
 
+    private TextureRegionDrawable backgroundButton;
+
     /**
      * Input multiplexer
      * stage and settings input processor
      */
     private InputMultiplexer inputMultiplexer;
 
+    private boolean accessedFromMain;
+
+    public void setAccessedFromMain(boolean b){
+        accessedFromMain = b;
+    }
+
     /**
      * Array of booleans represented if buttons are hovered over
      */
-    private boolean[] hoverBooleans = new boolean[]{false, false, false, false, false, false, false, false};
+    private boolean[] hoverBooleans = new boolean[]{false, false, false, false, false, false, false, false, false};
 
     /**
      * Values representing the keys and buttons pressed for each user control
      */
     private int[] values;
 
-    private final int[] defaultVals = new int[]{
+    /**
+     * Array keeping track if setting is a key or a button
+     * <p>
+     * True -> key, False -> button
+     */
+    private boolean[] bindings;
+
+    public static final boolean[] defaultBindings = new boolean[]{
+            true, true, true, true, false, false, true, true, true
+    };
+
+    public static final int[] defaultVals = new int[]{
             Input.Keys.A,
             Input.Keys.D,
             Input.Keys.SPACE,
             Input.Keys.SPACE,
-            Input.Keys.SHIFT_LEFT,
-            Input.Keys.R,
             Input.Buttons.LEFT,
-            Input.Buttons.RIGHT
+            Input.Buttons.RIGHT,
+            Input.Keys.R,
+            Input.Keys.SHIFT_LEFT,
+            Input.Keys.ESCAPE
     };
+
+    private HashMap<Integer, String> keyToString;
 
     /**
      * Contructor for making a settings mode
@@ -243,10 +280,13 @@ public class SettingsMode implements Screen {
 
         background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
         sliderBeforeKnob = new TextureRegionDrawable(new TextureRegion(slider));
-        sliderKnob = new TextureRegionDrawable(new TextureRegion(knob));
+        scrollKnob = new TextureRegionDrawable(internal.getEntry("scrollFill", Texture.class));
+        sliderKnob =  new TextureRegionDrawable(new TextureRegion(knob));
         sliderTexture = new TextureRegionDrawable(sliderBeforeKnobTexture);
         arrow = new TextureRegion(internal.getEntry("arrow", Texture.class));
-
+        scrollBar = new TextureRegionDrawable(internal.getEntry("scrollBar", Texture.class));
+        scrollBar.setMinWidth(20);
+        scrollKnob.setMinWidth(20);
 
         stage = new Stage();
         settingsTable = new Table();
@@ -255,31 +295,34 @@ public class SettingsMode implements Screen {
         controlsTable.align(Align.topLeft);
         settingsTable.setFillParent(true);
         controlsTable.setFillParent(true);
+//        controlsTable.debug();
         stage.addActor(settingsTable);
         values = SaveData.getKeyBindings();
+        bindings = SaveData.getKeyButtons();
+        accessedFromMain = true;
 
-        SettingsInputProcessor settingsInputProcessor = new SettingsInputProcessor();
+        settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
+        keyToString = new HashMap<>();
+
+        keyToString.put(Input.Buttons.RIGHT, "RIGHT CLICK");
+        keyToString.put(Input.Buttons.LEFT, "LEFT CLICK");
+        keyToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
+        keyToString.put(Input.Buttons.BACK, "BACK CLICK");
+        keyToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
     }
 
     public void resetDefaultBindings() {
         for (int i = 0; i < defaultVals.length; i++) {
             values[i] = defaultVals[i];
+            bindings[i] = defaultBindings[i];
         }
 
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             int value = values[index];
-            if (index < 6) {
-                entry.getKey().setText(Input.Keys.toString(value).toUpperCase());
-            } else {
-                if (value == 0) {
-                    entry.getKey().setText("LEFT CLICK");
-                } else {
-                    entry.getKey().setText("RIGHT CLICK");
-                }
-            }
-
+            String toString = bindings[index] ? Input.Keys.toString(value).toUpperCase() : keyToString.get(value);
+            entry.getKey().setText(toString);
         }
     }
 
@@ -320,7 +363,7 @@ public class SettingsMode implements Screen {
     public void makeSettingsTable() {
         headingsStyle = new Label.LabelStyle(this.titleFont, spaceBlue);
         labelStyle = new Label.LabelStyle(this.labelFont, Color.WHITE);
-        Label settings = new Label("Settings", headingsStyle);
+        Label settings = new Label("SETTINGS", headingsStyle);
         Label music = new Label("Music", labelStyle);
         Label soundEffects = new Label("Sound Effects", labelStyle);
 
@@ -329,12 +372,13 @@ public class SettingsMode implements Screen {
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null,
                 null, null, this.titleFont);
 
-        backButtonSettings = new TextButton("Back", backButtonStyle);
+        backButtonSettings = new TextButton("BACK", backButtonStyle);
         backButtonSettings.getLabel().setFontScale(.5f);
 
         backButtonSettings.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 backButtonClicked = true;
+                SoundController.playSound("keyClick", 1);
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -374,12 +418,9 @@ public class SettingsMode implements Screen {
         settingsTable.add(musicSlider).width(460).pad(0, 0, 32, 0);
         settingsTable.row();
         settingsTable.add(soundEffects).pad(0, 160, 32, 295);
-        ;
         settingsTable.add(soundEffectsSlider).width(460).pad(0, 0, 32, 0);
-        ;
         settingsTable.row();
         settingsTable.add(controlsButton).pad(0, 160, 40, 0);
-        ;
         settingsTable.row();
         settingsTable.add(backButtonSettings).pad(0, 100, 0, 0);
         settingsTable.row();
@@ -394,183 +435,77 @@ public class SettingsMode implements Screen {
     /**
      * Add listeners to controls buttons
      */
-    private void addControlButtonListners() {
-        moveLeftButton.addListener(new ClickListener() {
+    private void addControlButtonListeners() {
+
+        ClickListener listener = new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
+                TextButton button = (TextButton) event.getListenerActor();
                 if (checkedButton != null) {
                     checkedButton.setChecked(false);
                 }
-                if (checkedButton == moveLeftButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = moveLeftButton;
-                }
-            }
+                if (checkedButton == button) {
+                    ArrayList<Integer> indices = new ArrayList<>(2);
 
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(moveLeftButton)] = true;
-            }
+                    for (int i = 0; i < values.length; i++) {
+                        if (values[i] == Input.Buttons.LEFT) {
+                            indices.add(i);
+                            break;
+                        }
+                    }
 
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(moveLeftButton)] = false;
-            }
-        });
-        moveRightButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == moveRightButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = moveRightButton;
-                }
-            }
+                    int buttonIndex = buttonIndexMap.get(checkedButton);
 
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(moveRightButton)] = true;
-            }
+                    int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
+                    int indexGravityDown = buttonIndexMap.get(toggleGravityDownButton);
 
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(moveRightButton)] = false;
-            }
-        });
-        toggleGravityUpButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == toggleGravityUpButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = toggleGravityUpButton;
-                }
-            }
 
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                    // only no duplicates except for gravity
+                    if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                            !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
+//                        SoundController.playSound("error", 1);
+                        checkedButton.setChecked(false);
+                        checkedButton = null;
+                        return;
+                    }
 
-                hoverBooleans[buttonIndexMap.get(toggleGravityUpButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(toggleGravityUpButton)] = false;
-            }
-        });
-        toggleGravityDownButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == toggleGravityDownButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = toggleGravityDownButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(toggleGravityDownButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(toggleGravityDownButton)] = false;
-            }
-        });
-
-        toggleMinimapButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == toggleMinimapButton) {
-                    checkedButton = null;
-                } else {
-                    checkedButton = toggleMinimapButton;
-                }
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(toggleMinimapButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(toggleMinimapButton)] = false;
-            }
-        });
-        shootGumButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (checkedButton != shootGumButton)
-                    checkedButton = shootGumButton;
-                else {
+                    values[buttonIndex] = Input.Buttons.LEFT;
+                    bindings[buttonIndex] = false;
                     checkedButton.setText("LEFT CLICK");
-                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
                     checkedButton.setChecked(false);
-                    checkedButton = null;
-                }
-
-
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(shootGumButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(shootGumButton)] = false;
-            }
-        });
-        unstickGumButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (checkedButton != unstickGumButton)
-                    checkedButton = unstickGumButton;
-                else {
-                    checkedButton.setText("LEFT CLICK");
-                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
-                    checkedButton.setChecked(false);
-                    checkedButton = null;
-                }
-
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = true;
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(unstickGumButton)] = false;
-            }
-        });
-        reloadGumButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                if (checkedButton != null) {
-                    checkedButton.setChecked(false);
-                }
-                if (checkedButton == reloadGumButton) {
                     checkedButton = null;
                 } else {
-                    checkedButton = reloadGumButton;
+                    checkedButton = button;
                 }
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hoverBooleans[buttonIndexMap.get(reloadGumButton)] = true;
+                TextButton button = (TextButton) event.getListenerActor();
+                hoverBooleans[buttonIndexMap.get(button)] = true;
             }
 
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                hoverBooleans[buttonIndexMap.get(reloadGumButton)] = false;
+                TextButton button = (TextButton) event.getListenerActor();
+                hoverBooleans[buttonIndexMap.get(button)] = false;
             }
-        });
+        };
+
+        moveLeftButton.addListener(listener);
+        moveRightButton.addListener(listener);
+        toggleGravityUpButton.addListener(listener);
+        toggleGravityDownButton.addListener(listener);
+        toggleMinimapButton.addListener(listener);
+        shootGumButton.addListener(listener);
+        unstickGumButton.addListener(listener);
+        reloadGumButton.addListener(listener);
+        pauseButton.addListener(listener);
         controlsBackButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 stage.addActor(settingsTable);
-                for (TextButton button: buttonIndexMap.keySet()){
-                    button.setChecked(false);
+                for (Object o : buttonIndexMap.keySet()) {
+                    if (o instanceof TextButton) {
+                        ((TextButton) o).setChecked(false);
+                    }
                 }
             }
 
@@ -606,7 +541,7 @@ public class SettingsMode implements Screen {
      * Make controls table
      */
     private void makeControlsTable() {
-        Label controls = new Label("Controls", headingsStyle);
+        Label controls = new Label("CONTROLS", headingsStyle);
         Label moveLeft = new Label("Move Left", labelStyle);
         Label moveRight = new Label("Move Right", labelStyle);
         Label toggleGravityUp = new Label("Toggle Gravity Up", labelStyle);
@@ -615,6 +550,7 @@ public class SettingsMode implements Screen {
         Label unstickGum = new Label("Unstick Gum", labelStyle);
         Label toggleMinimap = new Label("Toggle Minimap", labelStyle);
         Label reloadGum = new Label("Reload Gum", labelStyle);
+        Label pause = new Label("Pause", labelStyle);
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.titleFont);
 
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
@@ -632,65 +568,133 @@ public class SettingsMode implements Screen {
         6: shoot
         7: unstick */
 
-        int[] values = SaveData.getKeyBindings();
-        //for(int i : values) System.out.println(Input.Keys.toString(i));
+        moveLeftButton = new TextButton("", controlsButtonStyle);
+        moveRightButton = new TextButton("", controlsButtonStyle);
+        toggleGravityUpButton = new TextButton("", controlsButtonStyle);
+        toggleGravityDownButton = new TextButton("", controlsButtonStyle);
+        toggleMinimapButton = new TextButton("", controlsButtonStyle);
+        reloadGumButton = new TextButton("", controlsButtonStyle);
+        shootGumButton = new TextButton("", controlsButtonStyle);
+        unstickGumButton = new TextButton("", controlsButtonStyle);
+        pauseButton = new TextButton("", controlsButtonStyle);
 
-        moveLeftButton = new TextButton(Input.Keys.toString(values[0]).toUpperCase(), controlsButtonStyle);
-        moveRightButton = new TextButton(Input.Keys.toString(values[1]).toUpperCase(), controlsButtonStyle);
-        toggleGravityUpButton = new TextButton(Input.Keys.toString(values[2]).toUpperCase(), controlsButtonStyle);
-        toggleGravityDownButton = new TextButton(Input.Keys.toString(values[3]).toUpperCase(), controlsButtonStyle);
-        toggleMinimapButton = new TextButton(Input.Keys.toString(values[4]).toUpperCase(), controlsButtonStyle);
-        shootGumButton = new TextButton(Input.Keys.toString(values[6]).toUpperCase(), controlsButtonStyle);
-        if (values[6] == Input.Buttons.LEFT)
-            shootGumButton.setText("Left Click".toUpperCase());
-        else if (values[6] == Input.Buttons.RIGHT)
-            shootGumButton.setText("Right Click".toUpperCase());
-        unstickGumButton = new TextButton(Input.Keys.toString(values[7]), controlsButtonStyle);
-        if (values[7] == Input.Buttons.LEFT)
-            unstickGumButton.setText("Left Click".toUpperCase());
-        else if (values[7] == Input.Buttons.RIGHT)
-            unstickGumButton.setText("Right Click".toUpperCase());
-        reloadGumButton = new TextButton(Input.Keys.toString(values[5]).toUpperCase(), controlsButtonStyle);
 
-        controlsBackButton = new TextButton("Back", backButtonStyle);
+        TextButton[] buttons = new TextButton[]{moveLeftButton, moveRightButton,
+                                                toggleGravityUpButton, toggleGravityDownButton,
+                                                shootGumButton, unstickGumButton,
+                                                reloadGumButton, toggleMinimapButton,
+                                                pauseButton };
+
+        for (int i = 0; i < values.length; i++) {
+            String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : keyToString.get(values[i]);
+            buttons[i].setText(buttonName);
+        }
+
+        controlsBackButton = new TextButton("BACK", backButtonStyle);
         controlsBackButton.getLabel().setFontScale(.5f);
 
-        defaultButton = new TextButton("Default Settings", backButtonStyle);
+        defaultButton = new TextButton("RESET CONTROLS", backButtonStyle);
         defaultButton.getLabel().setFontScale(.5f);
 
-        addControlButtonListners();
+        HorizontalGroup horizontalButtonGroup = new HorizontalGroup();
+        horizontalButtonGroup.space(436);
+        horizontalButtonGroup.addActor(controlsBackButton);
+        horizontalButtonGroup.addActor(defaultButton);
 
-        Label[] labels = new Label[]{moveLeft, moveRight, toggleGravityUp, toggleGravityDown, toggleMinimap, reloadGum, shootGum, unstickGum};
+        addControlButtonListeners();
+
+        Label[] labels = new Label[]{moveLeft, moveRight, toggleGravityUp, toggleGravityDown,shootGum, unstickGum, reloadGum,  toggleMinimap, pause};
 
 
         controlsTable.row();
         controlsTable.add(controls).pad(100, 100, 40, 0);
 
+
         buttonIndexMap.put(moveLeftButton, 0);
         buttonIndexMap.put(moveRightButton, 1);
         buttonIndexMap.put(toggleGravityUpButton, 2);
         buttonIndexMap.put(toggleGravityDownButton, 3);
-        buttonIndexMap.put(toggleMinimapButton, 4);
-        buttonIndexMap.put(reloadGumButton, 5);
-        buttonIndexMap.put(shootGumButton, 6);
-        buttonIndexMap.put(unstickGumButton, 7);
+        buttonIndexMap.put(shootGumButton, 4);
+        buttonIndexMap.put(unstickGumButton, 5);
+        buttonIndexMap.put(reloadGumButton, 6);
+        buttonIndexMap.put(toggleMinimapButton, 7);
+        buttonIndexMap.put(pauseButton, 8);
 
-        int rightPadding[] = new int[]{0, 240, 220, 120, 80, 280, 240, 200};
-        TextButton[] buttons = new TextButton[]{moveLeftButton, moveRightButton,
-                                                toggleGravityUpButton, toggleGravityDownButton,
-                                                toggleMinimapButton, reloadGumButton,
-                                                shootGumButton, unstickGumButton};
 
-        for (int i = 0; i < 8; i++) {
+        int rightPadding[] = new int[]{0, 240, 220, 120, 240, 200, 280, 80, 280};
+
+        Table c = new Table();
+
+        scrollPane = new ScrollPane(c);
+
+        scrollPane.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                ArrayList<Integer> indices = new ArrayList<>(2);
+
+                for (int i = 0; i < values.length; i++) {
+                    if (values[i] == button) {
+                        indices.add(i);
+                        break;
+                    }
+                }
+
+                if (checkedButton != null) {
+                    int buttonIndex = buttonIndexMap.get(checkedButton);
+
+                    int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
+                    int indexGravityDown = buttonIndexMap.get(toggleGravityDownButton);
+
+
+                    // only no duplicates except for gravity
+                    if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                            !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
+                        SoundController.playSound("error", 1);
+                        return false;
+                    }
+
+                    values[buttonIndex] = button;
+                    bindings[buttonIndex] = false;
+                    checkedButton.setText(keyToString.get(button));
+                    checkedButton.setChecked(false);
+                    checkedButton = null;
+                }
+                return true;
+            }
+        });
+
+        scrollPane.setScrollbarsVisible(true);
+        scrollPane.setScrollingDisabled(true, false);
+        scrollPane.getStyle().vScroll = scrollBar;
+        scrollPane.getStyle().vScrollKnob = scrollKnob;
+        scrollPane.setFadeScrollBars(false);
+        scrollPane.layout();
+
+        c.row();
+        c.align(Align.left);
+        c.setWidth(940);
+        c.debug();
+        c.add(moveLeft).pad(topPadding, 0, 32, 0);
+        c.add(moveLeftButton).pad(topPadding, 0, 32, 0);
+
+        for (int i = 1; i < labels.length; i++) {
             TextButton button = buttons[i];
-            controlsTable.row();
-            controlsTable.add(labels[i]).pad(0, 160, 20, rightPadding[i]);
-            controlsTable.add(button).pad(0, 0, 20, 0);
+            c.row();
+            c.add(labels[i]).pad(0, 0, 32, rightPadding[i]);
+            c.add(button).pad(0, 0, 32, 0);
         }
         controlsTable.row();
-        controlsTable.add(controlsBackButton).pad(20, 100, 0, 0);
-        controlsTable.add(defaultButton).pad(20, -400, 0, 0);
+        controlsTable.add(scrollPane).pad(-10, 160, 0, 0).height(350).width(940);
+//        scrollPane.debug();
 
+
+        controlsTable.row();
+        controlsTable.add(horizontalButtonGroup).pad(80, 100, 0, 0);
+        controlsTable.row();
+
+        for (Cell cell : c.getCells()) {
+            cell.align(Align.left);
+        }
         for (Cell cell : controlsTable.getCells()) {
             cell.align(Align.left);
         }
@@ -716,8 +720,6 @@ public class SettingsMode implements Screen {
         this.titleFont = projectSpace;
         makeSettingsTable();
         makeControlsTable();
-
-
     }
 
 
@@ -736,25 +738,27 @@ public class SettingsMode implements Screen {
      * Draws stage, background, and hover arrows for controls
      */
     public void draw() {
+        stage.getViewport().apply();
         stage.getBatch().begin();
         // draw background
         stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
 
-
         // draw hover arrows
         int spacing = 15;
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
-            TextButton button = entry.getKey();
             int index = entry.getValue();
-            if (hoverBooleans[index] || button.isChecked()) {
+            TextButton button = entry.getKey();
+            boolean inBounds = button.getY() + scrollPane.getScrollY() - 20> scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() - 20 < scrollPane.getY() + scrollPane.getScrollHeight();
+
+            if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
-                        button.getX() + button.getWidth() + spacing,
-                        button.getY(), arrow.getRegionWidth() / 2,
+                        button.getX() + 160 + button.getWidth() + spacing,
+                        button.getY() + scrollPane.getScrollY() - 20, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 180);
                 stage.getBatch().draw(arrow,
-                        button.getX() - arrow.getRegionWidth() - spacing,
-                        button.getY(), arrow.getRegionWidth() / 2,
+                        button.getX() + 160 - arrow.getRegionWidth() - spacing,
+                        button.getY() + scrollPane.getScrollY() - 20, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 0);
             }
@@ -778,10 +782,11 @@ public class SettingsMode implements Screen {
 //        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
 
         if (active) {
-            stage.act();
+            stage.act(Gdx.graphics.getDeltaTime());
             draw();
             if (backButtonClicked) {
-                listener.exitScreen(this, 0);
+                int exit = accessedFromMain ? Screens.LOADING_SCREEN : Screens.CONTROLLER;
+                listener.exitScreen(this, exit);
             }
         }
     }
@@ -805,16 +810,16 @@ public class SettingsMode implements Screen {
     public void hide() {
         active = false;
         checkedButton = null;
-        for (TextButton button: buttonIndexMap.keySet()){
+        for (TextButton button : buttonIndexMap.keySet()) {
             button.setChecked(false);
         }
-        SaveData.setKeyBindings(values);
+
+        SaveData.setKeyBindings(values, bindings);
         SoundController.setEffectsVolume(soundEffectsSlider.getValue());
         SoundController.setMusicVolume(musicSlider.getValue());
         SaveData.setSFXVolume(soundEffectsSlider.getValue());
         SaveData.setMusicVolume(musicSlider.getValue());
-        PlayerController.changeControls(values);
-        //add to save data
+        PlayerController.changeControls(values, bindings);
     }
 
     @Override
@@ -844,7 +849,7 @@ public class SettingsMode implements Screen {
                 }
             }
 
-            if (checkedButton != null && checkedButton != shootGumButton && checkedButton != unstickGumButton) {
+            if (checkedButton != null) {
                 int buttonIndex = buttonIndexMap.get(checkedButton);
 
                 int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
@@ -852,13 +857,15 @@ public class SettingsMode implements Screen {
 
 
                 // only no duplicates except for gravity
-                if (indices.size() == 2 || keycode == Input.Keys.ESCAPE || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                if (indices.size() == 2 || (indices.size() == 1 &&
+                        (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
                         !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
                     SoundController.playSound("error", 1);
                     return true;
                 }
 
                 values[buttonIndex] = keycode;
+                bindings[buttonIndex] = true;
                 checkedButton.setText(Input.Keys.toString(keycode).toUpperCase());
                 checkedButton.setChecked(false);
                 checkedButton = null;
@@ -880,14 +887,32 @@ public class SettingsMode implements Screen {
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
-            if (checkedButton != null && (checkedButton == shootGumButton || checkedButton == unstickGumButton)) {
-                if (button == Input.Buttons.LEFT) {
-                    checkedButton.setText("LEFT CLICK");
-                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.LEFT;
-                } else if (button == Input.Buttons.RIGHT) {
-                    checkedButton.setText("RIGHT CLICK");
-                    values[buttonIndexMap.get(checkedButton)] = Input.Buttons.RIGHT;
+            ArrayList<Integer> indices = new ArrayList<>(2);
+
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] == button) {
+                    indices.add(i);
+                    break;
                 }
+            }
+
+            if (checkedButton != null) {
+                int buttonIndex = buttonIndexMap.get(checkedButton);
+
+                int indexGravityUp = buttonIndexMap.get(toggleGravityUpButton);
+                int indexGravityDown = buttonIndexMap.get(toggleGravityDownButton);
+
+
+                // only no duplicates except for gravity
+                if (indices.size() == 2 || (indices.size() == 1 && (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
+                        !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
+                    SoundController.playSound("error", 1);
+                    return true;
+                }
+
+                values[buttonIndex] = button;
+                bindings[buttonIndex] = false;
+                checkedButton.setText(keyToString.get(button));
                 checkedButton.setChecked(false);
                 checkedButton = null;
             }
@@ -895,3 +920,4 @@ public class SettingsMode implements Screen {
         }
     }
 }
+

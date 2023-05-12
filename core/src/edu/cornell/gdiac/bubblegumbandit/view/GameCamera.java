@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.view;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.bubblegumbandit.helpers.CameraShake;
+import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 public class GameCamera  extends OrthographicCamera {
@@ -62,6 +63,13 @@ public class GameCamera  extends OrthographicCamera {
 
     /** The base position of the camera before screen shake. */
     private Vector2 basePos;
+
+    /** The scale of the bandit's "shock" trauma */
+    private float SHOCK_TRAUMA = 3f;
+
+
+    /** if in level select, directly follow camera */
+    private boolean levelSelect;
 
     /** Constructs a new GameCamera, using the given viewport width and height. For pixel perfect 2D rendering just supply
      * the screen size, for other unit scales (e.g. meters for box2d) proceed accordingly. The camera will show the region
@@ -254,11 +262,22 @@ public class GameCamera  extends OrthographicCamera {
         }
     }
 
+
+    public void startShockTrauma() {
+        shake.addShockTrauma(SHOCK_TRAUMA);
+    }
+
     /**
      * Updates this camera.
      */
     public void update(float dt) {
         update(true, dt);
+    }
+
+
+    /** Tell the game camera if we are on level select or not */
+    public void isLevelSelect (boolean value) {
+        levelSelect = value;
     }
 
     /**
@@ -281,17 +300,24 @@ public class GameCamera  extends OrthographicCamera {
         }
 
         float newTargetX = target.x;
-        if (!isFixedX) {
+        if (!isFixedX && !secondaryTarget.isZero()) {
             newTargetX = target.x * (1 - secondaryWeight) + secondaryTarget.x * secondaryWeight;
         }
 
         float newTargetY = target.y;
-        if (!isFixedY) {
+        if (!isFixedY && !secondaryTarget.isZero()) {
             newTargetY = target.y * (1 - secondaryWeight) + secondaryTarget.y * secondaryWeight;
         }
 
-        basePos.x += (newTargetX - basePos.x) * xSpeed * dt;
-        basePos.y += (newTargetY - basePos.y) * ySpeed * dt;
+        if (levelSelect){
+            basePos.x = newTargetX;
+            basePos.y = newTargetY;
+        }
+        else {
+            basePos.x += (newTargetX - basePos.x) * xSpeed * dt;
+            basePos.y += (newTargetY - basePos.y) * ySpeed * dt;
+        }
+
 
         // Adjust y clamp
         if (!isFixedY) {

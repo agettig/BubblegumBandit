@@ -44,6 +44,9 @@ public class AnimationController {
   /** The name of the looping temporary animation */
   private String tempName;
 
+  boolean ending = false;
+  boolean ended = false;
+
   private TextureRegion lastFrame;
 
 
@@ -89,11 +92,12 @@ public class AnimationController {
 
     timeSinceLastFrame += Gdx.graphics.getDeltaTime();
 
-    if(temp!=null&&finished&&timeSinceLastFrame>=1f/tempFPS) temp = null;
+    if(!ended&&temp!=null&&finished&&timeSinceLastFrame>=1f/tempFPS) temp = null;
 
     FilmStrip strip = temp==null ? looping : temp;
     float fps = temp==null ? loopFPS : tempFPS-1;
 
+    if(ended) return strip;
 
     if(timeSinceLastFrame<1f/fps) return strip;
     int frame = strip.getFrame();
@@ -102,10 +106,17 @@ public class AnimationController {
     strip.setFrame(frame);
     timeSinceLastFrame = 0;
 
-    if(temp!=null&&temp.getFrame()==temp.getSize()-1) finished = true;
+    if(temp!=null&&temp.getFrame()==temp.getSize()-1) {
+      finished = true;
+      if(ending) ended = true;
+    }
+
 
     return strip;
 
+  }
+  public boolean isEnding() {
+    return ending;
   }
 
   /**
@@ -144,7 +155,7 @@ public class AnimationController {
    * @param name the name of the animation
    * @param loop whether the animation is looping or temporary
    */
-  public void setAnimation(String name, boolean loop) {
+  public void setAnimation(String name, boolean loop, boolean end) {
    if(animations.containsKey(name)&&(currentName!=name)) {
       timeSinceLastFrame = 0f;
       frameNum = 0;
@@ -158,6 +169,7 @@ public class AnimationController {
         tempName = name;
         tempFPS = fps.get(name);
       }
+      ending = end;
     } else {
       if(!animations.containsKey(name)) System.err.println("Animation "+name+" does not exist in this context.");
     }

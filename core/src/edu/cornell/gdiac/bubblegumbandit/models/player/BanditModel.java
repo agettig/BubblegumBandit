@@ -17,14 +17,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
+import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 
 /**
@@ -34,6 +39,9 @@ import java.lang.reflect.Field;
  * by reading the JSON value.
  */
 public class BanditModel extends CapsuleObstacle {
+
+    /** The time the player can't move after knockback */
+    private final float STUN_TIME = 0.3f;
     // Physics constants
     /**
      * The factor to multiply by the input
@@ -60,6 +68,9 @@ public class BanditModel extends CapsuleObstacle {
      * Whether our feet are on the ground
      */
     private boolean isGrounded;
+
+    /** Knockback timer */
+    private float knockbackTimer;
 
     // SENSOR FIELDS
     /**
@@ -97,6 +108,10 @@ public class BanditModel extends CapsuleObstacle {
 
     private Texture reloadSymbol;
 
+    private int healthCountdown;
+
+    private final int HEALTH_REGEN_COOLDOWN = 180;
+
     /**
      * Whether we are actively shooting
      */
@@ -115,7 +130,7 @@ public class BanditModel extends CapsuleObstacle {
     /**
      * Cooldown (in animation frames) for shooting
      */
-    private final int shotLimit;
+    private final int shotLimit = 30;
 
     /**
      * Cache for flipping player orientation
@@ -158,7 +173,6 @@ public class BanditModel extends CapsuleObstacle {
     /** Reference to PoofController, which renders player particle effects */
     private EffectController poofController;
 
-    private TextureRegion deadText;
 
     private Vector2 orbPostion;
 
@@ -168,6 +182,9 @@ public class BanditModel extends CapsuleObstacle {
      * Non-positive stunTime means player is not stunned
      * */
     private int stunTime = 0;
+
+    /** The shock obstacles currently colliding with the player */
+    private ObjectSet<Fixture> shockFixtures;
 
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
@@ -215,6 +232,11 @@ public class BanditModel extends CapsuleObstacle {
     private float health;
 
     /**
+     * Whether the bandit should be sparking this frame.
+     */
+    private boolean shouldSpark;
+
+    /**
      * Whether the player has flipped in the air.
      */
     public boolean hasFlipped() {
@@ -242,16 +264,24 @@ public class BanditModel extends CapsuleObstacle {
     public void setKnockback(boolean knockback, boolean shock) {
         isKnockback = knockback;
        if( health>0) {
-           if(!shock) animationController.setAnimation("knock", false);
-           else animationController.setAnimation("shock", false);
+           if(!shock) animationController.setAnimation("knock", false, false);
+           else {
+               animationController.setAnimation("shock", false, false);
+               SoundController.playSound("banditShock", 1);
+           }
        }
     }
 
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
         if(knockback && health>0) {
-            animationController.setAnimation("knock", false);
+            animationController.setAnimation("knock", false, false);
         }
+       knockbackTimer = STUN_TIME;
+    }
+
+    public void setAnimation(String anim, boolean isLooping, boolean ending) {
+        animationController.setAnimation(anim, isLooping, ending);
     }
 
 
@@ -264,6 +294,7 @@ public class BanditModel extends CapsuleObstacle {
     public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
+            healthCountdown = HEALTH_REGEN_COOLDOWN;
             setCooldown(true);
             return true;
         }
@@ -306,6 +337,11 @@ public class BanditModel extends CapsuleObstacle {
     public boolean isOrbCollected() {
         return orbCollected;
     }
+
+    /**
+     * Gets whether the bandit should be sparking.
+     */
+    public boolean shouldSpark() { return shouldSpark; }
 
 
     /**
@@ -490,7 +526,7 @@ public class BanditModel extends CapsuleObstacle {
     /** Kills the bandit! Officially. Drains health and triggers death animation. */
     public void kill() {
         health = 0;
-        animationController.setAnimation("death", false);
+        animationController.setAnimation("death", false, true);
     }
 
     /**
@@ -511,7 +547,6 @@ public class BanditModel extends CapsuleObstacle {
         super(0, 0, 0.5f, 1.0f);
         setFixedRotation(true);
 
-        shotLimit = 6;
         // Gameplay attributes
         isGrounded = false;
         isShooting = false;
@@ -528,6 +563,8 @@ public class BanditModel extends CapsuleObstacle {
         numStars = 0;
         orbCollected = false;
         hasFlipped = false;
+        shockFixtures = new ObjectSet<>();
+        healthCountdown = 0;
     }
 
     /**
@@ -581,9 +618,6 @@ public class BanditModel extends CapsuleObstacle {
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
-
-        String deadKey = constantsJson.get("deadTexture").asString();
-        deadText = new TextureRegion(directory.getEntry(deadKey, Texture.class));
 
 
         // Get the sensor information
@@ -663,10 +697,14 @@ public class BanditModel extends CapsuleObstacle {
     }
 
     public void setFacingDirection(float cursorX) {
-        if(!faceRight) {
-            backpedal = (cursorX>getX());
+        if (shootCooldown > 0) {
+            if(!faceRight) {
+                backpedal = (cursorX>getX());
+            } else {
+                backpedal = (cursorX<getX());
+            }
         } else {
-            backpedal = (cursorX<getX());
+            backpedal = false;
         }
     }
 
@@ -694,6 +732,7 @@ public class BanditModel extends CapsuleObstacle {
         if (isKnockback) {
             return;
         }
+
         if (getMovement() == 0f) {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);
@@ -712,6 +751,17 @@ public class BanditModel extends CapsuleObstacle {
         }
     }
 
+    /** Add a shock fixture that the bandit is currently colliding with. */
+    public void addShockFixture(Fixture fix) {
+        shockFixtures.add(fix);
+    }
+
+    /** Remove a shock fixture that the bandit is no longer colliding with. */
+    public void removeShockFixture(Fixture fix) {
+        shockFixtures.remove(fix);
+    }
+
+
     /**
      * Updates the object's physics state (NOT GAME LOGIC).
      * <p>
@@ -720,16 +770,32 @@ public class BanditModel extends CapsuleObstacle {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        healthCountdown--;
         ticks++;
         stunTime--;
+
+        if (shockFixtures.size != 0) {
+            hitPlayer(Damage.DPS_ON_SHOCK * dt, true);
+            shouldSpark = true;
+//            animationController.setAnimation("knock", false);
+        } else {
+            shouldSpark = false;
+        }
+
+        if (isKnockback) {
+            knockbackTimer -= dt;
+            if (knockbackTimer <= 0) {
+                isKnockback = false;
+            }
+        }
 
         if (inCooldown) {
             if (ticks >= 60) {
                 setCooldown(false);
             }
         } else {
-            if (ticks % 3 == 0 && health>0) {
-                healPlayer((float)0.25);
+            if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
+                healPlayer(0.25f);
             }
         }
 
@@ -780,15 +846,16 @@ public class BanditModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
 
-            if(!animationController.hasTemp()&&health>0) {
-                if(playingReload) animationController.setAnimation("reload", true);
-                else if (!isGrounded) animationController.setAnimation("fall", true);
-                else if (getMovement() == 0) animationController.setAnimation("idle", true);
+            if(!animationController.hasTemp()&&!animationController.isEnding()
+                &&!animationController.getCurrentAnimation().equals("victory")) {
+                if(playingReload) animationController.setAnimation("reload", true, false);
+                else if (!isGrounded) animationController.setAnimation("fall", true, false);
+                else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
                 else {
                     if(backpedal) {
-                        animationController.setAnimation("back", true);
+                        animationController.setAnimation("back", true, false);
                     } else {
-                        animationController.setAnimation("run", true);
+                        animationController.setAnimation("run", true, false);
                     }
 
                 }
@@ -798,9 +865,6 @@ public class BanditModel extends CapsuleObstacle {
             if(backpedal&&health>0) effect *= -1f;
 
             TextureRegion text = animationController.getFrame();
-            if(!animationController.hasTemp()&&health<=0) {
-                text = deadText;
-            }
 
 
             canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,

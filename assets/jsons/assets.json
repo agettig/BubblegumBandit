@@ -7,12 +7,30 @@
         "emptyGum": "textures/UI/emptyGum.png",
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
+        "hoverPointer": "textures/UI/hoverPointer.png",
+        "continueGameButton": "textures/UI/nextLevel.png",
+        "levelSelectButton": "textures/UI/levelSelect.png",
+        "nextLevelButton": "textures/UI/nextLevel.png",
+        "titleScreenButton": "textures/UI/returnToTitleScreen.png",
+        "tryAgainButton": "textures/UI/tryAgain.png",
 
         "sunfish" : "textures/levelSelect/sunfish.png",
-        "ship1" : "textures/levelSelect/level1.png",
-        "ship2" : "textures/levelSelect/level2.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
+        "point" : "textures/levelSelect/point.png",
+        "marker": "textures/levelSelect/marker.png",
+        "x": "textures/levelSelect/x.png",
+        "o": "textures/levelSelect/o.png",
+
+        "ship1" : "textures/levelSelect/level1.png",
+        "ship2" : "textures/levelSelect/level1.png",
+        "ship3" : "textures/levelSelect/level1.png",
+        "ship4" : "textures/levelSelect/level1.png",
+        "ship5" : "textures/levelSelect/level1.png",
+        "ship6" : "textures/levelSelect/level1.png",
+        "ship7" : "textures/levelSelect/level1.png",
+        "ship8" : "textures/levelSelect/level1.png",
+        "ship9" : "textures/levelSelect/level1.png",
 
         "mapIcon" : "textures/tutorial/mapIcon.png",
         "shootIcon" : "textures/tutorial/gumIcon.png",
@@ -22,8 +40,11 @@
         "unstickIcon" : "textures/tutorial/unstickIcon.png",
         "upIcon" : "textures/tutorial/upIcon.png",
         "downIcon" : "textures/tutorial/downIcon.png",
+
+        "blackSquare": "textures/environment/black_square.png",
+
         "terrain": {
-            "file": "textures/environment/tileset.png"
+            "file": "textures/environment/tileSet.png"
         },
         "background": {
             "file": "textures/environment/background.png",
@@ -32,6 +53,11 @@
         },
         "spaceBg": {
             "file": "textures/environment/spaceSample.png",
+            "wrapU": "repeated",
+            "wrapV": "repeated"
+        },
+        "gameOverBg": {
+            "file": "textures/environment/failWinBackground.png",
             "wrapU": "repeated",
             "wrapV": "repeated"
         },
@@ -46,6 +72,12 @@
         "star": "textures/environment/star.png",
         "supports": "textures/environment/supports.png",
         "backgroundTiles" : "textures/environment/backgroundTiles.png",
+        "reactor": "textures/environment/pipes.png",
+        "reactorCore": "textures/environment/reactor.png",
+        "reactorCoreOff": "textures/environment/reactorOff.png",
+        "beam" :  "textures/environment/glowBeam.png",
+        "case" : "textures/environment/case.png",
+        "computer": "textures/environment/computer.png",
 
         "trajectoryProjectile": "textures/bandit/trajectory.png",
         "bandit": "textures/bandit/bandit.png",
@@ -76,6 +108,17 @@
             "wrap": false,
             "sprites": {
                 "shock": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+        "banditVictory":  {
+            "file": "textures/bandit/banditVictory.png",
+            "wrap": false,
+            "sprites": {
+                "victory": {
                     "size": 2,
                     "rows": 1,
                     "cols": 2
@@ -140,7 +183,6 @@
             }
 
         },
-        "banditDead" : "textures/bandit/banditDead.png",
 
         "poof": {
             "file": "textures/bandit/poof.png",
@@ -155,8 +197,29 @@
 
         },
 
+        "shockArc": {
+            "file": "textures/smallEnemy/shockArc.png",
+            "wrap": false,
+            "sprites": {
+                "shockArc": {
+                    "size": 2,
+                    "rows": 1,
+                    "cols": 2
+                }
+            }
+        },
+
         "smallEnemyOutline": "textures/smallEnemy/smallEnemyWhite.png",
         "bullet": "textures/smallEnemy/bullet.png",
+        "shockwave": "textures/smallEnemy/shockwave.png",
+        "electricFloor": {
+            "file": "textures/smallEnemy/shockLow1.png",
+            "wrapU": "repeated"
+        },
+        "electricFloor2": {
+            "file": "textures/smallEnemy/shockLow2.png",
+            "wrapU": "repeated"
+        },
         "smallEnemy": "textures/smallEnemy/smallEnemy.png",
         "smallShield": "textures/smallEnemy/smallShield.png",
         "smallEnemyPatrol":  {
@@ -293,6 +356,7 @@
         "crushingBlockGum": "textures/gum/blockGum.png",
         "crushingBlockGumOutline": "textures/gum/blockGumOutline.png",
         "gummedDoor": "textures/gum/doorGum.png",
+        "gummedDoorH": "textures/gum/doorGumH.png",
         "outlineDoor": "textures/gum/doorGumOutline.png",
         "largeGumMidair" : "textures/gum/largeGumMidair.png",
         "largeGumMidairOutline": "textures/gum/largeGumMidairOutline.png",
@@ -300,6 +364,7 @@
         "medGumMidairOutline" :  "textures/gum/medGumMidairOutline.png",
         "halfStuck" : "textures/gum/halfStuck.png",
         "halfStuckOutline" : "textures/gum/halfStuckOutline.png",
+        "outlineDoorH": "textures/gum/doorGumOutlineH.png",
         "escapeIcon" : "textures/UI/escapeIcon.png",
         "gumSplatCycle":{
             "file": "textures/gum/splatCycle.png",
@@ -341,7 +406,9 @@
 
         "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/halfDoor.png",
+        "doorH":  "textures/objects/halfDoorH.png",
         "lockedDoor":  "textures/objects/doorLocked.png",
+        "lockedDoorH":  "textures/objects/doorLockedH.png",
         "glass":  "textures/objects/glass.png",
         "glassShatter":  {
             "file": "textures/objects/glassShatter.png",
@@ -354,6 +421,7 @@
                 }
             }
         },
+        "settingsBackground" : "textures/settings/settingsBackground.png",
         "hazard": "textures/objects/hazard.png",
         "hazardSparks": {
             "file": "textures/objects/sparks.png",
@@ -380,23 +448,47 @@
         },
         "codygoonRegular": {
             "file" : "fonts/Codygoon.ttf",
-            "size": 36
+            "size": 30
         },
         "projectSpace" : {
             "file" : "fonts/ProjectSpace.ttf",
             "size": 40
+        }, "projectSpaceLarge" : {
+            "file" : "fonts/ProjectSpace.ttf",
+            "size": 60
         }, "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
             "size": 30
+        },
+        "sedgwickAveSmall" : {
+            "file" : "fonts/SedgwickAve-Regular.ttf",
+            "size": 20
         }
     },
 	"soundfx": {
-  		"jump" : "sounds/jump.mp3",
+  		"jump" : "sounds/jump.wav",
         "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
         "gumSplat": "sounds/gumSplat.wav",
         "enemySplat": "sounds/splatEnemy.wav",
         "collectItem": "sounds/collectItem.wav",
-        "error": "sounds/error.wav"
+        "error": "sounds/error.wav",
+        "laserFiring": "sounds/laserFiring.wav",
+        "laserCharging": "sounds/laserCharging.wav",
+        "laserLocking": "sounds/laserLocking.wav",
+        "laserThud": "sounds/laserThud.wav",
+        "shockAttack": "sounds/shockAttack.wav",
+        "electricShock": "sounds/electricShock.wav",
+        "noGum": "sounds/noGum.wav",
+        "victory": "sounds/victory.wav",
+        "failure": "sounds/failure.wav",
+        "rolling": "sounds/rolling.wav",
+        "clockTick": "sounds/clockTicking.wav",
+        "lowStressAlarm": "sounds/lowStressAlarm.wav",
+        "reloadingGum": "sounds/reloadingGum.wav",
+        "banditLanding": "sounds/banditLanding.wav",
+        "doorSound": "sounds/doorSound.wav",
+        "keyClick": "sounds/keyClick.wav",
+        "knockback": "sounds/knockback.wav"
 	},
     "samples": {
         "menu": "sounds/music/spaceCruising.ogg",
@@ -419,6 +511,7 @@
         "supports" : "tilesets/supports.json",
         "backgroundTiles" : "tilesets/backgroundTiles.json",
         "terrain" : "tilesets/terrain.json",
-        "objects" : "tilesets/objects.json"
+        "objects" : "tilesets/objects.json",
+        "reactor" : "tilesets/reactor.json"
     }
 }

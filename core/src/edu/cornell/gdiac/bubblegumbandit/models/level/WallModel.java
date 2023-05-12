@@ -23,59 +23,53 @@ import edu.cornell.gdiac.physics.obstacle.*;
 
 
 /**
- * A polygon shape representing the screen boundary
- *
- * Note that the constructor does very little.  The true initialization happens
- * by reading the JSON value.
+ * A box used to aggregate tiles into colliders
  */
-public class WallModel extends PolygonObstacle {
+public class WallModel extends BoxObstacle {
 	
 	/**
 	 * Create a new WallModel with degenerate settings
 	 */	
 	public WallModel() {
-		super(new float[]{0,0,1,0,1,1,0,1},0,0);
+		super(0, 0, 1, 1);
 	}
 
 	/**
-	 * Initializes the wall via the given JSON value
+	 * Initializes the platform via the given JSON value
 	 *
-	 * The JSON value has been parsed and is part of a bigger level file.  However, 
-	 * this JSON value is limited to the wall subtree
+	 * The JSON value has been parsed and is part of a bigger level file.  However,
+	 * this JSON value is limited to the platform subtree
 	 *
-	 * @param directory the asset manager
-	 * @param levelJson		the JSON subtree defining the wall in the level
-	 * @param constants 	the JSON subtree defining the wall constants
+	 * @param constants     the JSON subtree defining the platform constants
 	 */
-	public void initialize(AssetDirectory directory, JsonValue levelJson, JsonValue constants) {
-		setName(levelJson.name());
-		
+	public void initialize(float startX, float startY, float endX, float endY, JsonValue constants) {
+		setName("wall");
+
+		float x = (startX + endX + 1) / 2;
+		float y = (startY + endY + 1) / 2;
+		setPosition(x, y);
+		float width = endX - startX + 1;
+		float height = endY - startY + 1;
+		setDimension(width, height);
+
 		// Technically, we should do error checking here.
 		// A JSON field might accidentally be missing
-		float[] verts = levelJson.get("boundary").asFloatArray();
-		initShapes(verts);
-		
 		setBodyType(constants.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
 		setDensity(constants.get("density").asFloat());
 		setFriction(constants.get("friction").asFloat());
 		setRestitution(constants.get("restitution").asFloat());
-		
+
 		// Reflection is best way to convert name to color
 		Color debugColor;
 		try {
 			String cname = constants.get("debugcolor").asString().toUpperCase();
-		    Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
-		    debugColor = new Color((Color)field.get(null));
+			Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+			debugColor = new Color((Color)field.get(null));
 		} catch (Exception e) {
 			debugColor = null; // Not defined
 		}
 		int opacity = constants.get("debugopacity").asInt();
 		debugColor.mul(opacity/255.0f);
 		setDebugColor(debugColor);
-		
-		// Now get the texture from the AssetManager singleton
-		String key = constants.get("texture").asString();
-		TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
-		setTexture(texture);
 	}
 }
