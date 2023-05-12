@@ -748,7 +748,7 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             TextButton button = entry.getKey();
-            boolean inBounds = button.getY() + scrollPane.getScrollY() + 40> scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() + 40 < scrollPane.getY() + scrollPane.getScrollHeight();
+            boolean inBounds = button.getY() + scrollPane.getScrollY() - 20> scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() - 20 < scrollPane.getY() + scrollPane.getScrollHeight();
 
             if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
