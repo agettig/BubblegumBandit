@@ -276,11 +276,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * 1 = play down
      * 2 = level select down
      * 3 = settings down
-     * 4 = exit down
-     * 5 = play up, ready to go
-     * 6 = level select up, should open level select
-     * 7 = settings up, should open settings
-     * 8 = exit up, should quit.
+     * 4 = credits down
+     * 5 = exit down
+     * 6 = play up, ready to go
+     * 7 = level select up, should open level select
+     * 8 = settings up, should open settings
+     * 9 = credits up, should open credits
+     * 10 = exit up, should quit.
      */
     private int pressState;
     /**
@@ -329,16 +331,33 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * @return true if the player is ready to go
      */
     public boolean isReady() {
-        return pressState == 5;
-    }
-
-    public boolean isLevelSelect() {
         return pressState == 6;
     }
 
-    public boolean switchSettings(){
+    /**
+     * Returns true if the player touched up on the level select button.
+     *
+     * @return true if the player clicked level select
+     * */
+    public boolean isLevelSelect() {
         return pressState == 7;
     }
+
+    /**
+     * Returns true if the player touched up on the settings switch button.
+     *
+     * @return true if the player clicked to switch settings.
+     * */
+    public boolean switchSettings(){
+        return pressState == 8;
+    }
+
+    /**
+     * Returns true if the player touched up on the credits button.
+     *
+     * @return true if the player clicked on the credits button.
+     * */
+    public boolean isCredits() {return pressState == 9;}
 
     /**
      * Returns true if the player clicked the quit button.
@@ -346,7 +365,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * @return true if the player wants to quit.
      */
     public boolean shouldQuit() {
-        return pressState == 8;
+        return pressState == 10;
     }
 
 
@@ -682,8 +701,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             else return defaultTint;
         }
 
+        if(buttonName.equals("credits")) {
+            //Logic here, wait for implementation instructions
+        }
+
         if (buttonName.equals("exit")) {
-            if (hoveringExit && pressState == 4) return pressTint;
+            if (hoveringExit && pressState == 5) return pressTint;
             else if (hoveringExit) return hoverTint;
             else return defaultTint;
         }
@@ -921,7 +944,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
-            pressState = 4;
+            pressState = 5;
         }
 
         return false;
@@ -941,25 +964,31 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         //Start
         if (pressState == 1) {
-            pressState = 5;
+            pressState = 6;
             return false;
         }
 
         //Level Select
         if (pressState == 2) {
-            pressState = 6;
+            pressState = 7;
             return false;
         }
 
         //Settings
         if (pressState == 3) {
-            pressState = 7;
+            pressState = 8;
+            return false;
+        }
+
+        //Credits
+        if (pressState == 4) {
+            pressState = 9;
             return false;
         }
 
         //Exit
-        if (pressState == 4) {
-            pressState = 8;
+        if (pressState == 5) {
+            pressState = 10;
             return false;
         }
 
