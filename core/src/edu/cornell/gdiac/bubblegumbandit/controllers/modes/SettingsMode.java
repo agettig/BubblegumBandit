@@ -738,6 +738,7 @@ public class SettingsMode implements Screen {
      * Draws stage, background, and hover arrows for controls
      */
     public void draw() {
+        stage.getViewport().apply();
         stage.getBatch().begin();
         // draw background
         stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());

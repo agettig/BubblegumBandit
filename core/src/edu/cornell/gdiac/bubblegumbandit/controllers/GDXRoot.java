@@ -106,6 +106,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
         // Initialize the three game worlds
         controller = new GameController();
+        controller.setPauseViewport(canvas.getUIViewport());
         loading.setScreenListener(this);
         setScreen(loading);
     }
@@ -158,12 +159,11 @@ public class GDXRoot extends Game implements ScreenListener {
      */
     public void exitScreen(Screen screen, int exitCode) {
 
-		if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
-			Gdx.graphics.setCursor(crosshairCursor);
-		}
-		else{
-			Gdx.graphics.setCursor(mouseCursor);
-		}
+        if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
+            Gdx.graphics.setCursor(crosshairCursor);
+        } else{
+            Gdx.graphics.setCursor(mouseCursor);
+        }
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();
