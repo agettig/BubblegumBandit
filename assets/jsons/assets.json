@@ -448,7 +448,7 @@
         },
         "codygoonRegular": {
             "file" : "fonts/Codygoon.ttf",
-            "size": 36
+            "size": 30
         },
         "projectSpace" : {
             "file" : "fonts/ProjectSpace.ttf",

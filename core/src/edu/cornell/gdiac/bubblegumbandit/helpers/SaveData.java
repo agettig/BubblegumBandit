@@ -20,14 +20,14 @@ public class SaveData {
   private static int NOT_FOUND = -3;
 
   /** The number of key bindings in-game */
-  private static int keyCount = 8;
+  private static int keyCount = 9;
 
   //any numbers above -1 represent the number of stars collected
 
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
-//    return false; //uncomment to reset save data
-    return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
+    return false; //uncomment to reset save data
+//    return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
 
   }
 
