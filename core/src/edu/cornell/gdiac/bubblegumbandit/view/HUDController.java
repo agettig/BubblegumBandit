@@ -239,10 +239,10 @@ public class HUDController {
       orbCountdown.setText(timer);
 
       //Should we SHAKE??
-      int shakeChance = 35;
+      int shakeChance = 45;
       boolean shouldShake = MathUtils.random(1, 100) <= shakeChance;
       if(shouldShake && timer > 3){
-        float randomTrauma = MathUtils.random(.5f, 3f);
+        float randomTrauma = MathUtils.random(.25f, 1f);
         camera.addTrauma(
                 bandit.getX() * bandit.getDrawScale().x,
                 bandit.getY() * bandit.getDrawScale().y,
