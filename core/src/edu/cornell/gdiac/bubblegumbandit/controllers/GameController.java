@@ -15,6 +15,7 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
@@ -453,7 +455,11 @@ public class GameController implements Screen {
         SaveData.setLevel(num);
     }
 
-    /**
+    public void setPauseViewport(Viewport viewport){
+        pauseScreen.setViewport(viewport);
+    }
+
+                                 /**
      * Resets the status of the game so that we can play again.
      * <p>
      * This method disposes of the level and creates a new one. It will
@@ -831,9 +837,6 @@ public class GameController implements Screen {
         canvas.getUIViewport().apply();
 
         if (paused) {
-            if (!pauseScreen.hasViewport()) {
-                pauseScreen.setViewport(canvas.getUIViewport());
-            }
             pauseScreen.draw();
         }
 
@@ -873,7 +876,7 @@ public class GameController implements Screen {
      * @param height The new height in pixels
      */
     public void resize(int width, int height) {
-        // IGNORE FOR NOW
+        pauseScreen.resizeViewport(width, height);
     }
 
     /**

@@ -33,7 +33,6 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 public class PauseView {
 
-
   private Stage stage;
 
   private AssetDirectory internal;
@@ -76,8 +75,6 @@ public class PauseView {
   public boolean getQuitClicked() {return quitClicked; }
 
 
-  private boolean active;
-
   private Table pauseTable;
 
   private ScreenListener listener;
@@ -92,6 +89,10 @@ public class PauseView {
 
   public void setScreenListener(ScreenListener listener) {
     this.listener = listener;
+  }
+
+  public void resizeViewport(int width, int height){
+    stage.getViewport().update(width, height);
   }
 
   public PauseView() {
@@ -231,7 +232,6 @@ public class PauseView {
   }
 
   public void show() {
-    active = true;
     resumeClicked = false;
     retryClicked = false;
     levelSelectClicked = false;
@@ -257,7 +257,6 @@ public class PauseView {
 
   public void setViewport(Viewport view) {
     stage.setViewport(view);
-    view.apply(true);
   }
 
   public boolean hasViewport() {
@@ -265,6 +264,7 @@ public class PauseView {
   }
 
   public void draw() {
+      stage.getViewport().apply();
       stage.getBatch().begin();
       //stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
 
