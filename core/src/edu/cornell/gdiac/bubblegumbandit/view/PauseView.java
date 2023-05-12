@@ -91,6 +91,10 @@ public class PauseView {
     this.listener = listener;
   }
 
+  public void resizeViewport(int width, int height){
+    stage.getViewport().update(width, height);
+  }
+
   public PauseView() {
     internal = new AssetDirectory("jsons/pause.json");
     internal.loadAssets();

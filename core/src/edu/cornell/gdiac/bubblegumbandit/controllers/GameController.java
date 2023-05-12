@@ -459,7 +459,7 @@ public class GameController implements Screen {
         pauseScreen.setViewport(viewport);
     }
 
-    /**
+                                 /**
      * Resets the status of the game so that we can play again.
      * <p>
      * This method disposes of the level and creates a new one. It will
@@ -876,7 +876,7 @@ public class GameController implements Screen {
      * @param height The new height in pixels
      */
     public void resize(int width, int height) {
-        pauseScreen.viewport().update(width, height);
+        pauseScreen.resizeViewport(width, height);
     }
 
     /**
@@ -923,8 +923,6 @@ public class GameController implements Screen {
      */
     public void pause() {
         // We need this method to stop all sounds when we pause.
-        assert pauseScreen.viewport() == canvas.getUIViewport();
-//        setPauseViewport(canvas.getUIViewport());
         SoundController.pause();
         pauseScreen.show();
     }
