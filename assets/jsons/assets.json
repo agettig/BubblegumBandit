@@ -433,6 +433,17 @@
                     "cols": 2
                 }
             }
+        },
+        "explosion": {
+            "file": "textures/levelSelect/explosion.png",
+            "wrap": false,
+            "sprites": {
+                "explosion": {
+                    "size": 8,
+                    "rows": 1,
+                    "cols": 8
+                }
+            }
         }
 
 

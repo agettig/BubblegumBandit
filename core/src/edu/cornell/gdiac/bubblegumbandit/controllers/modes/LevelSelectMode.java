@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.*;
+import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.LevelIconModel;
 import edu.cornell.gdiac.bubblegumbandit.models.SunfishModel;
@@ -103,13 +104,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** The bandit's ship, The Sunfish, that follows the players cursor */
     private SunfishModel sunfish;
 
-    // level icon attributes
-
     /** array of all level icons */
     private Array<LevelIconModel> levels;
 
     /** dashes used to draw the paths between levels*/
     private TextureRegion path;
+
+    /** Explosion effect drawn when a level is completed, repeated completions trigger the effect again */
+    private EffectController explosionEffectController;
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -124,8 +126,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private float camWidth;
     private float camHeight;
 
-
-
     /** whether the player started to move their mouse, only start sunfish movement after player starts controlling*/
     private boolean startMove;
 
@@ -133,18 +133,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * Whether we should return to the main menu
      * */
     private boolean returnToMain;
-
-    // music
-
-    /** music to play */
-    AudioSource[] samples;
-
-    /** A queue to play music */
-    MusicQueue music;
-
-    /** An effect filter to apply */
-    EffectFilter filter;
-
 
 
     /**
@@ -203,6 +191,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         path =new TextureRegion (directory.getEntry("point", Texture.class));
 
+        explosionEffectController = new EffectController("explosion", "explosion",
+                directory, true, true, 0.2f);
+
         createIcons(directory);
         //music
 //        SoundController.playMusic("menu");
@@ -212,14 +203,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void createIcons(AssetDirectory directory){
         float flip = 0;
         TextureRegion texture;
-        TextureRegion marker = new TextureRegion (directory.getEntry("marker", Texture.class));
-        TextureRegion success = new TextureRegion (directory.getEntry("o", Texture.class));
-        TextureRegion fail = new TextureRegion (directory.getEntry("x", Texture.class));
+
+        //these are the same for every ship
+        LevelIconModel.setAttributes(directory);
+
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
             texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
             flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
-            levels.add(new LevelIconModel(texture, marker,success, fail, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
+            levels.add(new LevelIconModel(texture, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
         }
     }
 
@@ -262,6 +254,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         SoundController.playMusic("menu");
         startMove = false;
         sunfish.setBoosting(false);
+//        makeExplosion(sunfish.getX(), sunfish.getY());
+        makeExplosion(sunfish.getX() + 200, sunfish.getY());
     }
 
     /**
@@ -294,7 +288,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                     level.setPressState(0);
                 }
             }
-
             level.update();
         }
 
@@ -331,6 +324,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return selectedLevel;
     }
 
+    /** sets an explosion */
+    private void makeExplosion(float x, float y){
+        explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
+    }
+
     /**
      * Draw the status of this player mode.
      *
@@ -352,7 +350,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         displayFont.getData().setScale(1);
 //        levels.draw(canvas, displayFont);
 
+
         sunfish.draw(canvas);
+        explosionEffectController.draw(canvas);
+
         canvas.end();
     }
 
@@ -613,7 +614,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         if (keycode == Input.Keys.ESCAPE){
             returnToMain = true;
-            active = false;
         }
         return true;
     }

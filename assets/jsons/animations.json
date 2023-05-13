@@ -111,6 +111,12 @@
       "fps": 16
     }
   },
+  "explosion": {
+    "explosion": {
+      "strip": "explosion.explosion",
+      "fps": 12
+    }
+  },
   "captive": {
     "float": {
       "strip": "captiveFloat.float",
