@@ -676,7 +676,7 @@ public class LevelModel {
                     crush.initialize(directory, scale, x, y, object, constants.get("crushingBlock"));
                     activate(crush);
                     flippableObjects.add(crush);
-                    crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    crush.setFixtureMasks(CATEGORY_TERRAIN, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();
@@ -775,7 +775,7 @@ public class LevelModel {
 
         bandit.setOrbPostion(orbPosition);
         activate(goalDoor);
-        goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
+        goalDoor.setFilter(CATEGORY_EXIT, MASK_COLLECTIBLE);
 
         for (EnemyModel e : newEnemies) {
             activate(e);

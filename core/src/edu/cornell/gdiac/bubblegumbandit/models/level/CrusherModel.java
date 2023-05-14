@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
@@ -52,6 +54,31 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
     public float maxAbsFallVel;
 
     public boolean didSmash;
+
+    /** Box obstacle for player collisions */
+    private Fixture boxFixture;
+    private PolygonShape boxShape;
+
+    /** Sets the category of capsule object and sensors to capsuleCategory,
+     * category of box object to boxCategory,
+     * mask of capsule object to capsuleMask,
+     * mask of box object to boxMask,
+     * and mask of sensor object to sensorMask */
+    public void setFixtureMasks(short capsuleCategory, short boxCategory, short capsuleMask, short boxMask, short sensorMask) {
+        setFilter(capsuleCategory, capsuleMask);
+
+        Filter f;
+
+        f = topSensorFixture.getFilterData();
+        f.maskBits = sensorMask;
+        topSensorFixture.setFilterData(f);
+        bottomSensorFixture.setFilterData(f);
+
+        f = boxFixture.getFilterData();
+        f.categoryBits = boxCategory;
+        f.maskBits = boxMask;
+        boxFixture.setFilterData(f);
+    }
 
     /**
      * Create a new TileModel with degenerate settings
@@ -144,6 +171,8 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
 
         // Reflection is best way to convert name to color
         topSensorName = constants.get("topsensorname").asString();
+        boxShape = new PolygonShape();
+        boxShape.setAsBox(objectJson.getFloat("width") / (scale.x * 2f), objectJson.getFloat("height") / (scale.y * 2f));
     }
 
     public boolean activatePhysics(World world) {
@@ -162,6 +191,13 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
         sensorDef.shape = topSensorShape;
         topSensorFixture = body.createFixture(sensorDef);
         topSensorFixture.setUserData(this);
+
+        sensorDef.shape = boxShape;
+        sensorDef.isSensor = false;
+        boxFixture = body.createFixture(sensorDef);
+        boxFixture.setDensity(getDensity());
+        setDensity(getDensity() * 0.5f);
+        boxFixture.setUserData(this);
         return true;
     }
 

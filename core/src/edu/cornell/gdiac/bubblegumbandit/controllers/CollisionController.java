@@ -31,6 +31,7 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_EXIT = 0x0040;
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
     public static final short CATEGORY_DOOR = 0x0100;
+    public static final short CATEGORY_CRUSHER_BOX = 0x0200;
 
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
@@ -42,9 +43,10 @@ public class CollisionController implements ContactListener {
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);
 
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
-    public static final short MASK_EXIT = CATEGORY_PLAYER;
+    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY);
+    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
-    public static final short MASK_doorSensor = CATEGORY_PLAYER | CATEGORY_ENEMY;
+    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
     public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE;
 
     /**
@@ -544,6 +546,7 @@ public class CollisionController implements ContactListener {
         if (ob1 == null || ob2 == null) return;
         if (ob1.isRemoved() || ob2.isRemoved()) return;
         if (ob1 instanceof DoorModel || ob2 instanceof DoorModel) return;
+        if (ob1 instanceof CrusherModel || ob2 instanceof CrusherModel) return;
         if (fix1.getUserData() instanceof DoorModel || fix2.getUserData() instanceof DoorModel) {
             return;
         }
@@ -617,11 +620,12 @@ public class CollisionController implements ContactListener {
         Obstacle crushed;
 
         float levelGrav = levelModel.getWorld().getGravity().y;
+
 //        String sensorName = levelModel.getWorld().getGravity().y < 0 ? "crushing_bottom_sensor" : "crushing_top_sensor";
-        if (fix1.getUserData() instanceof CrusherModel) {
+        if (fix1.isSensor() && fix1.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix1.getUserData();
             crushed = bd2;
-        } else if (fix2.getUserData() instanceof CrusherModel) {
+        } else if (fix2.isSensor() && fix2.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix2.getUserData();
             crushed = bd1;
         } else {
