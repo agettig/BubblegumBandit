@@ -147,6 +147,18 @@
                  "width":44,
                  "x":1221,
                  "y":699
+                }, 
+                {
+                 "gid":81,
+                 "height":128,
+                 "id":128,
+                 "name":"",
+                 "rotation":0,
+                 "type":"crushingBlock",
+                 "visible":true,
+                 "width":257,
+                 "x":768,
+                 "y":768
                 }],
          "opacity":1,
          "type":"objectgroup",

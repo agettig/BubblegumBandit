@@ -23,7 +23,7 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 
 /**
- * A class representing a tile on the screen
+ * A class representing the crushing block on the screen
  **/
 public class CrusherModel extends CapsuleObstacle implements Gummable{
 
