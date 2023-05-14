@@ -8,8 +8,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+
+import java.util.HashMap;
 
 
 public class TutorialIcon {
@@ -24,6 +27,8 @@ public class TutorialIcon {
   private Color bubblePink = new Color(246f/255f, 148f/255f, 139f/255f, 1);
   private String description;
   protected BitmapFont fontSmall;
+
+  private HashMap<Integer, String> buttonToString = new HashMap<>();
 
 
   public TutorialIcon(AssetDirectory directory, float x, float y,
@@ -55,16 +60,16 @@ public class TutorialIcon {
         return new TextureRegion(directory.getEntry("downIcon", Texture.class));
       }
       case 4: {
-        return new TextureRegion(directory.getEntry("mapIcon", Texture.class));
-      }
-      case 5: {
-        return new TextureRegion(directory.getEntry("reloadIcon", Texture.class));
-      }
-      case 6: {
         return new TextureRegion(directory.getEntry("shootIcon", Texture.class));
       }
-      case 7: {
+      case 5: {
         return new TextureRegion(directory.getEntry("unstickIcon", Texture.class));
+      }
+      case 6: {
+        return new TextureRegion(directory.getEntry("reloadIcon", Texture.class));
+      }
+      case 7: {
+        return new TextureRegion(directory.getEntry("mapIcon", Texture.class));
       }
       default : {
         System.err.println("No key associated with keyCode "+keyCode);
@@ -90,16 +95,16 @@ public class TutorialIcon {
         return "flip gravity down";
       }
       case 4: {
-        return "hold to open map";
-      }
-      case 5: {
-        return "hold to reload";
-      }
-      case 6: {
         return "shoot gum";
       }
-      case 7: {
+      case 5: {
         return "unstick gum";
+      }
+      case 6: {
+        return "hold to reload";
+      }
+      case 7: {
+        return "hold to open map";
       }
       default : {
         System.err.println("No key associated with keyCode "+keyCode);
@@ -112,8 +117,8 @@ public class TutorialIcon {
 
   private String getKeyText() {
     int key = SaveData.getKeyBindings()[keyCode];
-    String keyText =  Input.Keys.toString(key);
-    if(keyCode==6||keyCode==7) return key == Input.Buttons.LEFT ? "LEFT CLICK" : "RIGHT CLICK";
+    boolean isKey = SaveData.getKeyButtons()[keyCode];
+    String keyText =  isKey ? Input.Keys.toString(key) : SettingsMode.buttonToString.get(key);
     return keyText;
   }
 
@@ -125,8 +130,5 @@ public class TutorialIcon {
     canvas.drawText(getDescription().toUpperCase(), fontSmall, bubblePink,
         x * scale.x,
         y * scale.y - margin*4, icon.getRegionWidth(), Align.center, true);
-
   }
-
-
 }
