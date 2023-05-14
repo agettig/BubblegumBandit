@@ -923,8 +923,8 @@ public class CollisionController implements ContactListener {
     }
 
     private void collectGum(Obstacle bd1) {
-        bd1.markRemoved(true);
-        bubblegumController.addAmmo(AMMO_AMOUNT);
+//        bd1.markRemoved(true);
+//        .addAmmo(AMMO_AMOUNT);
     }
 
 }

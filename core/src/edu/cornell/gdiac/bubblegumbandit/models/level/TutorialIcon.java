@@ -60,16 +60,16 @@ public class TutorialIcon {
         return new TextureRegion(directory.getEntry("downIcon", Texture.class));
       }
       case 4: {
-        return new TextureRegion(directory.getEntry("mapIcon", Texture.class));
-      }
-      case 5: {
-        return new TextureRegion(directory.getEntry("reloadIcon", Texture.class));
-      }
-      case 6: {
         return new TextureRegion(directory.getEntry("shootIcon", Texture.class));
       }
-      case 7: {
+      case 5: {
         return new TextureRegion(directory.getEntry("unstickIcon", Texture.class));
+      }
+      case 6: {
+        return new TextureRegion(directory.getEntry("reloadIcon", Texture.class));
+      }
+      case 7: {
+        return new TextureRegion(directory.getEntry("mapIcon", Texture.class));
       }
       default : {
         System.err.println("No key associated with keyCode "+keyCode);
@@ -95,16 +95,16 @@ public class TutorialIcon {
         return "flip gravity down";
       }
       case 4: {
-        return "hold to open map";
-      }
-      case 5: {
-        return "hold to reload";
-      }
-      case 6: {
         return "shoot gum";
       }
-      case 7: {
+      case 5: {
         return "unstick gum";
+      }
+      case 6: {
+        return "hold to reload";
+      }
+      case 7: {
+        return "hold to open map";
       }
       default : {
         System.err.println("No key associated with keyCode "+keyCode);
@@ -118,7 +118,7 @@ public class TutorialIcon {
   private String getKeyText() {
     int key = SaveData.getKeyBindings()[keyCode];
     boolean isKey = SaveData.getKeyButtons()[keyCode];
-    String keyText =  isKey ? Input.Keys.toString(key) : SettingsMode.buttonToString.get(keyCode);
+    String keyText =  isKey ? Input.Keys.toString(key) : SettingsMode.buttonToString.get(key);
     return keyText;
   }
 
