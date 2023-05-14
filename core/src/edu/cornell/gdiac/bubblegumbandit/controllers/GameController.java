@@ -642,7 +642,7 @@ public class GameController implements Screen {
                 bandit.setVY(0);
                 bandit.setVX(.1f);
             }
-        } else if (level.getBandit().getHealth()>0) {
+        } else if (level.getBandit().getHealth()>0 && (countdown > 100 || !complete)) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
