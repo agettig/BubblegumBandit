@@ -836,10 +836,6 @@ public class GameController implements Screen {
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
 
-        if (paused) {
-            pauseScreen.draw();
-        }
-
         Vector2 banditPosition = level.getBandit().getPosition();
 
         minimap.draw(banditPosition);
@@ -860,7 +856,9 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
-
+        if (paused) {
+            pauseScreen.draw();
+        }
 
         // Final message
         if (complete && !failed) {
@@ -883,6 +881,25 @@ public class GameController implements Screen {
     }
 
     /**
+     * The update loop for when the game is paused.
+     */
+    public void pauseUpdate() {
+        PlayerController input = PlayerController.getInstance();
+        input.readInput();
+        if (input.didPause()) {
+            setPaused(false);
+        }
+        else {
+            pauseScreen.update(this);
+            if (pauseScreen.getResumeClicked()) {
+                paused = false;
+            } else if (pauseScreen.getRetryClicked()) {
+                reset();
+            }
+        }
+    }
+
+    /**
      * Called when the Screen should render itself.
      * <p>
      * We defer to the other methods update() and draw().  However, it is VERY important
@@ -897,12 +914,7 @@ public class GameController implements Screen {
                     update(delta);
                 }
             } else {
-                pauseScreen.update(this);
-                if (pauseScreen.getResumeClicked()) {
-                    paused = false;
-                } else if (pauseScreen.getRetryClicked()) {
-                    reset();
-                }
+                pauseUpdate();
             }
             draw(delta);
             // Final message
