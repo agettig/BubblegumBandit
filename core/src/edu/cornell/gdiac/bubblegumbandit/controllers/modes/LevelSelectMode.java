@@ -24,6 +24,8 @@ import edu.cornell.gdiac.bubblegumbandit.models.SunfishModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.util.Random;
+
 import static java.lang.String.valueOf;
 
 /**
@@ -110,8 +112,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** dashes used to draw the paths between levels*/
     private TextureRegion path;
 
-    /** Explosion effect drawn when a level is completed, repeated completions trigger the effect again */
-    private EffectController explosionEffectController;
+
 
     /** Whether this player mode is still active */
     private boolean active;
@@ -190,9 +191,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
 
         path =new TextureRegion (directory.getEntry("point", Texture.class));
+//
 
-        explosionEffectController = new EffectController("explosion", "explosion",
-                directory, true, true, 0.2f);
 
         createIcons(directory);
         //music
@@ -202,16 +202,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Creates NUM_LEVELS number of level icons and adds them to the levels array */
     private void createIcons(AssetDirectory directory){
         float flip = 0;
-        TextureRegion texture;
 
         //these are the same for every ship
         LevelIconModel.setAttributes(directory);
 
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
-            texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
             flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
-            levels.add(new LevelIconModel(texture, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
+            levels.add(new LevelIconModel(directory, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
         }
     }
 
@@ -255,7 +253,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         startMove = false;
         sunfish.setBoosting(false);
 //        makeExplosion(sunfish.getX(), sunfish.getY());
-        makeExplosion(sunfish.getX() + 200, sunfish.getY());
     }
 
     /**
@@ -289,6 +286,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                 }
             }
             level.update();
+
         }
 
         //only start sunfish movement when player starts interacting with screen
@@ -324,10 +322,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return selectedLevel;
     }
 
-    /** sets an explosion */
-    private void makeExplosion(float x, float y){
-        explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
-    }
+//    /** sets an explosion */
+//    private void makeExplosion(float x, float y){
+//        explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
+//    }
 
     /**
      * Draw the status of this player mode.
@@ -350,9 +348,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         displayFont.getData().setScale(1);
 //        levels.draw(canvas, displayFont);
 
+//        explosionEffectController.draw(canvas);
 
         sunfish.draw(canvas);
-        explosionEffectController.draw(canvas);
 
         canvas.end();
     }
@@ -470,7 +468,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @param screenY the y-coordinate of the mouse on the screen
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
+     *
      */
+
+
+
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         if (active){
@@ -480,13 +482,19 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                 if (level.onIcon(target.x, target.y)){
                     level.setPressState(2);
                 }
+//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
+//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
+//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
+//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
+
             }
 //            levels.updateState();
-
         }
 
         return false;
     }
+
+    Random rand = new Random();
 
     /**
      * Called when a finger was lifted or a mouse button was released.

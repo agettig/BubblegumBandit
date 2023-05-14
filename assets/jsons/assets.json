@@ -439,9 +439,9 @@
             "wrap": false,
             "sprites": {
                 "explosion": {
-                    "size": 8,
+                    "size": 9,
                     "rows": 1,
-                    "cols": 8
+                    "cols": 9
                 }
             }
         }

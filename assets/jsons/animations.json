@@ -114,7 +114,7 @@
   "explosion": {
     "explosion": {
       "strip": "explosion.explosion",
-      "fps": 12
+      "fps": 14
     }
   },
   "captive": {

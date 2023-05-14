@@ -74,7 +74,7 @@ public class EffectController {
   /**
    * Adds a new effect to the controller
    * @param x the x position of the effect
-   * @param y the f position of the effect
+   * @param y the y position of the effect
    * @param scale the physics to world scalar
    * @param reflect whether this effect
    *               should be reflected across the x axis
@@ -84,7 +84,6 @@ public class EffectController {
       effects.add(new Effect(x, y, scale, reflect, animationName));
       delayTimer = TimeUtils.millis();
     }
-
   }
 
 /** Draws to the game canvas */
