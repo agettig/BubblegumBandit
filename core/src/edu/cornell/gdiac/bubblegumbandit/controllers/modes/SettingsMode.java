@@ -650,7 +650,7 @@ public class SettingsMode implements Screen {
         c.row();
         c.align(Align.left);
         c.setWidth(940);
-        c.debug();
+//        c.debug();
         c.add(moveLeft).pad(topPadding, 0, 32, 0);
         c.add(moveLeftButton).pad(topPadding, 0, 32, 0);
 
