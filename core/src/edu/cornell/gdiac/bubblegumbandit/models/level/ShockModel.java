@@ -92,6 +92,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
     private boolean doesDamage;
 
+    private Color tintColor = Color.WHITE;
+
     /**
      * Returns whether this shock model is on the bottom
      * @return Whether this shock model is on the bottom
@@ -239,7 +241,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         }
         else if (timeAlive > PERSIST_TIME) {
             doesDamage = false;
-            yScaleFactor = (float) (1 - Math.pow(((timeAlive - PERSIST_TIME) / DISSIPATE_TIME), 2)); // Lerp over dissipation period
+            float y = (float ) Math.pow(((timeAlive - PERSIST_TIME) / DISSIPATE_TIME), 2);
+            yScaleFactor = 1 - y;
         }
         if ((int) (timeAlive * FLOOR_FPS) % 2 == 0) {
             curFloor = electricFloorTexture;
@@ -304,7 +307,7 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         yScale = isBottom ? 1 : -1;
         float heightOffset = (origin.y * (1 - yScaleFactor) / 2f);
         float y = getY()*drawScale.y + (heightOffset * (isBottom ? -1 : 1));
-        canvas.draw(animationController.getFrame(),Color.WHITE,origin.x,origin.y, getX()*drawScale.x,y,0,isLeft ? -1 : 1,yScale*yScaleFactor);
+        canvas.draw(animationController.getFrame(),tintColor,origin.x,origin.y, getX()*drawScale.x,y,0,isLeft ? -1 : 1,yScale*yScaleFactor);
 
         float worldHalfWidth = origin.x / drawScale.x;
         float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
@@ -315,7 +318,7 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         y += (curFloor.getRegionHeight() * (1 - yScaleFactor) * (isBottom ? -1 : 1) / 4f);
         float originX = curFloor.getRegionWidth() / 2f;
 
-        canvas.draw(curFloor, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale*yScaleFactor);
+        canvas.draw(curFloor, tintColor, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale*yScaleFactor);
     }
 
     public void drawDebug(GameCanvas canvas) {
