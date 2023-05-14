@@ -589,17 +589,9 @@ public class GameController implements Screen {
     }
 
     /**
-     * The core gameplay loop of this world.
-     * <p>
-     * This method contains the specific update code for this mini-game. It does
-     * not handle collisions, as those are managed by the parent class WorldController.
-     * This method is called after input is read, but before collisions are resolved.
-     * The very last thing that it should do is apply forces to the appropriate objects.
-     *
-     * @param dt Number of seconds since last animation frame
-     */
-    public void update(float dt) {
-        ticks++;
+     * Unlocks next level
+     * */
+    public void unlockNextLevel(){
         if (collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
 
@@ -612,6 +604,22 @@ public class GameController implements Screen {
             SaveData.setLevel(levelNum);
             setComplete(true);
         }
+    }
+
+    /**
+     * The core gameplay loop of this world.
+     * <p>
+     * This method contains the specific update code for this mini-game. It does
+     * not handle collisions, as those are managed by the parent class WorldController.
+     * This method is called after input is read, but before collisions are resolved.
+     * The very last thing that it should do is apply forces to the appropriate objects.
+     *
+     * @param dt Number of seconds since last animation frame
+     */
+    public void update(float dt) {
+        ticks++;
+
+        unlockNextLevel();
 
         if (!orbCollected && level.getBandit().isOrbCollected()) {
             orbCollected = true;

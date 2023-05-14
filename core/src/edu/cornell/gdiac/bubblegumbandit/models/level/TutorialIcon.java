@@ -8,8 +8,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+
+import java.util.HashMap;
 
 
 public class TutorialIcon {
@@ -24,6 +27,8 @@ public class TutorialIcon {
   private Color bubblePink = new Color(246f/255f, 148f/255f, 139f/255f, 1);
   private String description;
   protected BitmapFont fontSmall;
+
+  private HashMap<Integer, String> buttonToString = new HashMap<>();
 
 
   public TutorialIcon(AssetDirectory directory, float x, float y,
@@ -112,8 +117,8 @@ public class TutorialIcon {
 
   private String getKeyText() {
     int key = SaveData.getKeyBindings()[keyCode];
-    String keyText =  Input.Keys.toString(key);
-    if(keyCode==6||keyCode==7) return key == Input.Buttons.LEFT ? "LEFT CLICK" : "RIGHT CLICK";
+    boolean isKey = SaveData.getKeyButtons()[keyCode];
+    String keyText =  isKey ? Input.Keys.toString(key) : SettingsMode.buttonToString.get(keyCode);
     return keyText;
   }
 
@@ -125,8 +130,5 @@ public class TutorialIcon {
     canvas.drawText(getDescription().toUpperCase(), fontSmall, bubblePink,
         x * scale.x,
         y * scale.y - margin*4, icon.getRegionWidth(), Align.center, true);
-
   }
-
-
 }

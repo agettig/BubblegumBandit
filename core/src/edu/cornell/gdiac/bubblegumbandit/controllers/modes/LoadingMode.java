@@ -260,6 +260,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
     private float scale;
 
+     public final Color hoverTint = new Color(1, 149 / 255f, 138 / 255f, 1);
+
+     public final Color pressTint = new Color(70/255f, 153/255f, 167/255f,1);
+
+     public final Color defaultTint = Color.WHITE;
+
     /**
      * Scale of Start, Settings, and Exit buttons.
      */
@@ -648,21 +654,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 
     private Color getButtonTint(String buttonName) {
-        int hoverR = 241;
-        int hoverG = 154;
-        int hoverB = 142;
-        int hoverA = 255;
-        int hoverRgba8888 = (hoverR << 24) | (hoverG << 16) | (hoverB << 8) | hoverA;
-        Color hoverTint = new Color(hoverRgba8888);
-
-        int pressR = 70;
-        int pressG = 153;
-        int pressB = 167;
-        int pressA = 255;
-        int pressRgba8888 = (pressR << 24) | (pressG << 16) | (pressB << 8) | pressA;
-        Color pressTint = new Color(pressRgba8888);
-
-        Color defaultTint = Color.WHITE;
 
         if (buttonName.equals("start")) {
             if (hoveringStart && pressState == 1) return pressTint;

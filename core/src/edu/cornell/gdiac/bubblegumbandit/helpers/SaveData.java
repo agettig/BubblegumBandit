@@ -61,8 +61,6 @@ public class SaveData {
         prefs.putInteger("level"+i+"Captives", count);
         if(i>1) prefs.putInteger("level" + i, lockLevels ? LOCKED : INCOMPLETE);
         i++;
-
-
       } else break;
 
     }
