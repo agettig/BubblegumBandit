@@ -163,7 +163,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /** The current frame of the enemy */
     protected TextureRegion curFrame;
 
-    private int turnCooldown;
+    protected int turnCooldown;
 
     // endRegion
 
@@ -385,7 +385,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     }
 
     public void update(float delta) {
-        turnCooldown--;
         if (!isFlipped && yScale < 1) {
             if (yScale != -1 || !stuck) {
                 yScale += 0.1f;

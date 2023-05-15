@@ -104,6 +104,7 @@ public class RollingEnemyModel extends EnemyModel {
      * Updates rolling enemy
      * */
     public void update(float delta) {
+        turnCooldown--;
         updateYScale();
         updateRayCasts();
         updateAnimations();

@@ -222,7 +222,7 @@ public class CollisionController implements ContactListener {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
-            resolveWinCondition(ob1, ob2, true);
+            resolveWinCondition(ob1, ob2, false);
 
             if (ob1 instanceof Gummable) {
                 ob1.endCollision(ob2, fix1);

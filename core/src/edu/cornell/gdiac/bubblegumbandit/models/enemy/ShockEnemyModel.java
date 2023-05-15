@@ -61,6 +61,7 @@ public class ShockEnemyModel extends EnemyModel {
 
 
     public void update(float dt){
+        turnCooldown--;
         if(fired()){
             animationController.setAnimation("fire", false, false);
             SoundController.playSound("shockAttack", 1);
