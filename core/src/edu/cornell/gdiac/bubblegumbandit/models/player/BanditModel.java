@@ -197,6 +197,9 @@ public class BanditModel extends CapsuleObstacle {
     /** The shock obstacles currently colliding with the player */
     private ObjectSet<Fixture> shockFixtures;
 
+    /** The current frame of the animation */
+    private TextureRegion curFrame;
+
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
         this.orbPostion = orbPostion;
@@ -809,6 +812,7 @@ public class BanditModel extends CapsuleObstacle {
         healthCountdown--;
         ticks++;
         stunTime--;
+        poofController.update();
 
         if (shockFixtures.size != 0) {
             hitPlayer(Damage.DPS_ON_SHOCK * dt, true);
@@ -862,6 +866,24 @@ public class BanditModel extends CapsuleObstacle {
         cameraTarget.y = getY() * drawScale.y;
 
         super.update(dt);
+
+        // Anim controller update
+        if(!animationController.hasTemp()&&!animationController.isEnding()
+                &&!animationController.getCurrentAnimation().equals("victory")) {
+            if(playingReload) animationController.setAnimation("reload", true, false);
+            else if (!isGrounded) animationController.setAnimation("fall", true, false);
+            else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
+            else {
+                if(backpedal) {
+                    animationController.setAnimation("back", true, false);
+                } else {
+                    animationController.setAnimation("run", true, false);
+                }
+
+            }
+        }
+
+        curFrame = animationController.getFrame();
     }
 
     private boolean playingReload;
@@ -880,30 +902,12 @@ public class BanditModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (texture != null) {
-
-            if(!animationController.hasTemp()&&!animationController.isEnding()
-                &&!animationController.getCurrentAnimation().equals("victory")) {
-                if(playingReload) animationController.setAnimation("reload", true, false);
-                else if (!isGrounded) animationController.setAnimation("fall", true, false);
-                else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
-                else {
-                    if(backpedal) {
-                        animationController.setAnimation("back", true, false);
-                    } else {
-                        animationController.setAnimation("run", true, false);
-                    }
-
-                }
-            }
+        if (curFrame != null) {
 
             float effect = faceRight ? 1.0f : -1.0f;
             if(backpedal&&health>0) effect *= -1f;
 
-            TextureRegion text = animationController.getFrame();
-
-
-            canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,
+            canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
                     getY() * drawScale.y, getAngle(), effect, yScale);
 

@@ -94,6 +94,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
     private Color tintColor = Color.WHITE;
 
+    private TextureRegion curFrame;
+
     /**
      * Returns whether this shock model is on the bottom
      * @return Whether this shock model is on the bottom
@@ -186,6 +188,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
         float speed = data.getFloat("speed");
         this.setVX(isLeft ? -speed : speed);
+
+        curFrame = texture;
     }
     /**
      * Destroy this photon immediately, removing it from the screen.
@@ -249,6 +253,15 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         } else {
             curFloor = electricFloorTexture2;
         }
+
+        curFrame = texture;
+        if (animationController != null) {
+            curFrame = animationController.getFrame();
+        }
+
+        float worldHalfWidth = origin.x / drawScale.x;
+        float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
+        curFloor.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
     }
 
     /** Returns whether the obstacle colliding with the shock sensor is valid
@@ -307,12 +320,13 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         yScale = isBottom ? 1 : -1;
         float heightOffset = (origin.y * (1 - yScaleFactor) / 2f);
         float y = getY()*drawScale.y + (heightOffset * (isBottom ? -1 : 1));
-        canvas.draw(animationController.getFrame(),tintColor,origin.x,origin.y, getX()*drawScale.x,y,0,isLeft ? -1 : 1,yScale*yScaleFactor);
+        if (curFrame != null) {
+            canvas.draw(curFrame,tintColor,origin.x,origin.y, getX()*drawScale.x,y,0,isLeft ? -1 : 1,yScale*yScaleFactor);
+        }
 
         float worldHalfWidth = origin.x / drawScale.x;
         float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
         float centerX = (innerX + initialX) / 2f;
-        curFloor.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
         float halfFloorHeight = curFloor.getRegionHeight() / 2f;
         y = getY()*drawScale.y + (isBottom ? -origin.y + halfFloorHeight - 1 : origin.y - halfFloorHeight + 1);
         y += (curFloor.getRegionHeight() * (1 - yScaleFactor) * (isBottom ? -1 : 1) / 4f);

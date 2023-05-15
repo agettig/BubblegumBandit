@@ -12,10 +12,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 public class Captive extends Collectible {
   private AnimationController animationController;
   private boolean freed;
-
   private TextureRegion drawn;
-
-
 
   public Captive() {
     super(2);
@@ -24,17 +21,14 @@ public class Captive extends Collectible {
   /** The y-scale for the shrinking effect when prisoners are freed. Will add animation before effect */
   private float ys = 1f;
 
-
   @Override
   public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, JsonValue json) {
     super.initialize(directory, x, y, scale, json);
     animationController = new AnimationController(directory, "captive");
-
   }
 
-  @Override
-  public void draw(GameCanvas canvas) {
-
+  public void update(float dt) {
+    super.update(dt);
     if (getCollected() && !freed) {
       freed = true;
       animationController.setAnimation("free", false, true);
@@ -43,18 +37,22 @@ public class Captive extends Collectible {
     if (freed && animationController.onLastFrame()) {
       //need shrink here
       if (ys > 0) {
-          ys-=.1f;
+        ys-=.1f;
       } else {
         markRemoved(true);
-        return;
       }
     } else {
       drawn = animationController.getFrame();
     }
+  }
 
-    canvas.drawWithShadow(drawn,
-        Color.WHITE,texture.getRegionWidth() / 2f,texture.getRegionHeight() /2f ,
-        getX()*drawScale.x-10,getY()*drawScale.y-20,getAngle(),1,ys);
+  @Override
+  public void draw(GameCanvas canvas) {
+    if (!isRemoved() && drawn != null) {
+      canvas.drawWithShadow(drawn,
+              Color.WHITE,texture.getRegionWidth() / 2f,texture.getRegionHeight() /2f ,
+              getX()*drawScale.x-10,getY()*drawScale.y-20,getAngle(),1,ys);
+    }
   }
 
 
