@@ -4,10 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.RayCastCallback;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -17,6 +14,8 @@ import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+
+import java.lang.reflect.Field;
 
 
 /**
@@ -185,6 +184,41 @@ public class LaserEnemyModel extends EnemyModel {
     public void initialize(AssetDirectory directory, float x, float y,
                            JsonValue constantsJson, boolean isFacingRight){
         super.initialize(directory, x, y, constantsJson, isFacingRight);
+//
+//        // Get the sensor information
+//        Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
+//        float[] sSize = constantsJson.get("sensorSize").asFloatArray();
+//        bottomSensorShape = new PolygonShape();
+//        bottomSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
+//
+//        // Reflection is best way to convert name to color
+//        try {
+//            String cname = constantsJson.get("sensorColor").asString().toUpperCase();
+//            Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+//            bottomSensorColor = new Color((Color) field.get(null));
+//        } catch (Exception e) {
+//            bottomSensorColor = null; // Not defined
+//        }
+//        opacity = constantsJson.get("sensorOpacity").asInt();
+//        bottomSensorColor.mul(opacity / 255.0f);
+//        bottomSensorName = constantsJson.get("bottomSensorName").asString();
+//
+//        sensorCenter = new Vector2(0, getHeight() / 2);
+//        topSensorShape = new PolygonShape();
+//        topSensorShape.setAsBox(sSize[0], sSize[1], sensorCenter, 0.0f);
+//
+//        // Reflection is best way to convert name to color
+//        try {
+//            String cname = constantsJson.get("sensorColor").asString().toUpperCase();
+//            Field field = Class.forName("com.badlogic.gdx.graphics.Color").getField(cname);
+//            topSensorColor = new Color((Color) field.get(null));
+//        } catch (Exception e) {
+//            topSensorColor = null; // Not defined
+//        }
+//        opacity = constantsJson.get("sensorOpacity").asInt();
+//        topSensorColor.mul(opacity / 255.0f);
+//        topSensorName = constantsJson.get("topSensorName").asString();
+
         halfStuck = new TextureRegion(directory.getEntry("halfStuck", Texture.class));
         halfStuckOutline = new TextureRegion(directory.getEntry("halfStuckOutline", Texture.class));
         setName("laserEnemy");
@@ -210,7 +244,6 @@ public class LaserEnemyModel extends EnemyModel {
                 // apply linear impulse
                 if (!hasJumped && jumpCooldown <= 0) {
                     int impulse = isFlipped ? -30 : 30;
-                    System.out.println("jump");
                     getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
                     hasJumped = true;
                 }
@@ -257,7 +290,8 @@ public class LaserEnemyModel extends EnemyModel {
      * Sets laser enemy to jump
      */
     public void jump(){
-        if (jumpCooldown < 0) {
+        // enemy should be on ground if !getCollisions().isEmpty()
+        if (jumpCooldown < 0 && !getCollisions().isEmpty()) {
             jumpCooldown = JUMP_COOLDOWN;
             isJumping = true;
         }
@@ -605,6 +639,7 @@ public class LaserEnemyModel extends EnemyModel {
         super.drawDebug(canvas);
         float y = getYFeet();
         canvas.drawPhysics(shape, Color.CORAL, (int) getX() + .5f, y, 0, drawScale.x, drawScale.y);
+
     }
 
     @Override
@@ -665,8 +700,5 @@ public class LaserEnemyModel extends EnemyModel {
             }
         }
     }
-
-
-
 
 }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -16,7 +15,6 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
-import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
@@ -108,17 +106,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     protected TextureRegion squishedGum;
     protected TextureRegion squishedGumOutline;
 
-    private CircleShape sensorShape;
+    private CircleShape listeningCircle;
     /**
      * The name of the sensor for detection purposes
      */
-
 
     private String sensorName;
     /**
      * The color to paint the sensor in debug mode
      */
-    private TextureRegion gummed_robot;
 
 
     /**
@@ -337,8 +333,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         // Get the sensor information
         int listeningRadius = constantsJson.get("listeningRadius").asInt();
 
-        sensorShape = new CircleShape();
-        sensorShape.setRadius(listeningRadius);
+        listeningCircle = new CircleShape();
+        listeningCircle.setRadius(listeningRadius);
 
 
         String gumKey = constantsJson.get("gumTexture").asString();
@@ -368,8 +364,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         envRays = new RayCastEnv(Color.GREEN, getHeight());
     }
 
-    public CircleShape getSensorShape() {
-        return sensorShape;
+    public CircleShape getListeningCircle() {
+        return listeningCircle;
     }
 
     public void update(float delta) {
@@ -524,7 +520,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
+        canvas.drawPhysics(listeningCircle, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
 //        canvas.drawPhysics(robotShape, sensorColor, getX(), getY(), 0, drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
