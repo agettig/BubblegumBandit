@@ -228,6 +228,9 @@ public class GDXRoot extends Game implements ScreenListener {
         } else if (exitCode == Screens.CREDITS){
             directory = loading.getAssets();
             controller.gatherAssets(directory);
+            credits.gatherAssets(directory);
+            credits.setCanvas(canvas);
+            credits.setScreenListener(this);
             setScreen(credits);
         }
         else {

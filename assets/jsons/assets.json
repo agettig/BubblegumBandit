@@ -13,7 +13,8 @@
         "nextLevelButton": "textures/UI/nextLevel.png",
         "titleScreenButton": "textures/UI/returnToTitleScreen.png",
         "tryAgainButton": "textures/UI/tryAgain.png",
-
+        "creditsBackground": "textures/UI/mainMenuBackground.png",
+        "back": "textures/UI/back.png",
         "sunfish" : "textures/levelSelect/sunfish.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
@@ -402,8 +403,6 @@
                 }
             }
         },
-
-
         "crushingBlock": "textures/objects/crushingBlock.png",
         "door":  "textures/objects/halfDoor.png",
         "doorH":  "textures/objects/halfDoorH.png",
