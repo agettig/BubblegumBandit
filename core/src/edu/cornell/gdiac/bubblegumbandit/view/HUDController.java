@@ -80,6 +80,13 @@ public class HUDController {
   private Texture emptyIcon;
   private int maxCaptives = 6;
 
+  private final Color ESCAPE_RED = new Color(
+          1,
+          70/255f,
+          61/255f,
+          1
+  );
+
 
   private Image[] gumCount = new Image[6];
   private Image[] reloadGumCount = new Image[6];
@@ -144,7 +151,7 @@ public class HUDController {
     table.padLeft(10).padTop(60);
 
 
-    escapeText = new Label("ESCAPE", new Label.LabelStyle(font, Color.RED));
+    escapeText = new Label("ESCAPE", new Label.LabelStyle(font, ESCAPE_RED));
     escapeIcon = new Image(directory.getEntry("escapeIcon", Texture.class));
     escapeText.setFontScale(1.75f);
     escapeText.setAlignment(Align.center, Align.center);
