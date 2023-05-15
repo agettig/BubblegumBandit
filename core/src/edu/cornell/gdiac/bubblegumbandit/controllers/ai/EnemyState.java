@@ -71,8 +71,8 @@ public enum EnemyState implements State<AIController> {
             // the enemy will turn around
             if (enemy.getSensing().canSee(bandit)) {
                 boolean facingRight = enemy.getFaceRight();
-                enemy.setFaceRight(!facingRight);
-                enemy.setNextAction(facingRight ? CONTROL_MOVE_LEFT : CONTROL_MOVE_RIGHT);
+                boolean right = enemy.setFaceRight(!facingRight, 15);
+                enemy.setNextAction(right ? CONTROL_MOVE_LEFT : CONTROL_MOVE_RIGHT);
                 return;
             }
 
@@ -159,9 +159,9 @@ public enum EnemyState implements State<AIController> {
                 if (move == 0) {
 
                     if (banditModel.getX() < aiController.getEnemy().getX()) {
-                        aiController.getEnemy().setFaceRight(false);
+                        aiController.getEnemy().setFaceRight(false, 60);
                     } else {
-                        aiController.getEnemy().setFaceRight(true);
+                        aiController.getEnemy().setFaceRight(true, 60);
                     }
                 }
             }
