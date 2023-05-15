@@ -262,11 +262,11 @@ public class HUDController {
   }
 
   public void draw(LevelModel level,
-                   BubblegumController bubblegumController,
                    int fps,
                    int timer,
                    boolean showFPS,
                    boolean reloadingGum) {
+    int ammo = level.getBandit().getAmmo();
     //drawing the health bar, draws no fill if health is 0
     float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
 
@@ -288,12 +288,11 @@ public class HUDController {
     healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
     healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
 
-    int currentAmmo = bubblegumController.getAmmo();
-    for (int i = 0; i < currentAmmo; i++) {
+    for (int i = 0; i < ammo; i++) {
       Image gumImage = gumCount[i];
       gumImage.setVisible(true);
     }
-    for (int i = currentAmmo; i < 6; i++) {
+    for (int i = ammo; i < 6; i++) {
       Image gumImage = gumCount[i];
       gumImage.setVisible(false);
     }
@@ -304,7 +303,7 @@ public class HUDController {
         Image emptyGumImage = emptyGumCount[i];
         emptyGumImage.setVisible(true);
       }
-      for (int i = 0; i < currentAmmo; i++) {
+      for (int i = 0; i < ammo; i++) {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(true);
       }

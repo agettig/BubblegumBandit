@@ -482,7 +482,6 @@ public class GameController implements Screen {
         orbCollected = false;
         paused = false;
         spawnedPostOrbEnemies = false;
-        bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
@@ -497,6 +496,7 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+        level.getBandit().resetAmmo();
 
         SoundController.playMusic("game");
 
@@ -504,21 +504,21 @@ public class GameController implements Screen {
         backgrounds.initialize(directory, levelFormat, x, y);
     }
 
-    public void respawn() {
-        setComplete(false);
-        setFailure(false);
-        countdown = -1;
-        orbCountdown = -1;
-        orbCollected = false;
-        level.endPostOrb();
-        for (EnemyModel enemy : level.getPostOrbEnemies()) {
-            enemy.markRemoved(true);
-        }
-        level.remakeOrb(directory, constantsJson);
-        bubblegumController.resetAmmo();
-        spawnedPostOrbEnemies = false;
-        level.getBandit().respawnPlayer();
-    }
+//    public void respawn() {
+//        setComplete(false);
+//        setFailure(false);
+//        countdown = -1;
+//        orbCountdown = -1;
+//        orbCollected = false;
+//        level.endPostOrb();
+//        for (EnemyModel enemy : level.getPostOrbEnemies()) {
+//            enemy.markRemoved(true);
+//        }
+//        level.remakeOrb(directory, constantsJson);
+//        bubblegumController.resetAmmo();
+//        spawnedPostOrbEnemies = false;
+//        level.getBandit().respawnPlayer();
+//    }
 
     /**
      * Returns whether to process the update loop
@@ -589,17 +589,9 @@ public class GameController implements Screen {
     }
 
     /**
-     * The core gameplay loop of this world.
-     * <p>
-     * This method contains the specific update code for this mini-game. It does
-     * not handle collisions, as those are managed by the parent class WorldController.
-     * This method is called after input is read, but before collisions are resolved.
-     * The very last thing that it should do is apply forces to the appropriate objects.
-     *
-     * @param dt Number of seconds since last animation frame
-     */
-    public void update(float dt) {
-        ticks++;
+     * Unlocks next level
+     * */
+    public void unlockNextLevel(){
         if (collisionController.isWinConditionMet() && !isComplete()) {
             levelNum++;
 
@@ -612,6 +604,22 @@ public class GameController implements Screen {
             SaveData.setLevel(levelNum);
             setComplete(true);
         }
+    }
+
+    /**
+     * The core gameplay loop of this world.
+     * <p>
+     * This method contains the specific update code for this mini-game. It does
+     * not handle collisions, as those are managed by the parent class WorldController.
+     * This method is called after input is read, but before collisions are resolved.
+     * The very last thing that it should do is apply forces to the appropriate objects.
+     *
+     * @param dt Number of seconds since last animation frame
+     */
+    public void update(float dt) {
+        ticks++;
+
+        unlockNextLevel();
 
         if (!orbCollected && level.getBandit().isOrbCollected()) {
             orbCollected = true;
@@ -634,7 +642,7 @@ public class GameController implements Screen {
                 bandit.setVY(0);
                 bandit.setVX(.1f);
             }
-        } else if (level.getBandit().getHealth()>0) {
+        } else if (level.getBandit().getHealth()>0 && (countdown > 100 || !complete)) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
@@ -668,10 +676,10 @@ public class GameController implements Screen {
             }
         }
 
-        if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+        if (inputResults.didReload() && !bandit.atMaxGum() && bandit.isGrounded()) {
             bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
-                bubblegumController.addAmmo(1);
+                bandit.addAmmo(1);
                 reloadSymbolTimer = -1;
                 reloadingGum = true;
                 SoundController.playSound("reloadingGum", 1);
@@ -682,7 +690,7 @@ public class GameController implements Screen {
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth() > 0) {
+        if (inputResults.didShoot() && bandit.getAmmo() > 0 && bandit.getHealth() > 0) {
             bandit.setShooting(true);
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
@@ -693,7 +701,7 @@ public class GameController implements Screen {
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
             GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
             if (gum != null) {
-                bubblegumController.fireGum();
+                bandit.fireGum();
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
@@ -840,13 +848,13 @@ public class GameController implements Screen {
 
         minimap.draw(banditPosition);
 
-        if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
+        if (level.getBandit().getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
             SoundController.playSound("noGum", 1);
         }
 
 
-        hud.draw(level, bubblegumController, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
+        hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
         hud.drawCountdownText((int)orbCountdown, delta, canvas.getCamera(), level.getBandit());
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {

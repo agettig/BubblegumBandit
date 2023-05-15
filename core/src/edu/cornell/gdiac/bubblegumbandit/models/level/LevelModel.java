@@ -1046,6 +1046,9 @@ public class LevelModel {
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
                 if(enemy.inactiveLaser()) continue;
 
+                //Don't draw if enemy can't see.
+                if(enemy.chargingLaser() && !enemy.canSeeBandit(getBandit())) continue;
+
 
                 //Determine properties based on our laser phase.
                 Color laserColor;

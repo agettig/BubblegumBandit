@@ -183,6 +183,17 @@ public class BanditModel extends CapsuleObstacle {
      * */
     private int stunTime = 0;
 
+
+    /* Gum variables */
+    /** The current amount of gum ammo of the player. */
+    private int gumAmmo;
+
+    private int startingGum;
+
+
+    /**Maximum allowed gum for the level*/
+    private int maxGum;
+
     /** The shock obstacles currently colliding with the player */
     private ObjectSet<Fixture> shockFixtures;
 
@@ -342,6 +353,28 @@ public class BanditModel extends CapsuleObstacle {
      * Gets whether the bandit should be sparking.
      */
     public boolean shouldSpark() { return shouldSpark; }
+
+
+    public void resetAmmo() {
+        gumAmmo = startingGum;
+    }
+    /** gets the amount of bubblegum player has */
+    public int getAmmo() {
+        return gumAmmo;
+    }
+
+    /** reduces max gum by 1 */
+    public void fireGum() {
+        gumAmmo -= 1;
+    }
+
+    /** Check if player already holds max gum*/
+    public boolean atMaxGum() {return gumAmmo == maxGum;}
+
+    /** increases amount of ammo by ammo */
+    public void addAmmo(int ammo) {
+        gumAmmo += ammo;
+    }
 
 
     /**
@@ -579,6 +612,9 @@ public class BanditModel extends CapsuleObstacle {
      * @oaram constantsJson the JSON subtree defining the constant player information
      */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
+        gumAmmo = constantsJson.get("startingGum").asInt();
+        maxGum = constantsJson.get("maxGum").asInt();
+        startingGum = gumAmmo;
         setName(constantsJson.name());
         float[] size = constantsJson.get("size").asFloatArray();
         setPosition(x, y);

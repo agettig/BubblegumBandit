@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -200,6 +199,8 @@ public class SettingsMode implements Screen {
      */
     public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
 
+    public final Color pressTint = new Color(70/255f, 153/255f, 167/255f,1);
+
     /**
      * Space Blue color
      * used for headings
@@ -264,7 +265,7 @@ public class SettingsMode implements Screen {
             Input.Keys.ESCAPE
     };
 
-    private HashMap<Integer, String> keyToString;
+    public static HashMap<Integer, String> buttonToString;
 
     /**
      * Contructor for making a settings mode
@@ -303,13 +304,13 @@ public class SettingsMode implements Screen {
 
         settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
-        keyToString = new HashMap<>();
+        buttonToString = new HashMap<>();
 
-        keyToString.put(Input.Buttons.RIGHT, "RIGHT CLICK");
-        keyToString.put(Input.Buttons.LEFT, "LEFT CLICK");
-        keyToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
-        keyToString.put(Input.Buttons.BACK, "BACK CLICK");
-        keyToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
+        buttonToString.put(Input.Buttons.RIGHT, "RIGHT CLICK");
+        buttonToString.put(Input.Buttons.LEFT, "LEFT CLICK");
+        buttonToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
+        buttonToString.put(Input.Buttons.BACK, "BACK CLICK");
+        buttonToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
     }
 
     public void resetDefaultBindings() {
@@ -321,7 +322,7 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             int value = values[index];
-            String toString = bindings[index] ? Input.Keys.toString(value).toUpperCase() : keyToString.get(value);
+            String toString = bindings[index] ? Input.Keys.toString(value).toUpperCase() : buttonToString.get(value);
             entry.getKey().setText(toString);
         }
     }
@@ -371,6 +372,9 @@ public class SettingsMode implements Screen {
 
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null,
                 null, null, this.titleFont);
+        backButtonStyle.overFontColor = bubblegumPink;
+        backButtonStyle.fontColor = Color.WHITE;
+        backButtonStyle.downFontColor = pressTint;
 
         backButtonSettings = new TextButton("BACK", backButtonStyle);
         backButtonSettings.getLabel().setFontScale(.5f);
@@ -380,33 +384,18 @@ public class SettingsMode implements Screen {
                 backButtonClicked = true;
                 SoundController.playSound("keyClick", 1);
             }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                backButtonSettings.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                backButtonSettings.getLabel().setColor(Color.WHITE);
-            }
         });
 
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
+        controlsButtonStyle.overFontColor = bubblegumPink;
+        controlsButtonStyle.fontColor = Color.WHITE;
+        controlsButtonStyle.downFontColor = pressTint;
 
         controlsButton = new TextButton("Controls", controlsButtonStyle);
         controlsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 stage.addActor(controlsTable);
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                controlsButton.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                controlsButton.getLabel().setColor(Color.WHITE);
             }
         });
 
@@ -508,29 +497,11 @@ public class SettingsMode implements Screen {
                     }
                 }
             }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                controlsBackButton.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                controlsBackButton.getLabel().setColor(Color.WHITE);
-            }
         });
 
         defaultButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 resetDefaultBindings();
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                defaultButton.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                defaultButton.getLabel().setColor(Color.WHITE);
             }
         });
 
@@ -553,8 +524,14 @@ public class SettingsMode implements Screen {
         Label pause = new Label("Pause", labelStyle);
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.titleFont);
 
+        backButtonStyle.overFontColor = bubblegumPink;
+        backButtonStyle.fontColor = Color.WHITE;
+        backButtonStyle.downFontColor = pressTint;
+
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
 
+        controlsButtonStyle.overFontColor = bubblegumPink;
+        controlsButtonStyle.fontColor = Color.WHITE;
         controlsButtonStyle.checkedFontColor = bubblegumPink;
 
 
@@ -586,7 +563,7 @@ public class SettingsMode implements Screen {
                                                 pauseButton };
 
         for (int i = 0; i < values.length; i++) {
-            String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : keyToString.get(values[i]);
+            String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : buttonToString.get(values[i]);
             buttons[i].setText(buttonName);
         }
 
@@ -655,7 +632,7 @@ public class SettingsMode implements Screen {
 
                     values[buttonIndex] = button;
                     bindings[buttonIndex] = false;
-                    checkedButton.setText(keyToString.get(button));
+                    checkedButton.setText(buttonToString.get(button));
                     checkedButton.setChecked(false);
                     checkedButton = null;
                 }
@@ -673,7 +650,7 @@ public class SettingsMode implements Screen {
         c.row();
         c.align(Align.left);
         c.setWidth(940);
-        c.debug();
+//        c.debug();
         c.add(moveLeft).pad(topPadding, 0, 32, 0);
         c.add(moveLeftButton).pad(topPadding, 0, 32, 0);
 
@@ -912,7 +889,7 @@ public class SettingsMode implements Screen {
 
                 values[buttonIndex] = button;
                 bindings[buttonIndex] = false;
-                checkedButton.setText(keyToString.get(button));
+                checkedButton.setText(buttonToString.get(button));
                 checkedButton.setChecked(false);
                 checkedButton = null;
             }

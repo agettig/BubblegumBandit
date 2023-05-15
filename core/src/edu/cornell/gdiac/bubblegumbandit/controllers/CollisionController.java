@@ -356,7 +356,7 @@ public class CollisionController implements ContactListener {
         boolean winConditionA = bodyA == bandit && bodyB == door;
         boolean winConditionB = bodyA == door && bodyB == bandit;
 
-        if (bandit.isOrbCollected() && (winConditionA ||winConditionB)){ winConditionMet = true;}
+        if (bandit.isOrbCollected() && (winConditionA ||winConditionB) && bandit.isGrounded() && !bandit.isFlipped()){ winConditionMet = true;}
     }
 
     /**
@@ -927,8 +927,8 @@ public class CollisionController implements ContactListener {
     }
 
     private void collectGum(Obstacle bd1) {
-        bd1.markRemoved(true);
-        bubblegumController.addAmmo(AMMO_AMOUNT);
+//        bd1.markRemoved(true);
+//        .addAmmo(AMMO_AMOUNT);
     }
 
 }

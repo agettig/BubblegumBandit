@@ -9,6 +9,8 @@
       1,
       1.75
     ],
+    "startingGum": 6,
+    "maxGum": 6,
     "bodyType": "dynamic",
     "density": 1.0,
     "friction": 0.0,
@@ -68,8 +70,6 @@
     "topsensorname": "crushing_top_sensor"
   },
   "gumProjectile": {
-    "startingGum": 6,
-    "maxGum": 6,
     "offsetX": 0.6,
     "offsetY": 0.5,
     "speed": 25.0,
