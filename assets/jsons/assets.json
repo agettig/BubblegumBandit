@@ -13,7 +13,7 @@
         "nextLevelButton": "textures/UI/nextLevel.png",
         "titleScreenButton": "textures/UI/returnToTitleScreen.png",
         "tryAgainButton": "textures/UI/tryAgain.png",
-
+        "escape": "textures/UI/escape.png",
         "sunfish" : "textures/levelSelect/sunfish.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
