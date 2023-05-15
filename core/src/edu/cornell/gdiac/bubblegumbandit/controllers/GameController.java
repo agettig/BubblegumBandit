@@ -817,7 +817,6 @@ public class GameController implements Screen {
             spawnedPostOrbEnemies = true;
         }
 
-
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
         bubblegumController.updateJoints(level);

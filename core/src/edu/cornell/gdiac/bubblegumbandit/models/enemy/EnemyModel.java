@@ -399,6 +399,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return sensorShape;
     }
 
+    /** End the crush without destroying the enemy (enemy not fully squished) */
+    public void endCrush() {
+        crusher = null;
+        isCrushing = false;
+        Filter f = getFilterData();
+        f.maskBits = CollisionController.MASK_ENEMY;
+        setFilterData(f);
+        crushScale = 1;
+    }
+
+
     public void update(float delta) {
         if (!isFlipped && yScale < 1) {
             if (yScale != -1 || !stuck) {
@@ -418,22 +429,20 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                 if (world.getGravity().y < 0) {
                     float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
                     float topOfEnemy = getY() + (getHeight() / 2);
-                    crushScale = (getHeight() - (topOfEnemy - bottomOfCrusher) / getHeight());
+                    crushScale = (bottomOfCrusher - topOfEnemy - getHeight()) / getHeight();
                     if (crushScale <= 0.05f) {
                         markRemoved(true);
                     } else if (crushScale > 1) {
-                        crusher = null;
-                        isCrushing = false;
+                        endCrush();
                     }
                 } else {
                     float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
                     float bottomOfEnemy = getY() - (getHeight() / 2);
-                    crushScale = (getHeight() - (topOfCrusher - bottomOfEnemy) / getHeight());
+                    crushScale = (bottomOfEnemy - topOfCrusher + getHeight()) / getHeight();
                     if (crushScale <= 0.05f) {
                         markRemoved(true);
                     } else if (crushScale > 1) {
-                        crusher = null;
-                        isCrushing = false;
+                        endCrush();
                     }
                 }
             } else {

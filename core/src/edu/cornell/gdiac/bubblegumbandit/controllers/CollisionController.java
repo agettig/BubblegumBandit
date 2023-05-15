@@ -30,28 +30,28 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_ENEMY = 0x0002;
     public static final short CATEGORY_TERRAIN = 0x0004;
     public static final short CATEGORY_GUM = 0x0008;
-    public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_PROJECTILE = 0x0010;
+    public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_EXIT = 0x0040;
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
     public static final short CATEGORY_DOOR = 0x0100;
     public static final short CATEGORY_CRUSHER_BOX = 0x0200;
     public static final short CATEGORY_CRUSHER = 0x0400;
+    public static final short CATEGORY_BACK = 0x0800;
 
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
-    public static final short CATEGORY_BACK = 0x0012;
-
     public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_GUM | CATEGORY_PLAYER);
     public static final short MASK_LANDED_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);
     public static final short MASK_CRUSHED_ENEMY = ~(CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_CRUSHER);
-
+    public static final short MASK_CRUSHED_PLAYER = ~(CATEGORY_CRUSHER_BOX | CATEGORY_CRUSHER);
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
     public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_PROJECTILE);
     public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_PROJECTILE;
+    public static final short MASK_CRUSHER_BOX_NO_PLAYER = CATEGORY_ENEMY | CATEGORY_PROJECTILE;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_CRUSHER;
     public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE | CATEGORY_CRUSHER;
@@ -144,10 +144,10 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
-            if (obstacleA instanceof Gummable && !(obstacleB instanceof DoorModel)) {
+            if ((obstacleA instanceof Gummable || obstacleA instanceof BanditModel) && !(obstacleB instanceof DoorModel)) {
                 obstacleA.startCollision(obstacleB, fixA);
             }
-            if (obstacleB instanceof Gummable && !(obstacleA instanceof DoorModel)) {
+            if ((obstacleB instanceof Gummable || obstacleB instanceof BanditModel) && !(obstacleA instanceof DoorModel)) {
                 obstacleB.startCollision(obstacleA, fixB);
             }
 
@@ -229,10 +229,10 @@ public class CollisionController implements ContactListener {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
-            if (ob1 instanceof Gummable) {
+            if (ob1 instanceof Gummable || ob1 instanceof BanditModel) {
                 ob1.endCollision(ob2, fix1);
             }
-            if (ob2 instanceof Gummable) {
+            if (ob2 instanceof Gummable || ob2 instanceof BanditModel) {
                 ob2.endCollision(ob1, fix2);
             }
 
@@ -632,18 +632,18 @@ public class CollisionController implements ContactListener {
         if (bd1 == null || bd2 == null) return;
         CrusherModel crusher;
         Obstacle crushed;
+        Fixture crusherFix;
         Fixture crushedFix;
 
-        float levelGrav = levelModel.getWorld().getGravity().y;
-
-//        String sensorName = levelModel.getWorld().getGravity().y < 0 ? "crushing_bottom_sensor" : "crushing_top_sensor";
         if (fix1.isSensor() && fix1.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix1.getUserData();
             crushed = bd2;
+            crusherFix = fix1;
             crushedFix = fix2;
         } else if (fix2.isSensor() && fix2.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix2.getUserData();
             crushed = bd1;
+            crusherFix = fix2;
             crushedFix = fix1;
         } else {
             return;
@@ -652,45 +652,17 @@ public class CollisionController implements ContactListener {
         BanditModel bandit = levelModel.getBandit();
         if (crushed.getName().contains("enemy")) {
             EnemyModel crushedEnemy = (EnemyModel) crushed;
-//            if (levelGrav < 0) {
-//                float crushedEnemyBottom = crushedEnemy.getY() - (crushedEnemy.getHeight() / 2f);
-//                for (Obstacle collision : crushedEnemy.getCollisions()) {
-//                    float otherTop = crushedEnemyBottom;
-//                    if (collision instanceof CapsuleObstacle) {
-//                        otherTop = collision.getY() + ((CapsuleObstacle) collision).getHeight() / 2f;
-//                    } else if (collision instanceof BoxObstacle) {
-//                        otherTop = collision.getY() + ((BoxObstacle) collision).getHeight() / 2f;
-//                    }
-//                    if (Math.abs(otherTop - crushedEnemyBottom) < 0.02f) {
-//                        shouldCrush = true;
-//                    }
-//                }
-//            } else {
-//                float crushedEnemyTop = crushedEnemy.getY() - (crushedEnemy.getHeight() / 2f);
-//                for (Obstacle collision : crushedEnemy.getCollisions()) {
-//                    float otherBottom = crushedEnemyTop;
-//                    if (collision instanceof CapsuleObstacle) {
-//                        otherBottom = collision.getY() - ((CapsuleObstacle) collision).getHeight() / 2f;
-//                    } else if (collision instanceof BoxObstacle) {
-//                        otherBottom = collision.getY() - ((BoxObstacle) collision).getHeight() / 2f;
-//                    }
-//                    if (Math.abs(crushedEnemyTop - otherBottom) < 0.02f) {
-//                        shouldCrush = true;
-//                    }
-//                }
-//            }
             if (Math.abs(crushed.getVY()) < 0.05f) {
                 crushedEnemy.crush(crusher);
             } else {
                 crushedEnemy.shouldCrush(crusher);
             }
         } else if (crushed.equals(bandit)) {
-            if (Math.abs(crushed.getVY()) < 0.001f) {
-                // Block must be pushing on bandit.
-                if ((bandit.getPosition().y > crusher.getPosition().y) == (levelGrav > 0)) {
-                    // Flip gravity again and make the bandit take damage.
-                    levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE, false);
-                    shouldFlipGravity = true;
+            if (crusherFix.getFilterData().maskBits == MASK_TERRAIN) {
+                if (Math.abs(crushed.getVY()) < 0.05f) {
+                    bandit.crush(crusher);
+                } else {
+                    bandit.shouldCrush(crusher);
                 }
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
@@ -704,7 +676,6 @@ public class CollisionController implements ContactListener {
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
             }
             else if (!crusher.didSmash) {
-                System.out.println("Add trauma because of: " + crushed.getName());
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
                 float hw = crusher.getWidth() / 2;
                 if (crushed.getX() < crusher.getX() + hw & crushed.getX() > crusher.getX() - hw) {
