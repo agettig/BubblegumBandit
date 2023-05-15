@@ -211,6 +211,7 @@ public class HUDController {
   public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
 
     if(timer < 0 && orbCountdown != null) orbCountdown.setText("");
+    if(timer < 0 && escapeText != null) escapeText.setVisible(false);
     if(timer < 0) timerStart = -1;
     if(timer < 0) return; //We aren't ticking down.
 
@@ -219,9 +220,11 @@ public class HUDController {
       orbCountdown = new Label("", new Label.LabelStyle(font, Color.WHITE));
       orbCountdown.setFontScale(1f);
       orbCountdown.setColor(Color.WHITE);
-      orbCountdown.setPosition(escapeIcon.getWidth() - escapeIcon.getWidth()/2,
-              escapeIcon.getY() + escapeIcon.getHeight()/2);
-      orbCountdown.setText(timer);
+      orbCountdown.setAlignment(Align.center);
+      orbCountdown.setX(escapeIcon.getX() + escapeIcon.getWidth()/2.3f);
+      orbCountdown.setY(escapeIcon.getY());
+      orbCountdown.setWidth(escapeIcon.getWidth()/2.3f);
+      orbCountdown.setHeight(escapeIcon.getHeight());
       stage.addActor(orbCountdown);
     }
 
@@ -235,7 +238,7 @@ public class HUDController {
 
     //Did we tick down one second?
     String countdownText = orbCountdown.getText().toString();
-    if(countdownText.equals("") || Integer.parseInt(countdownText) != timer){
+    if(countdownText.equals("") || Integer.parseInt(countdownText.trim()) != timer){
       orbCountdown.setText(timer);
 
       //Should we SHAKE??
@@ -339,10 +342,6 @@ public class HUDController {
     float xShakeRange;
     float yShakeRange;
     float transitionSpeed;
-    final float centerTimerX = escapeIcon.getX() + escapeIcon.getWidth()/2;
-    final float centerTimerY = escapeIcon.getY() + escapeIcon.getHeight()/2;
-    orbCountdown.setX(centerTimerX);
-    orbCountdown.setY(centerTimerY);
     escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth()/2);
     escapeIcon.setY(stage.getHeight() / 8f);
 
@@ -352,8 +351,8 @@ public class HUDController {
     yShakeRange = 2f;
     transitionSpeed = 7f;
     shakeAdjust = new Vector2(
-            centerTimerX + MathUtils.random(-xShakeRange, xShakeRange),
-            centerTimerY + MathUtils.random(-yShakeRange, yShakeRange)
+            escapeIcon.getX() + escapeIcon.getWidth()/2.3f + MathUtils.random(-xShakeRange, xShakeRange),
+            escapeIcon.getY() + MathUtils.random(-yShakeRange, yShakeRange)
     );
     orbCountdown.setX(MathUtils.lerp(orbCountdown.getX(), shakeAdjust.x, transitionSpeed * dt));
     orbCountdown.setY(MathUtils.lerp(orbCountdown.getY(), shakeAdjust.y, transitionSpeed * dt));
