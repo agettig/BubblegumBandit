@@ -188,7 +188,6 @@ public class GDXRoot extends Game implements ScreenListener {
             levels.setScreenListener(this);
             setScreen(levels);
         } else if (exitCode == Screens.CONTROLLER) {
-            setScreen(controller);
             if (screen == settingsMode) {
                 canvas.setCamera(oldCamera);
                 controller.setPaused(true);
@@ -201,6 +200,7 @@ public class GDXRoot extends Game implements ScreenListener {
                 if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
                 controller.reset();
             }
+            setScreen(controller);
         } else if (exitCode == Screens.GAME_WON) {
             directory = loading.getAssets();
             gameOver.initialize(directory, canvas);
