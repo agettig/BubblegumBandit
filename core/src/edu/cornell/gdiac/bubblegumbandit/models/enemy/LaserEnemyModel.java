@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -107,6 +108,14 @@ public class LaserEnemyModel extends EnemyModel {
      */
     private final int JUMP_COOLDOWN = 120;
 
+    /** Number of segments in the laser */
+    private int numSegments;
+
+    /** Direction of laser */
+    private Vector2 dir;
+
+    private boolean shouldDrawLaser;
+
     /**
      * Vector to represent start of ray cast for jumping damage
      */
@@ -117,12 +126,32 @@ public class LaserEnemyModel extends EnemyModel {
      */
     private Vector2 endVector = new Vector2();
 
+    /** Random X scale for laser vibrations */
+    private Array<Float> randomXScale;
+
+    /** Random Y scale for laser vibrations */
+    private Array<Float> randomYScale;
+
+    public int getNumSegments() {
+        return numSegments;
+    }
+
     public boolean isShouldJumpAttack() {
         return shouldJumpAttack;
     }
 
     public void setShouldJumpAttack(boolean shouldJumpAttack) {
         this.shouldJumpAttack = shouldJumpAttack;
+    }
+
+    /** The random X scale of the laser enemy */
+    public Array<Float> getRandomXScale() {
+        return randomXScale;
+    }
+
+    /** The random Y scale of the laser enemy */
+    public Array<Float> getRandomYScale() {
+        return randomYScale;
     }
 
     /**
@@ -136,11 +165,6 @@ public class LaserEnemyModel extends EnemyModel {
      * currently draw with outline is never called unless the enemy is gummed, however
      * */
     private TextureRegion halfStuckOutline;
-
-
-
-
-
 
     /**
      * Every phase that this LaserEnemyModel goes through when it attacks.
@@ -169,6 +193,9 @@ public class LaserEnemyModel extends EnemyModel {
         gumStuck = 0;
         isJumping = false;
         hasJumped = false;
+        randomXScale = new Array<>();
+        randomYScale = new Array<>();
+        dir = new Vector2();
     }
 
     /**
@@ -194,12 +221,23 @@ public class LaserEnemyModel extends EnemyModel {
         return isJumping;
     }
 
+    public Vector2 getDir() { return dir; }
+
+    public boolean shouldDrawLaser() { return shouldDrawLaser; }
+
+    @Override
     public void update(float dt) {
         // laser enemy can no longer jump set attack to laser
         if (getGummed() || getStuck()){
             setShouldJumpAttack(false);
         }
 
+        if(inactiveLaser()) {
+            shouldDrawLaser = false;
+        }
+        else {
+            shouldDrawLaser = !chargingLaser();
+        }
         // if jumping
         if (isJumping){
             // apply linear impulse
@@ -219,12 +257,22 @@ public class LaserEnemyModel extends EnemyModel {
                 }
             }
             updateRayCasts();
-
+            updateFrame();
             return;
         }
         if (shouldJumpAttack){
             jumpCooldown --;
         }
+        // attack animations
+        if (chargingLaser()) {
+            animationController.setAnimation("charge", true, false);
+        }
+        else if (stuck || gummed){
+            animationController.setAnimation("stuck", true, false);
+        } else {
+            animationController.setAnimation("patrol", true, false);
+        }
+
         if (phase == LASER_PHASE.INACTIVE) super.update(dt);
         else {
             if (!isFlipped && yScale < 1) {
@@ -237,15 +285,41 @@ public class LaserEnemyModel extends EnemyModel {
                 }
             }
             updateRayCasts();
+            updateFrame();
         }
-        // attack animations
-        if (chargingLaser()) {
-            animationController.setAnimation("charge", true, false);
+
+        //Math calculations for the laser.
+        if(!shouldDrawLaser) {
+            return;
         }
-        else if (stuck || gummed){
-            animationController.setAnimation("stuck", true, false);
-        } else {
-            animationController.setAnimation("patrol", true, false);
+
+        Vector2 intersect = getBeamIntersect();
+        Vector2 beamStartPos = getBeamOrigin();
+        dir.x = intersect.x - beamStartPos.x;
+        dir.y = intersect.y - beamStartPos.y;
+        numSegments = (int)((dir.len() * drawScale.x));
+        dir.nor();
+
+        randomXScale.clear();
+        randomYScale.clear();
+        for (int i = 0; i < numSegments; i++) {
+            if(firingLaser()){
+                if(Math.floor(Math.random()*10) % 2 == 0){
+                    randomXScale.add((float) (1f + Math.random()));
+                    randomYScale.add((float) (1f + Math.random()));
+                }
+                else if (Math.floor(Math.random()*10) % 3 == 0){
+                    randomXScale.add((float) (1f + Math.random()));
+                    randomYScale.add((float) (1f + Math.random()));
+                } else {
+                    randomXScale.add(1f);
+                    randomYScale.add(1f);
+                }
+            } else {
+                randomXScale.add(1f);
+                randomYScale.add(1f);
+            }
+
         }
     }
 
@@ -622,18 +696,18 @@ public class LaserEnemyModel extends EnemyModel {
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = getFaceRight() ? 1.0f : -1.0f;
-            TextureRegion drawn = texture;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
             float gumY = y;
             float gumX = x;
 
-            if(animationController!=null) {
-                drawn = animationController.getFrame();
+            if (animationController != null) {
                 x-=(getWidth()/2)*drawScale.x*effect;
             }
 
-            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+            if (curFrame != null) {
+                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+            }
 
             //if gummed, overlay with gumTexture
 

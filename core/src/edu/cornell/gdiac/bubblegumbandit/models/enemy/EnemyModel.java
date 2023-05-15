@@ -164,6 +164,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /** The GumModel instance that stuck this EnemyModel. */
     private HashSet<GumModel> stuckGum;
 
+    /** The current frame of the enemy */
+    protected TextureRegion curFrame;
+
     // endRegion
 
     /**
@@ -384,6 +387,16 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         }
         updateRayCasts();
         updateMovement(nextAction);
+        updateFrame();
+    }
+
+    /** Update the frame of the animation */
+    protected void updateFrame() {
+        curFrame = texture;
+        if(animationController!=null) {
+            currentFrameNum = animationController.getFrameNum();
+            curFrame = animationController.getFrame();
+        }
     }
 
     public boolean fired() {
@@ -453,21 +466,19 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (texture != null) {
             float effect = faceRight ? 1.0f : -1.0f;
-            TextureRegion drawn = texture;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
             float gumY = y;
             float gumX = x;
 
-            if(animationController!=null) {
-                currentFrameNum = animationController.getFrameNum();
-                drawn = animationController.getFrame();
+            if (animationController != null) {
                 x -= (getWidth() / 2) * drawScale.x * effect;
             }
 
-            canvas.drawWithShadow(drawn, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+            if (curFrame != null) {
+                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+            }
 
             //if gummed, overlay with gumTexture
             if (gummed) {
@@ -491,16 +502,12 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             }
 //            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
         }
-    }
 
     /**
      * Draw method for when highlighting the enemy before unsticking them
      */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
-
-
-
             if (stuck) {
                 float y = getY() * drawScale.y; //-yScale*outline.getRegionHeight()/2;
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()*drawScale.x-5,
@@ -510,7 +517,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
                     getX()*drawScale.x-5,
                     y-5*yScale-yScale*squishedGumOutline.getRegionHeight()/2, getAngle(), 1, yScale);
-
             }
         }
     }

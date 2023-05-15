@@ -110,6 +110,7 @@ public class RollingEnemyModel extends EnemyModel {
         updateAttackState();
         updateMovement();
         updateUnstick(delta);
+        updateFrame();
     }
 
     private void updateYScale(){
