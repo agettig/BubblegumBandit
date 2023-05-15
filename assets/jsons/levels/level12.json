@@ -998,7 +998,7 @@
         {
          "name":"captives",
          "type":"int",
-         "value":3
+         "value":2
         }, 
         {
          "name":"gravity",
