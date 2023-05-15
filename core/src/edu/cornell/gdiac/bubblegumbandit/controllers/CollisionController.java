@@ -172,7 +172,7 @@ public class CollisionController implements ContactListener {
 
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB, contact);
-            resolveWinCondition(obstacleA, obstacleB);
+            resolveWinCondition(obstacleA, obstacleB, true);
             checkShockCollision(obstacleA, fixA, obstacleB, fixB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
@@ -209,18 +209,20 @@ public class CollisionController implements ContactListener {
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
 
-        BanditModel avatar = levelModel.getBandit();
-        if (((avatar.getSensorName2().equals(fd2) || avatar.getSensorName().equals(fd2)) && avatar != bd1) ||
-                ((avatar.getSensorName2().equals(fd1) || avatar.getSensorName().equals(fd1)) && avatar != bd2)) {
-            sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0 && !avatar.getStuck()) {
-                avatar.setGrounded(false);
+        BanditModel bandit = levelModel.getBandit();
+        if (((bandit.getSensorName2().equals(fd2) || bandit.getSensorName().equals(fd2)) && bandit != bd1) ||
+                ((bandit.getSensorName2().equals(fd1) || bandit.getSensorName().equals(fd1)) && bandit != bd2)) {
+            sensorFixtures.remove(bandit == bd1 ? fix2 : fix1);
+            if (sensorFixtures.size == 0 && !bandit.getStuck()) {
+                bandit.setGrounded(false);
             }
         }
 
         try{
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
+
+            resolveWinCondition(ob1, ob2, false);
 
             if (ob1 instanceof Gummable) {
                 ob1.endCollision(ob2, fix1);
@@ -242,20 +244,20 @@ public class CollisionController implements ContactListener {
 
             resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
 
-            if (ob1.getName().equals("door") && avatar == bd2) {
+            if (ob1.getName().equals("door") && bandit == bd2) {
                 updateCamera(ob1);
-            } else if (ob2.getName().equals("door") && avatar == bd1) {
+            } else if (ob2.getName().equals("door") && bandit == bd1) {
                 updateCamera(ob2);
             }
 
-            if (ob1 instanceof ShockModel && avatar == bd2) {
-                avatar.removeShockFixture(fix1);
-            } else if (ob2 instanceof ShockModel && avatar == bd1) {
-                avatar.removeShockFixture(fix2);
-            } else if (ob1.getName().equals("hazard") && avatar == bd2) {
-                avatar.removeShockFixture(fix1);
-            }  else if (ob2.getName().equals("hazard") && avatar == bd1) {
-                avatar.removeShockFixture(fix2);
+            if (ob1 instanceof ShockModel && bandit == bd2) {
+                bandit.removeShockFixture(fix1);
+            } else if (ob2 instanceof ShockModel && bandit == bd1) {
+                bandit.removeShockFixture(fix2);
+            } else if (ob1.getName().equals("hazard") && bandit == bd2) {
+                bandit.removeShockFixture(fix1);
+            }  else if (ob2.getName().equals("hazard") && bandit == bd1) {
+                bandit.removeShockFixture(fix2);
             }
 
         }catch (Exception e){
@@ -355,7 +357,7 @@ public class CollisionController implements ContactListener {
      * Checks if the bandit has collided with the exit and sets the
      * win condition met field accordingly.
      * */
-    private void resolveWinCondition(Obstacle bodyA, Obstacle bodyB){
+    private void resolveWinCondition(Obstacle bodyA, Obstacle bodyB, boolean exit){
         // Check for win condition
         BanditModel bandit = levelModel.getBandit();
         ExitModel door = levelModel.getExit();
@@ -363,7 +365,7 @@ public class CollisionController implements ContactListener {
         boolean winConditionA = bodyA == bandit && bodyB == door;
         boolean winConditionB = bodyA == door && bodyB == bandit;
 
-        if (bandit.isOrbCollected() && (winConditionA ||winConditionB) && bandit.isGrounded() && !bandit.isFlipped()){ winConditionMet = true;}
+        if (winConditionB || winConditionA){bandit.setAtDoor(exit);}
     }
 
     /**

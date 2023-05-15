@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -18,6 +19,8 @@ import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+
+import java.lang.reflect.Field;
 
 
 /**
@@ -95,18 +98,18 @@ public class LaserEnemyModel extends EnemyModel {
     /**
      * Jump cooldown
      */
-    private int jumpCooldown = 0;
+    private int jumpCooldown;
 
     /**
      * Range in damage for bandit
      */
-    private int stompRange = 5;
+    private int stompRange = 3;
 
 
     /**
      * Jump cooldown time
      */
-    private final int JUMP_COOLDOWN = 120;
+    private final int JUMP_COOLDOWN = 60;
 
     /** Number of segments in the laser */
     private int numSegments;
@@ -196,6 +199,7 @@ public class LaserEnemyModel extends EnemyModel {
         randomXScale = new Array<>();
         randomYScale = new Array<>();
         dir = new Vector2();
+        jumpCooldown = -1;
     }
 
     /**
@@ -227,6 +231,7 @@ public class LaserEnemyModel extends EnemyModel {
 
     @Override
     public void update(float dt) {
+        turnCooldown--;
         // laser enemy can no longer jump set attack to laser
         if (getGummed() || getStuck()){
             setShouldJumpAttack(false);
@@ -240,11 +245,16 @@ public class LaserEnemyModel extends EnemyModel {
         }
         // if jumping
         if (isJumping){
-            // apply linear impulse
-            if (!hasJumped && jumpCooldown <=0){
-               int impulse = isFlipped ? -30 : 30;
-                getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
-                hasJumped = true;
+            if (jumpCooldown > 0){
+                jumpCooldown--;
+            }
+            else {
+                // apply linear impulse
+                if (!hasJumped && jumpCooldown <= 0) {
+                    int impulse = isFlipped ? -30 : 30;
+                    getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
+                    hasJumped = true;
+                }
             }
 
             if (!isFlipped && yScale < 1) {
@@ -327,7 +337,11 @@ public class LaserEnemyModel extends EnemyModel {
      * Sets laser enemy to jump
      */
     public void jump(){
-        if (jumpCooldown <= 0) isJumping = true;
+        // enemy should be on ground if !getCollisions().isEmpty()
+        if (jumpCooldown < 0 && !getCollisions().isEmpty()) {
+            jumpCooldown = JUMP_COOLDOWN;
+            isJumping = true;
+        }
     }
 
     /**
@@ -336,7 +350,7 @@ public class LaserEnemyModel extends EnemyModel {
     public void hasLanded(){
         isJumping = false;
         hasJumped = false;
-        jumpCooldown = JUMP_COOLDOWN;
+        jumpCooldown = -1;
         SoundController.playSound("laserThud", 1);
 
 
@@ -352,8 +366,8 @@ public class LaserEnemyModel extends EnemyModel {
                 if (isBandit) {
                     BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
                     bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
-                    int yImpulse = isFlipped ? -10 : 10;
-                    int xImpulse = getX() > bandit.getX() ? -5 : 5;
+                    int yImpulse = isFlipped ? -5 : 5;
+                    int xImpulse = getX() > bandit.getX() ? -4 : 4;
                     bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);
                     bandit.stun(180);
                 };
@@ -732,8 +746,5 @@ public class LaserEnemyModel extends EnemyModel {
             }
         }
     }
-
-
-
 
 }

@@ -200,6 +200,8 @@ public class BanditModel extends CapsuleObstacle {
     /** The current frame of the animation */
     private TextureRegion curFrame;
 
+    private boolean atDoor;
+
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
         this.orbPostion = orbPostion;
@@ -601,6 +603,19 @@ public class BanditModel extends CapsuleObstacle {
         hasFlipped = false;
         shockFixtures = new ObjectSet<>();
         healthCountdown = 0;
+        atDoor = false;
+    }
+
+    public void setAtDoor(boolean b){
+        atDoor = b;
+    }
+
+    public boolean getAtDoor(){
+        return atDoor;
+    }
+
+    public boolean winConditionMet(){
+        return isOrbCollected() && isGrounded() && !isFlipped() && getAtDoor();
     }
 
     /**
