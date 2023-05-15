@@ -164,6 +164,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /** The GumModel instance that stuck this EnemyModel. */
     private HashSet<GumModel> stuckGum;
 
+    private int turnCooldown;
+
     // endRegion
 
     /**
@@ -203,7 +205,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * @param isRight if this EnemyModel is facing right.
      */
     public void setFaceRight(boolean isRight) {
-        faceRight = isRight;
+        if (turnCooldown <= 0){
+            faceRight = isRight;
+        }
+    }
+
+    public boolean setFaceRight(boolean isRight, int cooldown){
+        if (turnCooldown <= 0){
+            faceRight = isRight;
+            turnCooldown = cooldown;
+        }
+        return faceRight;
     }
 
     /**
@@ -258,6 +270,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         collidedObs = new ObjectSet<>();
         tile = null;
         helpingTarget = null;
+        turnCooldown = 0;
     }
 
     public Vector2 getHelpingTarget() {
@@ -373,6 +386,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     }
 
     public void update(float delta) {
+        turnCooldown--;
         if (!isFlipped && yScale < 1) {
             if (yScale != -1 || !stuck) {
                 yScale += 0.1f;
@@ -402,7 +416,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
         // turn if block or hazard in the way
         if (envRays.getBodies().size > 0) {
-            setFaceRight(!faceRight);
+            setFaceRight(!faceRight, 60);
             return;
         }
         boolean movingLeft = (nextAction & CONTROL_MOVE_LEFT) != 0;
@@ -415,14 +429,27 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             if ((previousAction & CONTROL_MOVE_LEFT) == 0) {
                 setY((int) getY() + .5f);
             }
-            setVX(-speed);
-            setFaceRight(false);
+
+            boolean faceRight = setFaceRight(false, 60);
+
+            if (!faceRight) {
+                setVX(-speed);
+            }
+            else{
+                setVX(0);
+            }
         } else if (movingRight) {
             if ((previousAction & CONTROL_MOVE_RIGHT) == 0) {
                 setY((int) getY() + .5f);
             }
-            setVX(speed);
-            setFaceRight(true);
+            boolean faceRight = setFaceRight(true, 60);
+
+            if (faceRight) {
+                setVX(speed);
+            }
+            else{
+                setVX(0);
+            }
         } else if (movingUp) {
 
             if (!isFlipped) {
