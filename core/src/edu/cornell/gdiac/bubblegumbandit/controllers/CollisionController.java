@@ -845,6 +845,9 @@ public class CollisionController implements ContactListener {
 
         if ((bandit.getSensorName().equals(dataB) && bandit != bodyA && !bodyA.getName().equals("door")) ||
                 (bandit.getSensorName().equals(dataA) && bandit != bodyB && !bodyB.getName().equals("door"))) {
+            if (bodyA.getName().equals("exit") || bodyB.getName().equals("exit")) {
+                return;
+            }
             DoorModel door = null;
             if (bodyA.getName().equals("doorH")) {
                 door = (DoorModel) bodyA;
