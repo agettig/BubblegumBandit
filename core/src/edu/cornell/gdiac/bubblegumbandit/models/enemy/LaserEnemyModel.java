@@ -33,6 +33,8 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
  */
 public class LaserEnemyModel extends EnemyModel {
 
+    private final int DIR_LEN = 10;
+
     /**
      * The point at which the most up-to-date laser beam intersects.
      */
@@ -111,11 +113,6 @@ public class LaserEnemyModel extends EnemyModel {
     /** Number of segments in the laser */
     private int numSegments;
 
-    /** Direction of laser */
-    private Vector2 dir;
-
-    private boolean shouldDrawLaser;
-
     /**
      * Vector to represent start of ray cast for jumping damage
      */
@@ -131,10 +128,6 @@ public class LaserEnemyModel extends EnemyModel {
 
     /** Random Y scale for laser vibrations */
     private Array<Float> randomYScale;
-
-    public int getNumSegments() {
-        return numSegments;
-    }
 
     public boolean isShouldJumpAttack() {
         return shouldJumpAttack;
@@ -195,7 +188,6 @@ public class LaserEnemyModel extends EnemyModel {
         hasJumped = false;
         randomXScale = new Array<>();
         randomYScale = new Array<>();
-        dir = new Vector2();
     }
 
     /**
@@ -221,10 +213,6 @@ public class LaserEnemyModel extends EnemyModel {
         return isJumping;
     }
 
-    public Vector2 getDir() { return dir; }
-
-    public boolean shouldDrawLaser() { return shouldDrawLaser; }
-
     @Override
     public void update(float dt) {
         // laser enemy can no longer jump set attack to laser
@@ -232,12 +220,28 @@ public class LaserEnemyModel extends EnemyModel {
             setShouldJumpAttack(false);
         }
 
-        if(inactiveLaser()) {
-            shouldDrawLaser = false;
-        }
-        else {
-            shouldDrawLaser = !chargingLaser();
-        }
+        //Math calculations for the laser.
+            numSegments = (int)((DIR_LEN * drawScale.x));
+            randomXScale.clear();
+            randomYScale.clear();
+            for (int i = 0; i < numSegments; i++) {
+                if (firingLaser()) {
+                    if (Math.floor(Math.random() * 10) % 2 == 0) {
+                        randomXScale.add((float) (1f + Math.random()));
+                        randomYScale.add((float) (1f + Math.random()));
+                    } else if (Math.floor(Math.random() * 10) % 3 == 0) {
+                        randomXScale.add((float) (1f + Math.random()));
+                        randomYScale.add((float) (1f + Math.random()));
+                    } else {
+                        randomXScale.add(1f);
+                        randomYScale.add(1f);
+                    }
+                } else {
+                    randomXScale.add(1f);
+                    randomYScale.add(1f);
+                }
+            }
+
         // if jumping
         if (isJumping){
             // apply linear impulse
@@ -286,40 +290,6 @@ public class LaserEnemyModel extends EnemyModel {
             }
             updateRayCasts();
             updateFrame();
-        }
-
-        //Math calculations for the laser.
-        if(!shouldDrawLaser) {
-            return;
-        }
-
-        Vector2 intersect = getBeamIntersect();
-        Vector2 beamStartPos = getBeamOrigin();
-        dir.x = intersect.x - beamStartPos.x;
-        dir.y = intersect.y - beamStartPos.y;
-        numSegments = (int)((dir.len() * drawScale.x));
-        dir.nor();
-
-        randomXScale.clear();
-        randomYScale.clear();
-        for (int i = 0; i < numSegments; i++) {
-            if(firingLaser()){
-                if(Math.floor(Math.random()*10) % 2 == 0){
-                    randomXScale.add((float) (1f + Math.random()));
-                    randomYScale.add((float) (1f + Math.random()));
-                }
-                else if (Math.floor(Math.random()*10) % 3 == 0){
-                    randomXScale.add((float) (1f + Math.random()));
-                    randomYScale.add((float) (1f + Math.random()));
-                } else {
-                    randomXScale.add(1f);
-                    randomYScale.add(1f);
-                }
-            } else {
-                randomXScale.add(1f);
-                randomYScale.add(1f);
-            }
-
         }
     }
 

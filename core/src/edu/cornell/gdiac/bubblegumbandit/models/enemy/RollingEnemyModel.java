@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 
@@ -111,6 +112,42 @@ public class RollingEnemyModel extends EnemyModel {
         updateMovement();
         updateUnstick(delta);
         updateFrame();
+
+        if (crusher != null) {
+            if (isCrushing) {
+                if (world.getGravity().y < 0) {
+                    float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
+                    float topOfEnemy = getY() + (getHeight() / 2);
+                    crushScale = (bottomOfCrusher - topOfEnemy - getHeight()) / getHeight();
+                    if (crushScale <= 0.05f) {
+                        markRemoved(true);
+                    } else if (crushScale > 1) {
+                        endCrush();
+                    }
+                } else {
+                    float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
+                    float bottomOfEnemy = getY() - (getHeight() / 2);
+                    crushScale = (bottomOfEnemy - topOfCrusher + getHeight()) / getHeight();
+                    if (crushScale <= 0.05f) {
+                        markRemoved(true);
+                    } else if (crushScale > 1) {
+                        endCrush();
+                    }
+                }
+            } else {
+                boolean shouldStartCrush = false;
+                for (Obstacle ob : getCollisions()) {
+                    if (!(ob instanceof CrusherModel)) {
+                        shouldStartCrush = true;
+                    }
+                }
+                if (shouldStartCrush) {
+                    crush(crusher);
+                }
+            }
+        } else {
+            crushScale = 1;
+        }
     }
 
     private void updateYScale(){

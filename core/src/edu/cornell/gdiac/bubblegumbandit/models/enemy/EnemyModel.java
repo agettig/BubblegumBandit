@@ -172,11 +172,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /** The current frame of the enemy */
     protected TextureRegion curFrame;
 
-    private CrusherModel crusher = null;
+    protected CrusherModel crusher = null;
 
-    private float crushScale;
+    protected float crushScale;
 
-    private boolean isCrushing = false;
+    protected boolean isCrushing = false;
 
     /** Start crushing the enemy */
     public void crush(CrusherModel crusher) {
