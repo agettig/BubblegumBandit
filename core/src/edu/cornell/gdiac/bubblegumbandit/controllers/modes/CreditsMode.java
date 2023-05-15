@@ -214,10 +214,6 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
             update(delta);
             draw();
 
-            System.out.println("Hovered: " + backHovered);
-            System.out.println("Pressed: " + backPressedDown);
-            System.out.println("Up: " + backPressedUp);
-
             //Logic for returing to Main Menu below
             if (backPressedUp && listener!=null){
                 canvas.getCamera().isLevelSelect(false);
