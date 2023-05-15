@@ -250,16 +250,16 @@ public class SettingsMode implements Screen {
     private boolean[] bindings;
 
     public static final boolean[] defaultBindings = new boolean[]{
-            true, true, true, true, false, false, true, true, true
+            true, true, true, true, false, true, true, true, true
     };
 
     public static final int[] defaultVals = new int[]{
             Input.Keys.A,
             Input.Keys.D,
-            Input.Keys.SPACE,
-            Input.Keys.SPACE,
+            Input.Keys.W,
+            Input.Keys.W,
             Input.Buttons.LEFT,
-            Input.Buttons.RIGHT,
+            Input.Keys.E,
             Input.Keys.R,
             Input.Keys.SHIFT_LEFT,
             Input.Keys.ESCAPE
@@ -715,6 +715,7 @@ public class SettingsMode implements Screen {
      * Draws stage, background, and hover arrows for controls
      */
     public void draw() {
+
         stage.getViewport().apply();
         stage.getBatch().begin();
         // draw background

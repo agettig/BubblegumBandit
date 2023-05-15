@@ -174,8 +174,6 @@ public class LevelModel {
     /** Number of total captives in the level */
     private int captiveCount;
 
-
-
     /**
      * Creates a new LevelModel
      * <p>
@@ -676,7 +674,7 @@ public class LevelModel {
                     crush.initialize(directory, scale, x, y, object, constants.get("crushingBlock"));
                     activate(crush);
                     flippableObjects.add(crush);
-                    crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    crush.setFixtureMasks(CATEGORY_TERRAIN, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();
@@ -775,7 +773,7 @@ public class LevelModel {
 
         bandit.setOrbPostion(orbPosition);
         activate(goalDoor);
-        goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
+        goalDoor.setFilter(CATEGORY_EXIT, MASK_COLLECTIBLE);
 
         for (EnemyModel e : newEnemies) {
             activate(e);
@@ -933,6 +931,10 @@ public class LevelModel {
 
         alarms.update();
         if (reactorModel != null) reactorModel.update();
+
+        glassEffectController.update();
+        sparkEffectController.update();
+
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
@@ -999,18 +1001,12 @@ public class LevelModel {
             }
 
         }
-        drawChargeLasers(laserBeam, laserBeamEnd, canvas, dt);
-
-
-
-
+        drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
         if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
        // gumEffectController.draw(canvas);
         glassEffectController.draw(canvas);
         sparkEffectController.draw(canvas);
-
-
 
         canvas.end();
 
@@ -1029,26 +1025,18 @@ public class LevelModel {
         alarms.drawLights(canvas, scale);
     }
 
-    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas, float dt) {
-
-
-
+    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .75f;
         final float lockedLaserScale = .9f;
         final float firingLaserScale = 1.5f;
-
 
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
 
                 //Don't draw inactive lasers.
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
-                if(enemy.inactiveLaser()) continue;
-
-                //Don't draw if enemy can't see.
-                if(enemy.chargingLaser() && !enemy.canSeeBandit(getBandit())) continue;
-
+                if(!enemy.shouldDrawLaser() || !enemy.canSeeBandit(bandit)) continue;
 
                 //Determine properties based on our laser phase.
                 Color laserColor;
@@ -1068,19 +1056,11 @@ public class LevelModel {
                 }
 
                 //Math calculations for the laser.
-                Vector2 intersect = enemy.getBeamIntersect();
-                Vector2 beamStartPos = enemy.getBeamOrigin();
-                Vector2 dir = new Vector2(
-                        intersect.x - beamStartPos.x,
-                        intersect.y - beamStartPos.y
-                );
-
                 beam.setRegionWidth(1);
-                int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
-                dir.nor();
+                Vector2 dir = enemy.getDir();
+                int numSegments = enemy.getNumSegments();
 
                 //Offset calculations to match the animation.
-
                 float laserEyeNormalOffsetXLeft = 41 + canvas.getShadowOffset();
                 float laserEyeNormalOffsetYLeft = 20;
                 float laserEyeJettedOffsetXRight = 41 + + canvas.getShadowOffset();
@@ -1089,6 +1069,8 @@ public class LevelModel {
 
                 boolean jetted = enemy.getCurrentFrameNum() > 0;
 
+                Array<Float> xScales = enemy.getRandomXScale();
+                Array<Float> yScales = enemy.getRandomYScale();
 
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
@@ -1099,24 +1081,15 @@ public class LevelModel {
                     if(jetted) enemyOffsetY += jetBoostY;
                     if(!enemy.getFaceRight()) enemyOffsetX = -enemyOffsetX;
 
-
                     float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
                     float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
                     float scaleX = 1f;
                     float scaleY = laserThickness;
                     float ang = (float) Math.atan2(dir.y, dir.x);
 
-                    //Vibrations
-                    if(enemy.firingLaser()){
-                        if(Math.floor(Math.random()*10) % 2 == 0){
-                            scaleX *= (1f + Math.random());
-                            scaleY *= (1f + Math.random());
-                        }
-                        else if (Math.floor(Math.random()*10) % 3 == 0){
-                            scaleX *= (1f + Math.random());
-                            scaleY *= (1f + Math.random());
-                        }
-                    }
+                    //Vibrations - moved to enemy class to separate update and draw for pause purposes
+                    scaleX *= xScales.get(i);
+                    scaleY *= yScales.get(i);
 
                     canvas.draw(
                             beam,

@@ -592,7 +592,7 @@ public class GameController implements Screen {
      * Unlocks next level
      * */
     public void unlockNextLevel(){
-        if (collisionController.isWinConditionMet() && !isComplete()) {
+        if ( level.getBandit().winConditionMet() && !isComplete()) {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
@@ -653,11 +653,12 @@ public class GameController implements Screen {
 
 
         float grav = level.getWorld().getGravity().y;
-        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) &&
+        boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip&&!complete&&!failed) {
+
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = SoundController.playSound("jump", 0.25f);
@@ -844,10 +845,6 @@ public class GameController implements Screen {
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
 
-        if (paused) {
-            pauseScreen.draw();
-        }
-
         Vector2 banditPosition = level.getBandit().getPosition();
 
         minimap.draw(banditPosition);
@@ -868,7 +865,9 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
-
+        if (paused) {
+            pauseScreen.draw();
+        }
 
         // Final message
         if (complete && !failed) {
@@ -891,6 +890,25 @@ public class GameController implements Screen {
     }
 
     /**
+     * The update loop for when the game is paused.
+     */
+    public void pauseUpdate() {
+        PlayerController input = PlayerController.getInstance();
+        input.readInput();
+        if (input.didPause()) {
+            setPaused(false);
+        }
+        else {
+            pauseScreen.update();
+            if (pauseScreen.getResumeClicked()) {
+                paused = false;
+            } else if (pauseScreen.getRetryClicked()) {
+                reset();
+            }
+        }
+    }
+
+    /**
      * Called when the Screen should render itself.
      * <p>
      * We defer to the other methods update() and draw().  However, it is VERY important
@@ -905,12 +923,7 @@ public class GameController implements Screen {
                     update(delta);
                 }
             } else {
-                pauseScreen.update(this);
-                if (pauseScreen.getResumeClicked()) {
-                    paused = false;
-                } else if (pauseScreen.getRetryClicked()) {
-                    reset();
-                }
+                pauseUpdate();
             }
             draw(delta);
             // Final message
@@ -921,6 +934,15 @@ public class GameController implements Screen {
                 else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
+            }
+            if (pauseScreen.getQuitClicked()) {
+                listener.exitScreen(this, Screens.LOADING_SCREEN);
+            }
+            if (pauseScreen.getLevelSelectClicked()) {
+                listener.exitScreen(this, Screens.LEVEL_SELECT);
+            }
+            if (pauseScreen.getSettingsClicked()) {
+                listener.exitScreen(this, Screens.SETTINGS);
             }
 
         }

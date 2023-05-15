@@ -219,19 +219,8 @@ public class PauseView {
         Gdx.input.setInputProcessor(stage);
     }
 
-    public void update(Screen curScreen) {
+    public void update() {
         stage.act();
-
-        if (getQuitClicked()) {
-            listener.exitScreen(curScreen, Screens.LOADING_SCREEN);
-        }
-
-        if (getLevelSelectClicked()) {
-            listener.exitScreen(curScreen, Screens.LEVEL_SELECT);
-        }
-        if (getSettingsClicked()) {
-            listener.exitScreen(curScreen, Screens.SETTINGS);
-        }
     }
 
     public void setViewport(Viewport view) {

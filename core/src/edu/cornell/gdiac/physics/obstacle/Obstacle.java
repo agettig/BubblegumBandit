@@ -133,9 +133,6 @@ public abstract class Obstacle {
 				obstacleMap.remove(ob);
 			}
 		}
-		else{
-			System.out.println("Removing obstacle not in map");
-		}
 	}
 
 	public Set<Obstacle> getCollisions() {
