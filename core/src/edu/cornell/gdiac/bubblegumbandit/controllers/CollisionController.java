@@ -213,7 +213,7 @@ public class CollisionController implements ContactListener {
         if (((avatar.getSensorName2().equals(fd2) || avatar.getSensorName().equals(fd2)) && avatar != bd1) ||
                 ((avatar.getSensorName2().equals(fd1) || avatar.getSensorName().equals(fd1)) && avatar != bd2)) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0) {
+            if (sensorFixtures.size == 0 && !avatar.getStuck()) {
                 avatar.setGrounded(false);
             }
         }
