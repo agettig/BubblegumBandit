@@ -898,7 +898,7 @@ public class GameController implements Screen {
             setPaused(false);
         }
         else {
-            pauseScreen.update(this);
+            pauseScreen.update();
             if (pauseScreen.getResumeClicked()) {
                 paused = false;
             } else if (pauseScreen.getRetryClicked()) {
@@ -933,6 +933,15 @@ public class GameController implements Screen {
                 else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
+            }
+            if (pauseScreen.getQuitClicked()) {
+                listener.exitScreen(this, Screens.LOADING_SCREEN);
+            }
+            if (pauseScreen.getLevelSelectClicked()) {
+                listener.exitScreen(this, Screens.LEVEL_SELECT);
+            }
+            if (pauseScreen.getSettingsClicked()) {
+                listener.exitScreen(this, Screens.SETTINGS);
             }
 
         }

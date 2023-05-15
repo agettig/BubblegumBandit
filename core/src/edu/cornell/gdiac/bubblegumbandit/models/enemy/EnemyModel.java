@@ -508,9 +508,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      */
     public void drawWithOutline(GameCanvas canvas) {
         if (outline != null && gummedTexture != null) {
-
-
-
             if (stuck) {
                 float y = getY() * drawScale.y; //-yScale*outline.getRegionHeight()/2;
                 canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()*drawScale.x-5,
@@ -520,7 +517,6 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                 canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
                     getX()*drawScale.x-5,
                     y-5*yScale-yScale*squishedGumOutline.getRegionHeight()/2, getAngle(), 1, yScale);
-
             }
         }
     }
