@@ -701,6 +701,10 @@ public class LaserEnemyModel extends EnemyModel {
             float gumY = y;
             float gumX = x;
 
+            if (animationController != null) {
+                x-=(getWidth()/2)*drawScale.x*effect;
+            }
+
             if (curFrame != null) {
                 canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
             }
