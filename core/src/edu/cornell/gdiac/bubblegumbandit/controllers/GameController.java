@@ -793,7 +793,7 @@ public class GameController implements Screen {
 
         }
         projectileController.update();
-        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap(), false);
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt, level.getWorld(), level.getBandit());
 
@@ -956,6 +956,7 @@ public class GameController implements Screen {
     public void pause() {
         // We need this method to stop all sounds when we pause.
         SoundController.pause();
+        minimap.updateMinimap(0, false, true);
         pauseScreen.show();
     }
 
