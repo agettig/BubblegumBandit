@@ -69,8 +69,8 @@ public class HUDController {
   /** Texture for the Escape icon after the Bandit picks up the orb. */
   private Image escapeIcon;
 
-  /** Text that tells the player to get OUT! */
-  private Label escapeText;
+  /** Texture that tells the player to get OUT! */
+  private Image escapeMessage;
 
   /** Position that the timer "shakes" to */
   private Vector2 shakeAdjust;
@@ -151,16 +151,17 @@ public class HUDController {
     table.padLeft(10).padTop(60);
 
 
-    escapeText = new Label("ESCAPE", new Label.LabelStyle(font, ESCAPE_RED));
+    escapeMessage = new Image(directory.getEntry("escape", Texture.class));
+    escapeMessage.setVisible(false);
+    escapeMessage.setSize(escapeMessage.getWidth() * .5f, escapeMessage.getHeight() * .5f);
+    escapeMessage.setPosition(stage.getWidth()/2 - escapeMessage.getWidth()/2, stage.getHeight() * .6f);
+    escapeMessage.setColor(ESCAPE_RED);
+
     escapeIcon = new Image(directory.getEntry("escapeIcon", Texture.class));
-    escapeText.setFontScale(1.75f);
-    escapeText.setAlignment(Align.center, Align.center);
-    escapeText.setVisible(false);
-    escapeText.setPosition(stage.getWidth()/2 - escapeText.getWidth()/2, stage.getHeight() * .6f);
     escapeIcon.setPosition(stage.getWidth()/2 - escapeIcon.getWidth()/2, stage.getHeight() / 8);
     timerStart = -1;
     stage.addActor(escapeIcon);
-    stage.addActor(escapeText);
+    stage.addActor(escapeMessage);
 
 
     for (int i = 0; i < 6; i++) {
@@ -218,7 +219,7 @@ public class HUDController {
   public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
 
     if(timer < 0 && orbCountdown != null) orbCountdown.setText("");
-    if(timer < 0 && escapeText != null) escapeText.setVisible(false);
+    if(timer < 0 && escapeMessage != null) escapeMessage.setVisible(false);
     if(timer < 0) timerStart = -1;
     if(timer < 0) return; //We aren't ticking down.
 
@@ -240,7 +241,7 @@ public class HUDController {
     //Should we draw "ESCAPE!" ?
     final int escapeTextDuration = 3;
     if(timerStart < 0) timerStart = timer;
-    escapeText.setVisible(timerStart - timer < escapeTextDuration);
+    escapeMessage.setVisible(timerStart - timer < escapeTextDuration);
 
 
     //Did we tick down one second?
