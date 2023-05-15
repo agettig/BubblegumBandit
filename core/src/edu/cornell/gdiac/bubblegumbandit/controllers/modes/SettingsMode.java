@@ -638,6 +638,15 @@ public class SettingsMode implements Screen {
                 }
                 return true;
             }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                stage.setScrollFocus(scrollPane);
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                stage.setScrollFocus(null);
+            }
         });
 
         scrollPane.setScrollbarsVisible(true);
