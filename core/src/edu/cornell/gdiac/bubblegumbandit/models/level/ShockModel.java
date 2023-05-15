@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -95,6 +97,9 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
     private Color tintColor = Color.WHITE;
 
     private TextureRegion curFrame;
+
+    private Fixture boxFixture;
+    private PolygonShape boxShape;
 
     /**
      * Returns whether this shock model is on the bottom
@@ -190,6 +195,9 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         this.setVX(isLeft ? -speed : speed);
 
         curFrame = texture;
+
+        boxShape = new PolygonShape();
+        boxShape.setAsBox(getWidth() / 2f, getHeight() / 2f);
     }
     /**
      * Destroy this photon immediately, removing it from the screen.
@@ -308,6 +316,14 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         sensorDef.shape = sensorShape;
         sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
+
+        sensorDef.isSensor = false;
+        sensorDef.shape = boxShape;
+        boxFixture = body.createFixture(sensorDef);
+        boxFixture.setUserData(this);
+        Filter f = boxFixture.getFilterData();
+        f.maskBits = CollisionController.MASK_SHOCK_BOX;
+        boxFixture.setFilterData(f);
 
         return true;
     }

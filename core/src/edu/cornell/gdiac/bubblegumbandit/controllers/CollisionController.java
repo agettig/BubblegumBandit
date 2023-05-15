@@ -50,11 +50,12 @@ public class CollisionController implements ContactListener {
     public static final short MASK_CRUSHED_ENEMY = ~(CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_CRUSHER);
 
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
-    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY);
-    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY;
+    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_PROJECTILE);
+    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_PROJECTILE;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
-    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
+    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_CRUSHER;
     public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE | CATEGORY_CRUSHER;
+    public static final short MASK_SHOCK_BOX = CATEGORY_CRUSHER_BOX;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -631,6 +632,7 @@ public class CollisionController implements ContactListener {
         if (bd1 == null || bd2 == null) return;
         CrusherModel crusher;
         Obstacle crushed;
+        Fixture crushedFix;
 
         float levelGrav = levelModel.getWorld().getGravity().y;
 
@@ -638,9 +640,11 @@ public class CollisionController implements ContactListener {
         if (fix1.isSensor() && fix1.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix1.getUserData();
             crushed = bd2;
+            crushedFix = fix2;
         } else if (fix2.isSensor() && fix2.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix2.getUserData();
             crushed = bd1;
+            crushedFix = fix1;
         } else {
             return;
         }
@@ -691,12 +695,16 @@ public class CollisionController implements ContactListener {
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
                 // Screen shake cause block hit the floor
+            if (crushedFix.isSensor()) {
+                return;
+            }
             if (crushed.getName().equals("glass") && !crusher.didSmash) {
                 crushed.markRemoved(true);
                 levelModel.makeShatter(crushed.getX(), crushed.getY());
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
             }
             else if (!crusher.didSmash) {
+                System.out.println("Add trauma because of: " + crushed.getName());
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
                 float hw = crusher.getWidth() / 2;
                 if (crushed.getX() < crusher.getX() + hw & crushed.getX() > crusher.getX() - hw) {
@@ -765,7 +773,7 @@ public class CollisionController implements ContactListener {
         } else {
             return;
         }
-        if (ob.equals(levelModel.getBandit()) || ob.getName().contains("enemy")) {
+        if (ob.equals(levelModel.getBandit()) || ob.getName().contains("enemy") || ob instanceof CrusherModel) {
             if (isBeginContact) {
                 door.addObInRange(ob);
             } else {
@@ -793,7 +801,7 @@ public class CollisionController implements ContactListener {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f, true);
             levelModel.makeSpark(o.getX(), o.getY());
             levelModel.getBandit().addShockFixture(shockFixture);
-        } else if (o instanceof WallModel) {
+        } else if (o instanceof WallModel || o instanceof CrusherModel) {
             boolean isBottom = p.getIsBottom();
             if ((isBottom && o.getY() > p.getY()) || (!isBottom && o.getY() < p.getY())) {
                 p.stopShock();
