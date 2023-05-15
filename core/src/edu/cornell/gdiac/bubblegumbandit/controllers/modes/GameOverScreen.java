@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -139,6 +141,12 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     private boolean hoveringReturnTitleScreen;
 
+    /**
+     * icon for captives
+     */
+    private Texture captiveIcon;
+    private Texture emptyIcon;
+
     /** How much of screen is shown*/
     private float fadeFraction;
 
@@ -150,12 +158,23 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     private int heightY;
 
+    private Array<Image> captiveIcons;
+
+    private int caughtCaptives;
+
+    private int totalCaptives;
+
+    private BitmapFont subHeadingFont;
+
     private float backgroundHeight;
 
     private float backgroundWidth;
 
+    private boolean levelWon;
+
     private Color green = new Color(10f/255f, 199f/255f, 152f/255f, 1f);
     private Color red = new Color(252f/255f, 97f/255f, 89/255f, 1f);
+    private Color yellow = new Color(255f/255f, 178f/255f, 23f/255f, 1f);
 
 
     public GameOverScreen() {}
@@ -175,11 +194,13 @@ public class GameOverScreen implements Screen, InputProcessor {
 
         background = new TextureRegion(directory.getEntry("settingsBackground", Texture.class));
         displayFont = directory.getEntry("projectSpaceLarge", BitmapFont.class).newFontCache().getFont();
-
+        subHeadingFont = directory.getEntry("projectSpaceSubHeading", BitmapFont.class).newFontCache().getFont();
         hoverPointer = directory.getEntry("hoverPointer", Texture.class);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("levelSelectButton", Texture.class);
         titleScreenButton = directory.getEntry("titleScreenButton", Texture.class);
+        captiveIcon = directory.getEntry("captiveIcon", Texture.class);
+        emptyIcon = directory.getEntry("captiveIconOutline", Texture.class);
         backgroundHeight = background.getRegionHeight();
         backgroundWidth = background.getRegionWidth();
         fadeFraction = 0;
@@ -190,9 +211,11 @@ public class GameOverScreen implements Screen, InputProcessor {
     public void gameWon(AssetDirectory directory) {
         gameOverMessage = "VICTORY";
         displayFont.setColor(green);
+        subHeadingFont.setColor(yellow);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("victory", 1);
+        levelWon = true;
     }
 
     public void gameLost(AssetDirectory directory) {
@@ -201,6 +224,12 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("failure", 1);
+        levelWon = false;
+    }
+
+    public void setCaptive(int caught, int total) {
+        caughtCaptives = caught;
+        totalCaptives = total;
     }
 
     @Override
@@ -245,9 +274,6 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.begin();
 
-        int width = Gdx.graphics.getWidth();
-        int height = Gdx.graphics.getHeight();
-
        // if (fadeFraction < 1) {
            // background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
            // canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
@@ -259,7 +285,19 @@ public class GameOverScreen implements Screen, InputProcessor {
 
             float x = (canvas.getCamera().viewportWidth) / 2.0f;
             float y = (canvas.getCamera().viewportHeight)/ 2.0f;
-          //  Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
+
+            if (levelWon) {
+                canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 120);
+                int offset = 0;
+                for (int i = 0; i < totalCaptives; i++) {
+                    canvas.draw(emptyIcon, x + offset, y);
+                    offset += 60;
+                }
+                offset = 0;
+                for (int i = 0; i < caughtCaptives; i++) {
+                    canvas.draw(captiveIcon, x + offset, y);
+                }
+            }
 
             float highestButtonY = y;
             float lowestButtonY = y - 60;
@@ -274,7 +312,6 @@ public class GameOverScreen implements Screen, InputProcessor {
             titleScreenButtonPositionX = (int) x;
             titleScreenButtonPositionY = (int) lowestButtonY - 60;
 
-            float pointerX = startButtonPositionX / 4f;
 
             //Draw continue game options
             canvas.draw(

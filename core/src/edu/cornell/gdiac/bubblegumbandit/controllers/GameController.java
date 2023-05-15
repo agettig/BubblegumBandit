@@ -520,6 +520,14 @@ public class GameController implements Screen {
 //        level.getBandit().respawnPlayer();
 //    }
 
+    public int getCaughtCaptives() {
+        return level.getBandit().getNumStars();
+    }
+
+    public int getTotalCaptives() {
+        return level.getTotalCaptives();
+    }
+
     /**
      * Returns whether to process the update loop
      * <p>
