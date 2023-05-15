@@ -252,6 +252,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
         if(active){
+            backPressedDown = false;
+            backHovered = false;
             Vector2 mousePos = canvas.unproject(new Vector2(screenX, screenY));
             boolean onBack = true;
             if(mousePos.x < backButtonX || mousePos.x > backButtonX + backButton.getWidth() * BUTTON_SCALE)
