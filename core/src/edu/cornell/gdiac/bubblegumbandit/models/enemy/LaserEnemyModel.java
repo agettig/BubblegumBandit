@@ -94,18 +94,18 @@ public class LaserEnemyModel extends EnemyModel {
     /**
      * Jump cooldown
      */
-    private int jumpCooldown = 0;
+    private int jumpCooldown;
 
     /**
      * Range in damage for bandit
      */
-    private int stompRange = 5;
+    private int stompRange = 3;
 
 
     /**
      * Jump cooldown time
      */
-    private final int JUMP_COOLDOWN = 120;
+    private final int JUMP_COOLDOWN = 60;
 
     /**
      * Vector to represent start of ray cast for jumping damage
@@ -169,6 +169,7 @@ public class LaserEnemyModel extends EnemyModel {
         gumStuck = 0;
         isJumping = false;
         hasJumped = false;
+        jumpCooldown = -1;
     }
 
     /**
@@ -202,11 +203,17 @@ public class LaserEnemyModel extends EnemyModel {
 
         // if jumping
         if (isJumping){
-            // apply linear impulse
-            if (!hasJumped && jumpCooldown <=0){
-               int impulse = isFlipped ? -30 : 30;
-                getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
-                hasJumped = true;
+            if (jumpCooldown > 0){
+                jumpCooldown--;
+            }
+            else {
+                // apply linear impulse
+                if (!hasJumped && jumpCooldown <= 0) {
+                    int impulse = isFlipped ? -30 : 30;
+                    System.out.println("jump");
+                    getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
+                    hasJumped = true;
+                }
             }
 
             if (!isFlipped && yScale < 1) {
@@ -221,9 +228,6 @@ public class LaserEnemyModel extends EnemyModel {
             updateRayCasts();
 
             return;
-        }
-        if (shouldJumpAttack){
-            jumpCooldown --;
         }
         if (phase == LASER_PHASE.INACTIVE) super.update(dt);
         else {
@@ -253,7 +257,10 @@ public class LaserEnemyModel extends EnemyModel {
      * Sets laser enemy to jump
      */
     public void jump(){
-        if (jumpCooldown <= 0) isJumping = true;
+        if (jumpCooldown < 0) {
+            jumpCooldown = JUMP_COOLDOWN;
+            isJumping = true;
+        }
     }
 
     /**
@@ -262,7 +269,7 @@ public class LaserEnemyModel extends EnemyModel {
     public void hasLanded(){
         isJumping = false;
         hasJumped = false;
-        jumpCooldown = JUMP_COOLDOWN;
+        jumpCooldown = -1;
         SoundController.playSound("laserThud", 1);
 
 
@@ -278,8 +285,8 @@ public class LaserEnemyModel extends EnemyModel {
                 if (isBandit) {
                     BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
                     bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
-                    int yImpulse = isFlipped ? -10 : 10;
-                    int xImpulse = getX() > bandit.getX() ? -5 : 5;
+                    int yImpulse = isFlipped ? -5 : 5;
+                    int xImpulse = getX() > bandit.getX() ? -4 : 4;
                     bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);
                     bandit.stun(180);
                 };
