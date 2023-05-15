@@ -497,7 +497,7 @@
 
     },
 	"jsons" : {
-        "level1" : "jsons/levels/level1.json",
+        "level1" : "jsons/levels/old/betaMedium.json",
         "level2":"jsons/levels/level2.json",
         "level3" : "jsons/levels/level3.json",
         "level4": "jsons/levels/level4.json",

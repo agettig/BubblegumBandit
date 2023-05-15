@@ -674,7 +674,7 @@ public class LevelModel {
                     crush.initialize(directory, scale, x, y, object, constants.get("crushingBlock"));
                     activate(crush);
                     flippableObjects.add(crush);
-                    crush.setFixtureMasks(CATEGORY_TERRAIN, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
+                    crush.setFixtureMasks(CATEGORY_CRUSHER, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();

@@ -17,7 +17,11 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
+import sun.java2d.pipe.SpanShapeRenderer.Simple;
 
 
 public class CollisionController implements ContactListener {
@@ -32,6 +36,7 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
     public static final short CATEGORY_DOOR = 0x0100;
     public static final short CATEGORY_CRUSHER_BOX = 0x0200;
+    public static final short CATEGORY_CRUSHER = 0x0400;
 
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
@@ -42,13 +47,14 @@ public class CollisionController implements ContactListener {
     public static final short MASK_LANDED_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);
+    public static final short MASK_CRUSHED_ENEMY = ~(CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_CRUSHER);
 
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
     public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY);
     public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
     public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
-    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE;
+    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE | CATEGORY_CRUSHER;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -641,12 +647,38 @@ public class CollisionController implements ContactListener {
 
         BanditModel bandit = levelModel.getBandit();
         if (crushed.getName().contains("enemy")) {
-            // Check if enemy is beneath crusher and stopped (if it's stopped, it's pinched).
-            // If so, trigger its deletion.
-            // This might cause bugs. If there is some unexpected crusher behavior, this is probably
-            // what needs to be changed.
-            if (Math.abs(crushed.getVY()) < 0.001f) {
-                crushed.markRemoved(true);
+            EnemyModel crushedEnemy = (EnemyModel) crushed;
+//            if (levelGrav < 0) {
+//                float crushedEnemyBottom = crushedEnemy.getY() - (crushedEnemy.getHeight() / 2f);
+//                for (Obstacle collision : crushedEnemy.getCollisions()) {
+//                    float otherTop = crushedEnemyBottom;
+//                    if (collision instanceof CapsuleObstacle) {
+//                        otherTop = collision.getY() + ((CapsuleObstacle) collision).getHeight() / 2f;
+//                    } else if (collision instanceof BoxObstacle) {
+//                        otherTop = collision.getY() + ((BoxObstacle) collision).getHeight() / 2f;
+//                    }
+//                    if (Math.abs(otherTop - crushedEnemyBottom) < 0.02f) {
+//                        shouldCrush = true;
+//                    }
+//                }
+//            } else {
+//                float crushedEnemyTop = crushedEnemy.getY() - (crushedEnemy.getHeight() / 2f);
+//                for (Obstacle collision : crushedEnemy.getCollisions()) {
+//                    float otherBottom = crushedEnemyTop;
+//                    if (collision instanceof CapsuleObstacle) {
+//                        otherBottom = collision.getY() - ((CapsuleObstacle) collision).getHeight() / 2f;
+//                    } else if (collision instanceof BoxObstacle) {
+//                        otherBottom = collision.getY() - ((BoxObstacle) collision).getHeight() / 2f;
+//                    }
+//                    if (Math.abs(crushedEnemyTop - otherBottom) < 0.02f) {
+//                        shouldCrush = true;
+//                    }
+//                }
+//            }
+            if (Math.abs(crushed.getVY()) < 0.05f) {
+                crushedEnemy.crush(crusher);
+            } else {
+                crushedEnemy.shouldCrush(crusher);
             }
         } else if (crushed.equals(bandit)) {
             if (Math.abs(crushed.getVY()) < 0.001f) {

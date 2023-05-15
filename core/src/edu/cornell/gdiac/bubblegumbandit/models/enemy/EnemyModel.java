@@ -5,14 +5,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Shield;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
@@ -20,6 +24,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 
@@ -166,6 +171,25 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
     /** The current frame of the enemy */
     protected TextureRegion curFrame;
+
+    private CrusherModel crusher = null;
+
+    private float crushScale;
+
+    private boolean isCrushing = false;
+
+    /** Start crushing the enemy */
+    public void crush(CrusherModel crusher) {
+        Filter f = getFilterData();
+        f.maskBits = CollisionController.MASK_CRUSHED_ENEMY;
+        setFilterData(f);
+        this.crusher = crusher;
+        isCrushing = true;
+    }
+
+    public void shouldCrush(CrusherModel crusher) {
+        this.crusher = crusher;
+    }
 
     // endRegion
 
@@ -388,6 +412,44 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         updateRayCasts();
         updateMovement(nextAction);
         updateFrame();
+
+        if (crusher != null) {
+            if (isCrushing) {
+                if (world.getGravity().y < 0) {
+                    float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
+                    float topOfEnemy = getY() + (getHeight() / 2);
+                    crushScale = (getHeight() - (topOfEnemy - bottomOfCrusher) / getHeight());
+                    if (crushScale <= 0.05f) {
+                        markRemoved(true);
+                    } else if (crushScale > 1) {
+                        crusher = null;
+                        isCrushing = false;
+                    }
+                } else {
+                    float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
+                    float bottomOfEnemy = getY() - (getHeight() / 2);
+                    crushScale = (getHeight() - (topOfCrusher - bottomOfEnemy) / getHeight());
+                    if (crushScale <= 0.05f) {
+                        markRemoved(true);
+                    } else if (crushScale > 1) {
+                        crusher = null;
+                        isCrushing = false;
+                    }
+                }
+            } else {
+                boolean shouldStartCrush = false;
+                for (Obstacle ob : getCollisions()) {
+                    if (!(ob instanceof CrusherModel)) {
+                        shouldStartCrush = true;
+                    }
+                }
+                if (shouldStartCrush) {
+                    crush(crusher);
+                }
+            }
+        } else {
+            crushScale = 1;
+        }
     }
 
     /** Update the frame of the animation */
@@ -469,6 +531,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             float effect = faceRight ? 1.0f : -1.0f;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
+            y += ((1 - crushScale) * texture.getRegionHeight() * (world.getGravity().y < 0 ? -.5f : .5f));
             float gumY = y;
             float gumX = x;
 
@@ -477,7 +540,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             }
 
             if (curFrame != null) {
-                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale * crushScale);
             }
 
             //if gummed, overlay with gumTexture
