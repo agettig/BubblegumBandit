@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -29,11 +31,14 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
     /** Floor animation fps */
     private final int FLOOR_FPS = 4;
 
-    /** The time the shock persists */
+    /** The time the shock persists before dissipating */
     private final float PERSIST_TIME = 2.5f;
 
     /** The distance to travel before the shockwave stops */
     private final float TRAVEL_DISTANCE = 5;
+
+    /** The amount of time the shock dissipates */
+    private final float DISSIPATE_TIME = .15f;
 
     /** The percentage of travel at which the wave crest starts decreasing */
 //    private final float STARTS_DECREASING = .66f;
@@ -84,6 +89,18 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
     /** Maintains a set of collided walls */
     private ObjectSet<WallModel> collisions;
 
+    /** Y scale factor for shrinking down before disappearing */
+    private float yScaleFactor;
+
+    private boolean doesDamage;
+
+    private Color tintColor = Color.WHITE;
+
+    private TextureRegion curFrame;
+
+    private Fixture boxFixture;
+    private PolygonShape boxShape;
+
     /**
      * Returns whether this shock model is on the bottom
      * @return Whether this shock model is on the bottom
@@ -91,6 +108,7 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
     public boolean getIsBottom() {
         return isBottom;
     }
+
     /**
      * Creates a new projectile with the given attributes. Should only be called by ProjectileController.
      *
@@ -103,6 +121,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         timeAlive = 0;
         debugSensorShape = new PolygonShape();
         collisions = new ObjectSet<>();
+        doesDamage = true;
+        yScaleFactor = 1;
     }
 
     /**
@@ -173,6 +193,11 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
         float speed = data.getFloat("speed");
         this.setVX(isLeft ? -speed : speed);
+
+        curFrame = texture;
+
+        boxShape = new PolygonShape();
+        boxShape.setAsBox(getWidth() / 2f, getHeight() / 2f);
     }
     /**
      * Destroy this photon immediately, removing it from the screen.
@@ -223,19 +248,36 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
             }
         }
         timeAlive += dt;
-        if (timeAlive > PERSIST_TIME) {
+        if (timeAlive > PERSIST_TIME + DISSIPATE_TIME) {
             destroy();
+        }
+        else if (timeAlive > PERSIST_TIME) {
+            doesDamage = false;
+            float y = (float ) Math.pow(((timeAlive - PERSIST_TIME) / DISSIPATE_TIME), 2);
+            yScaleFactor = 1 - y;
         }
         if ((int) (timeAlive * FLOOR_FPS) % 2 == 0) {
             curFloor = electricFloorTexture;
         } else {
             curFloor = electricFloorTexture2;
         }
+
+        curFrame = texture;
+        if (animationController != null) {
+            curFrame = animationController.getFrame();
+        }
+
+        float worldHalfWidth = origin.x / drawScale.x;
+        float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
+        curFloor.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
     }
 
     /** Returns whether the obstacle colliding with the shock sensor is valid
      * @param ob The ob that has collided with the shock */
     public boolean isValidHit(Obstacle ob) {
+        if (!doesDamage) {
+            return false;
+        }
         if (getX() < initialX) { // If is moving left
             return ob.getX() < initialX; // Valid hit if obstacle is left of start
         } else if (getX() > initialX) {
@@ -275,6 +317,14 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
 
+        sensorDef.isSensor = false;
+        sensorDef.shape = boxShape;
+        boxFixture = body.createFixture(sensorDef);
+        boxFixture.setUserData(this);
+        Filter f = boxFixture.getFilterData();
+        f.maskBits = CollisionController.MASK_SHOCK_BOX;
+        boxFixture.setFilterData(f);
+
         return true;
     }
 
@@ -284,19 +334,21 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         boolean isLeft = getX() < initialX;
 
         yScale = isBottom ? 1 : -1;
-//        float heightOffset = (origin.y * (1 - yScale));
-        float y = getY()*drawScale.y;
-        canvas.draw(animationController.getFrame(),Color.WHITE,origin.x,origin.y, getX()*drawScale.x,y,0,isLeft ? -1 : 1,yScale);
+        float heightOffset = (origin.y * (1 - yScaleFactor) / 2f);
+        float y = getY()*drawScale.y + (heightOffset * (isBottom ? -1 : 1));
+        if (curFrame != null) {
+            canvas.draw(curFrame,tintColor,origin.x,origin.y, getX()*drawScale.x,y,0,isLeft ? -1 : 1,yScale*yScaleFactor);
+        }
 
         float worldHalfWidth = origin.x / drawScale.x;
         float innerX = getX() + (getX() > initialX ? -worldHalfWidth : worldHalfWidth);
         float centerX = (innerX + initialX) / 2f;
-        curFloor.setRegionWidth((int) (Math.abs(innerX - initialX) * drawScale.x) + 2);
         float halfFloorHeight = curFloor.getRegionHeight() / 2f;
         y = getY()*drawScale.y + (isBottom ? -origin.y + halfFloorHeight - 1 : origin.y - halfFloorHeight + 1);
+        y += (curFloor.getRegionHeight() * (1 - yScaleFactor) * (isBottom ? -1 : 1) / 4f);
         float originX = curFloor.getRegionWidth() / 2f;
 
-        canvas.draw(curFloor, Color.WHITE, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale);
+        canvas.draw(curFloor, tintColor, originX, halfFloorHeight, centerX*drawScale.x, y, 0, isLeft ? -1 : 1, yScale*yScaleFactor);
     }
 
     public void drawDebug(GameCanvas canvas) {

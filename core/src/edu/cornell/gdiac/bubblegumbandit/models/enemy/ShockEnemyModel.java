@@ -61,6 +61,18 @@ public class ShockEnemyModel extends EnemyModel {
 
 
     public void update(float dt){
+        turnCooldown--;
+        if(fired()){
+            animationController.setAnimation("fire", false, false);
+            SoundController.playSound("shockAttack", 1);
+        }
+        else if (stuck || gummed){
+            animationController.setAnimation("stuck", true, false);
+        }
+        else {
+            animationController.setAnimation("patrol", true, false);
+        }
+
         if (leftShock != null && leftShock.isAlive()) {
             if (!isFlipped && yScale < 1) {
                 if (yScale != -1 || !stuck) {
@@ -73,18 +85,9 @@ public class ShockEnemyModel extends EnemyModel {
             }
             updateRayCasts();
             updateMovement(InputController.CONTROL_NO_ACTION);
+            updateFrame();
         } else {
             super.update(dt);
-        }
-        if(fired()){
-            animationController.setAnimation("fire", false, false);
-            SoundController.playSound("shockAttack", 1);
-        }
-        else if (stuck || gummed){
-            animationController.setAnimation("stuck", true, false);
-        }
-        else {
-            animationController.setAnimation("patrol", true, false);
         }
     }
 }

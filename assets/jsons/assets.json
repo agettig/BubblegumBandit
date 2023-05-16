@@ -13,7 +13,7 @@
         "nextLevelButton": "textures/UI/nextLevel.png",
         "titleScreenButton": "textures/UI/returnToTitleScreen.png",
         "tryAgainButton": "textures/UI/tryAgain.png",
-
+        "escape": "textures/UI/escape.png",
         "sunfish" : "textures/levelSelect/sunfish.png",
         "fire" : "textures/levelSelect/fire.png",
         "boost" : "textures/levelSelect/boost.png",
@@ -497,9 +497,9 @@
 
     },
 	"jsons" : {
-        "level1" : "jsons/levels/level12.json",
-        "level2":"jsons/levels/level13.json",
-        "level3" : "jsons/levels/test.json",
+        "level1" : "jsons/levels/level1.json",
+        "level2":"jsons/levels/level2.json",
+        "level3" : "jsons/levels/level3.json",
         "level4": "jsons/levels/level4.json",
         "level5" : "jsons/levels/level5.json",
         "level6":"jsons/levels/level6.json",
