@@ -1456,6 +1456,7 @@ public class LevelModel {
          * @param canvas The GameCanvas to draw the trajectory on.
          */
         public void drawProjectileRay(GameCanvas canvas) {
+            /*
             for (int i = 0; i < range; i++) {
                 canvas.draw(trajectoryTexture, COLORS[i],
                     trajectoryTexture.getRegionWidth() / 2f,
@@ -1463,7 +1464,7 @@ public class LevelModel {
                         dotPos[2 * i + 1] * scale.y,
                     trajectoryTexture.getRegionWidth() * trajectoryScale,
                     trajectoryTexture.getRegionHeight() * trajectoryScale);
-            }
+            } */
         }
     }
 

@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSorter;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.*;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
@@ -160,10 +161,14 @@ public class GDXRoot extends Game implements ScreenListener {
     public void exitScreen(Screen screen, int exitCode) {
 
         if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
-            Gdx.graphics.setCursor(crosshairCursor);
+//            Gdx.graphics.setCursor(crosshairCursor);
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
         } else{
             Gdx.graphics.setCursor(mouseCursor);
+
+
         }
+
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();

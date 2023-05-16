@@ -880,7 +880,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (texture != null) {
+        /* if (texture != null) {
 
             if(!animationController.hasTemp()&&!animationController.isEnding()
                 &&!animationController.getCurrentAnimation().equals("victory")) {
@@ -908,7 +908,7 @@ public class BanditModel extends CapsuleObstacle {
                     getY() * drawScale.y, getAngle(), effect, yScale);
 
         }
-        poofController.draw(canvas);
+        poofController.draw(canvas);*/
     }
 
     /**
