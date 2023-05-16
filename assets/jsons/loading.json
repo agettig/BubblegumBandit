@@ -2,10 +2,11 @@
   "textures": {
     "background": "textures/UI/mainMenuBackground.png",
     "loadingBackground": "textures/settings/settingsBackground.png",
-    "startButton": "textures/UI/continueGame.png",
+    "startButton": "textures/UI/start.png",
     "settingsButton": "textures/UI/settings.png",
-    "exitButton": "textures/UI/quitGame.png",
+    "exitButton": "textures/UI/quit.png",
     "levelSelectButton": "textures/UI/levelSelect.png",
+    "creditsButton": "textures/UI/credits.png",
     "hoverPointer": "textures/UI/hoverPointer.png",
     "progressBackground": "textures/UI/progressBackground.png",
     "progressFill": "textures/UI/progressFill.png",
