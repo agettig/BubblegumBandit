@@ -59,10 +59,6 @@ public class CollisionController implements ContactListener {
     public static final short MASK_SHOCK_BOX = CATEGORY_CRUSHER_BOX;
 
     /**
-     * The amount of gum collected when collecting floating gum
-     */
-    private static final int AMMO_AMOUNT = 5;
-    /**
      * Mark set to handle more sophisticated collision callbacks
      */
     protected ObjectSet<Fixture> sensorFixtures;

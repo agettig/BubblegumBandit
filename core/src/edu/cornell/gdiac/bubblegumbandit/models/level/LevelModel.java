@@ -627,8 +627,8 @@ public class LevelModel {
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
-                    //if shielded add shield
-                    if (objType.contains("shielded")) enemy.hasShield(true);
+                    // Always has a shield now
+                    enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
@@ -638,8 +638,8 @@ public class LevelModel {
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
-                    //if shielded add shield
-                    if (objType.contains("shielded")) enemy.hasShield(true);
+//                    //if shielded add shield
+//                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
