@@ -151,6 +151,11 @@
                  "name":"text",
                  "type":"string",
                  "value":"move right"
+                }, 
+                {
+                 "name":"x_iconDirectoryKey",
+                 "type":"string",
+                 "value":""
                 }],
          "type":"tutorial"
         }, 

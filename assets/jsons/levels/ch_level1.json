@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"ch_level1.json"
-        }
-    },
  "height":30,
  "infinite":false,
  "layers":[
@@ -244,7 +236,7 @@
                  "id":163,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":1721.51130018612,
@@ -256,7 +248,7 @@
                  "id":164,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":1790.64185057166,
@@ -268,7 +260,7 @@
                  "id":165,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":1851.79579898963,
@@ -280,7 +272,7 @@
                  "id":166,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":1915.60861473012,
@@ -292,7 +284,7 @@
                  "id":167,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":1979.42143047062,
@@ -304,7 +296,7 @@
                  "id":168,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2045.89311353363,
@@ -316,7 +308,7 @@
                  "id":169,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2107.04706195161,
@@ -328,7 +320,7 @@
                  "id":170,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2178.83647965966,
@@ -340,7 +332,7 @@
                  "id":171,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2234.6726934326,
@@ -352,7 +344,7 @@
                  "id":172,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2306.46211114065,
@@ -364,7 +356,7 @@
                  "id":173,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2370.27492688115,
@@ -376,7 +368,7 @@
                  "id":174,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"hazard",
                  "visible":true,
                  "width":72,
                  "x":2426.11114065408,
@@ -388,7 +380,7 @@
                  "id":175,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"star",
                  "visible":true,
                  "width":92,
                  "x":2317.73304972082,
@@ -400,7 +392,7 @@
                  "id":176,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"star",
                  "visible":true,
                  "width":92,
                  "x":1034.37903669476,
@@ -484,14 +476,17 @@
                  "id":185,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"mediumEnemy",
                  "visible":true,
                  "width":109,
                  "x":1237.11531190926,
                  "y":1344.66351606805
                 }, 
                 {
+                 "gid":83,
+                 "height":256,
                  "id":192,
+                 "name":"",
                  "properties":[
                         {
                          "name":"enemy1",
@@ -519,6 +514,11 @@
                          "value":1
                         }, 
                         {
+                         "name":"lockOnOrb",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
                          "name":"rightx1",
                          "type":"int",
                          "value":22
@@ -537,13 +537,24 @@
                          "name":"righty2",
                          "type":"int",
                          "value":23
+                        }, 
+                        {
+                         "name":"unlockOnOrb",
+                         "type":"bool",
+                         "value":false
                         }],
-                 "template":"..\/..\/templates\/doorVLocked.tx",
+                 "rotation":0,
+                 "type":"doorVLocked",
+                 "visible":true,
+                 "width":64,
                  "x":1472,
                  "y":448
                 }, 
                 {
+                 "gid":82,
+                 "height":256,
                  "id":195,
+                 "name":"",
                  "properties":[
                         {
                          "name":"leftx1",
@@ -566,6 +577,11 @@
                          "value":-1
                         }, 
                         {
+                         "name":"lockOnOrb",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
                          "name":"rightx1",
                          "type":"int",
                          "value":-1
@@ -584,8 +600,16 @@
                          "name":"righty2",
                          "type":"int",
                          "value":-1
+                        }, 
+                        {
+                         "name":"unlockOnOrb",
+                         "type":"bool",
+                         "value":false
                         }],
-                 "template":"..\/..\/templates\/doorV.tx",
+                 "rotation":0,
+                 "type":"doorV",
+                 "visible":true,
+                 "width":64,
                  "x":640,
                  "y":448
                 }, 
@@ -595,7 +619,7 @@
                  "id":196,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"reactor",
                  "visible":true,
                  "width":115,
                  "x":2816,
@@ -607,14 +631,17 @@
                  "id":197,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"reactor",
                  "visible":true,
                  "width":115,
                  "x":2816,
                  "y":284
                 }, 
                 {
+                 "gid":82,
+                 "height":256,
                  "id":198,
+                 "name":"",
                  "properties":[
                         {
                          "name":"leftx1",
@@ -635,8 +662,41 @@
                          "name":"lefty2",
                          "type":"int",
                          "value":23
+                        }, 
+                        {
+                         "name":"lockOnOrb",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"rightx1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"rightx2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"righty1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"righty2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"unlockOnOrb",
+                         "type":"bool",
+                         "value":false
                         }],
-                 "template":"..\/..\/templates\/doorV.tx",
+                 "rotation":0,
+                 "type":"doorV",
+                 "visible":true,
+                 "width":64,
                  "x":2176,
                  "y":448
                 }],

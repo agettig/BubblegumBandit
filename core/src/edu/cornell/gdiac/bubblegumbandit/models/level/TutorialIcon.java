@@ -23,7 +23,6 @@ public class TutorialIcon {
   private static float margin = 10f;
   protected BitmapFont font;
   private Vector2 scale;
-  private float textOffset = 4f;
   private Color bubblePink = new Color(246f/255f, 148f/255f, 139f/255f, 1);
   private String description;
   protected BitmapFont fontSmall;
@@ -37,12 +36,25 @@ public class TutorialIcon {
     this.x = x;
     this.y = y;
     this.keyCode = keyCode;
-    this.icon =getTexture(directory);
+    this.icon = getTexture(directory);
     this.scale = scale;
     this.description = getDescription();
     this.fontSmall = directory.getEntry("sedgwickAveSmall", BitmapFont.class);
 
   }
+
+  public TutorialIcon(AssetDirectory directory, float x, float y,
+                      String description, String filename, Vector2 scale){
+    this.font = directory.getEntry("sedgwickAve", BitmapFont.class);
+    this.x = x;
+    this.y = y;
+    this.keyCode = -1;
+    this.icon = new TextureRegion(directory.getEntry(filename, Texture.class));
+    this.scale = scale;
+    this.description = description;
+    this.fontSmall = directory.getEntry("sedgwickAveSmall", BitmapFont.class);
+  }
+
 
 
   private TextureRegion getTexture(AssetDirectory directory) {
@@ -124,11 +136,20 @@ public class TutorialIcon {
 
   public void draw(GameCanvas canvas) {
     canvas.draw(icon, x * scale.x, y * scale.y);
-    canvas.drawText(getKeyText(), font, bubblePink,
-        x * scale.x,
-        y * scale.y - margin, icon.getRegionWidth(), Align.center, true);
-    canvas.drawText(getDescription().toUpperCase(), fontSmall, bubblePink,
-        x * scale.x,
-        y * scale.y - margin*4, icon.getRegionWidth(), Align.center, true);
-  }
+    float width = Math.max(icon.getRegionWidth(), 128f);
+    if(keyCode>=0) {
+      canvas.drawText(getKeyText(), font, bubblePink,
+          x * scale.x,
+          y * scale.y - margin, width, Align.center, true);
+      canvas.drawText(description.toUpperCase(), fontSmall, bubblePink,
+          x * scale.x,
+          y * scale.y - margin*4f, width, Align.center, true);
+    } else {
+      canvas.drawText(description.toUpperCase(), fontSmall, bubblePink,
+          x * scale.x,
+          y * scale.y - margin, width, Align.center, true);
+    }
+
+    }
+
 }
