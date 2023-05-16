@@ -446,13 +446,17 @@ public class GameController implements Screen {
 
     }
 
-
     /**
      * sets the level loaded by the game controller, set by level select
      */
     public void setLevelNum(int num) {
         levelNum = num;
         SaveData.setLevel(num);
+    }
+
+    public void previousLevel() {
+        levelNum -= 1;
+        SaveData.setLevel(levelNum - 1);
     }
 
     public void setPauseViewport(Viewport viewport){
@@ -519,6 +523,14 @@ public class GameController implements Screen {
 //        spawnedPostOrbEnemies = false;
 //        level.getBandit().respawnPlayer();
 //    }
+
+    public int getCaughtCaptives() {
+        return level.getBandit().getNumStars();
+    }
+
+    public int getTotalCaptives() {
+        return level.getTotalCaptives();
+    }
 
     /**
      * Returns whether to process the update loop
