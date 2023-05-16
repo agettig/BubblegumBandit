@@ -16,7 +16,13 @@
     "ship6" : "textures/levelSelect/level1.png",
     "ship7" : "textures/levelSelect/level1.png",
     "ship8" : "textures/levelSelect/level1.png",
-    "ship9" : "textures/levelSelect/level1.png"
+    "ship9" : "textures/levelSelect/level1.png",
+
+    "spaceBg": {
+      "file": "textures/environment/spaceSample.png",
+      "wrapU": "repeated",
+      "wrapV": "repeated"
+    }
   }
 
 }

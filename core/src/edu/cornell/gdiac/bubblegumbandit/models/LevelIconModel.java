@@ -48,6 +48,9 @@ public class LevelIconModel {
     /** color to tint the level texture, determined by press state */
     private Color tint;
 
+    /** the tint of an exploded, dead ship */
+    private static final Color DEAD = new Color(255/255f, 100/255f, 120/255f, 1);
+
     /** the state of the button
      *
      * 0 - regular
@@ -92,15 +95,15 @@ public class LevelIconModel {
 
 
     /** sets the static attributes of the class */
-    public static void setAttributes(AssetDirectory directory){
+    public static void setTextures(AssetDirectory directory){
         marker = new TextureRegion (directory.getEntry("marker", Texture.class));
         success = new TextureRegion (directory.getEntry("o", Texture.class));
         fail = new TextureRegion (directory.getEntry("x", Texture.class));
 
     }
 
-    public LevelIconModel (AssetDirectory directory, int level, float x, float y) {
-        this.texture = new TextureRegion(directory.getEntry("ship"+valueOf(level), Texture.class));
+    public LevelIconModel (AssetDirectory directory, AssetDirectory internal, int level, float x, float y) {
+        this.texture = new TextureRegion(internal.getEntry("ship"+valueOf(level), Texture.class));
         this.level = level;
         this.x = x;
         this.y = y;
@@ -110,7 +113,6 @@ public class LevelIconModel {
 
         explosionEffectController = new EffectController("explosion", "explosion",
                 directory, true, true, 0.03f);
-
     }
 
     public void setPressState(int value) {
@@ -176,7 +178,6 @@ public class LevelIconModel {
 
 
         if (SaveData.completed(level) && !exploded) {
-            System.out.println(level);
             makeExplosion(x + rand.nextInt(texture.getRegionWidth()),y + rand.nextInt(texture.getRegionHeight()));
             angle += ROTATION_RATE;
         }
@@ -194,7 +195,7 @@ public class LevelIconModel {
 
         //draw ship icon
         if (SaveData.completed(level)){
-            canvas.draw(texture, tint.cpy().mul(Color.GRAY), texture.getRegionWidth()/2f, texture.getRegionHeight()/2f,
+            canvas.draw(texture, tint.cpy().mul(DEAD), texture.getRegionWidth()/2f, texture.getRegionHeight()/2f,
                     x + texture.getRegionWidth()/2f,y + texture.getRegionHeight()/2f,angle, 1, 1);
             drawNPCs(canvas, pos);
 

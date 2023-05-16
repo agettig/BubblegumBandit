@@ -61,6 +61,8 @@ public class EffectController {
     this.delay = delay;
     delayTimer = (long) (delay*1000+1);
 
+    System.out.println("");
+
 
   }
 

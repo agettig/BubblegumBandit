@@ -68,19 +68,15 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     // technical attributes
 
     /**
-     * Need an ongoing reference to the asset directory
+     * Internal assets for the level select screen
      */
-    protected AssetDirectory directory;
+    private AssetDirectory internal;
 
     /**
      * The font for giving messages to the player
      */
     protected BitmapFont displayFont;
 
-    /**
-     * The JSON defining game constants
-     */
-    private JsonValue constantsJson;
 
     /** Standard window size (for scaling) */
     private static int STANDARD_WIDTH  = 800;
@@ -111,7 +107,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
     /** dashes used to draw the paths between levels*/
     private TextureRegion path;
-
 
 
     /** Whether this player mode is still active */
@@ -155,6 +150,25 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      *
      */
     public LevelSelectMode() {
+        internal = new AssetDirectory("jsons/levelSelect.json");
+        internal.loadAssets();
+        internal.finishLoading();
+
+        world = new World(new Vector2(0, 0), false);
+
+        TextureRegion sunfish_texture = new TextureRegion (internal.getEntry("sunfish", Texture.class));
+        TextureRegion fire = new TextureRegion (internal.getEntry("fire", Texture.class));
+        TextureRegion boost = new TextureRegion (internal.getEntry("boost", Texture.class));
+
+        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP * 0.7f, SPACE_HEIGHT * 0.8f);
+        sunfish.activatePhysics(world);
+
+        returnToMain = false;
+
+        background = new TextureRegion(internal.getEntry("spaceBg", Texture.class));
+
+        path =new TextureRegion (internal.getEntry("point", Texture.class));
+
     }
     /**
      * Gather the assets for this controller.
@@ -165,38 +179,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @param directory Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
-        // Access the assets used directly by this controller
-        this.directory = directory;
         // Some assets may have not finished loading so this is a catch-all for those.
         directory.finishLoading();
         displayFont = directory.getEntry("codygoonRegular", BitmapFont.class);
         displayFont.setColor(Color.WHITE);
 
-        constantsJson = directory.getEntry("constants", JsonValue.class);
-
-//        Gdx.input.setInputProcessor( this );
-
-        world = new World(new Vector2(0, 0), false);
-
-        TextureRegion sunfish_texture = new TextureRegion (directory.getEntry("sunfish", Texture.class));
-        TextureRegion fire = new TextureRegion (directory.getEntry("fire", Texture.class));
-        TextureRegion boost = new TextureRegion (directory.getEntry("boost", Texture.class));
-
-//        if (selectedLevel )
-        sunfish = new SunfishModel(sunfish_texture, fire, boost, LEVEL_GAP * 0.7f, SPACE_HEIGHT * 0.8f);
-        sunfish.activatePhysics(world);
-
-        returnToMain = false;
-
-        background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
-
-        path =new TextureRegion (directory.getEntry("point", Texture.class));
-//
-
-
         createIcons(directory);
-        //music
-//        SoundController.playMusic("menu");
     }
 
     /** Creates NUM_LEVELS number of level icons and adds them to the levels array */
@@ -204,12 +192,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         float flip = 0;
 
         //these are the same for every ship
-        LevelIconModel.setAttributes(directory);
+        LevelIconModel.setTextures(internal);
 
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
             flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
-            levels.add(new LevelIconModel(directory, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
+            levels.add(new LevelIconModel(directory, internal, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
         }
     }
 
