@@ -22,17 +22,6 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
  * */
 public class BubblegumController {
 
-    /** The current amount of gum ammo of the player. */
-    private int gumAmmo;
-
-    private int startingGum;
-
-    /**Amount of active gum. */
-    private static int activeGum;
-
-    /**Maximum allowed gum for the level*/
-    private int maxGum;
-
     /**The map of stuck Bubblegum obstacles to their joints. */
     private static ObjectMap<GumModel, ObjectSet<GumJointPair>> stuckBubblegum;
 
@@ -75,6 +64,9 @@ public class BubblegumController {
     private TextureRegion topLeftOutline;
     private TextureRegion bottomLeftOutline;
 
+    /**Amount of active gum. */
+    private static int activeGum;
+
 
     /**
      * Instantiates the Bubblegum controller and its queues.
@@ -91,9 +83,6 @@ public class BubblegumController {
 
     /** Initialize bubblegumController stats */
     public void initialize(AssetDirectory directory, JsonValue json) {
-        gumAmmo = json.get("startingGum").asInt();
-        maxGum = json.get("maxGum").asInt();
-        startingGum = gumAmmo;
         String key = json.get("stuckTexture").asString();
         stuckGumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
         key = json.get("rotatedStuckTexture").asString();
@@ -115,27 +104,6 @@ public class BubblegumController {
         bottomLeftOutline = new TextureRegion(directory.getEntry("bottomLeftOutline", Texture.class));
         bottomRightOutline = new TextureRegion(directory.getEntry("bottomRightOutline", Texture.class));
 
-    }
-
-    public void resetAmmo() {
-        gumAmmo = startingGum;
-    }
-    /** gets the amount of bubblegum player has */
-    public int getAmmo() {
-        return gumAmmo;
-    }
-
-    /** reduces max gum by 1 */
-    public void fireGum() {
-        gumAmmo -= 1;
-    }
-
-    /** Check if player already holds max gum*/
-    public boolean atMaxGum() {return gumAmmo == maxGum;}
-
-    /** increases amount of ammo by ammo */
-    public void addAmmo(int ammo) {
-        gumAmmo += ammo;
     }
 
     /** Returns the stuck gum texture. */

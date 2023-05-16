@@ -113,6 +113,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
         // Initialize the three game worlds
         controller = new GameController();
+        controller.setPauseViewport(canvas.getUIViewport());
         loading.setScreenListener(this);
         setScreen(loading);
     }
@@ -165,12 +166,11 @@ public class GDXRoot extends Game implements ScreenListener {
      */
     public void exitScreen(Screen screen, int exitCode) {
 
-		if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
-			Gdx.graphics.setCursor(crosshairCursor);
-		}
-		else{
-			Gdx.graphics.setCursor(mouseCursor);
-		}
+        if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
+            Gdx.graphics.setCursor(crosshairCursor);
+        } else{
+            Gdx.graphics.setCursor(mouseCursor);
+        }
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();
@@ -181,12 +181,12 @@ public class GDXRoot extends Game implements ScreenListener {
         } else if (exitCode == Screens.SETTINGS) {
             settingsMode.setAccessedFromMain(screen == loading);
             oldCamera = canvas.getCamera();
-            canvas.resetCamera();
             settingsMode.setScreenListener(this);
             BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
             BitmapFont projectSpace = loading.getAssets().getEntry("projectSpace", BitmapFont.class);
             settingsMode.initialize(codygoonRegular, projectSpace);
             setScreen(settingsMode);
+            canvas.resetCamera();
         } else if (exitCode == Screens.LEVEL_SELECT) {
             directory = loading.getAssets();
             controller.gatherAssets(directory);
@@ -195,10 +195,10 @@ public class GDXRoot extends Game implements ScreenListener {
             levels.setScreenListener(this);
             setScreen(levels);
         } else if (exitCode == Screens.CONTROLLER) {
-            setScreen(controller);
             if (screen == settingsMode) {
                 canvas.setCamera(oldCamera);
                 controller.setPaused(true);
+                controller.update(0);
             } else {
                 directory = loading.getAssets();
                 controller.gatherAssets(directory);
@@ -207,6 +207,7 @@ public class GDXRoot extends Game implements ScreenListener {
                 if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
                 controller.reset();
             }
+            setScreen(controller);
         } else if (exitCode == Screens.GAME_WON) {
             directory = loading.getAssets();
             gameOver.initialize(directory, canvas);

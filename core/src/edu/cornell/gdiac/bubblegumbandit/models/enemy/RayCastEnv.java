@@ -80,7 +80,7 @@ public class RayCastEnv {
                     boolean isBlock = fixture.getBody().getUserData() instanceof CrusherModel;
 
                     if (fixture.getFilterData().categoryBits == CollisionController.CATEGORY_TERRAIN
-                            && !isHazard && !isBlock) {
+                            && !isBlock) {
                         rays.get(finalI).set(point);
                         if (fraction < minFraction[0]) {
                             minFraction[0] = fraction;
@@ -99,7 +99,7 @@ public class RayCastEnv {
 
                     boolean isHazard = ((Obstacle) fixture.getBody().getUserData()).getName().equals("hazard");
                     boolean isBlock = fixture.getBody().getUserData() instanceof CrusherModel;
-                    if(fraction < minFraction[0] && !bodies.contains(fixture.getBody(), true) && (isBlock || isHazard)) {
+                    if(fraction < minFraction[0] && !bodies.contains(fixture.getBody(), true) && (isBlock)) {
                         bodies.add(fixture.getBody());
                     }
                     return minFraction[0];

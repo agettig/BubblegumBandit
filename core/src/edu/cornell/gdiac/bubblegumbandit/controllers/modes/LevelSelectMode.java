@@ -43,7 +43,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     //constants
 
     /** the number of levels to add to the level select screen*/
-    private final static int NUM_LEVELS = 9;
+    private final static int NUM_LEVELS = 21;
 
     /** the gap between level icons */
     private final static float LEVEL_GAP = 800;
@@ -220,7 +220,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         TextureRegion fail = new TextureRegion (directory.getEntry("x", Texture.class));
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
-            texture = new TextureRegion(directory.getEntry("ship"+valueOf(i), Texture.class));
+            //TODO add each ship
+//            texture = new TextureRegion(directory.getEntry("ship"+i, Texture.class));
+            texture = new TextureRegion(directory.getEntry("ship1", Texture.class));
             flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
             levels.add(new LevelIconModel(texture, marker,success, fail, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
         }
