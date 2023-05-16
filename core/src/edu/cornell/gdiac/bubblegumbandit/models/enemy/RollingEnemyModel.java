@@ -205,7 +205,6 @@ public class RollingEnemyModel extends EnemyModel {
         if(getStuck() || getGummed()){
             unsticking = true;
             unstickStopWatch += dt;
-           // System.out.println(unstickStopWatch);
         }
         else{
             unsticking = false;

@@ -396,7 +396,9 @@ public class BubblegumController {
             } catch (Exception ignored) {
 
             }
-            level.getWorld().destroyJoint(j);
+            if (j.getBodyA() != null && j.getBodyB() != null) {
+                level.getWorld().destroyJoint(j);
+            }
         }
     }
 

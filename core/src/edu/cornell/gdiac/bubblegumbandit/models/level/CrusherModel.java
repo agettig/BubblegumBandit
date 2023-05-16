@@ -212,6 +212,9 @@ public class CrusherModel extends CapsuleObstacle implements Gummable{
         if (Math.abs(getVY()) > 0.5f) {
             didSmash = false;
         }
+        if (Math.abs(getVY()) > 0.05f) {
+            setVX(0);
+        }
     }
 
     @Override

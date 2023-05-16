@@ -853,7 +853,6 @@ public class GameController implements Screen {
             SoundController.playSound("noGum", 1);
         }
 
-
         hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
         hud.drawCountdownText((int)orbCountdown, delta, canvas.getCamera(), level.getBandit());
 
