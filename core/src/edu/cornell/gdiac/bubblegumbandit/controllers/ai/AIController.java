@@ -10,8 +10,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 
-import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_NO_ACTION;
-
 public class AIController implements Telegraph {
 
     /**
@@ -106,7 +104,7 @@ public class AIController implements Telegraph {
     public boolean enemyHeardBandit() {
         Vector2 playerPosition = bandit.getPosition();
         Vector2 enemyPosition = enemy.getPosition();
-        CircleShape hearingCircle = enemy.getSensorShape();
+        CircleShape hearingCircle = enemy.getListeningCircle();
 
         float xDiff = Math.abs(playerPosition.x - enemyPosition.x);
         float yDiff = Math.abs(playerPosition.y - enemyPosition.y);

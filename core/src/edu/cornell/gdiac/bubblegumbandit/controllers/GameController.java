@@ -592,7 +592,7 @@ public class GameController implements Screen {
      * Unlocks next level
      * */
     public void unlockNextLevel(){
-        if (collisionController.isWinConditionMet() && !isComplete()) {
+        if ( level.getBandit().winConditionMet() && !isComplete()) {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());

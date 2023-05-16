@@ -20,7 +20,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.TileModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
-import edu.cornell.gdiac.bubblegumbandit.models.FlippingObject;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
@@ -113,17 +112,15 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     protected TextureRegion squishedGum;
     protected TextureRegion squishedGumOutline;
 
-    private CircleShape sensorShape;
+    private CircleShape listeningCircle;
     /**
      * The name of the sensor for detection purposes
      */
-
 
     private String sensorName;
     /**
      * The color to paint the sensor in debug mode
      */
-    private TextureRegion gummed_robot;
 
 
     /**
@@ -191,6 +188,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         this.crusher = crusher;
     }
 
+    protected int turnCooldown;
+
     // endRegion
 
     /**
@@ -230,7 +229,17 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      * @param isRight if this EnemyModel is facing right.
      */
     public void setFaceRight(boolean isRight) {
-        faceRight = isRight;
+        if (turnCooldown <= 0){
+            faceRight = isRight;
+        }
+    }
+
+    public boolean setFaceRight(boolean isRight, int cooldown){
+        if (turnCooldown <= 0){
+            faceRight = isRight;
+            turnCooldown = cooldown;
+        }
+        return faceRight;
     }
 
     /**
@@ -285,6 +294,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         collidedObs = new ObjectSet<>();
         tile = null;
         helpingTarget = null;
+        turnCooldown = 0;
     }
 
     public Vector2 getHelpingTarget() {
@@ -364,8 +374,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         // Get the sensor information
         int listeningRadius = constantsJson.get("listeningRadius").asInt();
 
-        sensorShape = new CircleShape();
-        sensorShape.setRadius(listeningRadius);
+        listeningCircle = new CircleShape();
+        listeningCircle.setRadius(listeningRadius);
 
 
         String gumKey = constantsJson.get("gumTexture").asString();
@@ -395,8 +405,8 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         envRays = new RayCastEnv(Color.GREEN, getHeight());
     }
 
-    public CircleShape getSensorShape() {
-        return sensorShape;
+    public CircleShape getListeningCircle() {
+        return listeningCircle;
     }
 
     public boolean isCrushing() {
@@ -499,7 +509,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
 
         // turn if block or hazard in the way
         if (envRays.getBodies().size > 0) {
-            setFaceRight(!faceRight);
+            setFaceRight(!faceRight, 60);
             return;
         }
         boolean movingLeft = (nextAction & CONTROL_MOVE_LEFT) != 0;
@@ -512,14 +522,27 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             if ((previousAction & CONTROL_MOVE_LEFT) == 0) {
                 setY((int) getY() + .5f);
             }
-            setVX(-speed);
-            setFaceRight(false);
+
+            boolean faceRight = setFaceRight(false, 60);
+
+            if (!faceRight) {
+                setVX(-speed);
+            }
+            else{
+                setVX(0);
+            }
         } else if (movingRight) {
             if ((previousAction & CONTROL_MOVE_RIGHT) == 0) {
                 setY((int) getY() + .5f);
             }
-            setVX(speed);
-            setFaceRight(true);
+            boolean faceRight = setFaceRight(true, 60);
+
+            if (faceRight) {
+                setVX(speed);
+            }
+            else{
+                setVX(0);
+            }
         } else if (movingUp) {
 
             if (!isFlipped) {
@@ -615,7 +638,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     @Override
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
-        canvas.drawPhysics(sensorShape, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
+        canvas.drawPhysics(listeningCircle, sensorColor, getX(), getY(), drawScale.x, drawScale.y);
 //        canvas.drawPhysics(robotShape, sensorColor, getX(), getY(), 0, drawScale.x, drawScale.y);
         vision.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);
         sensing.drawDebug(canvas, getX(), getY(), drawScale.x, drawScale.y);

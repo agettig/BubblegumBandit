@@ -69,8 +69,8 @@ public class HUDController {
   /** Texture for the Escape icon after the Bandit picks up the orb. */
   private Image escapeIcon;
 
-  /** Text that tells the player to get OUT! */
-  private Label escapeText;
+  /** Texture that tells the player to get OUT! */
+  private Image escapeMessage;
 
   /** Position that the timer "shakes" to */
   private Vector2 shakeAdjust;
@@ -79,6 +79,13 @@ public class HUDController {
 
   private Texture emptyIcon;
   private int maxCaptives = 6;
+
+  private final Color ESCAPE_RED = new Color(
+          1,
+          70/255f,
+          61/255f,
+          1
+  );
 
 
   private Image[] gumCount = new Image[6];
@@ -144,16 +151,17 @@ public class HUDController {
     table.padLeft(10).padTop(60);
 
 
-    escapeText = new Label("ESCAPE", new Label.LabelStyle(font, Color.RED));
+    escapeMessage = new Image(directory.getEntry("escape", Texture.class));
+    escapeMessage.setVisible(false);
+    escapeMessage.setSize(escapeMessage.getWidth() * .5f, escapeMessage.getHeight() * .5f);
+    escapeMessage.setPosition(stage.getWidth()/2 - escapeMessage.getWidth()/2, stage.getHeight() * .6f);
+    escapeMessage.setColor(ESCAPE_RED);
+
     escapeIcon = new Image(directory.getEntry("escapeIcon", Texture.class));
-    escapeText.setFontScale(1.75f);
-    escapeText.setAlignment(Align.center, Align.center);
-    escapeText.setVisible(false);
-    escapeText.setPosition(stage.getWidth()/2 - escapeText.getWidth()/2, stage.getHeight() * .6f);
     escapeIcon.setPosition(stage.getWidth()/2 - escapeIcon.getWidth()/2, stage.getHeight() / 8);
     timerStart = -1;
     stage.addActor(escapeIcon);
-    stage.addActor(escapeText);
+    stage.addActor(escapeMessage);
 
 
     for (int i = 0; i < 6; i++) {
@@ -211,6 +219,7 @@ public class HUDController {
   public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
 
     if(timer < 0 && orbCountdown != null) orbCountdown.setText("");
+    if(timer < 0 && escapeMessage != null) escapeMessage.setVisible(false);
     if(timer < 0) timerStart = -1;
     if(timer < 0) return; //We aren't ticking down.
 
@@ -219,9 +228,11 @@ public class HUDController {
       orbCountdown = new Label("", new Label.LabelStyle(font, Color.WHITE));
       orbCountdown.setFontScale(1f);
       orbCountdown.setColor(Color.WHITE);
-      orbCountdown.setPosition(escapeIcon.getWidth() - escapeIcon.getWidth()/2,
-              escapeIcon.getY() + escapeIcon.getHeight()/2);
-      orbCountdown.setText(timer);
+      orbCountdown.setAlignment(Align.center);
+      orbCountdown.setX(escapeIcon.getX() + escapeIcon.getWidth()/2.3f);
+      orbCountdown.setY(escapeIcon.getY());
+      orbCountdown.setWidth(escapeIcon.getWidth()/2.3f);
+      orbCountdown.setHeight(escapeIcon.getHeight());
       stage.addActor(orbCountdown);
     }
 
@@ -230,12 +241,12 @@ public class HUDController {
     //Should we draw "ESCAPE!" ?
     final int escapeTextDuration = 3;
     if(timerStart < 0) timerStart = timer;
-    escapeText.setVisible(timerStart - timer < escapeTextDuration);
+    escapeMessage.setVisible(timerStart - timer < escapeTextDuration);
 
 
     //Did we tick down one second?
     String countdownText = orbCountdown.getText().toString();
-    if(countdownText.equals("") || Integer.parseInt(countdownText) != timer){
+    if(countdownText.equals("") || Integer.parseInt(countdownText.trim()) != timer){
       orbCountdown.setText(timer);
 
       //Should we SHAKE??
@@ -339,10 +350,6 @@ public class HUDController {
     float xShakeRange;
     float yShakeRange;
     float transitionSpeed;
-    final float centerTimerX = escapeIcon.getX() + escapeIcon.getWidth()/2;
-    final float centerTimerY = escapeIcon.getY() + escapeIcon.getHeight()/2;
-    orbCountdown.setX(centerTimerX);
-    orbCountdown.setY(centerTimerY);
     escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth()/2);
     escapeIcon.setY(stage.getHeight() / 8f);
 
@@ -352,8 +359,8 @@ public class HUDController {
     yShakeRange = 2f;
     transitionSpeed = 7f;
     shakeAdjust = new Vector2(
-            centerTimerX + MathUtils.random(-xShakeRange, xShakeRange),
-            centerTimerY + MathUtils.random(-yShakeRange, yShakeRange)
+            escapeIcon.getX() + escapeIcon.getWidth()/2.3f + MathUtils.random(-xShakeRange, xShakeRange),
+            escapeIcon.getY() + MathUtils.random(-yShakeRange, yShakeRange)
     );
     orbCountdown.setX(MathUtils.lerp(orbCountdown.getX(), shakeAdjust.x, transitionSpeed * dt));
     orbCountdown.setY(MathUtils.lerp(orbCountdown.getY(), shakeAdjust.y, transitionSpeed * dt));
