@@ -176,7 +176,6 @@ public class GDXRoot extends Game implements ScreenListener {
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();
-            System.exit(0);
         } else if (exitCode == Screens.LOADING_SCREEN) {
             canvas.resetCamera();
             loading.setScreenListener(this);
