@@ -191,7 +191,6 @@ public class LaserEnemyModel extends EnemyModel {
         hasJumped = false;
         randomXScale = new Array<>();
         randomYScale = new Array<>();
-        dir = new Vector2();
         jumpCooldown = -1;
     }
 
