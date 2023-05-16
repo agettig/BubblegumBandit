@@ -687,21 +687,21 @@ public class LaserEnemyModel extends EnemyModel {
             if (gummed) {
                 if(stuck) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
-                        gumY, getAngle(), 1, yScale);
+                        gumY, getAngle(), 1, yScale*crushScale);
                 } else {
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
-                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
+                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale*crushScale);
                 }
 //
             } else if (gumStuck>0){
                     canvas.draw(halfStuck, Color.WHITE,
-                        origin.x, origin.y, (getX() - (getDimension().x/2))* drawScale.x, y, getAngle(), 1, yScale);
+                        origin.x, origin.y, (getX() - (getDimension().x/2))* drawScale.x, y, getAngle(), 1, yScale*crushScale);
             }
 
             //if shielded, overlay shield
             if (isShielded()){
                 canvas.draw(shield, Color.WHITE, origin.x , origin.y, (getX() - (getDimension().x/2))* drawScale.x ,
-                    y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale);
+                    y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale*crushScale);
             }
         }
     }

@@ -654,7 +654,7 @@ public class CollisionController implements ContactListener {
         }
 
         BanditModel bandit = levelModel.getBandit();
-        if (crushed.getName().contains("enemy")) {
+        if (crushed instanceof EnemyModel) {
             EnemyModel crushedEnemy = (EnemyModel) crushed;
             if (Math.abs(crushed.getVY()) < 0.05f) {
                 crushedEnemy.crush(crusher);
@@ -663,7 +663,7 @@ public class CollisionController implements ContactListener {
             }
         } else if (crushed.equals(bandit)) {
             if (crusherFix.getFilterData().maskBits == MASK_TERRAIN) {
-                if (Math.abs(crushed.getVY()) < 0.05f) {
+                if (Math.abs(crushed.getVY()) < 0.05f && Math.abs(crusher.getVY()) > 0.05f) {
                     bandit.crush(crusher);
                 } else {
                     bandit.shouldCrush(crusher);

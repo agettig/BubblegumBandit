@@ -1312,7 +1312,7 @@ public class LevelModel {
                     if (canUnstickThrough.contains(ob.getName())) {
                         return -1;
                     }
-                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                    if (ob instanceof CrusherModel && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
                     if (fixture.getUserData() instanceof DoorModel) {

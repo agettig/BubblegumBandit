@@ -433,7 +433,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
                     float bottomOfEnemy = getY() - (getHeight() / 2);
                     crushScale = (bottomOfCrusher - bottomOfEnemy) / getHeight();
-                    if (crushScale < 0) {
+                    if (crushScale < -0.1f) {
                         endCrush();
                     }
                     else if (crushScale <= 0.05f) {
@@ -445,7 +445,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
                     float topOfEnemy = getY() + (getHeight() / 2);
                     crushScale = (topOfEnemy - topOfCrusher) / getHeight();
-                    if (crushScale < 0) {
+                    if (crushScale < -0.1f) {
                         endCrush();
                     }
                     else if (crushScale <= 0.05f) {
@@ -567,11 +567,11 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                 if(stuck) {
                     //gumY += yScale*gumTexture.getRegionHeight()/2;
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
-                            gumY, getAngle(), 1, yScale);
+                            gumY, getAngle(), 1, yScale*crushScale);
                 } else {
                    // gumY += yScale*squishedGum.getRegionHeight()/2;
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
-                       gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
+                       gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale*crushScale);
                 }
 //
             }
@@ -579,7 +579,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
             //if shielded, overlay shield
             if (isShielded) {
                 canvas.draw(shield, Color.WHITE, origin.x, origin.y, (getX() - (getDimension().x / 2)) * drawScale.x,
-                        y - shield.getRegionHeight() / 8f * yScale, getAngle(), 1, yScale);
+                        y - shield.getRegionHeight() / 8f * yScale, getAngle(), 1, yScale*crushScale);
             }
 //            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
         }
