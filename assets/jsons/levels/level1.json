@@ -501,22 +501,22 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":24
+                         "value":1
                         }, 
                         {
                          "name":"lefty1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"lefty2",
                          "type":"int",
-                         "value":23
+                         "value":1
                         }, 
                         {
                          "name":"rightx1",
@@ -548,42 +548,42 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":14
+                         "value":-1
                         }, 
                         {
                          "name":"lefty1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"lefty2",
                          "type":"int",
-                         "value":9
+                         "value":-1
                         }, 
                         {
                          "name":"rightx1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"rightx2",
                          "type":"int",
-                         "value":24
+                         "value":-1
                         }, 
                         {
                          "name":"righty1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"righty2",
                          "type":"int",
-                         "value":23
+                         "value":-1
                         }],
                  "template":"..\/..\/templates\/doorV.tx",
                  "x":640,
@@ -612,6 +612,33 @@
                  "width":115,
                  "x":2816,
                  "y":284
+                }, 
+                {
+                 "id":198,
+                 "properties":[
+                        {
+                         "name":"leftx1",
+                         "type":"int",
+                         "value":22
+                        }, 
+                        {
+                         "name":"leftx2",
+                         "type":"int",
+                         "value":47
+                        }, 
+                        {
+                         "name":"lefty1",
+                         "type":"int",
+                         "value":2
+                        }, 
+                        {
+                         "name":"lefty2",
+                         "type":"int",
+                         "value":23
+                        }],
+                 "template":"..\/..\/templates\/doorV.tx",
+                 "x":2176,
+                 "y":448
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -702,7 +729,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":198,
+ "nextobjectid":199,
  "orientation":"orthogonal",
  "properties":[
         {

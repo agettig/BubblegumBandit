@@ -496,22 +496,22 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":24
+                         "value":1
                         }, 
                         {
                          "name":"lefty1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"lefty2",
                          "type":"int",
-                         "value":23
+                         "value":1
                         }, 
                         {
                          "name":"lockOnOrb",
@@ -559,22 +559,22 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":14
+                         "value":-1
                         }, 
                         {
                          "name":"lefty1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"lefty2",
                          "type":"int",
-                         "value":9
+                         "value":-1
                         }, 
                         {
                          "name":"lockOnOrb",
@@ -584,22 +584,22 @@
                         {
                          "name":"rightx1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"rightx2",
                          "type":"int",
-                         "value":24
+                         "value":-1
                         }, 
                         {
                          "name":"righty1",
                          "type":"int",
-                         "value":2
+                         "value":-1
                         }, 
                         {
                          "name":"righty2",
                          "type":"int",
-                         "value":23
+                         "value":-1
                         }, 
                         {
                          "name":"unlockOnOrb",
@@ -636,6 +636,69 @@
                  "width":115,
                  "x":2816,
                  "y":284
+                }, 
+                {
+                 "gid":82,
+                 "height":256,
+                 "id":198,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"leftx1",
+                         "type":"int",
+                         "value":22
+                        }, 
+                        {
+                         "name":"leftx2",
+                         "type":"int",
+                         "value":47
+                        }, 
+                        {
+                         "name":"lefty1",
+                         "type":"int",
+                         "value":2
+                        }, 
+                        {
+                         "name":"lefty2",
+                         "type":"int",
+                         "value":23
+                        }, 
+                        {
+                         "name":"lockOnOrb",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"rightx1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"rightx2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"righty1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"righty2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"unlockOnOrb",
+                         "type":"bool",
+                         "value":false
+                        }],
+                 "rotation":0,
+                 "type":"doorV",
+                 "visible":true,
+                 "width":64,
+                 "x":2176,
+                 "y":448
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -726,7 +789,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":198,
+ "nextobjectid":199,
  "orientation":"orthogonal",
  "properties":[
         {
