@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -18,6 +19,8 @@ import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+
+import java.lang.reflect.Field;
 
 
 /**
@@ -32,6 +35,8 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
  * damages the player.
  */
 public class LaserEnemyModel extends EnemyModel {
+
+    private final int DIR_LEN = 10;
 
     /**
      * The point at which the most up-to-date laser beam intersects.
@@ -95,26 +100,21 @@ public class LaserEnemyModel extends EnemyModel {
     /**
      * Jump cooldown
      */
-    private int jumpCooldown = 0;
+    private int jumpCooldown;
 
     /**
      * Range in damage for bandit
      */
-    private int stompRange = 5;
+    private int stompRange = 3;
 
 
     /**
      * Jump cooldown time
      */
-    private final int JUMP_COOLDOWN = 120;
+    private final int JUMP_COOLDOWN = 60;
 
     /** Number of segments in the laser */
     private int numSegments;
-
-    /** Direction of laser */
-    private Vector2 dir;
-
-    private boolean shouldDrawLaser;
 
     /**
      * Vector to represent start of ray cast for jumping damage
@@ -131,10 +131,6 @@ public class LaserEnemyModel extends EnemyModel {
 
     /** Random Y scale for laser vibrations */
     private Array<Float> randomYScale;
-
-    public int getNumSegments() {
-        return numSegments;
-    }
 
     public boolean isShouldJumpAttack() {
         return shouldJumpAttack;
@@ -195,7 +191,7 @@ public class LaserEnemyModel extends EnemyModel {
         hasJumped = false;
         randomXScale = new Array<>();
         randomYScale = new Array<>();
-        dir = new Vector2();
+        jumpCooldown = -1;
     }
 
     /**
@@ -221,30 +217,50 @@ public class LaserEnemyModel extends EnemyModel {
         return isJumping;
     }
 
-    public Vector2 getDir() { return dir; }
-
-    public boolean shouldDrawLaser() { return shouldDrawLaser; }
-
     @Override
     public void update(float dt) {
+        turnCooldown--;
         // laser enemy can no longer jump set attack to laser
         if (getGummed() || getStuck()){
             setShouldJumpAttack(false);
         }
 
-        if(inactiveLaser()) {
-            shouldDrawLaser = false;
-        }
-        else {
-            shouldDrawLaser = !chargingLaser();
-        }
+        //Math calculations for the laser.
+            numSegments = (int)((DIR_LEN * drawScale.x));
+            randomXScale.clear();
+            randomYScale.clear();
+            for (int i = 0; i < numSegments; i++) {
+                if (firingLaser()) {
+                    if (Math.floor(Math.random() * 10) % 2 == 0) {
+                        randomXScale.add((float) (1f + Math.random()));
+                        randomYScale.add((float) (1f + Math.random()));
+                    } else if (Math.floor(Math.random() * 10) % 3 == 0) {
+                        randomXScale.add((float) (1f + Math.random()));
+                        randomYScale.add((float) (1f + Math.random()));
+                    } else {
+                        randomXScale.add(1f);
+                        randomYScale.add(1f);
+                    }
+                } else {
+                    randomXScale.add(1f);
+                    randomYScale.add(1f);
+                }
+            }
+
+        updateCrush();
+
         // if jumping
         if (isJumping){
-            // apply linear impulse
-            if (!hasJumped && jumpCooldown <=0){
-               int impulse = isFlipped ? -30 : 30;
-                getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
-                hasJumped = true;
+            if (jumpCooldown > 0){
+                jumpCooldown--;
+            }
+            else {
+                // apply linear impulse
+                if (!hasJumped && jumpCooldown <= 0) {
+                    int impulse = isFlipped ? -30 : 30;
+                    getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
+                    hasJumped = true;
+                }
             }
 
             if (!isFlipped && yScale < 1) {
@@ -287,47 +303,17 @@ public class LaserEnemyModel extends EnemyModel {
             updateRayCasts();
             updateFrame();
         }
-
-        //Math calculations for the laser.
-        if(!shouldDrawLaser) {
-            return;
-        }
-
-        Vector2 intersect = getBeamIntersect();
-        Vector2 beamStartPos = getBeamOrigin();
-        dir.x = intersect.x - beamStartPos.x;
-        dir.y = intersect.y - beamStartPos.y;
-        numSegments = (int)((dir.len() * drawScale.x));
-        dir.nor();
-
-        randomXScale.clear();
-        randomYScale.clear();
-        for (int i = 0; i < numSegments; i++) {
-            if(firingLaser()){
-                if(Math.floor(Math.random()*10) % 2 == 0){
-                    randomXScale.add((float) (1f + Math.random()));
-                    randomYScale.add((float) (1f + Math.random()));
-                }
-                else if (Math.floor(Math.random()*10) % 3 == 0){
-                    randomXScale.add((float) (1f + Math.random()));
-                    randomYScale.add((float) (1f + Math.random()));
-                } else {
-                    randomXScale.add(1f);
-                    randomYScale.add(1f);
-                }
-            } else {
-                randomXScale.add(1f);
-                randomYScale.add(1f);
-            }
-
-        }
     }
 
     /**
      * Sets laser enemy to jump
      */
     public void jump(){
-        if (jumpCooldown <= 0) isJumping = true;
+        // enemy should be on ground if !getCollisions().isEmpty()
+        if (jumpCooldown < 0 && !getCollisions().isEmpty()) {
+            jumpCooldown = JUMP_COOLDOWN;
+            isJumping = true;
+        }
     }
 
     /**
@@ -336,7 +322,7 @@ public class LaserEnemyModel extends EnemyModel {
     public void hasLanded(){
         isJumping = false;
         hasJumped = false;
-        jumpCooldown = JUMP_COOLDOWN;
+        jumpCooldown = -1;
         SoundController.playSound("laserThud", 1);
 
 
@@ -352,8 +338,8 @@ public class LaserEnemyModel extends EnemyModel {
                 if (isBandit) {
                     BanditModel bandit = (BanditModel) fixture.getBody().getUserData();
                     bandit.hitPlayer(Damage.LASER_JUMP_DAMAGE, false);
-                    int yImpulse = isFlipped ? -10 : 10;
-                    int xImpulse = getX() > bandit.getX() ? -5 : 5;
+                    int yImpulse = isFlipped ? -5 : 5;
+                    int xImpulse = getX() > bandit.getX() ? -4 : 4;
                     bandit.getBody().applyLinearImpulse(new Vector2(xImpulse,yImpulse), getPosition(), true);
                     bandit.stun(180);
                 };
@@ -693,11 +679,21 @@ public class LaserEnemyModel extends EnemyModel {
     }
 
     @Override
+    public boolean setFaceRight(boolean isRight, int cooldown){
+        if (chargingLaser() || lockingLaser() || firingLaser() || getStuck() || getGummed()) return faceRight;
+        if (turnCooldown <= 0){
+            faceRight = isRight;
+            turnCooldown = cooldown;
+        }
+        return faceRight;
+    }
+    @Override
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = getFaceRight() ? 1.0f : -1.0f;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
+            y += ((1 - crushScale) * texture.getRegionHeight() * (world.getGravity().y < 0 ? -.5f : .5f));
             float gumY = y;
             float gumX = x;
 
@@ -706,7 +702,7 @@ public class LaserEnemyModel extends EnemyModel {
             }
 
             if (curFrame != null) {
-                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale*crushScale);
             }
 
             //if gummed, overlay with gumTexture
@@ -714,26 +710,23 @@ public class LaserEnemyModel extends EnemyModel {
             if (gummed) {
                 if(stuck) {
                     canvas.draw(gumTexture, Color.WHITE, origin.x, origin.y, gumX,
-                        gumY, getAngle(), 1, yScale);
+                        gumY, getAngle(), 1, yScale*crushScale);
                 } else {
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
-                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale);
+                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale*crushScale);
                 }
 //
             } else if (gumStuck>0){
                     canvas.draw(halfStuck, Color.WHITE,
-                        origin.x, origin.y, (getX() - (getDimension().x/2))* drawScale.x, y, getAngle(), 1, yScale);
+                        origin.x, origin.y, (getX() - (getDimension().x/2))* drawScale.x, y, getAngle(), 1, yScale*crushScale);
             }
 
             //if shielded, overlay shield
             if (isShielded()){
                 canvas.draw(shield, Color.WHITE, origin.x , origin.y, (getX() - (getDimension().x/2))* drawScale.x ,
-                    y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale);
+                    y - shield.getRegionHeight()/8f * yScale, getAngle(), 1, yScale*crushScale);
             }
         }
     }
-
-
-
 
 }

@@ -17,7 +17,12 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.*;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
+import java.util.logging.Level;
+import sun.java2d.pipe.SpanShapeRenderer.Simple;
 
 
 public class CollisionController implements ContactListener {
@@ -26,29 +31,32 @@ public class CollisionController implements ContactListener {
     public static final short CATEGORY_ENEMY = 0x0002;
     public static final short CATEGORY_TERRAIN = 0x0004;
     public static final short CATEGORY_GUM = 0x0008;
-    public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_PROJECTILE = 0x0010;
+    public static final short CATEGORY_PLAYER = 0x0020;
     public static final short CATEGORY_EXIT = 0x0040;
     public static final short CATEGORY_COLLECTIBLE = 0x0080;
     public static final short CATEGORY_DOOR = 0x0100;
     public static final short CATEGORY_CRUSHER_BOX = 0x0200;
+    public static final short CATEGORY_CRUSHER = 0x0400;
+    public static final short CATEGORY_BACK = 0x0800;
 
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
-    public static final short CATEGORY_BACK = 0x0012;
-
     public static final short MASK_TERRAIN = -1; // Collides with everything
     public static final short MASK_GUM = ~(CATEGORY_GUM | CATEGORY_PLAYER);
     public static final short MASK_LANDED_GUM = ~(CATEGORY_GUM);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);
-
+    public static final short MASK_CRUSHED_ENEMY = ~(CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_CRUSHER);
+    public static final short MASK_CRUSHED_PLAYER = ~(CATEGORY_CRUSHER_BOX | CATEGORY_CRUSHER);
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
-    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY);
-    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY;
+    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_PROJECTILE | CATEGORY_DOOR);
+    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_PROJECTILE | CATEGORY_DOOR;
+    public static final short MASK_CRUSHER_BOX_NO_PLAYER = CATEGORY_ENEMY | CATEGORY_PROJECTILE;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
-    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY;
-    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE;
+    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_CRUSHER_BOX;
+    public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE | CATEGORY_CRUSHER;
+    public static final short MASK_SHOCK_BOX = CATEGORY_CRUSHER_BOX;
 
     /**
      * The amount of gum collected when collecting floating gum
@@ -137,10 +145,10 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
-            if (obstacleA instanceof Gummable && !(obstacleB instanceof DoorModel)) {
+            if ((obstacleA instanceof Gummable || obstacleA instanceof BanditModel) && !(obstacleB instanceof DoorModel)) {
                 obstacleA.startCollision(obstacleB, fixA);
             }
-            if (obstacleB instanceof Gummable && !(obstacleA instanceof DoorModel)) {
+            if ((obstacleB instanceof Gummable || obstacleB instanceof BanditModel) && !(obstacleA instanceof DoorModel)) {
                 obstacleB.startCollision(obstacleA, fixB);
             }
 
@@ -172,7 +180,7 @@ public class CollisionController implements ContactListener {
 
             resolveGroundContact(obstacleA, fixA, obstacleB, fixB);
             resolveGumCollision(obstacleA, obstacleB, contact);
-            resolveWinCondition(obstacleA, obstacleB);
+            resolveWinCondition(obstacleA, obstacleB, true);
             checkShockCollision(obstacleA, fixA, obstacleB, fixB);
             resolveFloatingGumCollision(obstacleA, obstacleB);
             resolveGummableGumCollision(obstacleA, obstacleB, fixA, fixB);
@@ -209,12 +217,12 @@ public class CollisionController implements ContactListener {
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
 
-        BanditModel avatar = levelModel.getBandit();
-        if (((avatar.getSensorName2().equals(fd2) || avatar.getSensorName().equals(fd2)) && avatar != bd1) ||
-                ((avatar.getSensorName2().equals(fd1) || avatar.getSensorName().equals(fd1)) && avatar != bd2)) {
-            sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-            if (sensorFixtures.size == 0 && !avatar.getStuck()) {
-                avatar.setGrounded(false);
+        BanditModel bandit = levelModel.getBandit();
+        if (((bandit.getSensorName2().equals(fd2) || bandit.getSensorName().equals(fd2)) && bandit != bd1) ||
+                ((bandit.getSensorName2().equals(fd1) || bandit.getSensorName().equals(fd1)) && bandit != bd2)) {
+            sensorFixtures.remove(bandit == bd1 ? fix2 : fix1);
+            if (sensorFixtures.size == 0 && !bandit.getStuck()) {
+                bandit.setGrounded(false);
             }
         }
 
@@ -222,10 +230,12 @@ public class CollisionController implements ContactListener {
             Obstacle ob1 = (Obstacle) body1.getUserData();
             Obstacle ob2 = (Obstacle) body2.getUserData();
 
-            if (ob1 instanceof Gummable) {
+            resolveWinCondition(ob1, ob2, false);
+
+            if (ob1 instanceof Gummable || ob1 instanceof BanditModel) {
                 ob1.endCollision(ob2, fix1);
             }
-            if (ob2 instanceof Gummable) {
+            if (ob2 instanceof Gummable || ob2 instanceof BanditModel) {
                 ob2.endCollision(ob1, fix2);
             }
 
@@ -242,20 +252,20 @@ public class CollisionController implements ContactListener {
 
             resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
 
-            if (ob1.getName().equals("door") && avatar == bd2) {
+            if (ob1.getName().contains("door") && bandit == bd2) {
                 updateCamera(ob1);
-            } else if (ob2.getName().equals("door") && avatar == bd1) {
+            } else if (ob2.getName().contains("door") && bandit == bd1) {
                 updateCamera(ob2);
             }
 
-            if (ob1 instanceof ShockModel && avatar == bd2) {
-                avatar.removeShockFixture(fix1);
-            } else if (ob2 instanceof ShockModel && avatar == bd1) {
-                avatar.removeShockFixture(fix2);
-            } else if (ob1.getName().equals("hazard") && avatar == bd2) {
-                avatar.removeShockFixture(fix1);
-            }  else if (ob2.getName().equals("hazard") && avatar == bd1) {
-                avatar.removeShockFixture(fix2);
+            if (ob1 instanceof ShockModel && bandit == bd2) {
+                bandit.removeShockFixture(fix1);
+            } else if (ob2 instanceof ShockModel && bandit == bd1) {
+                bandit.removeShockFixture(fix2);
+            } else if (ob1.getName().equals("hazard") && bandit == bd2) {
+                bandit.removeShockFixture(fix1);
+            }  else if (ob2.getName().equals("hazard") && bandit == bd1) {
+                bandit.removeShockFixture(fix2);
             }
 
         }catch (Exception e){
@@ -355,7 +365,7 @@ public class CollisionController implements ContactListener {
      * Checks if the bandit has collided with the exit and sets the
      * win condition met field accordingly.
      * */
-    private void resolveWinCondition(Obstacle bodyA, Obstacle bodyB){
+    private void resolveWinCondition(Obstacle bodyA, Obstacle bodyB, boolean exit){
         // Check for win condition
         BanditModel bandit = levelModel.getBandit();
         ExitModel door = levelModel.getExit();
@@ -363,7 +373,7 @@ public class CollisionController implements ContactListener {
         boolean winConditionA = bodyA == bandit && bodyB == door;
         boolean winConditionB = bodyA == door && bodyB == bandit;
 
-        if (bandit.isOrbCollected() && (winConditionA ||winConditionB) && bandit.isGrounded() && !bandit.isFlipped()){ winConditionMet = true;}
+        if (winConditionB || winConditionA){bandit.setAtDoor(exit);}
     }
 
     /**
@@ -462,7 +472,9 @@ public class CollisionController implements ContactListener {
                             gummable.setStuck(true);
                         }
                         for (Obstacle ob : gummable.getCollisions()) {
-                            bubblegumController.createGummableJoint(gummable, ob);
+                            if (!(ob instanceof BanditModel)) {
+                                bubblegumController.createGummableJoint(gummable, ob);
+                            }
                         }
                     }
                 }
@@ -553,7 +565,9 @@ public class CollisionController implements ContactListener {
         if (ob1 == null || ob2 == null) return;
         if (ob1.isRemoved() || ob2.isRemoved()) return;
         if (ob1 instanceof DoorModel || ob2 instanceof DoorModel) return;
-        if (ob1 instanceof CrusherModel || ob2 instanceof CrusherModel) return;
+        if ((ob1 instanceof CrusherModel && !(ob2 instanceof WallModel)) || (ob2 instanceof CrusherModel && !(ob1 instanceof WallModel))) {
+            return;
+        }
         if (fix1.getUserData() instanceof DoorModel || fix2.getUserData() instanceof DoorModel) {
             return;
         }
@@ -625,40 +639,44 @@ public class CollisionController implements ContactListener {
         if (bd1 == null || bd2 == null) return;
         CrusherModel crusher;
         Obstacle crushed;
+        Fixture crusherFix;
+        Fixture crushedFix;
 
-        float levelGrav = levelModel.getWorld().getGravity().y;
-
-//        String sensorName = levelModel.getWorld().getGravity().y < 0 ? "crushing_bottom_sensor" : "crushing_top_sensor";
         if (fix1.isSensor() && fix1.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix1.getUserData();
             crushed = bd2;
+            crusherFix = fix1;
+            crushedFix = fix2;
         } else if (fix2.isSensor() && fix2.getUserData() instanceof CrusherModel) {
             crusher = (CrusherModel) fix2.getUserData();
             crushed = bd1;
+            crusherFix = fix2;
+            crushedFix = fix1;
         } else {
             return;
         }
 
         BanditModel bandit = levelModel.getBandit();
-        if (crushed.getName().contains("enemy")) {
-            // Check if enemy is beneath crusher and stopped (if it's stopped, it's pinched).
-            // If so, trigger its deletion.
-            // This might cause bugs. If there is some unexpected crusher behavior, this is probably
-            // what needs to be changed.
-            if (Math.abs(crushed.getVY()) < 0.001f) {
-                crushed.markRemoved(true);
+        if (crushed instanceof EnemyModel) {
+            EnemyModel crushedEnemy = (EnemyModel) crushed;
+            if (Math.abs(crushed.getVY()) < 0.05f) {
+                crushedEnemy.crush(crusher);
+            } else {
+                crushedEnemy.shouldCrush(crusher);
             }
         } else if (crushed.equals(bandit)) {
-            if (Math.abs(crushed.getVY()) < 0.001f) {
-                // Block must be pushing on bandit.
-                if ((bandit.getPosition().y > crusher.getPosition().y) == (levelGrav > 0)) {
-                    // Flip gravity again and make the bandit take damage.
-                    levelModel.getBandit().hitPlayer(Damage.CRUSH_DAMAGE, false);
-                    shouldFlipGravity = true;
+            if (crusherFix.getFilterData().maskBits == MASK_TERRAIN) {
+                if (Math.abs(crushed.getVY()) < 0.05f && Math.abs(crusher.getVY()) > 0.05f) {
+                    bandit.crush(crusher);
+                } else {
+                    bandit.shouldCrush(crusher);
                 }
             }
         } else if (crushed.getBodyType().equals(BodyType.StaticBody)) {
                 // Screen shake cause block hit the floor
+            if (crushedFix.isSensor()) {
+                return;
+            }
             if (crushed.getName().equals("glass") && !crusher.didSmash) {
                 crushed.markRemoved(true);
                 levelModel.makeShatter(crushed.getX(), crushed.getY());
@@ -733,7 +751,7 @@ public class CollisionController implements ContactListener {
         } else {
             return;
         }
-        if (ob.equals(levelModel.getBandit()) || ob.getName().contains("enemy")) {
+        if (ob.equals(levelModel.getBandit()) || ob instanceof EnemyModel || ob instanceof CrusherModel) {
             if (isBeginContact) {
                 door.addObInRange(ob);
             } else {
@@ -761,7 +779,7 @@ public class CollisionController implements ContactListener {
             applyKnockback(p, (BanditModel) o, false, Damage.SHOCK_DAMAGE, 1f, 1f, true);
             levelModel.makeSpark(o.getX(), o.getY());
             levelModel.getBandit().addShockFixture(shockFixture);
-        } else if (o instanceof WallModel) {
+        } else if (o instanceof WallModel || o instanceof CrusherModel) {
             boolean isBottom = p.getIsBottom();
             if ((isBottom && o.getY() > p.getY()) || (!isBottom && o.getY() < p.getY())) {
                 p.stopShock();
@@ -849,12 +867,18 @@ public class CollisionController implements ContactListener {
                 return;
             }
             DoorModel door = null;
+            Fixture doorFix = null;
             if (bodyA.getName().equals("doorH")) {
                 door = (DoorModel) bodyA;
+                doorFix = fixA;
             } else if (bodyB.getName().equals("doorH")) {
                 door = (DoorModel) bodyB;
+                doorFix = fixB;
             }
-            if (door != null && door.isOpen()) {
+            if (door != null && !door.isLocked() && !door.getGummed()) {
+                return;
+            }
+            if (doorFix != null && doorFix.isSensor()) {
                 return;
             }
             bandit.setGrounded(true);

@@ -243,7 +243,7 @@ public class GameController implements Screen {
     /**
      * The number of levels in the game.
      */
-    private final int NUM_LEVELS = 9;
+    private final int NUM_LEVELS = 21;
 
     /**
      * Whether the orb has been collected.
@@ -604,7 +604,7 @@ public class GameController implements Screen {
      * Unlocks next level
      * */
     public void unlockNextLevel(){
-        if (collisionController.isWinConditionMet() && !isComplete()) {
+        if ( level.getBandit().winConditionMet() && !isComplete()) {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
@@ -805,7 +805,7 @@ public class GameController implements Screen {
 
         }
         projectileController.update();
-        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap(), false);
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt, level.getWorld(), level.getBandit());
 
@@ -828,7 +828,6 @@ public class GameController implements Screen {
             level.postOrbDoors();
             spawnedPostOrbEnemies = true;
         }
-
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
@@ -969,6 +968,7 @@ public class GameController implements Screen {
     public void pause() {
         // We need this method to stop all sounds when we pause.
         SoundController.pause();
+        minimap.updateMinimap(0, false, true);
         pauseScreen.show();
     }
 

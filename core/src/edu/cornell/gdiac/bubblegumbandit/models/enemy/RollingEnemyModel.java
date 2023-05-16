@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 
@@ -104,6 +105,7 @@ public class RollingEnemyModel extends EnemyModel {
      * Updates rolling enemy
      * */
     public void update(float delta) {
+        turnCooldown--;
         updateYScale();
         updateRayCasts();
         updateAnimations();
@@ -111,6 +113,7 @@ public class RollingEnemyModel extends EnemyModel {
         updateMovement();
         updateUnstick(delta);
         updateFrame();
+        updateCrush();
     }
 
     private void updateYScale(){

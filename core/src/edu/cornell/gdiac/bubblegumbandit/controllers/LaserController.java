@@ -115,6 +115,11 @@ public class LaserController {
             //Disqualification #2: cannot see bandit.
             boolean disqualified = !enemy.canSeeBandit(bandit);
 
+            // Disqualification: enemy is crushed.
+            if (enemy.isCrushing()) {
+                disqualified = true;
+            }
+
             //Disqualification #1: too far.
             banditEnemyDist.set(
                     bandit.getX() - enemy.getX(),

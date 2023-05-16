@@ -443,8 +443,9 @@ public class Minimap {
      * @param dt The Delta Time value
      * @param holdingMapKey true if the player is holding down the key
      *                      to expand the Minimap
+     * @param instant whether it should update instantly
      * */
-    public void updateMinimap(float dt, boolean holdingMapKey) {
+    public void updateMinimap(float dt, boolean holdingMapKey, boolean instant) {
         //Start of game
         if(!initialized) return;
 
@@ -459,40 +460,55 @@ public class Minimap {
         }
 
         //Linear Interpolation Logic
-        if (expanded) {
-            currentSize.x = MathUtils.lerp(
-                    currentSize.x,
-                    expandedSize.x,
-                    TRANSITION_SPEED * dt);
-            currentSize.y = MathUtils.lerp(currentSize.y,
-                    expandedSize.y,
-                    TRANSITION_SPEED * dt);
-            currentPosition.x = MathUtils.lerp(
-                    currentPosition.x,
-                    expandedPosition.x,
-                    TRANSITION_SPEED * dt);
-            currentPosition.y = MathUtils.lerp(
-                    currentPosition.y,
-                    expandedPosition.y,
-                    TRANSITION_SPEED * dt);
+        if (instant) {
+            if (expanded) {
+                currentSize.x = expandedSize.x;
+                currentSize.y = expandedSize.y;
+                currentPosition.x = expandedPosition.x;
+                currentPosition.y = expandedPosition.y;
+            } else {
+                currentSize.x = condensedSize.x;
+                currentSize.y = condensedSize.y;
+                currentPosition.x = condensedPosition.x;
+                currentPosition.y = condensedPosition.y;
+            }
         } else {
-            currentSize.x = MathUtils.lerp(
-                    currentSize.x,
-                    condensedSize.x,
-                    TRANSITION_SPEED * dt);
-            currentSize.y = MathUtils.lerp(
-                    currentSize.y,
-                    condensedSize.y,
-                    TRANSITION_SPEED * dt);
-            currentPosition.x = MathUtils.lerp(
-                    currentPosition.x,
-                    condensedPosition.x,
-                    TRANSITION_SPEED * dt);
-            currentPosition.y = MathUtils.lerp(
-                    currentPosition.y,
-                    condensedPosition.y,
-                    TRANSITION_SPEED * dt);
+            if (expanded) {
+                currentSize.x = MathUtils.lerp(
+                        currentSize.x,
+                        expandedSize.x,
+                        TRANSITION_SPEED * dt);
+                currentSize.y = MathUtils.lerp(currentSize.y,
+                        expandedSize.y,
+                        TRANSITION_SPEED * dt);
+                currentPosition.x = MathUtils.lerp(
+                        currentPosition.x,
+                        expandedPosition.x,
+                        TRANSITION_SPEED * dt);
+                currentPosition.y = MathUtils.lerp(
+                        currentPosition.y,
+                        expandedPosition.y,
+                        TRANSITION_SPEED * dt);
+            } else {
+                currentSize.x = MathUtils.lerp(
+                        currentSize.x,
+                        condensedSize.x,
+                        TRANSITION_SPEED * dt);
+                currentSize.y = MathUtils.lerp(
+                        currentSize.y,
+                        condensedSize.y,
+                        TRANSITION_SPEED * dt);
+                currentPosition.x = MathUtils.lerp(
+                        currentPosition.x,
+                        condensedPosition.x,
+                        TRANSITION_SPEED * dt);
+                currentPosition.y = MathUtils.lerp(
+                        currentPosition.y,
+                        condensedPosition.y,
+                        TRANSITION_SPEED * dt);
+            }
         }
+
         setMinimapSizeAndPosition(true);
     }
 }
