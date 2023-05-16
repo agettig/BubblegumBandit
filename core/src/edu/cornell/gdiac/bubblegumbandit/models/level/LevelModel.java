@@ -674,7 +674,7 @@ public class LevelModel {
                     crush.initialize(directory, scale, x, y, object, constants.get("crushingBlock"));
                     activate(crush);
                     flippableObjects.add(crush);
-                    crush.setFixtureMasks(CATEGORY_TERRAIN, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
+                    crush.setFixtureMasks(CATEGORY_CRUSHER, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();
@@ -1026,17 +1026,23 @@ public class LevelModel {
     }
 
     public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
+
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .75f;
         final float lockedLaserScale = .9f;
         final float firingLaserScale = 1.5f;
 
+
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
-
                 //Don't draw inactive lasers.
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
-                if(!enemy.shouldDrawLaser() || !enemy.canSeeBandit(bandit)) continue;
+                if (enemy.isCrushing()) continue;
+                if(enemy.inactiveLaser()) continue;
+
+                //Don't draw if enemy can't see.
+                if(enemy.chargingLaser() && !enemy.canSeeBandit(getBandit())) continue;
+
 
                 //Determine properties based on our laser phase.
                 Color laserColor;
@@ -1056,11 +1062,19 @@ public class LevelModel {
                 }
 
                 //Math calculations for the laser.
+                Vector2 intersect = enemy.getBeamIntersect();
+                Vector2 beamStartPos = enemy.getBeamOrigin();
+                Vector2 dir = new Vector2(
+                        intersect.x - beamStartPos.x,
+                        intersect.y - beamStartPos.y
+                );
+
                 beam.setRegionWidth(1);
-                Vector2 dir = enemy.getDir();
-                int numSegments = enemy.getNumSegments();
+                int numSegments = (int)((dir.len() * scale.x) / beam.getRegionWidth());
+                dir.nor();
 
                 //Offset calculations to match the animation.
+
                 float laserEyeNormalOffsetXLeft = 41 + canvas.getShadowOffset();
                 float laserEyeNormalOffsetYLeft = 20;
                 float laserEyeJettedOffsetXRight = 41 + + canvas.getShadowOffset();
@@ -1081,15 +1095,16 @@ public class LevelModel {
                     if(jetted) enemyOffsetY += jetBoostY;
                     if(!enemy.getFaceRight()) enemyOffsetX = -enemyOffsetX;
 
+
                     float x = enemy.getPosition().x * scale.x + (i * dir.x * beam.getRegionWidth());
                     float y = enemy.getPosition().y * scale.y + (i * dir.y * beam.getRegionWidth());
                     float scaleX = 1f;
                     float scaleY = laserThickness;
                     float ang = (float) Math.atan2(dir.y, dir.x);
 
-                    //Vibrations - moved to enemy class to separate update and draw for pause purposes
-                    scaleX *= xScales.get(i);
-                    scaleY *= yScales.get(i);
+                    //Vibrations
+                    scaleX *= xScales.get(i % xScales.size);
+                    scaleY *= yScales.get(i % yScales.size);
 
                     canvas.draw(
                             beam,
@@ -1297,7 +1312,7 @@ public class LevelModel {
                     if (canUnstickThrough.contains(ob.getName())) {
                         return -1;
                     }
-                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                    if (ob instanceof CrusherModel && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
                     if (fixture.getUserData() instanceof DoorModel) {
