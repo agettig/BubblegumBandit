@@ -224,46 +224,46 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
         //Ruike Liang
         creditsTableLeft.row();
-        Label ruike = new Label("Ruike Liang", nameStyle);
+        Label ruike = new Label("RUIKE LIANG", nameStyle);
         ruike.setAlignment(Align.left);
         ruike.setFontScale(.45f);
         ruike.setFontScaleX(.5f);
-        creditsTableLeft.add(ruike).padBottom(20f).padRight(30f);
+        creditsTableLeft.add(ruike).padBottom(20f).padRight(34f);
         creditsTableLeft.row();
         Label ruikeRole = new Label("Project Lead", roleStyle);
         ruikeRole.setAlignment(Align.left);
         ruikeRole.setFontScale(.45f);
-        creditsTableLeft.add(ruikeRole).padRight(169f);
+        creditsTableLeft.add(ruikeRole).padRight(193f);
 
         //Ariela Gettig
         creditsTableLeft.row();
-        Label ariela = new Label("Ariela Gettig", nameStyle);
+        Label ariela = new Label("ARIELA GETTIG", nameStyle);
         ariela.setAlignment(Align.left);
         ariela.setFontScale(.45f);
         ariela.setFontScaleX(.5f);
-        creditsTableLeft.add(ariela).padBottom(20f).padTop(40f).padLeft(33f);
+        creditsTableLeft.add(ariela).padBottom(20f).padTop(40f).padLeft(28f);
         creditsTableLeft.row();
         Label arielaRole = new Label("Programming Lead", roleStyle);
         arielaRole.setAlignment(Align.left);
         arielaRole.setFontScale(.45f);
-        creditsTableLeft.add(arielaRole).padRight(126f);
+        creditsTableLeft.add(arielaRole).padRight(156f);
 
         //Bella Besuud
         creditsTableLeft.row();
-        Label bella = new Label("Bella Besuud", nameStyle);
+        Label bella = new Label("BELLA BESUUD", nameStyle);
         bella.setAlignment(Align.left);
         bella.setFontScale(.45f);
         bella.setFontScaleX(.5f);
-        creditsTableLeft.add(bella).padBottom(20f).padTop(40f).padLeft(47f);
+        creditsTableLeft.add(bella).padBottom(20f).padTop(40f).padLeft(46f);
         creditsTableLeft.row();
         Label bellaRole = new Label("Design Lead", roleStyle);
         bellaRole.setAlignment(Align.left);
         bellaRole.setFontScale(.45f);
-        creditsTableLeft.add(bellaRole).padRight(181f);
+        creditsTableLeft.add(bellaRole).padRight(202f);
 
         //Caroline Hohner
         creditsTableLeft.row();
-        Label caroline = new Label("Caroline Hohner", nameStyle);
+        Label caroline = new Label("CAROLINE HOHNER", nameStyle);
         caroline.setAlignment(Align.left);
         caroline.setFontScale(.45f);
         caroline.setFontScaleX(.5f);
@@ -272,13 +272,13 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         Label carolineRole = new Label("Programmer, Designer", roleStyle);
         carolineRole.setAlignment(Align.left);
         carolineRole.setFontScale(.45f);
-        creditsTableLeft.add(carolineRole).padRight(82f);
+        creditsTableLeft.add(carolineRole).padRight(118f);
 
         //Right Side
 
         //Benjamin Neuwirth
         creditsTableRight.row();
-        Label ben = new Label("Benjamin Neuwirth", nameStyle);
+        Label ben = new Label("BENJAMIN NEUWIRTH", nameStyle);
         ben.setAlignment(Align.left);
         ben.setFontScale(.45f);
         ben.setFontScaleX(.5f);
@@ -287,48 +287,48 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         Label benRole = new Label("Programmer", roleStyle);
         benRole.setAlignment(Align.left);
         benRole.setFontScale(.45f);
-        creditsTableRight.add(benRole).padRight(369f);
+        creditsTableRight.add(benRole).padRight(382f);
 
         //Emily Penna
         creditsTableRight.row();
-        Label emily = new Label("Emily Penna", nameStyle);
+        Label emily = new Label("EMILY PENNA", nameStyle);
         emily.setAlignment(Align.left);
         emily.setFontScale(.45f);
         emily.setFontScaleX(.5f);
-        creditsTableRight.add(emily).padBottom(20f).padTop(40f).padRight(187f);
+        creditsTableRight.add(emily).padBottom(20f).padTop(40f).padRight(180f);
         creditsTableRight.row();
         Label emilyRole = new Label("Programmer, Designer, Musician", roleStyle);
         emilyRole.setAlignment(Align.left);
         emilyRole.setFontScale(.45f);
-        creditsTableRight.add(emilyRole).padRight(155f);
+        creditsTableRight.add(emilyRole).padRight(198f);
 
 
         //Teddy Siker
         creditsTableRight.row();
-        Label teddy = new Label("Teddy Siker", nameStyle);
+        Label teddy = new Label("TEDDY SIKER", nameStyle);
         teddy.setAlignment(Align.left);
         teddy.setFontScale(.45f);
         teddy.setFontScaleX(.5f);
-        creditsTableRight.add(teddy).padBottom(20f).padTop(40f).padRight(190f);
+        creditsTableRight.add(teddy).padBottom(20f).padTop(40f).padRight(180f);
         creditsTableRight.row();
         Label teddyRole = new Label("Programmer", roleStyle);
         teddyRole.setAlignment(Align.left);
         teddyRole.setFontScale(.45f);
-        creditsTableRight.add(teddyRole).padRight(369f);
+        creditsTableRight.add(teddyRole).padRight(378f);
 
 
         //Sophia Xu
         creditsTableRight.row();
-        Label sophia = new Label("Sophia Xu", nameStyle);
+        Label sophia = new Label("SOPHIA XU", nameStyle);
         sophia.setAlignment(Align.left);
         sophia.setFontScale(.45f);
         sophia.setFontScaleX(.5f);
-        creditsTableRight.add(sophia).padBottom(20f).padTop(40f).padRight(243f);
+        creditsTableRight.add(sophia).padBottom(20f).padTop(40f).padRight(235f);
         creditsTableRight.row();
         Label sophiaRole = new Label("Programmer", roleStyle);
         sophiaRole.setAlignment(Align.left);
         sophiaRole.setFontScale(.45f);
-        creditsTableRight.add(sophiaRole).padRight(369f);
+        creditsTableRight.add(sophiaRole).padRight(376f);
 
     }
 
