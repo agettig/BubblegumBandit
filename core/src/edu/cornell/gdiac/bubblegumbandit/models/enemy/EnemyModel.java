@@ -399,6 +399,10 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         return sensorShape;
     }
 
+    public boolean isCrushing() {
+        return isCrushing;
+    }
+
     /** End the crush without destroying the enemy (enemy not fully squished) */
     public void endCrush() {
         crusher = null;

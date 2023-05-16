@@ -1035,9 +1035,9 @@ public class LevelModel {
 
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
-
                 //Don't draw inactive lasers.
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
+                if (enemy.isCrushing()) continue;
                 if(enemy.inactiveLaser()) continue;
 
                 //Don't draw if enemy can't see.
