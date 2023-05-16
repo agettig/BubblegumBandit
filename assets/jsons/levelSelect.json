@@ -1,0 +1,22 @@
+{
+  "textures": {
+    "sunfish" : "textures/levelSelect/sunfish.png",
+    "fire" : "textures/levelSelect/fire.png",
+    "boost" : "textures/levelSelect/boost.png",
+    "point" : "textures/levelSelect/point.png",
+    "marker": "textures/levelSelect/marker.png",
+    "x": "textures/levelSelect/x.png",
+    "o": "textures/levelSelect/o.png",
+
+    "ship1" : "textures/levelSelect/level1.png",
+    "ship2" : "textures/levelSelect/level1.png",
+    "ship3" : "textures/levelSelect/level1.png",
+    "ship4" : "textures/levelSelect/level1.png",
+    "ship5" : "textures/levelSelect/level1.png",
+    "ship6" : "textures/levelSelect/level1.png",
+    "ship7" : "textures/levelSelect/level1.png",
+    "ship8" : "textures/levelSelect/level1.png",
+    "ship9" : "textures/levelSelect/level1.png"
+  }
+
+}

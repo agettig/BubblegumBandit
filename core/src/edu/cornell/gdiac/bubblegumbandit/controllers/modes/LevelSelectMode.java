@@ -252,7 +252,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         SoundController.playMusic("menu");
         startMove = false;
         sunfish.setBoosting(false);
-//        makeExplosion(sunfish.getX(), sunfish.getY());
     }
 
     /**
@@ -322,11 +321,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         return selectedLevel;
     }
 
-//    /** sets an explosion */
-//    private void makeExplosion(float x, float y){
-//        explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
-//    }
-
     /**
      * Draw the status of this player mode.
      *
@@ -346,9 +340,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             level.draw(canvas, displayFont);
         }
         displayFont.getData().setScale(1);
-//        levels.draw(canvas, displayFont);
-
-//        explosionEffectController.draw(canvas);
 
         sunfish.draw(canvas);
 
@@ -482,13 +473,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
                 if (level.onIcon(target.x, target.y)){
                     level.setPressState(2);
                 }
-//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
-//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
-//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
-//                makeExplosion(level.x + rand.nextInt(200), level.y + rand.nextInt(200));
-
             }
-//            levels.updateState();
         }
 
         return false;

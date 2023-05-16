@@ -605,6 +605,7 @@ public class GameController implements Screen {
             }
             SaveData.setLevel(levelNum);
             setComplete(true);
+
         }
 
         if (!orbCollected && level.getBandit().isOrbCollected()) {

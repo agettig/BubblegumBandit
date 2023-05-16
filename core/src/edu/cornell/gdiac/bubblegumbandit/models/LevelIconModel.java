@@ -174,7 +174,9 @@ public class LevelIconModel {
         }
 
 
+
         if (SaveData.completed(level) && !exploded) {
+            System.out.println(level);
             makeExplosion(x + rand.nextInt(texture.getRegionWidth()),y + rand.nextInt(texture.getRegionHeight()));
             angle += ROTATION_RATE;
         }
@@ -192,7 +194,7 @@ public class LevelIconModel {
 
         //draw ship icon
         if (SaveData.completed(level)){
-            canvas.draw(texture, tint.cpy().mul(Color.PINK), texture.getRegionWidth()/2f, texture.getRegionHeight()/2f,
+            canvas.draw(texture, tint.cpy().mul(Color.GRAY), texture.getRegionWidth()/2f, texture.getRegionHeight()/2f,
                     x + texture.getRegionWidth()/2f,y + texture.getRegionHeight()/2f,angle, 1, 1);
             drawNPCs(canvas, pos);
 
