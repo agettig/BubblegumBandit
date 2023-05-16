@@ -225,7 +225,7 @@
          "objects":[],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -1176,6 +1176,90 @@
                  "width":92,
                  "x":1870,
                  "y":915
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":237,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":1674,
+                 "y":758
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":238,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":2058,
+                 "y":755
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":239,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":2568,
+                 "y":1205
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":240,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":2890,
+                 "y":1205
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":241,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":3659,
+                 "y":1208
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":242,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":4168,
+                 "y":1205
+                }, 
+                {
+                 "gid":76,
+                 "height":43,
+                 "id":243,
+                 "name":"",
+                 "rotation":0,
+                 "type":"alarm",
+                 "visible":true,
+                 "width":44,
+                 "x":4036,
+                 "y":1862
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1292,13 +1376,13 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":237,
+ "nextobjectid":246,
  "orientation":"orthogonal",
  "properties":[
         {
          "name":"captives",
          "type":"int",
-         "value":2
+         "value":0
         }, 
         {
          "name":"gravity",
