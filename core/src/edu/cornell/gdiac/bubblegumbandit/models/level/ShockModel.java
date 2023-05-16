@@ -1,5 +1,8 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_PROJECTILE;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_PROJECTILE;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -309,6 +312,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         if (!super.activatePhysics(world)) {
             return false;
         }
+
+        setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
 
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = getDensity();
