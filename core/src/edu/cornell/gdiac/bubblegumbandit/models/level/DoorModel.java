@@ -461,6 +461,12 @@ public class DoorModel extends TileModel implements Gummable {
                 openDoor();
             }
         } else {
+            for (Obstacle ob : obsInRange) {
+                if (ob instanceof CrusherModel) {
+                    openDoor();
+                    playerPassed = true;
+                }
+            }
             if (!playerInRange && isOpen) {
                 closeDoor();
             } else if (playerInRange && !isOpen) {

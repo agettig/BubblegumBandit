@@ -21,6 +21,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
+import java.util.logging.Level;
 import sun.java2d.pipe.SpanShapeRenderer.Simple;
 
 
@@ -49,11 +50,11 @@ public class CollisionController implements ContactListener {
     public static final short MASK_CRUSHED_ENEMY = ~(CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_CRUSHER);
     public static final short MASK_CRUSHED_PLAYER = ~(CATEGORY_CRUSHER_BOX | CATEGORY_CRUSHER);
     public static final short MASK_BACK = ~(CATEGORY_GUM | CATEGORY_ENEMY | CATEGORY_PLAYER);
-    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_PROJECTILE);
-    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_PROJECTILE;
+    public static final short MASK_CRUSHER = ~(CATEGORY_PLAYER | CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_PROJECTILE | CATEGORY_DOOR);
+    public static final short MASK_CRUSHER_BOX = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_PROJECTILE | CATEGORY_DOOR;
     public static final short MASK_CRUSHER_BOX_NO_PLAYER = CATEGORY_ENEMY | CATEGORY_PROJECTILE;
     public static final short MASK_COLLECTIBLE = CATEGORY_PLAYER;
-    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_CRUSHER;
+    public static final short MASK_SENSOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_CRUSHER_BOX;
     public static final short MASK_DOOR = CATEGORY_PLAYER | CATEGORY_ENEMY | CATEGORY_GUM | CATEGORY_TERRAIN | CATEGORY_PROJECTILE | CATEGORY_CRUSHER;
     public static final short MASK_SHOCK_BOX = CATEGORY_CRUSHER_BOX;
 
@@ -249,9 +250,9 @@ public class CollisionController implements ContactListener {
 
             resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
 
-            if (ob1.getName().equals("door") && avatar == bd2) {
+            if (ob1.getName().contains("door") && avatar == bd2) {
                 updateCamera(ob1);
-            } else if (ob2.getName().equals("door") && avatar == bd1) {
+            } else if (ob2.getName().contains("door") && avatar == bd1) {
                 updateCamera(ob2);
             }
 
@@ -748,7 +749,7 @@ public class CollisionController implements ContactListener {
         } else {
             return;
         }
-        if (ob.equals(levelModel.getBandit()) || ob.getName().contains("enemy") || ob instanceof CrusherModel) {
+        if (ob.equals(levelModel.getBandit()) || ob instanceof EnemyModel || ob instanceof CrusherModel) {
             if (isBeginContact) {
                 door.addObInRange(ob);
             } else {

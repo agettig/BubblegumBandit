@@ -932,6 +932,10 @@ public class BanditModel extends CapsuleObstacle {
 
         if (crusher != null) {
             if (isCrushing) {
+                if (getHealth() <= 0) {
+                    crushScale = 0;
+                    return;
+                }
                 float banditLeft = getX() - getWidth() / 2f;
                 float banditRight = getX() + getWidth() / 2f;
                 float crusherLeft = crusher.getX() - crusher.getWidth() / 2f;
