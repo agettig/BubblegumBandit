@@ -25,11 +25,11 @@ public class GameOverScreen implements Screen, InputProcessor {
      * The current state of the play button
      * <p>
      * 0 = nothing pressed
-     * 1 = play down
-     * 2 = level select down
+     * 1 = Try Again or Retry Level down
+     * 2 = level select or Continue down
      * 3 = return to title down
-     * 5 = play up, ready to go
-     * 6 = level select up, should open level select
+     * 5 = try again or retry level up, ready to go
+     * 6 = level select or continue up, should open level select
      * 7 = return to title up, should open title screen
      */
     private int pressState;
@@ -205,6 +205,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         backgroundWidth = background.getRegionWidth();
         fadeFraction = 0;
         fadeRate = 0.01f;
+        levelWon = false;
 
     }
 
@@ -213,10 +214,13 @@ public class GameOverScreen implements Screen, InputProcessor {
         displayFont.setColor(green);
         subHeadingFont.setColor(yellow);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
+        levelSelectButton = directory.getEntry("retryLevelButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("victory", 1);
         levelWon = true;
     }
+
+    public boolean gameWon() {return levelWon;}
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
@@ -289,7 +293,7 @@ public class GameOverScreen implements Screen, InputProcessor {
             float highestButtonY = y;
             float middleButtonY = y - 60;
 
-        if (levelWon) {
+        if (levelWon && totalCaptives > 0) {
             canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 50);
             int offset = 0;
             for (int i = 0; i < totalCaptives; i++) {
@@ -475,7 +479,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         // if loading has not started
         if (continueGameButton == null || levelSelectButton == null || titleScreenButton == null) return false;
 
-        //Detect clicks on the start button
+        //Detect clicks on the top button
         float rectWidth = scale * BUTTON_SCALE * continueGameButton.getWidth();
         float rectHeight = scale * BUTTON_SCALE * continueGameButton.getHeight();
         float leftX = startButtonPositionX - rectWidth / 2.0f;
@@ -483,10 +487,15 @@ public class GameOverScreen implements Screen, InputProcessor {
         float topY = startButtonPositionY - rectHeight / 2.0f;
         float bottomY = startButtonPositionY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
-            pressState = 1;
+            if (levelWon) {
+                pressState = 2; //continue should go to level select
+            }
+            else {
+                pressState = 1;
+            }
         }
 
-        //Detect clicks on the level select button
+        //Detect clicks on the middle button
         rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
         leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
@@ -494,9 +503,15 @@ public class GameOverScreen implements Screen, InputProcessor {
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
-            pressState = 2;
+            if (levelWon) {
+                pressState = 1;
+            }
+            else {
+                pressState = 2;
+            }
         }
 
+        //Detect clicks on the bottom button
         rectWidth = scale * BUTTON_SCALE * titleScreenButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * titleScreenButton.getHeight();
         leftX = titleScreenButtonPositionX - rectWidth / 2.0f;

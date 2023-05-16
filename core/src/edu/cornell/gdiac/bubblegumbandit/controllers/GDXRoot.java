@@ -198,6 +198,7 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
                 if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
+                if (screen == gameOver && gameOver.gameWon()) controller.previousLevel();
                 controller.reset();
             }
             setScreen(controller);

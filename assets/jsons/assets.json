@@ -8,11 +8,12 @@
         "minimapBackground" : "textures/UI/minimapBackground.png",
         "minimapTile" : "textures/UI/square.png",
         "hoverPointer": "textures/UI/hoverPointer.png",
-        "continueGameButton": "textures/UI/nextLevel.png",
+        "continueGameButton": "textures/UI/continueGame.png",
         "levelSelectButton": "textures/UI/levelSelect.png",
         "nextLevelButton": "textures/UI/nextLevel.png",
         "titleScreenButton": "textures/UI/returnToTitleScreen.png",
         "tryAgainButton": "textures/UI/tryAgain.png",
+        "retryLevelButton": "textures/UI/retryLevel.png",
 
         "sunfish" : "textures/levelSelect/sunfish.png",
         "fire" : "textures/levelSelect/fire.png",
