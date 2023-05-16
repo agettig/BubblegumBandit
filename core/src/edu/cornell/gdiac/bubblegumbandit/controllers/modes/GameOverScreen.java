@@ -285,7 +285,6 @@ public class GameOverScreen implements Screen, InputProcessor {
        // else {
             canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth,
                 canvas.getCamera().viewportHeight);
-            canvas.drawTextCentered(gameOverMessage, displayFont, 100);
 
             float x = (canvas.getCamera().viewportWidth) / 2.0f;
             float y = (canvas.getCamera().viewportHeight)/ 2.0f;
@@ -294,19 +293,32 @@ public class GameOverScreen implements Screen, InputProcessor {
             float middleButtonY = y - 60;
 
         if (levelWon && totalCaptives > 0) {
-            canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 50);
-            int offset = 0;
+            canvas.drawTextCentered(gameOverMessage, displayFont, 150);
+            canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 65);
+            int[] oddOffset = new int[]{-35, -115, 45};
+            int[] evenOffset = new int[]{-75, 5};
             for (int i = 0; i < totalCaptives; i++) {
-                canvas.draw(emptyIcon, x + offset, y);
-                offset += 60;
+                if (totalCaptives % 2 == 1) {
+                    canvas.draw(emptyIcon, x + oddOffset[i], y - 15);
+                }
+                else {
+                    canvas.draw(emptyIcon, x + evenOffset[i], y - 15);
+                }
             }
-            offset = 0;
             for (int i = 0; i < caughtCaptives; i++) {
-                canvas.draw(captiveIcon, x + offset, y);
+                if (totalCaptives % 2 == 1) {
+                    canvas.draw(captiveIcon, x + oddOffset[i], y - 15);
+                }
+                else {
+                    canvas.draw(captiveIcon, x + evenOffset[i], y - 15);
+                }
             }
 
             highestButtonY = y - 60;
             middleButtonY = y - 120;
+        }
+        else {
+            canvas.drawTextCentered(gameOverMessage, displayFont, 100);
         }
 
 

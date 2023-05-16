@@ -206,18 +206,6 @@
                  "x":924.577669902913,
                  "y":1344.24150485437
                 },
-           {
-             "gid":89,
-             "height":128,
-             "id":464,
-             "name":"",
-             "rotation":0,
-             "type":"star",
-             "visible":true,
-             "width":92,
-             "x": 1050.577669902913,
-             "y": 1375.24150485437
-           },
                 {
                  "gid":86,
                  "height":73,
@@ -407,7 +395,7 @@
         {
          "name":"captives",
          "type":"int",
-         "value": 1
+         "value": 0
         }, 
         {
          "name":"gravity",
