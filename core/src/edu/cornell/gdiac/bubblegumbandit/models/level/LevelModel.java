@@ -576,11 +576,16 @@ public class LevelModel {
             switch (objType) {
                 case "tutorial": {
                     int keyCode = object.get("properties").get(0).getInt("value");
-                    if(keyCode>7) {
+                    if(keyCode>8) {
                         System.err.println("Invalid keycode "+keyCode+" accessed by tutorial icon.");
                         break;
                     }
-                    icons.add(new TutorialIcon(directory, decorX, decorY, keyCode, scale));
+                    if(keyCode>=0) icons.add(new TutorialIcon(directory, decorX, decorY, keyCode, scale));
+                    else {
+                        String icon = object.get("properties").get(2).getString("value");
+                        String text = object.get("properties").get(1).getString("value");
+                        icons.add(new TutorialIcon(directory, decorX, decorY, text, icon, scale));
+                    }
                     break;
                 }
                 case "chair":

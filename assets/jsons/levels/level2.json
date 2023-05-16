@@ -280,14 +280,19 @@
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"move right"
+                         "value":"hello world"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
                  "visible":true,
                  "width":94,
                  "x":1307.39846743295,
-                 "y":1206.34730673879
+                 "y":1210.34730673879
                 }, 
                 {
                  "gid":86,
@@ -304,6 +309,11 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
