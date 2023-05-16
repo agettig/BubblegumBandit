@@ -423,23 +423,32 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
         updateRayCasts();
         updateMovement(nextAction);
         updateFrame();
+        updateCrush();
+    }
 
+    public void updateCrush() {
         if (crusher != null) {
             if (isCrushing) {
                 if (world.getGravity().y < 0) {
                     float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
-                    float topOfEnemy = getY() + (getHeight() / 2);
-                    crushScale = (bottomOfCrusher - topOfEnemy - getHeight()) / getHeight();
-                    if (crushScale <= 0.05f) {
+                    float bottomOfEnemy = getY() - (getHeight() / 2);
+                    crushScale = (bottomOfCrusher - bottomOfEnemy) / getHeight();
+                    if (crushScale < 0) {
+                        endCrush();
+                    }
+                    else if (crushScale <= 0.05f) {
                         markRemoved(true);
                     } else if (crushScale > 1) {
                         endCrush();
                     }
                 } else {
                     float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
-                    float bottomOfEnemy = getY() - (getHeight() / 2);
-                    crushScale = (bottomOfEnemy - topOfCrusher + getHeight()) / getHeight();
-                    if (crushScale <= 0.05f) {
+                    float topOfEnemy = getY() + (getHeight() / 2);
+                    crushScale = (topOfEnemy - topOfCrusher) / getHeight();
+                    if (crushScale < 0) {
+                        endCrush();
+                    }
+                    else if (crushScale <= 0.05f) {
                         markRemoved(true);
                     } else if (crushScale > 1) {
                         endCrush();

@@ -242,6 +242,8 @@ public class LaserEnemyModel extends EnemyModel {
                 }
             }
 
+        updateCrush();
+
         // if jumping
         if (isJumping){
             // apply linear impulse
@@ -668,6 +670,7 @@ public class LaserEnemyModel extends EnemyModel {
             float effect = getFaceRight() ? 1.0f : -1.0f;
             float x = getX() * drawScale.x;
             float y = getY() * drawScale.y;
+            y += ((1 - crushScale) * texture.getRegionHeight() * (world.getGravity().y < 0 ? -.5f : .5f));
             float gumY = y;
             float gumX = x;
 
@@ -676,7 +679,7 @@ public class LaserEnemyModel extends EnemyModel {
             }
 
             if (curFrame != null) {
-                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale);
+                canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y, x, y, getAngle(), effect, yScale*crushScale);
             }
 
             //if gummed, overlay with gumTexture

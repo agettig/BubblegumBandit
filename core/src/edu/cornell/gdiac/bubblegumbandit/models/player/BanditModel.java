@@ -613,7 +613,6 @@ public class BanditModel extends CapsuleObstacle {
         setFilter(CollisionController.CATEGORY_PLAYER, CollisionController.MASK_PLAYER);
         isCrushing = false;
         crusher = null;
-        crushScale = 1;
     }
 
     /**
@@ -644,6 +643,7 @@ public class BanditModel extends CapsuleObstacle {
         shockFixtures = new ObjectSet<>();
         healthCountdown = 0;
         isCrushing = false;
+        crushScale = 1;
     }
 
     /**
@@ -823,7 +823,7 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         // Velocity too high, clamp it
-        if (Math.abs(getVX()) >= getMaxSpeed()) {
+        if (Math.abs(getVX()) >= getMaxSpeed() && !isCrushing) {
             setVX(Math.signum(getVX()) * getMaxSpeed());
             if (getVX() * getMovement() < 0) { // Velocity and movement in opposite directions
                 forceCache.set(getMovement(), 0);
@@ -932,23 +932,41 @@ public class BanditModel extends CapsuleObstacle {
 
         if (crusher != null) {
             if (isCrushing) {
-                if (world.getGravity().y < 0) {
-                    float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
-                    float bottomOfPlayer = getY() - (getHeight() / 2);
-                    crushScale = (bottomOfCrusher - bottomOfPlayer) / getHeight();
-                    if (crushScale <= 0.05f) {
-                        hitPlayer(getHealth(), true);
-                    } else if (crushScale > 1.02f) {
-                        endCrush();
+                float banditLeft = getX() - getWidth() / 2f;
+                float banditRight = getX() + getWidth() / 2f;
+                float crusherLeft = crusher.getX() - crusher.getWidth() / 2f;
+                float crusherRight = crusher.getX() + crusher.getWidth() / 2f;
+                if (banditLeft > crusherRight) {
+                    endCrush();
+                }
+                else if (banditRight < crusherLeft) {
+                    endCrush();
+                }
+
+                else {
+                    if (world.getGravity().y < 0) {
+                        float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
+                        float bottomOfPlayer = getY() - (getHeight() / 2);
+                        crushScale = (bottomOfCrusher - bottomOfPlayer) / getHeight();
+                        if (crushScale <= 0.05f) {
+                            hitPlayer(getHealth(), true);
+                            setVX(0);
+                        } else if (crushScale > 1.02f) {
+                            endCrush();
+                        }
+                    } else {
+                        float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
+                        float topOfPlayer = getY() + (getHeight() / 2);
+                        crushScale = (topOfPlayer - topOfCrusher) / getHeight();
+                        if (crushScale <= 0.05f) {
+                            hitPlayer(getHealth(), true);
+                            setVX(0);
+                        } else if (crushScale > 1.02f) {
+                            endCrush();
+                        }
                     }
-                } else {
-                    float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
-                    float topOfPlayer = getY() + (getHeight() / 2);
-                    crushScale = (topOfPlayer - topOfCrusher) / getHeight();
-                    if (crushScale <= 0.05f) {
-                        hitPlayer(getHealth(), true);
-                    } else if (crushScale > 1.02f) {
-                        endCrush();
+                    if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
+                        body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
                     }
                 }
             } else {
@@ -987,7 +1005,11 @@ public class BanditModel extends CapsuleObstacle {
                 }
             }
         } else {
-            crushScale = 1;
+            if (crushScale < 1) {
+                crushScale += 0.1f;
+            } else {
+                crushScale = 1;
+            }
         }
     }
 

@@ -469,7 +469,9 @@ public class CollisionController implements ContactListener {
                             gummable.setStuck(true);
                         }
                         for (Obstacle ob : gummable.getCollisions()) {
-                            bubblegumController.createGummableJoint(gummable, ob);
+                            if (!(ob instanceof BanditModel)) {
+                                bubblegumController.createGummableJoint(gummable, ob);
+                            }
                         }
                     }
                 }
@@ -560,7 +562,9 @@ public class CollisionController implements ContactListener {
         if (ob1 == null || ob2 == null) return;
         if (ob1.isRemoved() || ob2.isRemoved()) return;
         if (ob1 instanceof DoorModel || ob2 instanceof DoorModel) return;
-        if (ob1 instanceof CrusherModel || ob2 instanceof CrusherModel) return;
+        if ((ob1 instanceof CrusherModel && !(ob2 instanceof WallModel)) || (ob2 instanceof CrusherModel && !(ob1 instanceof WallModel))) {
+            return;
+        }
         if (fix1.getUserData() instanceof DoorModel || fix2.getUserData() instanceof DoorModel) {
             return;
         }
