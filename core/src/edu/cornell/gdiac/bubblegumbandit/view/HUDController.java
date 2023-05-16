@@ -46,14 +46,14 @@ public class HUDController {
   private WidgetGroup health;
 
 
-
   /** The container for laying out all HUD elements */
   private Table table;
   /** The margin of the current health bar, depends on the current design */
   private float HEALTH_MARGIN = .125f;
 
 
-  /** The last health the health bar filling was cropped to, saved as a reference so the
+  /**
+   * The last health the health bar filling was cropped to, saved as a reference so the
    * texture region healthFillRegion is not redefined on frames where the health has not changed.
    */
   private float lastFrac = 1f;
@@ -81,10 +81,10 @@ public class HUDController {
   private int maxCaptives = 6;
 
   private final Color ESCAPE_RED = new Color(
-          1,
-          70/255f,
-          61/255f,
-          1
+      1,
+      70 / 255f,
+      61 / 255f,
+      1
   );
 
 
@@ -112,7 +112,7 @@ public class HUDController {
 
 
     healthFillRegion = new TextureRegion(healthFillText, 0, 0,
-            healthFillText.getWidth(), healthFillText.getHeight());
+        healthFillText.getWidth(), healthFillText.getHeight());
     healthFill = new Image(new SpriteDrawable(new Sprite(healthFillRegion)) {
     });
 
@@ -126,11 +126,11 @@ public class HUDController {
     table.row();
     for (int i = 0; i < 6; i++) {
       Image emptyGum = new Image(directory.getEntry("emptyGum", Texture.class));
-      emptyGum.setPosition(32 + i*72, stage.getHeight() - 103);
+      emptyGum.setPosition(32 + i * 72, stage.getHeight() - 103);
       stage.addActor(emptyGum);
 
       Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
-      reloadGumIcon.setPosition(32 + i*72, stage.getHeight() - 103);
+      reloadGumIcon.setPosition(32 + i * 72, stage.getHeight() - 103);
       gumCount[i] = reloadGumIcon;
       stage.addActor(reloadGumIcon);
     }
@@ -142,7 +142,7 @@ public class HUDController {
 
     captiveIcons = new Array<>(maxCaptives);
 
-    for(int i =0; i< maxCaptives; i++) {
+    for (int i = 0; i < maxCaptives; i++) {
       Image icon = new Image(emptyIcon);
       captiveIcons.add(icon);
       table.add(icon).padRight(12).padBottom(5);
@@ -154,11 +154,12 @@ public class HUDController {
     escapeMessage = new Image(directory.getEntry("escape", Texture.class));
     escapeMessage.setVisible(false);
     escapeMessage.setSize(escapeMessage.getWidth() * .5f, escapeMessage.getHeight() * .5f);
-    escapeMessage.setPosition(stage.getWidth()/2 - escapeMessage.getWidth()/2, stage.getHeight() * .6f);
+    escapeMessage.setPosition(stage.getWidth() / 2 - escapeMessage.getWidth() / 2,
+        stage.getHeight() * .6f);
     escapeMessage.setColor(ESCAPE_RED);
 
     escapeIcon = new Image(directory.getEntry("escapeIcon", Texture.class));
-    escapeIcon.setPosition(stage.getWidth()/2 - escapeIcon.getWidth()/2, stage.getHeight() / 8);
+    escapeIcon.setPosition(stage.getWidth() / 2 - escapeIcon.getWidth() / 2, stage.getHeight() / 8);
     timerStart = -1;
     stage.addActor(escapeIcon);
     stage.addActor(escapeMessage);
@@ -167,8 +168,10 @@ public class HUDController {
     for (int i = 0; i < 6; i++) {
       Image reloadGumIcon = new Image(directory.getEntry("bubblegumIcon", Texture.class));
       Image emptyGumIcon = new Image(directory.getEntry("emptyGum", Texture.class));
-      emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*72, stage.getHeight() / 4, Align.center);
-      reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i*72, stage.getHeight() / 4, Align.center);
+      emptyGumIcon.setPosition(stage.getWidth() / 2 - 125 + i * 72, stage.getHeight() / 4,
+          Align.center);
+      reloadGumIcon.setPosition(stage.getWidth() / 2 - 125 + i * 72, stage.getHeight() / 4,
+          Align.center);
 
       emptyGumCount[i] = emptyGumIcon;
       reloadGumCount[i] = reloadGumIcon;
@@ -186,15 +189,15 @@ public class HUDController {
     table.padLeft(30).padTop(60);
   }
 
-  public void setCaptives(int currentCaptives, int totalCaptives){
+  public void setCaptives(int currentCaptives, int totalCaptives) {
     //ahh
 
-    for(int i = 0; i< maxCaptives; i++) {
+    for (int i = 0; i < maxCaptives; i++) {
       Image curr = captiveIcons.get(i);
-      if(i<currentCaptives) {
+      if (i < currentCaptives) {
         curr.setVisible(true);
         curr.setDrawable(new SpriteDrawable(new Sprite(captiveIcon)));
-      } else if (i<totalCaptives){
+      } else if (i < totalCaptives) {
         curr.setVisible(true);
         curr.setDrawable(new SpriteDrawable(new Sprite(emptyIcon)));
       } else {
@@ -202,9 +205,6 @@ public class HUDController {
       }
     }
   }
-
-
-
 
 
   public boolean hasViewport() {
@@ -216,22 +216,22 @@ public class HUDController {
     view.apply(true);
   }
 
-  public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit){
+  public void drawCountdownText(int timer, float dt, GameCamera camera, BanditModel bandit) {
 
-    if(timer < 0 && orbCountdown != null) orbCountdown.setText("");
-    if(timer < 0 && escapeMessage != null) escapeMessage.setVisible(false);
-    if(timer < 0) timerStart = -1;
-    if(timer < 0) return; //We aren't ticking down.
+    if (timer < 0 && orbCountdown != null) orbCountdown.setText("");
+    if (timer < 0 && escapeMessage != null) escapeMessage.setVisible(false);
+    if (timer < 0) timerStart = -1;
+    if (timer < 0) return; //We aren't ticking down.
 
     //We need to instantiate the label here in order to draw the text over the UI
-    if(orbCountdown == null){
+    if (orbCountdown == null) {
       orbCountdown = new Label("", new Label.LabelStyle(font, Color.WHITE));
       orbCountdown.setFontScale(1f);
       orbCountdown.setColor(Color.WHITE);
       orbCountdown.setAlignment(Align.center);
-      orbCountdown.setX(escapeIcon.getX() + escapeIcon.getWidth()/2.3f);
+      orbCountdown.setX(escapeIcon.getX() + escapeIcon.getWidth() / 2.3f);
       orbCountdown.setY(escapeIcon.getY());
-      orbCountdown.setWidth(escapeIcon.getWidth()/2.3f);
+      orbCountdown.setWidth(escapeIcon.getWidth() / 2.3f);
       orbCountdown.setHeight(escapeIcon.getHeight());
       stage.addActor(orbCountdown);
     }
@@ -240,33 +240,33 @@ public class HUDController {
 
     //Should we draw "ESCAPE!" ?
     final int escapeTextDuration = 3;
-    if(timerStart < 0) timerStart = timer;
+    if (timerStart < 0) timerStart = timer;
     escapeMessage.setVisible(timerStart - timer < escapeTextDuration);
 
 
     //Did we tick down one second?
     String countdownText = orbCountdown.getText().toString();
-    if(countdownText.equals("") || Integer.parseInt(countdownText.trim()) != timer){
+    if (countdownText.equals("") || Integer.parseInt(countdownText.trim()) != timer) {
       orbCountdown.setText(timer);
 
       //Should we SHAKE??
       int shakeChance = 45;
       boolean shouldShake = MathUtils.random(1, 100) <= shakeChance;
-      if(shouldShake && timer > 3){
+      if (shouldShake && timer > 3) {
         float randomTrauma = MathUtils.random(.25f, 1f);
         camera.addTrauma(
-                bandit.getX() * bandit.getDrawScale().x,
-                bandit.getY() * bandit.getDrawScale().y,
-                randomTrauma
+            bandit.getX() * bandit.getDrawScale().x,
+            bandit.getY() * bandit.getDrawScale().y,
+            randomTrauma
         );
       }
 
       //Final shakes
-      if(timer <= 3){
+      if (timer <= 3) {
         camera.addTrauma(
-                bandit.getX() * bandit.getDrawScale().x,
-                bandit.getY() * bandit.getDrawScale().y,
-                4 - timer
+            bandit.getX() * bandit.getDrawScale().x,
+            bandit.getY() * bandit.getDrawScale().y,
+            4 - timer
         );
       }
     }
@@ -279,14 +279,14 @@ public class HUDController {
                    boolean reloadingGum) {
     int ammo = level.getBandit().getAmmo();
     //drawing the health bar, draws no fill if health is 0
-    float healthFraction = level.getBandit().getHealth()/ level.getBandit().getMaxHealth();
+    float healthFraction = level.getBandit().getHealth() / level.getBandit().getMaxHealth();
 
 
-    if(healthFraction!=lastFrac) {
-      if(healthFraction==0) {
+    if (healthFraction != lastFrac) {
+      if (healthFraction == 0) {
         healthFill.setDrawable(null);
       } else {
-        healthFillRegion.setRegionWidth((int) (healthFillText.getWidth()*healthFraction));
+        healthFillRegion.setRegionWidth((int) (healthFillText.getWidth() * healthFraction));
         healthFill.setDrawable(new SpriteDrawable(new Sprite(healthFillRegion)) {
         });
       }
@@ -296,8 +296,8 @@ public class HUDController {
     int totalCaptives = level.getTotalCaptives();
     setCaptives(numCaptives, totalCaptives);
 
-    healthFill.setWidth(healthFillRegion.getRegionWidth()-HEALTH_MARGIN*healthBar.getHeight());
-    healthFill.setHeight(healthBar.getHeight()-2*(healthBar.getHeight()*HEALTH_MARGIN));
+    healthFill.setWidth(healthFillRegion.getRegionWidth() - HEALTH_MARGIN * healthBar.getHeight());
+    healthFill.setHeight(healthBar.getHeight() - 2 * (healthBar.getHeight() * HEALTH_MARGIN));
 
     for (int i = 0; i < ammo; i++) {
       Image gumImage = gumCount[i];
@@ -318,8 +318,7 @@ public class HUDController {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(true);
       }
-    }
-    else {
+    } else {
       for (int i = 0; i < reloadGumCount.length; i++) {
         Image gumImage = reloadGumCount[i];
         gumImage.setVisible(false);
@@ -336,31 +335,33 @@ public class HUDController {
       fpsLabel.setText("");
     }
 
-    if(timer >= 0){
+    if (timer >= 0) {
       escapeIcon.setVisible(true);
+    } else {
+      escapeIcon.setVisible(false);
     }
-    else escapeIcon.setVisible(false);
 
 
     stage.draw();
   }
 
-  /** Shakes the timer, lerping quickly it to a random position.*/
-  private void shakeTimer(float dt, float timer, GameCamera camera, BanditModel bandit){
+  /** Shakes the timer, lerping quickly it to a random position. */
+  private void shakeTimer(float dt, float timer, GameCamera camera, BanditModel bandit) {
     float xShakeRange;
     float yShakeRange;
     float transitionSpeed;
-    escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth()/2);
+    escapeIcon.setX((stage.getWidth() / 2) - escapeIcon.getWidth() / 2);
     escapeIcon.setY(stage.getHeight() / 8f);
 
-    if(timer > 10) return;
+    if (timer > 10) return;
 
     xShakeRange = 10f;
     yShakeRange = 2f;
     transitionSpeed = 7f;
     shakeAdjust = new Vector2(
-            escapeIcon.getX() + escapeIcon.getWidth()/2.3f + MathUtils.random(-xShakeRange, xShakeRange),
-            escapeIcon.getY() + MathUtils.random(-yShakeRange, yShakeRange)
+        escapeIcon.getX() + escapeIcon.getWidth() / 2.3f +
+            MathUtils.random(-xShakeRange, xShakeRange),
+        escapeIcon.getY() + MathUtils.random(-yShakeRange, yShakeRange)
     );
     orbCountdown.setX(MathUtils.lerp(orbCountdown.getX(), shakeAdjust.x, transitionSpeed * dt));
     orbCountdown.setY(MathUtils.lerp(orbCountdown.getY(), shakeAdjust.y, transitionSpeed * dt));

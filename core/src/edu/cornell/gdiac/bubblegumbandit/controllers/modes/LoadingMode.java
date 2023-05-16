@@ -722,7 +722,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                   sunfish.getHeight()-(jet.getWidth()+8)*(i+.6f),
               (float) centerY+progressBackground.getHeight()*2.4f, (float) (-Math.PI/2f), sizes[i][0],  sizes[i][0]);
       }
-      canvas.drawText("loading", font, centerX-progressBackground.getWidth()/2, centerY+progressBackground.getHeight()*2.5f);
+      canvas.drawText("LOADING", font, centerX-progressBackground.getWidth()/2, centerY+progressBackground.getHeight()*2.5f);
 
 
 
