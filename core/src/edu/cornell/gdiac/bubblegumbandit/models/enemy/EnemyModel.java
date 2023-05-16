@@ -51,7 +51,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * true if this EnemyModel is facing right; false if facing left
      */
-    private boolean faceRight;
+    protected boolean faceRight;
 
     // SENSOR FIELDS
 

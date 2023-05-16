@@ -680,6 +680,15 @@ public class LaserEnemyModel extends EnemyModel {
     }
 
     @Override
+    public boolean setFaceRight(boolean isRight, int cooldown){
+        if (chargingLaser() || lockingLaser() || firingLaser() || getStuck() || getGummed()) return faceRight;
+        if (turnCooldown <= 0){
+            faceRight = isRight;
+            turnCooldown = cooldown;
+        }
+        return faceRight;
+    }
+    @Override
     public void draw(GameCanvas canvas) {
         if (texture != null) {
             float effect = getFaceRight() ? 1.0f : -1.0f;
