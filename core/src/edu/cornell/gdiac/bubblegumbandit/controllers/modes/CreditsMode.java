@@ -60,6 +60,7 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
             55 / 255f, 226 / 255f, 226 / 255f, 1
     );
 
+
     /** Current CreditsMode screen scale.*/
     private float scale;
 
@@ -89,6 +90,9 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
     /** Texture to represent the back button. */
     private Texture backButton;
+
+    /** Texture to represent the credits title. */
+    private Texture creditsTitle;
 
     /** X-Offset for drawing things. */
     private float offsetX;
@@ -151,6 +155,7 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
         background = directory.getEntry("creditsBackground", Texture.class);
         backButton = directory.getEntry("back", Texture.class);
+        creditsTitle = directory.getEntry("creditsTitle", Texture.class);
         this.nameFont = nameFont;
         this.roleFont = roleFont;
 
@@ -182,6 +187,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         backButtonY = canvas.getCamera().viewportWidth * BACK_SCALAR_Y + offsetY;
 
         makeCreditsTable();
+
+
     }
 
     /**
@@ -288,12 +295,12 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         emily.setAlignment(Align.left);
         emily.setFontScale(.45f);
         emily.setFontScaleX(.5f);
-        creditsTableRight.add(emily).padBottom(20f).padTop(40f).padRight(182f);
+        creditsTableRight.add(emily).padBottom(20f).padTop(40f).padRight(187f);
         creditsTableRight.row();
         Label emilyRole = new Label("Programmer, Designer, Musician", roleStyle);
         emilyRole.setAlignment(Align.left);
         emilyRole.setFontScale(.45f);
-        creditsTableRight.add(emilyRole).padRight(151f);
+        creditsTableRight.add(emilyRole).padRight(155f);
 
 
         //Teddy Siker
@@ -302,12 +309,12 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         teddy.setAlignment(Align.left);
         teddy.setFontScale(.45f);
         teddy.setFontScaleX(.5f);
-        creditsTableRight.add(teddy).padBottom(20f).padTop(40f).padRight(175f);
+        creditsTableRight.add(teddy).padBottom(20f).padTop(40f).padRight(190f);
         creditsTableRight.row();
         Label teddyRole = new Label("Programmer", roleStyle);
         teddyRole.setAlignment(Align.left);
         teddyRole.setFontScale(.45f);
-        creditsTableRight.add(teddyRole).padRight(169f);
+        creditsTableRight.add(teddyRole).padRight(369f);
 
 
         //Sophia Xu
@@ -316,12 +323,12 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         sophia.setAlignment(Align.left);
         sophia.setFontScale(.45f);
         sophia.setFontScaleX(.5f);
-        creditsTableRight.add(sophia).padBottom(20f).padTop(40f).padRight(30f);
+        creditsTableRight.add(sophia).padBottom(20f).padTop(40f).padRight(243f);
         creditsTableRight.row();
         Label sophiaRole = new Label("Programmer", roleStyle);
         sophiaRole.setAlignment(Align.left);
         sophiaRole.setFontScale(.45f);
-        creditsTableRight.add(sophiaRole).padRight(169f);
+        creditsTableRight.add(sophiaRole).padRight(369f);
 
     }
 
@@ -365,6 +372,21 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
                 backButtonY,
                 backButton.getWidth() * BUTTON_SCALE,
                 backButton.getHeight() * BUTTON_SCALE
+        );
+
+        //Draw the credits title
+
+        final float creditsScale = .4f;
+        float creditsX = -(creditsTitle.getWidth()/2f);
+        float creditsY = creditsTitle.getHeight() * 1.45f;
+
+        canvas.draw(
+                creditsTitle,
+                PRESS_BLUE,
+                creditsX * creditsScale,
+                creditsY,
+                creditsTitle.getWidth() * creditsScale,
+                creditsTitle.getHeight() * creditsScale
         );
 
 
