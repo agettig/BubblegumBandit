@@ -194,7 +194,7 @@ public class GameOverScreen implements Screen, InputProcessor {
 
         background = new TextureRegion(directory.getEntry("settingsBackground", Texture.class));
         displayFont = directory.getEntry("projectSpaceLarge", BitmapFont.class).newFontCache().getFont();
-        subHeadingFont = directory.getEntry("projectSpaceSubHeading", BitmapFont.class).newFontCache().getFont();
+        subHeadingFont = directory.getEntry("codygoonRegular", BitmapFont.class).newFontCache().getFont();
         hoverPointer = directory.getEntry("hoverPointer", Texture.class);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("levelSelectButton", Texture.class);
@@ -286,31 +286,34 @@ public class GameOverScreen implements Screen, InputProcessor {
             float x = (canvas.getCamera().viewportWidth) / 2.0f;
             float y = (canvas.getCamera().viewportHeight)/ 2.0f;
 
-            if (levelWon) {
-                canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 120);
-                int offset = 0;
-                for (int i = 0; i < totalCaptives; i++) {
-                    canvas.draw(emptyIcon, x + offset, y);
-                    offset += 60;
-                }
-                offset = 0;
-                for (int i = 0; i < caughtCaptives; i++) {
-                    canvas.draw(captiveIcon, x + offset, y);
-                }
+            float highestButtonY = y;
+            float middleButtonY = y - 60;
+
+        if (levelWon) {
+            canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 50);
+            int offset = 0;
+            for (int i = 0; i < totalCaptives; i++) {
+                canvas.draw(emptyIcon, x + offset, y);
+                offset += 60;
+            }
+            offset = 0;
+            for (int i = 0; i < caughtCaptives; i++) {
+                canvas.draw(captiveIcon, x + offset, y);
             }
 
-            float highestButtonY = y;
-            float lowestButtonY = y - 60;
+            highestButtonY = y - 60;
+            middleButtonY = y - 120;
+        }
 
 
             startButtonPositionX = (int) x;
             startButtonPositionY = (int) highestButtonY;
 
             levelSelectButtonPositionX = (int) x;
-            levelSelectButtonPositionY = (int) lowestButtonY;
+            levelSelectButtonPositionY = (int) middleButtonY;
 
             titleScreenButtonPositionX = (int) x;
-            titleScreenButtonPositionY = (int) lowestButtonY - 60;
+            titleScreenButtonPositionY = (int) middleButtonY - 60;
 
 
             //Draw continue game options

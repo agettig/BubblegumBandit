@@ -456,9 +456,6 @@
         }, "projectSpaceLarge" : {
             "file" : "fonts/ProjectSpace.ttf",
             "size": 60
-        }, "projectSpaceSubHeading": {
-            "file" : "fonts/ProjectSpace.ttf",
-            "size": 30
         },
         "sedgwickAve" : {
             "file" : "fonts/SedgwickAveDisplay-Regular.ttf",
