@@ -227,6 +227,7 @@ public class SaveData {
   }
 
   public static int getContinueLevel() {
+
     Preferences prefs = Gdx.app.getPreferences(prefsName);
     int levels = 1;
     while(true) {
