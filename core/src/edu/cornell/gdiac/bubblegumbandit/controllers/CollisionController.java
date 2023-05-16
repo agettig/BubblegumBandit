@@ -43,8 +43,8 @@ public class CollisionController implements ContactListener {
     public static final short MASK_PLAYER = -1;
     public static final short MASK_ENEMY = ~(CATEGORY_ENEMY);
     public static final short MASK_TERRAIN = -1; // Collides with everything
-    public static final short MASK_GUM = ~(CATEGORY_GUM | CATEGORY_PLAYER);
-    public static final short MASK_LANDED_GUM = ~(CATEGORY_GUM);
+    public static final short MASK_GUM = ~(CATEGORY_GUM | CATEGORY_PLAYER | CATEGORY_PROJECTILE | CATEGORY_CRUSHER_BOX);
+    public static final short MASK_LANDED_GUM = ~(CATEGORY_GUM | CATEGORY_PROJECTILE | CATEGORY_CRUSHER_BOX);
     public static final short MASK_GUM_LIMIT = ~(CATEGORY_PLAYER | CATEGORY_GUM | CATEGORY_ENEMY);
     public static final short MASK_PROJECTILE = ~(CATEGORY_PROJECTILE | CATEGORY_ENEMY | CATEGORY_GUM);
     public static final short MASK_CRUSHED_ENEMY = ~(CATEGORY_CRUSHER_BOX | CATEGORY_ENEMY | CATEGORY_CRUSHER);
@@ -76,9 +76,6 @@ public class CollisionController implements ContactListener {
     private boolean winConditionMet;
 
     private boolean shouldFlipGravity;
-
-    /**Temp queue for now for sticking robot joints */
-    private Queue<WeldJointDef> stickRobots = new Queue<>();
 
     /** Resets this CollisionController. */
     public void reset(){
@@ -141,11 +138,25 @@ public class CollisionController implements ContactListener {
             Obstacle obstacleA = (Obstacle) bodyA.getUserData();
             Obstacle obstacleB = (Obstacle) bodyB.getUserData();
 
-            if ((obstacleA instanceof Gummable || obstacleA instanceof BanditModel) && !(obstacleB instanceof DoorModel)) {
-                obstacleA.startCollision(obstacleB, fixA);
+            if ((obstacleA instanceof Gummable || obstacleA instanceof BanditModel)) {
+                if (obstacleB instanceof DoorModel) {
+                   DoorModel door = (DoorModel) obstacleB;
+                   if (door.isLocked() && door.isHorizontal()) {
+                       obstacleA.startCollision(obstacleB, fixA);
+                   }
+                } else {
+                    obstacleA.startCollision(obstacleB, fixA);
+                }
             }
-            if ((obstacleB instanceof Gummable || obstacleB instanceof BanditModel) && !(obstacleA instanceof DoorModel)) {
-                obstacleB.startCollision(obstacleA, fixB);
+            if ((obstacleB instanceof Gummable || obstacleB instanceof BanditModel)) {
+                if (obstacleA instanceof DoorModel) {
+                    DoorModel door = (DoorModel) obstacleA;
+                    if (door.isLocked() && door.isHorizontal()) {
+                        obstacleB.startCollision(obstacleA, fixB);
+                    }
+                } else {
+                    obstacleB.startCollision(obstacleA, fixB);
+                }
             }
 
             if (obstacleA instanceof GumModel) {
@@ -560,11 +571,18 @@ public class CollisionController implements ContactListener {
     public void resolveGummableGumCollision(Obstacle ob1, Obstacle ob2, Fixture fix1, Fixture fix2) {
         if (ob1 == null || ob2 == null) return;
         if (ob1.isRemoved() || ob2.isRemoved()) return;
-        if (ob1 instanceof DoorModel || ob2 instanceof DoorModel) return;
-        if ((ob1 instanceof CrusherModel && !(ob2 instanceof WallModel)) || (ob2 instanceof CrusherModel && !(ob1 instanceof WallModel))) {
-            return;
+        if (ob1 instanceof DoorModel || ob2 instanceof DoorModel) {
+            DoorModel door;
+            if (ob1 instanceof DoorModel) {
+                door = (DoorModel) ob1;
+            } else {
+                door = (DoorModel) ob2;
+            }
+            if (!(door.isHorizontal() && door.isLocked())) {
+                return;
+            }
         }
-        if (fix1.getUserData() instanceof DoorModel || fix2.getUserData() instanceof DoorModel) {
+        if ((ob1 instanceof CrusherModel && !(ob2 instanceof WallModel)) || (ob2 instanceof CrusherModel && !(ob1 instanceof WallModel))) {
             return;
         }
 
@@ -573,7 +591,7 @@ public class CollisionController implements ContactListener {
         if (ob1 instanceof Gummable) {
             gummable = (Gummable) ob1;
             if (gummable.getGummed()) { // && !ob2.equals(levelModel.getBandit())
-                if (ob1.getName().contains("nemy") && ob2.equals(levelModel.getBandit())) {
+                if (ob1 instanceof EnemyModel && ob2.equals(levelModel.getBandit())) {
                     return;
                 }
                 bubblegumController.createGummableJoint(gummable, ob2);
@@ -584,7 +602,7 @@ public class CollisionController implements ContactListener {
         else if (ob2 instanceof Gummable) {
             gummable = (Gummable) ob2;
             if (gummable.getGummed()) { // && !ob1.equals(levelModel.getBandit())
-                if (ob2.getName().contains("nemy") && ob1.equals(levelModel.getBandit())) {
+                if (ob2 instanceof EnemyModel && ob1.equals(levelModel.getBandit())) {
                     return;
                 }
                 bubblegumController.createGummableJoint(gummable, ob1);

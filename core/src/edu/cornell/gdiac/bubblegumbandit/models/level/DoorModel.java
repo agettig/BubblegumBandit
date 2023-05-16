@@ -454,7 +454,7 @@ public class DoorModel extends TileModel implements Gummable {
         if (isLocked && !postOrb) {
             tryUnlockDoor();
         }
-        if (playerPassed) {
+        if (playerPassed || isHorizontal) {
             if (obsInRange.size == 0 && isOpen) {
                 closeDoor();
             } else if (obsInRange.size > 0 && !isOpen) {

@@ -313,8 +313,6 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
             return false;
         }
 
-        setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
-
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = getDensity();
         sensorDef.isSensor = true;
@@ -322,11 +320,13 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
 
+        setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+
         sensorDef.isSensor = false;
         sensorDef.shape = boxShape;
         boxFixture = body.createFixture(sensorDef);
         boxFixture.setUserData(this);
-        Filter f = boxFixture.getFilterData();
+        Filter f = getFilterData();
         f.maskBits = CollisionController.MASK_SHOCK_BOX;
         boxFixture.setFilterData(f);
 
