@@ -22,8 +22,6 @@ public class SaveData {
   /** The number of key bindings in-game */
   private static int keyCount = 9;
 
-  private static boolean testing= true;
-
   //any numbers above -1 represent the number of stars collected
 
   /** Returns whether valid save data can be found on this device */
@@ -229,8 +227,6 @@ public class SaveData {
   }
 
   public static int getContinueLevel() {
-
-    if(testing) return 16;
 
     Preferences prefs = Gdx.app.getPreferences(prefsName);
     int levels = 1;
