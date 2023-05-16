@@ -251,8 +251,8 @@
                  "type":"alarm",
                  "visible":true,
                  "width":44,
-                 "x":1484.03,
-                 "y":1125.70666666667
+                 "x":1610.64317123443,
+                 "y":1142.71333084737
                 }, 
                 {
                  "gid":75,
@@ -269,52 +269,6 @@
                 {
                  "gid":86,
                  "height":73,
-                 "id":150,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"keyCode",
-                         "type":"string",
-                         "value":"1"
-                        }, 
-                        {
-                         "name":"text",
-                         "type":"string",
-                         "value":"move right"
-                        }],
-                 "rotation":0,
-                 "type":"tutorial",
-                 "visible":true,
-                 "width":94,
-                 "x":1416.25099285147,
-                 "y":1256
-                }, 
-                {
-                 "gid":86,
-                 "height":73,
-                 "id":151,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"keyCode",
-                         "type":"string",
-                         "value":"0"
-                        }, 
-                        {
-                         "name":"text",
-                         "type":"string",
-                         "value":"move right"
-                        }],
-                 "rotation":0,
-                 "type":"tutorial",
-                 "visible":true,
-                 "width":94,
-                 "x":1245.07386814932,
-                 "y":1258.41143764893
-                }, 
-                {
-                 "gid":86,
-                 "height":73,
                  "id":152,
                  "name":"",
                  "properties":[
@@ -326,14 +280,19 @@
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"move right"
+                         "value":"hello world"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
                  "visible":true,
                  "width":94,
-                 "x":771,
-                 "y":1043
+                 "x":1307.39846743295,
+                 "y":1210.34730673879
                 }, 
                 {
                  "gid":86,
@@ -350,13 +309,18 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
                  "visible":true,
                  "width":94,
-                 "x":926,
-                 "y":1047
+                 "x":1462.39846743295,
+                 "y":1210.34730673879
                 }, 
                 {
                  "gid":87,
@@ -471,7 +435,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":158,
+ "nextobjectid":159,
  "orientation":"orthogonal",
  "properties":[
         {
