@@ -186,6 +186,8 @@ public class DoorModel extends TileModel implements Gummable {
         return isOpen;
     }
 
+    public boolean isLocked() { return isLocked;}
+
     /** Initializes the door model with the camera change information.
      *
      * @param directory the asset directory of the level

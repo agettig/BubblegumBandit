@@ -864,12 +864,18 @@ public class CollisionController implements ContactListener {
                 return;
             }
             DoorModel door = null;
+            Fixture doorFix = null;
             if (bodyA.getName().equals("doorH")) {
                 door = (DoorModel) bodyA;
+                doorFix = fixA;
             } else if (bodyB.getName().equals("doorH")) {
                 door = (DoorModel) bodyB;
+                doorFix = fixB;
             }
-            if (door != null && door.isOpen()) {
+            if (door != null && !door.isLocked() && !door.getGummed()) {
+                return;
+            }
+            if (doorFix != null && doorFix.isSensor()) {
                 return;
             }
             bandit.setGrounded(true);
