@@ -278,11 +278,11 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.begin();
 
-       // if (fadeFraction < 1) {
-           // background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
-           // canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
-       // }
-       // else {
+        if (fadeFraction < 1) {
+            background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
+            canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
+        }
+        else {
             canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth,
                 canvas.getCamera().viewportHeight);
 
@@ -372,7 +372,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                     BUTTON_SCALE
             );
 
-        //}
+        }
         canvas.end();
     }
 
