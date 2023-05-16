@@ -244,9 +244,9 @@ public class CollisionController implements ContactListener {
 
             resolveDoorSensorCollision(ob1, fix1, ob2, fix2, false);
 
-            if (ob1.getName().equals("door") && bandit == bd2) {
+            if (ob1.getName().contains("door") && bandit == bd2) {
                 updateCamera(ob1);
-            } else if (ob2.getName().equals("door") && bandit == bd1) {
+            } else if (ob2.getName().contains("door") && bandit == bd1) {
                 updateCamera(ob2);
             }
 
