@@ -13,7 +13,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
@@ -33,10 +36,10 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     private final static float ZOOM = 1.5f;
 
     /** How far right, in terms of the background, to draw the back button*/
-    private final static float BACK_SCALAR_X = .08f;
+    private final static float BACK_SCALAR_X = .087f;
 
     /** How far up, in terms of the background, to draw the back button*/
-    private final static float BACK_SCALAR_Y = .07f;
+    private final static float BACK_SCALAR_Y = .05f;
 
     /** Standard window size (for scaling)  */
     private final static int STANDARD_WIDTH = 800;
@@ -45,7 +48,7 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     private final static int STANDARD_HEIGHT = 700;
 
     /** Scale of buttons. */
-    private final float BUTTON_SCALE = .2f;
+    private final float BUTTON_SCALE = .15f;
 
     /** Pink hover color. */
     public final Color HOVER_PINK = new Color(
@@ -74,6 +77,12 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
     /** Stage to hold CreditsMode texture assets. */
     private Stage stage;
+
+    /** Left table for the credits. */
+    private Table creditsTableLeft;
+
+    /** Right table for the credits. */
+    private Table creditsTableRight;
 
     /** Texture to represent the CreditsMode background.*/
     private Texture background;
@@ -105,8 +114,16 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     /** CreditsMode's reference to a screen listener */
     private ScreenListener listener;
 
+    /** Font used for names. */
+    private BitmapFont nameFont;
+
+    /** Font used for roles. */
+    private BitmapFont roleFont;
+
     /** Current tint for the back button. */
     private Color backColor;
+
+
 
 
 
@@ -122,16 +139,20 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
      * should only be called after the asset directory is completed.
      *
      * @param directory Reference to global asset manager.
+     * @param nameFont the font for names
+     * @param roleFont the font for roles
      */
-    public void gatherAssets(AssetDirectory directory) {
+    public void gatherAssets(AssetDirectory directory, BitmapFont nameFont, BitmapFont roleFont) {
         this.directory = directory;
         this.directory.finishLoading();
         Gdx.input.setInputProcessor( this );
         world = new World(new Vector2(0, 0), false);
         SoundController.playMusic("menu");
 
-        background = directory.getEntry("spaceBg", Texture.class);
+        background = directory.getEntry("creditsBackground", Texture.class);
         backButton = directory.getEntry("back", Texture.class);
+        this.nameFont = nameFont;
+        this.roleFont = roleFont;
 
         backPressedDown = false;
         backPressedUp = false;
@@ -159,6 +180,149 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
         backButtonX = canvas.getCamera().viewportWidth * BACK_SCALAR_X + offsetX;
         backButtonY = canvas.getCamera().viewportWidth * BACK_SCALAR_Y + offsetY;
+
+        makeCreditsTable();
+    }
+
+    /**
+     * Creates the table of names and roles.
+     * */
+    private void makeCreditsTable(){
+        stage = new Stage();
+
+
+        creditsTableLeft = new Table();
+        creditsTableLeft.align(Align.left);
+        creditsTableLeft.setFillParent(true);
+        creditsTableLeft.padTop(80f);
+
+        creditsTableRight = new Table();
+        creditsTableRight.align(Align.left);
+        creditsTableRight.setFillParent(true);
+        creditsTableRight.padTop(80f);
+        creditsTableRight.padLeft(710f);
+
+
+        stage.addActor(creditsTableLeft);
+        stage.addActor(creditsTableRight);
+
+        Label.LabelStyle nameStyle = new Label.LabelStyle(this.nameFont, Color.WHITE);
+        final Color roleOrange = new Color(
+                1f,
+                178/255f,
+                23/255f,
+                1f
+        );
+        Label.LabelStyle roleStyle = new Label.LabelStyle(this.roleFont, roleOrange);
+
+        //Ruike Liang
+        creditsTableLeft.row();
+        Label ruike = new Label("Ruike Liang", nameStyle);
+        ruike.setAlignment(Align.left);
+        ruike.setFontScale(.45f);
+        ruike.setFontScaleX(.5f);
+        creditsTableLeft.add(ruike).padBottom(20f).padRight(30f);
+        creditsTableLeft.row();
+        Label ruikeRole = new Label("Project Lead", roleStyle);
+        ruikeRole.setAlignment(Align.left);
+        ruikeRole.setFontScale(.45f);
+        creditsTableLeft.add(ruikeRole).padRight(169f);
+
+        //Ariela Gettig
+        creditsTableLeft.row();
+        Label ariela = new Label("Ariela Gettig", nameStyle);
+        ariela.setAlignment(Align.left);
+        ariela.setFontScale(.45f);
+        ariela.setFontScaleX(.5f);
+        creditsTableLeft.add(ariela).padBottom(20f).padTop(40f).padLeft(33f);
+        creditsTableLeft.row();
+        Label arielaRole = new Label("Programming Lead", roleStyle);
+        arielaRole.setAlignment(Align.left);
+        arielaRole.setFontScale(.45f);
+        creditsTableLeft.add(arielaRole).padRight(126f);
+
+        //Bella Besuud
+        creditsTableLeft.row();
+        Label bella = new Label("Bella Besuud", nameStyle);
+        bella.setAlignment(Align.left);
+        bella.setFontScale(.45f);
+        bella.setFontScaleX(.5f);
+        creditsTableLeft.add(bella).padBottom(20f).padTop(40f).padLeft(47f);
+        creditsTableLeft.row();
+        Label bellaRole = new Label("Design Lead", roleStyle);
+        bellaRole.setAlignment(Align.left);
+        bellaRole.setFontScale(.45f);
+        creditsTableLeft.add(bellaRole).padRight(181f);
+
+        //Caroline Hohner
+        creditsTableLeft.row();
+        Label caroline = new Label("Caroline Hohner", nameStyle);
+        caroline.setAlignment(Align.left);
+        caroline.setFontScale(.45f);
+        caroline.setFontScaleX(.5f);
+        creditsTableLeft.add(caroline).padBottom(20f).padTop(40f).padLeft(110f);
+        creditsTableLeft.row();
+        Label carolineRole = new Label("Programmer, Designer", roleStyle);
+        carolineRole.setAlignment(Align.left);
+        carolineRole.setFontScale(.45f);
+        creditsTableLeft.add(carolineRole).padRight(82f);
+
+        //Right Side
+
+        //Benjamin Neuwirth
+        creditsTableRight.row();
+        Label ben = new Label("Benjamin Neuwirth", nameStyle);
+        ben.setAlignment(Align.left);
+        ben.setFontScale(.45f);
+        ben.setFontScaleX(.5f);
+        creditsTableRight.add(ben).padBottom(20f).padRight(30f);
+        creditsTableRight.row();
+        Label benRole = new Label("Programmer", roleStyle);
+        benRole.setAlignment(Align.left);
+        benRole.setFontScale(.45f);
+        creditsTableRight.add(benRole).padRight(369f);
+
+        //Emily Penna
+        creditsTableRight.row();
+        Label emily = new Label("Emily Penna", nameStyle);
+        emily.setAlignment(Align.left);
+        emily.setFontScale(.45f);
+        emily.setFontScaleX(.5f);
+        creditsTableRight.add(emily).padBottom(20f).padTop(40f).padRight(182f);
+        creditsTableRight.row();
+        Label emilyRole = new Label("Programmer, Designer, Musician", roleStyle);
+        emilyRole.setAlignment(Align.left);
+        emilyRole.setFontScale(.45f);
+        creditsTableRight.add(emilyRole).padRight(151f);
+
+
+        //Teddy Siker
+        creditsTableRight.row();
+        Label teddy = new Label("Teddy Siker", nameStyle);
+        teddy.setAlignment(Align.left);
+        teddy.setFontScale(.45f);
+        teddy.setFontScaleX(.5f);
+        creditsTableRight.add(teddy).padBottom(20f).padTop(40f).padRight(175f);
+        creditsTableRight.row();
+        Label teddyRole = new Label("Programmer", roleStyle);
+        teddyRole.setAlignment(Align.left);
+        teddyRole.setFontScale(.45f);
+        creditsTableRight.add(teddyRole).padRight(169f);
+
+
+        //Sophia Xu
+        creditsTableRight.row();
+        Label sophia = new Label("Sophia Xu", nameStyle);
+        sophia.setAlignment(Align.left);
+        sophia.setFontScale(.45f);
+        sophia.setFontScaleX(.5f);
+        creditsTableRight.add(sophia).padBottom(20f).padTop(40f).padRight(30f);
+        creditsTableRight.row();
+        Label sophiaRole = new Label("Programmer", roleStyle);
+        sophiaRole.setAlignment(Align.left);
+        sophiaRole.setFontScale(.45f);
+        creditsTableRight.add(sophiaRole).padRight(169f);
+
     }
 
     /**
@@ -167,6 +331,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     private void draw() {
 
         if(!active) return;
+
+
 
         resize(
                 (int)canvas.getCamera().viewportWidth,
@@ -201,7 +367,10 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
                 backButton.getHeight() * BUTTON_SCALE
         );
 
+
         canvas.end();
+
+        stage.draw();
     }
 
     /**

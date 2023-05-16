@@ -13,7 +13,7 @@
         "nextLevelButton": "textures/UI/nextLevel.png",
         "titleScreenButton": "textures/UI/returnToTitleScreen.png",
         "tryAgainButton": "textures/UI/tryAgain.png",
-        "creditsBackground": "textures/UI/mainMenuBackground.png",
+        "creditsBackground": "textures/UI/creditsBackground.png",
         "back": "textures/UI/back.png",
         "sunfish" : "textures/levelSelect/sunfish.png",
         "fire" : "textures/levelSelect/fire.png",

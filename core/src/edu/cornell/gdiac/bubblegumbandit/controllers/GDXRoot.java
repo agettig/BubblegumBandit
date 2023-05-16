@@ -227,8 +227,10 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(controller);
         } else if (exitCode == Screens.CREDITS){
             directory = loading.getAssets();
+            BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
+            BitmapFont projectSpace = loading.getAssets().getEntry("projectSpace", BitmapFont.class);
             controller.gatherAssets(directory);
-            credits.gatherAssets(directory);
+            credits.gatherAssets(directory, projectSpace, codygoonRegular);
             credits.setCanvas(canvas);
             credits.setScreenListener(this);
             setScreen(credits);

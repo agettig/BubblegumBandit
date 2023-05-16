@@ -135,7 +135,7 @@
          "name":"Terrain",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":84,
          "x":0,
          "y":0
@@ -204,7 +204,7 @@
          "name":"Supports",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":84,
          "x":0,
          "y":0
@@ -285,7 +285,7 @@
          "objects":[],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -630,7 +630,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -698,7 +698,7 @@
          "name":"BoardGravityUp",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":84,
          "x":0,
          "y":0
@@ -767,7 +767,7 @@
          "name":"BoardGravityDown",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":84,
          "x":0,
          "y":0
@@ -792,7 +792,7 @@
          "value":30
         }],
  "renderorder":"right-down",
- "tiledversion":"1.10.0",
+ "tiledversion":"1.10.1",
  "tileheight":64,
  "tilesets":[
         {
