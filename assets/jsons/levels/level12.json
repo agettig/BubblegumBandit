@@ -687,22 +687,22 @@
                         {
                          "name":"leftx1",
                          "type":"int",
-                         "value":-1
+                         "value":11
                         }, 
                         {
                          "name":"leftx2",
                          "type":"int",
-                         "value":-1
+                         "value":34
                         }, 
                         {
                          "name":"lefty1",
                          "type":"int",
-                         "value":-1
+                         "value":14
                         }, 
                         {
                          "name":"lefty2",
                          "type":"int",
-                         "value":-1
+                         "value":19
                         }, 
                         {
                          "name":"rightx1",
