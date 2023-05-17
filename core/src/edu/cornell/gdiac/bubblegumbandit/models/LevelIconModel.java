@@ -103,7 +103,14 @@ public class LevelIconModel {
     }
 
     public LevelIconModel (AssetDirectory directory, AssetDirectory internal, int level, float x, float y) {
-        this.texture = new TextureRegion(internal.getEntry("ship1", Texture.class));
+
+        Texture entry = internal.getEntry("ship" + valueOf(level), Texture.class);
+        if (entry == null){
+            entry = internal.getEntry("ship1", Texture.class);
+        }
+
+        this.texture = new TextureRegion(entry);
+
 
         this.level = level;
         this.x = x;

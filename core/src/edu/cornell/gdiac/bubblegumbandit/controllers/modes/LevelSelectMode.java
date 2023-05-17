@@ -57,13 +57,23 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** the width of the sunfish movement bounds */
     private final static float SPACE_WIDTH = LEVEL_GAP * (NUM_LEVELS + 2);
     /** height of sunfish movement bounds */
-    private final static float SPACE_HEIGHT = 2000;
+    private final static float SPACE_HEIGHT =5000;
 
     /** spacing between path dots */
     private static final float PATH_SPACE = 50;
 
     /** Camera zoom out */
-    private final static float ZOOM = 1.5f;
+    private float zoom = 1.5f;
+
+    /** maximum zoom in scale */
+    private static final float ZOOM_MIN = 1.5f;
+
+    /** maximum zoom out scale */
+
+    private static final float ZOOM_MAX = 10f;
+
+    /** the number of spaceships in each row before looping down */
+    private static final int SHIPS_PER_ROW = 10;
 
     // technical attributes
 
@@ -191,6 +201,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** Creates NUM_LEVELS number of level icons and adds them to the levels array */
     private void createIcons(AssetDirectory directory){
         float flip = 0;
+        int polarity = 0;
+        Vector2 pos = new Vector2(LEVEL_GAP, SPACE_HEIGHT/2);
 
         //these are the same for every ship
         LevelIconModel.setTextures(internal);
@@ -198,7 +210,14 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         levels = new Array<>();
         for (int i = 1; i <= NUM_LEVELS; i++){
             flip = (float) Math.pow((-1),((i % 2) + 1)); // either 1 or -1
-            levels.add(new LevelIconModel(directory, internal, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip));
+            polarity = (i / SHIPS_PER_ROW) % 2;
+
+//            levels.add(new LevelIconModel(directory, internal, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip - SPACE_GAP * position));
+            levels.add(new LevelIconModel(directory, internal, i, pos.x, pos.y));
+            if (i % SHIPS_PER_ROW == 0) pos.set(pos.x, pos.y - SPACE_GAP * 6 - SPACE_GAP * flip);
+            else pos.set(polarity == 0 ? pos.x + LEVEL_GAP : pos.x - LEVEL_GAP, pos.y - SPACE_GAP * flip * 2);
+
+
         }
     }
 
@@ -215,7 +234,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         canvas.resetCamera();
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
-        canvas.getCamera().setZoom(ZOOM);
+        canvas.getCamera().setZoom(zoom);
 
         camWidth = canvas.getCamera().viewportWidth;
         camHeight = canvas.getCamera().viewportHeight;
@@ -303,6 +322,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         }
 
         canvas.getCamera().update(dt);
+        canvas.getCamera().setZoom(zoom);
+
     }
 
     /** returns the level chosen by the player */
@@ -563,6 +584,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         if (keycode == Input.Keys.SPACE) {
             sunfish.setBoosting(true);
         }
+
+
         //start debug
 //        if (keycode == Input.Keys.NUM_1){
 //            pause = true;
@@ -610,6 +633,13 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * @return whether to hand the event to other listeners.
      */
     public boolean scrolled(float dx, float dy) {
+
+        if (active){
+            zoom += dy;
+            if (zoom > ZOOM_MAX) zoom = ZOOM_MAX;
+            if (zoom < ZOOM_MIN) zoom = ZOOM_MIN;
+        }
+
         return true;
     }
 
