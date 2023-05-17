@@ -183,8 +183,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         returnToMain = false;
 
-        background = new TextureRegion(internal.getEntry("spaceBg", Texture.class));
-        createBackground();
+
 
         path =new TextureRegion (internal.getEntry("point", Texture.class));
 
@@ -204,6 +203,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         displayFont = directory.getEntry("codygoonRegular", BitmapFont.class);
         displayFont.setColor(Color.WHITE);
 
+        background = new TextureRegion(directory.getEntry("spaceBg", Texture.class));
+        createBackground();
 
         createIcons(directory);
     }
