@@ -111,7 +111,7 @@ public class ShockController {
         left.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
         right.setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
 
-        SoundController.playSound("shockAttack", 0.25f);
+        SoundController.playSound("shockAttack", 0.3f);
     }
 
     /**

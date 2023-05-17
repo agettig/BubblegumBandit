@@ -850,7 +850,7 @@ public class GameController implements Screen {
 
         if (level.getBandit().getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
-            SoundController.playSound("noGum", 1);
+            SoundController.playSound("noGum", 0.75f);
         }
 
 

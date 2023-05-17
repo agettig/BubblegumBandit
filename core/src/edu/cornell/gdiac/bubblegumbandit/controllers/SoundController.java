@@ -62,6 +62,7 @@ public class SoundController {
     private static SoundEffect doorSound;
     private static SoundEffect keyClick;
     private static SoundEffect knockback;
+    private static SoundEffect banditHurt;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -144,6 +145,7 @@ public class SoundController {
         doorSound = directory.getEntry("doorSound", SoundEffect.class);
         keyClick = directory.getEntry("keyClick", SoundEffect.class);
         knockback = directory.getEntry("knockback", SoundEffect.class);
+        banditHurt = directory.getEntry("banditHurt", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -169,6 +171,7 @@ public class SoundController {
             put(doorSound, -21);
             put(keyClick, -22);
             put(knockback, -23);
+            put(banditHurt, -24);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -195,6 +198,7 @@ public class SoundController {
             put("doorSound", doorSound);
             put("keyClick", keyClick);
             put("knockback", knockback);
+            put("banditHurt", banditHurt);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );

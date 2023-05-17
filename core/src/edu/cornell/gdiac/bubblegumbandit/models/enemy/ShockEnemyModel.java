@@ -64,7 +64,6 @@ public class ShockEnemyModel extends EnemyModel {
         turnCooldown--;
         if(fired()){
             animationController.setAnimation("fire", false, false);
-            SoundController.playSound("shockAttack", 1);
         }
         else if (stuck || gummed){
             animationController.setAnimation("stuck", true, false);
