@@ -84,7 +84,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     /**
      * Button to enter level select
      */
-    private Texture levelSelectButton;
+    private Texture creditsButton;
 
     /**
      * Button to open settings
@@ -245,7 +245,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     /**
      * true if the player is hovering over the level select button
      */
-    private boolean hoveringLevelSelect;
+    private boolean hoveringCredits;
 
     /**
      * true if the player is hovering over the settings button
@@ -280,13 +280,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * <p>
      * 0 = nothing pressed
      * 1 = play down
-     * 2 = level select down
-     * 3 = settings down
+     * 2 = settings down
+     * 3 = credits down
      * 4 = exit down
      * 5 = play up, ready to go
      * 6 = level select up, should open level select
      * 7 = settings up, should open settings
-     * 8 = exit up, should quit.
+     * 8 = credits up, should open credits
+     * 9 = exit up, should quit.
      */
     private int pressState;
     /**
@@ -330,21 +331,29 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     }
 
     /**
-     * Returns true if all assets are loaded and the player is ready to go.
+     * Returns true if the player touched up on the level select button.
      *
-     * @return true if the player is ready to go
-     */
+     * @return true if the player clicked level select
+     * */
     public boolean isReady() {
         return pressState == 5;
     }
 
-    public boolean isLevelSelect() {
+    /**
+     * Returns true if the player touched up on the settings switch button.
+     *
+     * @return true if the player clicked to switch settings.
+     * */
+    public boolean isSettings(){
         return pressState == 6;
     }
 
-    public boolean switchSettings(){
-        return pressState == 7;
-    }
+    /**
+     * Returns true if the player touched up on the credits button.
+     *
+     * @return true if the player clicked on the credits button.
+     * */
+    public boolean isCredits() {return pressState == 7;}
 
     /**
      * Returns true if the player clicked the quit button.
@@ -405,7 +414,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         //We need these NOW!
         startButton = null;
-        levelSelectButton = null;
+        creditsButton = null;
         settingsButton = null;
         exitButton = null;
         hoverPointer = null;
@@ -486,7 +495,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 this.progress = 1.0f;
                 hoverPointer = internal.getEntry("hoverPointer", Texture.class);
                 startButton = internal.getEntry("startButton", Texture.class);
-                levelSelectButton = internal.getEntry("levelSelectButton", Texture.class);
+                creditsButton = internal.getEntry("creditsButton", Texture.class);
                 settingsButton = internal.getEntry("settingsButton", Texture.class);
                 exitButton = internal.getEntry("exitButton", Texture.class);
             }
@@ -525,11 +534,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
             startButtonPositionY = (int) highestButtonY;
 
-            levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-            levelSelectButtonPositionY = (int) (highestButtonY - gap);
-
             settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-            settingsButtonPositionY = (int) (highestButtonY - gap * 2);
+            settingsButtonPositionY = (int) (highestButtonY - gap);
+
+            levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+            levelSelectButtonPositionY = (int) (highestButtonY - gap * 2);
 
             exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
             exitButtonPositionY = (int) (highestButtonY - gap * 3);
@@ -565,17 +574,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
             //Draw Level Select
             canvas.draw(
-                    levelSelectButton,
-                    getButtonTint("level"),
-                    levelSelectButton.getWidth() / 2f,
-                    levelSelectButton.getHeight() / 2f,
+                    creditsButton,
+                    getButtonTint("credits"),
+                    creditsButton.getWidth() / 2f,
+                    creditsButton.getHeight() / 2f,
                     levelSelectButtonPositionX,
                     levelSelectButtonPositionY,
                     0,
                     scale * BUTTON_SCALE,
                     scale * BUTTON_SCALE
             );
-            if (hoveringLevelSelect) {
+            if (hoveringCredits) {
                 canvas.draw(
                         hoverPointer,
                         Color.WHITE,
@@ -627,6 +636,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                     scale * BUTTON_SCALE,
                     scale * BUTTON_SCALE
             );
+
             if (hoveringExit) {
                 canvas.draw(
                         hoverPointer,
@@ -661,17 +671,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             else return defaultTint;
         }
 
-        if (buttonName.equals("level")) {
-            if (hoveringLevelSelect && pressState == 2) return pressTint;
-            else if (hoveringLevelSelect) return hoverTint;
-            else return defaultTint;
-        }
-
         if (buttonName.equals("settings")) {
-            if (hoveringSettings && pressState == 3) return pressTint;
+            if (hoveringSettings && pressState == 2) return pressTint;
             else if (hoveringSettings) return hoverTint;
             else return defaultTint;
         }
+
+        if(buttonName.equals("credits")) {
+            if (hoveringCredits && pressState == 3) return pressTint;
+            else if (hoveringCredits) return hoverTint;
+            else return defaultTint;        }
 
         if (buttonName.equals("exit")) {
             if (hoveringExit && pressState == 4) return pressTint;
@@ -741,26 +750,25 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     public void render(float delta) {
         if (active) {
+            shipTime+=delta;
             update(delta);
             draw();
             // If the player hits the start/play button
             // We are ready, notify our listener
             if (isReady() && listener != null) {
                 SoundController.playSound("keyClick", 1);
-                listener.exitScreen(this, Screens.CONTROLLER);
-            }
-
-            shipTime+=delta;
-
-            if (isLevelSelect() && listener != null) {
-                SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, Screens.LEVEL_SELECT);
             }
-
-            if (switchSettings() && listener != null){
+            if (isSettings() && listener != null){
                 SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, Screens.SETTINGS);
             }
+
+            if (isCredits() && listener != null){
+                SoundController.playSound("keyClick", 1);
+                listener.exitScreen(this, Screens.CREDITS);
+            }
+
             // If the player hits the quit button
             if (shouldQuit()) {
                 SoundController.playSound("keyClick", 1);
@@ -868,7 +876,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 
         // if loading has not started
-        if (startButton == null || levelSelectButton == null
+        if (startButton == null || creditsButton == null
                 || settingsButton == null || exitButton == null) return false;
 
         //Detect clicks on the start button
@@ -882,17 +890,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             pressState = 1;
         }
 
-        //Detect clicks on the level select button
-        rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
-        rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
-        leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
-        rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
-        topY = levelSelectButtonPositionY - rectHeight / 2.0f;
-        bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
-        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
-            pressState = 2;
-        }
-
         //Detect clicks on the settings button
         rectWidth = scale * BUTTON_SCALE * settingsButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * settingsButton.getHeight();
@@ -900,6 +897,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         rightX = settingsButtonPositionX + rectWidth / 2.0f;
         topY = settingsButtonPositionY - rectHeight / 2.0f;
         bottomY = settingsButtonPositionY + rectHeight / 2.0f;
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
+            pressState = 2;
+        }
+
+        //Detect clicks on the credits button
+        rectWidth = scale * BUTTON_SCALE * creditsButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * creditsButton.getHeight();
+        leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
+        rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
+        topY = levelSelectButtonPositionY - rectHeight / 2.0f;
+        bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
             pressState = 3;
         }
@@ -948,9 +956,15 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             return false;
         }
 
-        //Exit
+        //Credits
         if (pressState == 4) {
             pressState = 8;
+            return false;
+        }
+
+        //Exit
+        if (pressState == 5) {
+            pressState = 9;
             return false;
         }
 
@@ -1047,7 +1061,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float pixelX = pixelMouse.x;
         float pixelY = pixelMouse.y;
 
-        if (startButton == null || levelSelectButton == null
+        if (startButton == null || creditsButton == null
                 || settingsButton == null || exitButton == null) return false;
         // Flip to match graphics coordinates
 
@@ -1060,15 +1074,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         float bottomY = (startButtonPositionY + (rectHeight) / 2.0f);
         hoveringStart = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
-        //Detect hovers on the level select button
-        rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
-        rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
-        leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
-        rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
-        topY = levelSelectButtonPositionY - rectHeight / 2.0f;
-        bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
-        hoveringLevelSelect = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
-
         //Detect hovers on the settings button
         rectWidth = scale * BUTTON_SCALE * settingsButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * settingsButton.getHeight();
@@ -1077,6 +1082,15 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         topY = settingsButtonPositionY - rectHeight / 2.0f;
         bottomY = settingsButtonPositionY + rectHeight / 2.0f;
         hoveringSettings = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
+
+        //Detect hovers on the credits
+        rectWidth = scale * BUTTON_SCALE * creditsButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * creditsButton.getHeight();
+        leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
+        rightX = levelSelectButtonPositionX + rectWidth / 2.0f;
+        topY = levelSelectButtonPositionY - rectHeight / 2.0f;
+        bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
+        hoveringCredits = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         //Detect hovers on the exit button
         rectWidth = scale * BUTTON_SCALE * exitButton.getWidth();

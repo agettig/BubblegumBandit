@@ -26,7 +26,7 @@ public class SaveData {
 
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
-//    return false; //uncomment to reset save data
+   // return false; //uncomment to reset save data
     return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
   }
 
@@ -70,10 +70,11 @@ public class SaveData {
         1: right
         2: grav up
         3: grav down
-        4: minimap
-        5: reload (and you can't be moving at the time? why doesn't it just stop you from moving?)
-        6: shoot
-        7: unstick */
+        4: shoot
+        5: unstick
+        6: reload
+        7: minimap
+        8: pause  */
 
     int[] defaultKeys = SettingsMode.defaultVals;
     boolean[] defaultBindings = SettingsMode.defaultBindings;
@@ -227,6 +228,7 @@ public class SaveData {
   }
 
   public static int getContinueLevel() {
+
     Preferences prefs = Gdx.app.getPreferences(prefsName);
     int levels = 1;
     while(true) {

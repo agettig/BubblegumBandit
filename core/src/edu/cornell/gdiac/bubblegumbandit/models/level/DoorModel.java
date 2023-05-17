@@ -186,6 +186,8 @@ public class DoorModel extends TileModel implements Gummable {
         return isOpen;
     }
 
+    public boolean isLocked() { return isLocked;}
+
     /** Initializes the door model with the camera change information.
      *
      * @param directory the asset directory of the level
@@ -389,7 +391,7 @@ public class DoorModel extends TileModel implements Gummable {
         boolean allDead = true;
         for (Integer id : enemyIds) {
             EnemyModel cur = enemyMap.get(id);
-            if (cur == null || (!cur.getStuck() && !cur.getGummed())) {
+            if (cur == null || (!cur.getStuck() && !cur.getGummed() && !cur.isRemoved())) {
                 allDead = false;
             }
         }
@@ -459,6 +461,12 @@ public class DoorModel extends TileModel implements Gummable {
                 openDoor();
             }
         } else {
+            for (Obstacle ob : obsInRange) {
+                if (ob instanceof CrusherModel) {
+                    openDoor();
+                    playerPassed = true;
+                }
+            }
             if (!playerInRange && isOpen) {
                 closeDoor();
             } else if (playerInRange && !isOpen) {
@@ -478,9 +486,9 @@ public class DoorModel extends TileModel implements Gummable {
             if (isHorizontal) {
                 texture.setRegionWidth((int) ((1 - openFraction) * textureWidth));
                 float offsetX = textureWidth - texture.getRegionWidth();
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x-offsetX - halfWidth, getY()*drawScale.y, (float) (getAngle()+Math.PI), 1, 1);
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x + offsetX +halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
             } else {
                 texture.setRegionHeight((int) ((1 - openFraction) * textureHeight));
@@ -491,7 +499,7 @@ public class DoorModel extends TileModel implements Gummable {
             }
         } else if (!isOpen) {
             if (isHorizontal) {
-                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                canvas.draw(lockedTexture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x-halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
             } else {
                 canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
@@ -516,9 +524,9 @@ public class DoorModel extends TileModel implements Gummable {
         if (!isLocked) {
             if (isHorizontal) {
                 texture.setRegionWidth(textureWidth);
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x- halfWidth, getY()*drawScale.y, (float) (getAngle()+Math.PI), 1, 1);
-                canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x +halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
 
             } else {
@@ -530,7 +538,7 @@ public class DoorModel extends TileModel implements Gummable {
             }
         } else {
             if (isHorizontal) {
-                canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,
+                canvas.draw(lockedTexture, Color.WHITE, origin.x, origin.y,
                         getX()*drawScale.x - halfWidth, getY()*drawScale.y, getAngle(), 1, 1);
             } else {
                 canvas.drawWithShadow(lockedTexture, Color.WHITE, origin.x, origin.y,

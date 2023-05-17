@@ -57,6 +57,11 @@ public class GDXRoot extends Game implements ScreenListener {
     private LevelSelectMode levels;
 
     /**
+     * Player mode for the credits screen (VIEW CLASS)
+     * */
+    private CreditsMode credits;
+
+    /**
      * Player mode for the game proper (CONTROLLER CLASS)
      */
     private GameController controller;
@@ -103,6 +108,8 @@ public class GDXRoot extends Game implements ScreenListener {
         settingsMode = new SettingsMode();
         settingsMode.setViewport(canvas.getUIViewport());
         gameOver = new GameOverScreen();
+        credits = new CreditsMode();
+
 
         // Initialize the three game worlds
         controller = new GameController();
@@ -198,6 +205,7 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
                 if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
+                if (screen == gameOver && gameOver.gameWon()) controller.previousLevel();
                 controller.reset();
             }
             setScreen(controller);
@@ -206,6 +214,7 @@ public class GDXRoot extends Game implements ScreenListener {
             gameOver.initialize(directory, canvas);
             gameOver.gameWon(directory);
             gameOver.setScreenListener(this);
+            gameOver.setCaptive(controller.getCaughtCaptives(), controller.getTotalCaptives());
             canvas.resetCamera();
             setScreen(gameOver);
         } else if (exitCode == Screens.GAME_LOST) {
@@ -219,7 +228,17 @@ public class GDXRoot extends Game implements ScreenListener {
             controller.setPaused(false);
             controller.setScreenListener(this);
             setScreen(controller);
-        } else {
+        } else if (exitCode == Screens.CREDITS){
+            directory = loading.getAssets();
+            BitmapFont codygoonRegular = loading.getAssets().getEntry("codygoonRegular", BitmapFont.class);
+            BitmapFont projectSpace = loading.getAssets().getEntry("projectSpace", BitmapFont.class);
+            controller.gatherAssets(directory);
+            credits.gatherAssets(directory, projectSpace, codygoonRegular);
+            credits.setCanvas(canvas);
+            credits.setScreenListener(this);
+            setScreen(credits);
+        }
+        else {
             throw new UnsupportedOperationException("Invalid screen");
         }
     }

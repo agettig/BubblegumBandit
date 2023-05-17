@@ -243,7 +243,7 @@ public class GameController implements Screen {
     /**
      * The number of levels in the game.
      */
-    private final int NUM_LEVELS = 9;
+    private final int NUM_LEVELS = 21;
 
     /**
      * Whether the orb has been collected.
@@ -446,13 +446,17 @@ public class GameController implements Screen {
 
     }
 
-
     /**
      * sets the level loaded by the game controller, set by level select
      */
     public void setLevelNum(int num) {
         levelNum = num;
         SaveData.setLevel(num);
+    }
+
+    public void previousLevel() {
+        levelNum -= 1;
+        SaveData.setLevel(levelNum - 1);
     }
 
     public void setPauseViewport(Viewport viewport){
@@ -519,6 +523,14 @@ public class GameController implements Screen {
 //        spawnedPostOrbEnemies = false;
 //        level.getBandit().respawnPlayer();
 //    }
+
+    public int getCaughtCaptives() {
+        return level.getBandit().getNumStars();
+    }
+
+    public int getTotalCaptives() {
+        return level.getTotalCaptives();
+    }
 
     /**
      * Returns whether to process the update loop
@@ -793,7 +805,7 @@ public class GameController implements Screen {
 
         }
         projectileController.update();
-        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap(), false);
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt, level.getWorld(), level.getBandit());
 
@@ -816,7 +828,6 @@ public class GameController implements Screen {
             level.postOrbDoors();
             spawnedPostOrbEnemies = true;
         }
-
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
@@ -957,6 +968,7 @@ public class GameController implements Screen {
     public void pause() {
         // We need this method to stop all sounds when we pause.
         SoundController.pause();
+        minimap.updateMinimap(0, false, true);
         pauseScreen.show();
     }
 
