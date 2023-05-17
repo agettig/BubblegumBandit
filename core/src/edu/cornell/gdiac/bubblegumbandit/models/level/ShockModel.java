@@ -89,8 +89,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
     /** Animation controller for the crest */
     private AnimationController animationController;
 
-    /** Maintains a set of collided walls */
-    private ObjectSet<WallModel> collisions;
+    /** Maintains a set of collided walls / glass */
+    private ObjectSet<Obstacle> collisions;
 
     /** Y scale factor for shrinking down before disappearing */
     private float yScaleFactor;
@@ -130,18 +130,18 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
     /**
      * Marks that a collision has started between the shock model and obstacle ob
-     * @param wall the wall in the collision
+     * @param ob the obstacle in the collision
      */
-    public void startCollision(WallModel wall) {
-        collisions.add(wall);
+    public void startCollision(Obstacle ob) {
+        collisions.add(ob);
     }
 
     /**
      * Marks that a collision has ended between the shock model and obstacle ob
-     * @param wall the wall in the collision
+     * @param ob the ob in the collision
      */
-    public void endCollision(WallModel wall) {
-        collisions.remove(wall);
+    public void endCollision(Obstacle ob) {
+        collisions.remove(ob);
     }
 
     public void initialize(AssetDirectory directory, Vector2 scale, JsonValue data, float x, float y, float radius, boolean isBottom, boolean isLeft) {

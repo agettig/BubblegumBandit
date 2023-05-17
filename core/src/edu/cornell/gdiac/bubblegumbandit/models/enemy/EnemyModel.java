@@ -450,7 +450,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     if (crushScale < -0.1f) {
                         endCrush();
                     }
-                    else if (crushScale <= 0.05f) {
+                    else if (crushScale <= 0.1f) {
                         markRemoved(true);
                     } else if (crushScale > 1) {
                         endCrush();

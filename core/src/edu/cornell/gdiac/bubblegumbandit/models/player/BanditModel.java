@@ -32,8 +32,10 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.DoorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
+import edu.cornell.gdiac.bubblegumbandit.models.level.SpecialTileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -984,8 +986,10 @@ public class BanditModel extends CapsuleObstacle {
                             endCrush();
                         }
                     }
-                    if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
-                        body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                    if (crusher != null) {
+                        if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
+                            body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                        }
                     }
                 }
             } else {
@@ -997,7 +1001,7 @@ public class BanditModel extends CapsuleObstacle {
                 float banditRight = getX() + (getWidth() / 2f);
                 boolean isCrusher = false;
                 for (Obstacle ob : getCollisions()) {
-                    if (!(ob instanceof CrusherModel)) {
+                    if (!(ob instanceof CrusherModel || ob instanceof DoorModel)) {
                         float obHW = 0;
 
                         if (ob instanceof CapsuleObstacle) {
