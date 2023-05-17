@@ -50,9 +50,9 @@
         }, 
         {
          "id":5,
-         "image":"..\/textures\/environment\/shipdoor.png",
-         "imageheight":177,
-         "imagewidth":136,
+         "image":"..\/textures\/environment\/shipDoor.png",
+         "imageheight":176,
+         "imagewidth":128,
          "type":"exit"
         }, 
         {

@@ -883,6 +883,7 @@ public class GameController implements Screen {
         // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
+            level.getExit().setOpen(true);
            // level.getBandit().setVX(0);
         }
     }

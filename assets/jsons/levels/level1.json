@@ -183,18 +183,6 @@
          "name":"Objects",
          "objects":[
                 {
-                 "gid":71,
-                 "height":176,
-                 "id":141,
-                 "name":"",
-                 "rotation":0,
-                 "type":"exit",
-                 "visible":true,
-                 "width":144,
-                 "x":760.094660194175,
-                 "y":1344.24150485437
-                }, 
-                {
                  "gid":66,
                  "height":113,
                  "id":142,
@@ -309,6 +297,18 @@
                  "width":44,
                  "x":1458,
                  "y":1234
+                }, 
+                {
+                 "gid":71,
+                 "height":176,
+                 "id":166,
+                 "name":"",
+                 "rotation":0,
+                 "type":"exit",
+                 "visible":true,
+                 "width":128,
+                 "x":768,
+                 "y":1344
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -399,7 +399,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":163,
+ "nextobjectid":167,
  "orientation":"orthogonal",
  "properties":[
         {

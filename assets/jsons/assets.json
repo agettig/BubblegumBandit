@@ -422,7 +422,11 @@
           "cols": 2
         }
       }
-    }
+    },
+    "doorFrame" : "textures/environment/doorFrame.png",
+    "doorBack" : "textures/environment/doorBack.png",
+    "doorLeft" : "textures/environment/doorLeft.png",
+    "doorRight" : "textures/environment/doorRight.png"
   },
   "fonts": {
     "display": {
