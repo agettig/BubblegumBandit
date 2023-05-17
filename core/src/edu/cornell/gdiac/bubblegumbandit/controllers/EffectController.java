@@ -92,6 +92,7 @@ public class EffectController {
     }
   }
 
+
 /** Draws to the game canvas */
   public void draw(GameCanvas canvas) {
 

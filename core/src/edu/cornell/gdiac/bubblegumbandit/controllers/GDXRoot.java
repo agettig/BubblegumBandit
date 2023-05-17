@@ -169,13 +169,19 @@ public class GDXRoot extends Game implements ScreenListener {
      */
     public void exitScreen(Screen screen, int exitCode) {
 
+
         // gathering assets only happens once
         if (screen == loading && !initialized) {
             directory = loading.getAssets();
-            controller.gatherAssets(directory);
             levels.gatherAssets(directory);
             initialized = true;
         }
+        if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
+            Gdx.graphics.setCursor(crosshairCursor);
+        } else{
+            Gdx.graphics.setCursor(mouseCursor);
+        }
+
 
         if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
             Gdx.graphics.setCursor(crosshairCursor);
@@ -199,8 +205,7 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(settingsMode);
             canvas.resetCamera();
         } else if (exitCode == Screens.LEVEL_SELECT) {
-//            controller.gatherAssets(directory);
-//            levels.gatherAssets(directory);
+            controller.gatherAssets(directory);
             levels.setup();
             levels.setCanvas(canvas);
             levels.setScreenListener(this);
@@ -211,7 +216,7 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setPaused(true);
                 controller.update(0);
             } else {
-//                controller.gatherAssets(directory);
+                controller.gatherAssets(directory);
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
                 if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
