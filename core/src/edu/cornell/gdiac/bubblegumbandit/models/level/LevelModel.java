@@ -825,7 +825,7 @@ public class LevelModel {
         glassEffectController = new EffectController("glass", "shatter",
             directory, true, true, 0);
         sparkEffectController = new EffectController("sparks", "sparks",
-            directory, true, true, 0.2f);
+            directory, true, true, 0.3f);
 
     }
 

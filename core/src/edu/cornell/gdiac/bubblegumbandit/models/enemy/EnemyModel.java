@@ -600,10 +600,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale*crushScale);
                 }
-//
+
             }
 
-        System.out.println("here");
             //if shielded, overlay shield
             if (isShielded) {
                 canvas.draw(shield, Color.WHITE, origin.x, origin.y, (getX() - (getDimension().x / 2)) * drawScale.x-10f*effect,
