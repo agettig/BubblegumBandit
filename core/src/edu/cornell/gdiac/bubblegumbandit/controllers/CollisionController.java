@@ -20,9 +20,6 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
-import java.util.logging.Level;
-import sun.java2d.pipe.SpanShapeRenderer.Simple;
 
 
 public class CollisionController implements ContactListener {
@@ -609,6 +606,10 @@ public class CollisionController implements ContactListener {
                 }
                 bubblegumController.createGummableJoint(gummable, ob1);
                 SoundController.playSound("enemySplat", 1f);
+                // orientation of robot and gravity have to be opposite
+                if (ob2.isFlipped() == (levelModel.getWorld().getGravity().y >= 0)){
+                    ob2.flipGravity();
+                }
                 ob2.setStuck(true);
             }
         }
