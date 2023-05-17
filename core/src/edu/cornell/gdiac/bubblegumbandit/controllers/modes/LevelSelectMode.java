@@ -51,29 +51,34 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /** the gap between level icons */
     private final static float LEVEL_GAP = 700;
 
-    /** the gap between level icons and the center of space */
-    private final static float SPACE_GAP = 100;
+    /** the height of the zig-zag gap between adjacent level icons */
+    private final static float SPACE_GAP = 200;
+
+    /** the space between each row of level icons */
+    private static final float ROW_GAP = 800;
+
+
+    /** the number of spaceships in each row before looping down */
+    private static final int SHIPS_PER_ROW = 6;
 
     /** the width of the sunfish movement bounds */
-    private final static float SPACE_WIDTH = LEVEL_GAP * (NUM_LEVELS + 2);
+    private final static float SPACE_WIDTH = LEVEL_GAP * (SHIPS_PER_ROW + 2);
     /** height of sunfish movement bounds */
-    private final static float SPACE_HEIGHT =5000;
+    private final static float SPACE_HEIGHT = ROW_GAP * ((float)(NUM_LEVELS / SHIPS_PER_ROW) + 2);
 
     /** spacing between path dots */
     private static final float PATH_SPACE = 50;
 
     /** Camera zoom out */
-    private float zoom = 1.5f;
+    private float zoom = 2f;
 
     /** maximum zoom in scale */
-    private static final float ZOOM_MIN = 1.5f;
+    private static final float ZOOM_MIN = 2f;
 
     /** maximum zoom out scale */
 
     private static final float ZOOM_MAX = 10f;
 
-    /** the number of spaceships in each row before looping down */
-    private static final int SHIPS_PER_ROW = 10;
 
     // technical attributes
 
@@ -140,6 +145,9 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * */
     private boolean returnToMain;
 
+    /**polygon representing the background */
+    private PolygonRegion spaceReg;
+
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -176,8 +184,10 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         returnToMain = false;
 
         background = new TextureRegion(internal.getEntry("spaceBg", Texture.class));
+        createBackground();
 
         path =new TextureRegion (internal.getEntry("point", Texture.class));
+
 
     }
     /**
@@ -202,7 +212,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     private void createIcons(AssetDirectory directory){
         float flip = 0;
         int polarity = 0;
-        Vector2 pos = new Vector2(LEVEL_GAP, SPACE_HEIGHT/2);
+        Vector2 pos = new Vector2(LEVEL_GAP, SPACE_HEIGHT-ROW_GAP);
 
         //these are the same for every ship
         LevelIconModel.setTextures(internal);
@@ -214,8 +224,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
 //            levels.add(new LevelIconModel(directory, internal, i, LEVEL_GAP * i, SPACE_HEIGHT/2 - SPACE_GAP * flip - SPACE_GAP * position));
             levels.add(new LevelIconModel(directory, internal, i, pos.x, pos.y));
-            if (i % SHIPS_PER_ROW == 0) pos.set(pos.x, pos.y - SPACE_GAP * 6 - SPACE_GAP * flip);
-            else pos.set(polarity == 0 ? pos.x + LEVEL_GAP : pos.x - LEVEL_GAP, pos.y - SPACE_GAP * flip * 2);
+            if (i % SHIPS_PER_ROW == 0) pos.set(pos.x, pos.y - SPACE_GAP * flip - ROW_GAP); //enter a new row
+            else pos.set(polarity == 0 ? pos.x + LEVEL_GAP : pos.x - LEVEL_GAP, pos.y - SPACE_GAP * flip); //space the ships horizontally
 
 
         }
@@ -342,7 +352,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         canvas.clear();
         canvas.begin();
 
-        drawBackground(canvas);
+        canvas.draw(spaceReg, -SPACE_WIDTH, -SPACE_HEIGHT);
         drawPaths(canvas);
 
         displayFont.getData().setScale(1.5f);
@@ -404,32 +414,19 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     /**
      * Draws a repeating background, and crops off any overhangs outside the level
      * to maintain resolution and aspect ratio.
-     *
-     * @param canvas the current canvas
      */
-    private void drawBackground(GameCanvas canvas) {
-        for (int i = 0; i < SPACE_WIDTH; i += background.getRegionWidth()) {
-            for (int j = 0; j < SPACE_HEIGHT; j += background.getRegionHeight()) {
-                canvas.draw(background, i, j);
-            }
-        }
-
-        //space polygon is just a large rectangle
-//        PolygonRegion spaceReg = new PolygonRegion(background,
-//                new float[] {
-//                        0, 0,
-//                        background.getRegionWidth()*2, 0,
-//                        background.getRegionWidth()*2, background.getRegionHeight()*2,
-//                        0, background.getRegionHeight()*2
-//                }, new short[] {
-//                0, 1, 2,         // Two triangles using vertex indices.
-//                0, 2, 3          // Take care of the counter-clockwise direction.
-//        });
-//
-//        float x = canvas.getCamera().position.x - background.getRegionWidth();
-//        float y = canvas.getCamera().position.y - background.getRegionHeight();
-//        canvas.draw(spaceReg, x, y);
-
+    private void createBackground() {
+//        space polygon is just a large rectangle
+        spaceReg = new PolygonRegion(background,
+                new float[] {
+                        0, 0,
+                        SPACE_WIDTH * ZOOM_MAX, 0,
+                       SPACE_WIDTH * ZOOM_MAX, SPACE_HEIGHT * ZOOM_MAX,
+                        0, SPACE_HEIGHT * ZOOM_MAX
+                }, new short[] {
+                0, 1, 2,         // Two triangles using vertex indices.
+                0, 2, 3          // Take care of the counter-clockwise direction.
+        });
     }
 
     private void drawPaths(GameCanvas canvas){
@@ -634,11 +631,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      */
     public boolean scrolled(float dx, float dy) {
 
-        if (active){
-            zoom += dy;
-            if (zoom > ZOOM_MAX) zoom = ZOOM_MAX;
-            if (zoom < ZOOM_MIN) zoom = ZOOM_MIN;
-        }
+//        if (active){
+//            zoom += dy;
+//            if (zoom > ZOOM_MAX) zoom = ZOOM_MAX;
+//            if (zoom < ZOOM_MIN) zoom = ZOOM_MIN;
+//        }
 
         return true;
     }
