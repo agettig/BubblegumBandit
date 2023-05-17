@@ -20,7 +20,7 @@ public class SaveData {
   private static int NOT_FOUND = -3;
 
   /** The number of key bindings in-game */
-  private static int keyCount = 8;
+  private static int keyCount = 9;
 
   //any numbers above -1 represent the number of stars collected
 
@@ -28,7 +28,6 @@ public class SaveData {
   public static boolean saveExists() {
 //    return false; //uncomment to reset save data
     return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
-
   }
 
   /** Makes a new save with defaults
@@ -61,8 +60,6 @@ public class SaveData {
         prefs.putInteger("level"+i+"Captives", count);
         if(i>1) prefs.putInteger("level" + i, lockLevels ? LOCKED : INCOMPLETE);
         i++;
-
-
       } else break;
 
     }
@@ -72,10 +69,11 @@ public class SaveData {
         1: right
         2: grav up
         3: grav down
-        4: minimap
-        5: reload (and you can't be moving at the time? why doesn't it just stop you from moving?)
-        6: shoot
-        7: unstick */
+        4: shoot
+        5: unstick
+        6: reload
+        7: minimap
+        8: pause  */
 
     int[] defaultKeys = SettingsMode.defaultVals;
     boolean[] defaultBindings = SettingsMode.defaultBindings;
@@ -229,6 +227,7 @@ public class SaveData {
   }
 
   public static int getContinueLevel() {
+
     Preferences prefs = Gdx.app.getPreferences(prefsName);
     int levels = 1;
     while(true) {

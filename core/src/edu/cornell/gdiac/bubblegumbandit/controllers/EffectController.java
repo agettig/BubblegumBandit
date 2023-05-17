@@ -61,9 +61,6 @@ public class EffectController {
     this.delay = delay;
     delayTimer = (long) (delay*1000+1);
 
-    System.out.println("");
-
-
   }
 
   /**
@@ -88,16 +85,25 @@ public class EffectController {
     }
   }
 
+  /** Updates all effects */
+  public void update () {
+    for (Effect effect : effects) {
+      effect.update();
+    }
+  }
+
 /** Draws to the game canvas */
   public void draw(GameCanvas canvas) {
+
+
     if(effects.size==0) return;
+
     for(int i = 0; i< effects.size; i++) {
       if(effects.get(i).dispose) trash.add(effects.get(i));
     }
     for(Effect effect: trash) {
       effects.removeValue(effect, false);
     }
-
 
     for(Effect effect: effects) {
       effect.draw(canvas);
@@ -120,6 +126,9 @@ public class EffectController {
     /** The physics to world scale */
     Vector2 scale;
 
+    /** The current frame from the animation controller */
+    TextureRegion curFrame;
+
     private Effect(float x, float y, Vector2 scale, boolean reflect, String animationName) {
       this.ac = new AnimationController(assets, animationKey);
       ac.setAnimation(animationName, false, false);
@@ -131,18 +140,23 @@ public class EffectController {
 
     }
 
+    /** Updates the effect animation frame */
+    private void update() {
+      curFrame = ac.getFrame();
+      if(!ac.hasTemp()) {
+        dispose = true;
+      }
+    }
+
     /** Draws this effect to the game canvas */
     private void draw(GameCanvas canvas) {
-      if(!ac.hasTemp()) {
-        this.dispose = true;
-        return;
-      }
-      TextureRegion region = ac.getFrame();
-      float ox = centerX? region.getRegionWidth()/2f: 0;
-      float oy =  centerY? region.getRegionHeight()/2f: 0;
-      canvas.draw(region, Color.WHITE, ox,
-          oy, x*scale.x, y*scale.y, 0, 1, (reflect? -1 : 1));
+      if (!dispose && curFrame != null) {
+        float ox = centerX? curFrame.getRegionWidth()/2f: 0;
+        float oy =  centerY? curFrame.getRegionHeight()/2f: 0;
+        canvas.draw(curFrame, Color.WHITE, ox,
+                oy, x*scale.x, y*scale.y, 0, 1, (reflect? -1 : 1));
 
+      }
     }
 
   }

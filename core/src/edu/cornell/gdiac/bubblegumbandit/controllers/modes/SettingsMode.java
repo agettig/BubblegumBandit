@@ -104,6 +104,11 @@ public class SettingsMode implements Screen {
     private TextButton unstickGumButton;
 
     /**
+     * Pause button
+     * */
+    private TextButton pauseButton;
+
+    /**
      * Shoot gum button
      */
     private TextButton shootGumButton;
@@ -184,7 +189,7 @@ public class SettingsMode implements Screen {
      */
     private Label.LabelStyle labelStyle;
 
-    private int topPadding = 30;
+    private int topPadding = 0;
 
     private SettingsInputProcessor settingsInputProcessor;
 
@@ -193,6 +198,8 @@ public class SettingsMode implements Screen {
      * used for hover
      */
     public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
+
+    public final Color pressTint = new Color(70/255f, 153/255f, 167/255f,1);
 
     /**
      * Space Blue color
@@ -228,7 +235,7 @@ public class SettingsMode implements Screen {
     /**
      * Array of booleans represented if buttons are hovered over
      */
-    private boolean[] hoverBooleans = new boolean[]{false, false, false, false, false, false, false, false};
+    private boolean[] hoverBooleans = new boolean[]{false, false, false, false, false, false, false, false, false};
 
     /**
      * Values representing the keys and buttons pressed for each user control
@@ -243,21 +250,22 @@ public class SettingsMode implements Screen {
     private boolean[] bindings;
 
     public static final boolean[] defaultBindings = new boolean[]{
-            true, true, true, true, true, true, false, false
+            true, true, true, true, false, true, true, true, true
     };
 
     public static final int[] defaultVals = new int[]{
             Input.Keys.A,
             Input.Keys.D,
-            Input.Keys.SPACE,
-            Input.Keys.SPACE,
-            Input.Keys.SHIFT_LEFT,
-            Input.Keys.R,
+            Input.Keys.W,
+            Input.Keys.W,
             Input.Buttons.LEFT,
-            Input.Buttons.RIGHT
+            Input.Keys.E,
+            Input.Keys.R,
+            Input.Keys.SHIFT_LEFT,
+            Input.Keys.ESCAPE
     };
 
-    private HashMap<Integer, String> keyToString;
+    public static HashMap<Integer, String> buttonToString;
 
     /**
      * Contructor for making a settings mode
@@ -273,13 +281,13 @@ public class SettingsMode implements Screen {
 
         background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
         sliderBeforeKnob = new TextureRegionDrawable(new TextureRegion(slider));
-        sliderKnob = new TextureRegionDrawable(new TextureRegion(knob));
-        scrollKnob =  new TextureRegionDrawable(sliderBeforeKnobTexture);
+        scrollKnob = new TextureRegionDrawable(internal.getEntry("scrollFill", Texture.class));
+        sliderKnob =  new TextureRegionDrawable(new TextureRegion(knob));
         sliderTexture = new TextureRegionDrawable(sliderBeforeKnobTexture);
         arrow = new TextureRegion(internal.getEntry("arrow", Texture.class));
-        scrollBar = new TextureRegionDrawable(new TextureRegion(slider));
-        scrollBar.setMinWidth(10);
-        scrollKnob.setMinWidth(10);
+        scrollBar = new TextureRegionDrawable(internal.getEntry("scrollBar", Texture.class));
+        scrollBar.setMinWidth(20);
+        scrollKnob.setMinWidth(20);
 
         stage = new Stage();
         settingsTable = new Table();
@@ -288,6 +296,7 @@ public class SettingsMode implements Screen {
         controlsTable.align(Align.topLeft);
         settingsTable.setFillParent(true);
         controlsTable.setFillParent(true);
+//        controlsTable.debug();
         stage.addActor(settingsTable);
         values = SaveData.getKeyBindings();
         bindings = SaveData.getKeyButtons();
@@ -295,13 +304,13 @@ public class SettingsMode implements Screen {
 
         settingsInputProcessor = new SettingsInputProcessor();
         inputMultiplexer = new InputMultiplexer(stage, settingsInputProcessor);
-        keyToString = new HashMap<>();
+        buttonToString = new HashMap<>();
 
-        keyToString.put(Input.Buttons.RIGHT, "RIGHT CLICK");
-        keyToString.put(Input.Buttons.LEFT, "LEFT CLICK");
-        keyToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
-        keyToString.put(Input.Buttons.BACK, "BACK CLICK");
-        keyToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
+        buttonToString.put(Input.Buttons.RIGHT, "RIGHT CLICK");
+        buttonToString.put(Input.Buttons.LEFT, "LEFT CLICK");
+        buttonToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
+        buttonToString.put(Input.Buttons.BACK, "BACK CLICK");
+        buttonToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
     }
 
     public void resetDefaultBindings() {
@@ -313,7 +322,7 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             int value = values[index];
-            String toString = bindings[index] ? Input.Keys.toString(value).toUpperCase() : keyToString.get(value);
+            String toString = bindings[index] ? Input.Keys.toString(value).toUpperCase() : buttonToString.get(value);
             entry.getKey().setText(toString);
         }
     }
@@ -355,7 +364,7 @@ public class SettingsMode implements Screen {
     public void makeSettingsTable() {
         headingsStyle = new Label.LabelStyle(this.titleFont, spaceBlue);
         labelStyle = new Label.LabelStyle(this.labelFont, Color.WHITE);
-        Label settings = new Label("Settings", headingsStyle);
+        Label settings = new Label("SETTINGS", headingsStyle);
         Label music = new Label("Music", labelStyle);
         Label soundEffects = new Label("Sound Effects", labelStyle);
 
@@ -363,8 +372,11 @@ public class SettingsMode implements Screen {
 
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null,
                 null, null, this.titleFont);
+        backButtonStyle.overFontColor = bubblegumPink;
+        backButtonStyle.fontColor = Color.WHITE;
+        backButtonStyle.downFontColor = pressTint;
 
-        backButtonSettings = new TextButton("Back", backButtonStyle);
+        backButtonSettings = new TextButton("BACK", backButtonStyle);
         backButtonSettings.getLabel().setFontScale(.5f);
 
         backButtonSettings.addListener(new ClickListener() {
@@ -372,33 +384,18 @@ public class SettingsMode implements Screen {
                 backButtonClicked = true;
                 SoundController.playSound("keyClick", 1);
             }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                backButtonSettings.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                backButtonSettings.getLabel().setColor(Color.WHITE);
-            }
         });
 
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
+        controlsButtonStyle.overFontColor = bubblegumPink;
+        controlsButtonStyle.fontColor = Color.WHITE;
+        controlsButtonStyle.downFontColor = pressTint;
 
         controlsButton = new TextButton("Controls", controlsButtonStyle);
         controlsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 stage.addActor(controlsTable);
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                controlsButton.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                controlsButton.getLabel().setColor(Color.WHITE);
             }
         });
 
@@ -489,7 +486,7 @@ public class SettingsMode implements Screen {
         shootGumButton.addListener(listener);
         unstickGumButton.addListener(listener);
         reloadGumButton.addListener(listener);
-
+        pauseButton.addListener(listener);
         controlsBackButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
@@ -500,29 +497,11 @@ public class SettingsMode implements Screen {
                     }
                 }
             }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                controlsBackButton.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                controlsBackButton.getLabel().setColor(Color.WHITE);
-            }
         });
 
         defaultButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 resetDefaultBindings();
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                defaultButton.getLabel().setColor(bubblegumPink);
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                defaultButton.getLabel().setColor(Color.WHITE);
             }
         });
 
@@ -533,7 +512,7 @@ public class SettingsMode implements Screen {
      * Make controls table
      */
     private void makeControlsTable() {
-        Label controls = new Label("Controls", headingsStyle);
+        Label controls = new Label("CONTROLS", headingsStyle);
         Label moveLeft = new Label("Move Left", labelStyle);
         Label moveRight = new Label("Move Right", labelStyle);
         Label toggleGravityUp = new Label("Toggle Gravity Up", labelStyle);
@@ -542,10 +521,17 @@ public class SettingsMode implements Screen {
         Label unstickGum = new Label("Unstick Gum", labelStyle);
         Label toggleMinimap = new Label("Toggle Minimap", labelStyle);
         Label reloadGum = new Label("Reload Gum", labelStyle);
+        Label pause = new Label("Pause", labelStyle);
         TextButton.TextButtonStyle backButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.titleFont);
+
+        backButtonStyle.overFontColor = bubblegumPink;
+        backButtonStyle.fontColor = Color.WHITE;
+        backButtonStyle.downFontColor = pressTint;
 
         TextButton.TextButtonStyle controlsButtonStyle = new TextButton.TextButtonStyle(null, null, null, this.labelFont);
 
+        controlsButtonStyle.overFontColor = bubblegumPink;
+        controlsButtonStyle.fontColor = Color.WHITE;
         controlsButtonStyle.checkedFontColor = bubblegumPink;
 
 
@@ -567,32 +553,34 @@ public class SettingsMode implements Screen {
         reloadGumButton = new TextButton("", controlsButtonStyle);
         shootGumButton = new TextButton("", controlsButtonStyle);
         unstickGumButton = new TextButton("", controlsButtonStyle);
+        pauseButton = new TextButton("", controlsButtonStyle);
 
 
         TextButton[] buttons = new TextButton[]{moveLeftButton, moveRightButton,
                                                 toggleGravityUpButton, toggleGravityDownButton,
-                                                toggleMinimapButton, reloadGumButton,
-                                                shootGumButton, unstickGumButton};
+                                                shootGumButton, unstickGumButton,
+                                                reloadGumButton, toggleMinimapButton,
+                                                pauseButton };
 
         for (int i = 0; i < values.length; i++) {
-            String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : keyToString.get(values[i]);
+            String buttonName = bindings[i] ? Input.Keys.toString(values[i]).toUpperCase() : buttonToString.get(values[i]);
             buttons[i].setText(buttonName);
         }
 
-        controlsBackButton = new TextButton("Back", backButtonStyle);
+        controlsBackButton = new TextButton("BACK", backButtonStyle);
         controlsBackButton.getLabel().setFontScale(.5f);
 
-        defaultButton = new TextButton("Default Settings", backButtonStyle);
+        defaultButton = new TextButton("RESET CONTROLS", backButtonStyle);
         defaultButton.getLabel().setFontScale(.5f);
 
         HorizontalGroup horizontalButtonGroup = new HorizontalGroup();
-        horizontalButtonGroup.space(100);
+        horizontalButtonGroup.space(436);
         horizontalButtonGroup.addActor(controlsBackButton);
         horizontalButtonGroup.addActor(defaultButton);
 
         addControlButtonListeners();
 
-        Label[] labels = new Label[]{moveLeft, moveRight, toggleGravityUp, toggleGravityDown, toggleMinimap, reloadGum, shootGum, unstickGum};
+        Label[] labels = new Label[]{moveLeft, moveRight, toggleGravityUp, toggleGravityDown,shootGum, unstickGum, reloadGum,  toggleMinimap, pause};
 
 
         controlsTable.row();
@@ -603,12 +591,14 @@ public class SettingsMode implements Screen {
         buttonIndexMap.put(moveRightButton, 1);
         buttonIndexMap.put(toggleGravityUpButton, 2);
         buttonIndexMap.put(toggleGravityDownButton, 3);
-        buttonIndexMap.put(toggleMinimapButton, 4);
-        buttonIndexMap.put(reloadGumButton, 5);
-        buttonIndexMap.put(shootGumButton, 6);
-        buttonIndexMap.put(unstickGumButton, 7);
+        buttonIndexMap.put(shootGumButton, 4);
+        buttonIndexMap.put(unstickGumButton, 5);
+        buttonIndexMap.put(reloadGumButton, 6);
+        buttonIndexMap.put(toggleMinimapButton, 7);
+        buttonIndexMap.put(pauseButton, 8);
 
-        int rightPadding[] = new int[]{0, 240, 220, 120, 80, 280, 240, 200};
+
+        int rightPadding[] = new int[]{0, 240, 220, 120, 240, 200, 280, 80, 280};
 
         Table c = new Table();
 
@@ -642,11 +632,20 @@ public class SettingsMode implements Screen {
 
                     values[buttonIndex] = button;
                     bindings[buttonIndex] = false;
-                    checkedButton.setText(keyToString.get(button));
+                    checkedButton.setText(buttonToString.get(button));
                     checkedButton.setChecked(false);
                     checkedButton = null;
                 }
                 return true;
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                stage.setScrollFocus(scrollPane);
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                stage.setScrollFocus(null);
             }
         });
 
@@ -654,24 +653,29 @@ public class SettingsMode implements Screen {
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.getStyle().vScroll = scrollBar;
         scrollPane.getStyle().vScrollKnob = scrollKnob;
-        scrollPane.setupFadeScrollBars(.5f,.5f);
+        scrollPane.setFadeScrollBars(false);
+        scrollPane.layout();
 
         c.row();
+        c.align(Align.left);
+        c.setWidth(940);
+//        c.debug();
         c.add(moveLeft).pad(topPadding, 0, 32, 0);
         c.add(moveLeftButton).pad(topPadding, 0, 32, 0);
 
-        for (int i = 1; i < 8; i++) {
+        for (int i = 1; i < labels.length; i++) {
             TextButton button = buttons[i];
             c.row();
             c.add(labels[i]).pad(0, 0, 32, rightPadding[i]);
             c.add(button).pad(0, 0, 32, 0);
         }
         controlsTable.row();
-        controlsTable.add(scrollPane).pad(-10, 160, 0, 0).height(350).width(1000);
+        controlsTable.add(scrollPane).pad(-10, 160, 0, 0).height(350).width(940);
+//        scrollPane.debug();
 
 
         controlsTable.row();
-        controlsTable.add(horizontalButtonGroup).pad(20, 100, 0, 0);
+        controlsTable.add(horizontalButtonGroup).pad(80, 100, 0, 0);
         controlsTable.row();
 
         for (Cell cell : c.getCells()) {
@@ -720,6 +724,8 @@ public class SettingsMode implements Screen {
      * Draws stage, background, and hover arrows for controls
      */
     public void draw() {
+
+        stage.getViewport().apply();
         stage.getBatch().begin();
         // draw background
         stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
@@ -729,16 +735,17 @@ public class SettingsMode implements Screen {
         for (Map.Entry<TextButton, Integer> entry : buttonIndexMap.entrySet()) {
             int index = entry.getValue();
             TextButton button = entry.getKey();
-            boolean inBounds = button.getY() + scrollPane.getScrollY() - topPadding > scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() - topPadding < scrollPane.getY() + scrollPane.getScrollHeight();
+            boolean inBounds = button.getY() + scrollPane.getScrollY() - 20> scrollPane.getY() && button.getY() + scrollPane.getScrollY() + button.getHeight() - 20 < scrollPane.getY() + scrollPane.getScrollHeight();
+
             if ((hoverBooleans[index] || button.isChecked()) && inBounds) {
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 + button.getWidth() + spacing,
-                        button.getY() + scrollPane.getScrollY() - topPadding, arrow.getRegionWidth() / 2,
+                        button.getY() + scrollPane.getScrollY() - 20, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 180);
                 stage.getBatch().draw(arrow,
                         button.getX() + 160 - arrow.getRegionWidth() - spacing,
-                        button.getY() + scrollPane.getScrollY() - topPadding, arrow.getRegionWidth() / 2,
+                        button.getY() + scrollPane.getScrollY() - 20, arrow.getRegionWidth() / 2,
                         arrow.getRegionHeight() / 2,
                         arrow.getRegionWidth(), arrow.getRegionHeight(), 1, 1, 0);
             }
@@ -837,7 +844,7 @@ public class SettingsMode implements Screen {
 
 
                 // only no duplicates except for gravity
-                if (indices.size() == 2 || keycode == Input.Keys.ESCAPE || (indices.size() == 1 &&
+                if (indices.size() == 2 || (indices.size() == 1 &&
                         (!(indices.get(0) == indexGravityDown && buttonIndex == indexGravityUp) &&
                         !(indices.get(0) == indexGravityUp && buttonIndex == indexGravityDown)))) {
                     SoundController.playSound("error", 1);
@@ -892,7 +899,7 @@ public class SettingsMode implements Screen {
 
                 values[buttonIndex] = button;
                 bindings[buttonIndex] = false;
-                checkedButton.setText(keyToString.get(button));
+                checkedButton.setText(buttonToString.get(button));
                 checkedButton.setChecked(false);
                 checkedButton = null;
             }

@@ -1,22 +1,23 @@
 {
-	"textures": {
-        "background": "textures/UI/mainMenuBackground.png",
-        "loadingBackground": "textures/settings/settingsBackground.png",
-        "startButton": "textures/UI/continueGame.png",
-        "settingsButton": "textures/UI/settings.png",
-        "exitButton": "textures/UI/quitGame.png",
-        "levelSelectButton": "textures/UI/levelSelect.png",
-        "hoverPointer": "textures/UI/hoverPointer.png",
-        "progressBackground": "textures/UI/progressBackground.png",
-        "progressFill": "textures/UI/progressFill.png",
-        "spaceship":     "textures/levelSelect/sunfish.png",
-         "jet" : "textures/UI/jet.png",
-        "bigShip" : "textures/UI/ship.png"
-    },
-        "fonts": {
-                "projectSpace" : {
-                        "file" : "fonts/ProjectSpace.ttf",
-                        "size": 25
-                }
-        }
+  "textures": {
+    "background": "textures/UI/mainMenuBackground.png",
+    "loadingBackground": "textures/settings/settingsBackground.png",
+    "startButton": "textures/UI/start.png",
+    "settingsButton": "textures/UI/settings.png",
+    "exitButton": "textures/UI/quit.png",
+    "levelSelectButton": "textures/UI/levelSelect.png",
+    "creditsButton": "textures/UI/credits.png",
+    "hoverPointer": "textures/UI/hoverPointer.png",
+    "progressBackground": "textures/UI/progressBackground.png",
+    "progressFill": "textures/UI/progressFill.png",
+    "spaceship": "textures/levelSelect/sunfish.png",
+    "jet": "textures/UI/jet.png",
+    "bigShip": "textures/UI/ship.png"
+  },
+  "fonts": {
+    "projectSpace": {
+      "file": "fonts/ProjectSpace.ttf",
+      "size": 25
+    }
+  }
 }

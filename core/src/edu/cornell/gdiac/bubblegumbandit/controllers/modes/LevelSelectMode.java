@@ -46,7 +46,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     //constants
 
     /** the number of levels to add to the level select screen*/
-    private final static int NUM_LEVELS = 9;
+    private final static int NUM_LEVELS = 21;
 
     /** the gap between level icons */
     private final static float LEVEL_GAP = 700;
@@ -183,6 +183,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         directory.finishLoading();
         displayFont = directory.getEntry("codygoonRegular", BitmapFont.class);
         displayFont.setColor(Color.WHITE);
+
 
         createIcons(directory);
     }

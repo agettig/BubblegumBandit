@@ -434,10 +434,11 @@ public class PlayerController{
         boolean moveRight = isKeyControl[1] ? Gdx.input.isKeyPressed(keyBindings[1]) : Gdx.input.isButtonPressed(keyBindings[1]);
         boolean gUp = isKeyControl[2] ? Gdx.input.isKeyPressed(keyBindings[2]) : Gdx.input.isButtonPressed(keyBindings[2]);
         boolean gDown = isKeyControl[3] ? Gdx.input.isKeyPressed(keyBindings[3]) : Gdx.input.isButtonPressed(keyBindings[3]);
-        boolean mini = isKeyControl[4] ? Gdx.input.isKeyPressed(keyBindings[4]) : Gdx.input.isButtonPressed(keyBindings[4]);
-        boolean reload = isKeyControl[5] ? Gdx.input.isKeyPressed(keyBindings[5]) : Gdx.input.isButtonPressed(keyBindings[5]);
-        boolean shoot = isKeyControl[6] ? Gdx.input.isKeyPressed(keyBindings[6]) : Gdx.input.isButtonPressed(keyBindings[6]);
-        boolean unstick = isKeyControl[7] ? Gdx.input.isKeyPressed(keyBindings[7]) : Gdx.input.isButtonPressed(keyBindings[7]);
+        boolean shoot = isKeyControl[4] ? Gdx.input.isKeyPressed(keyBindings[4]) : Gdx.input.isButtonPressed(keyBindings[4]);
+        boolean unstick = isKeyControl[5] ? Gdx.input.isKeyPressed(keyBindings[5]) : Gdx.input.isButtonPressed(keyBindings[5]);
+        boolean reload = isKeyControl[6] ? Gdx.input.isKeyPressed(keyBindings[6]) : Gdx.input.isButtonPressed(keyBindings[6]);
+        boolean mini = isKeyControl[7] ? Gdx.input.isKeyPressed(keyBindings[7]) : Gdx.input.isButtonPressed(keyBindings[7]);
+        boolean pause = isKeyControl[8] ? Gdx.input.isKeyPressed(keyBindings[8]) : Gdx.input.isButtonPressed(keyBindings[8]);
 
         if (moveRight) {
             horizontal += 1.0f;
@@ -458,7 +459,7 @@ public class PlayerController{
         // Mouse results
         shootPressed = (secondary && shootPressed) || shoot;
         unstickPressed = (secondary && unstickPressed) || unstick;
-        pausePressed  = (secondary && pausePressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+        pausePressed  = (secondary && pausePressed) || pause;
         crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 
     }

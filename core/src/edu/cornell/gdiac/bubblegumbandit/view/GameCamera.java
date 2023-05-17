@@ -71,6 +71,9 @@ public class GameCamera  extends OrthographicCamera {
     /** if in level select, directly follow camera */
     private boolean levelSelect;
 
+    /** true if the current mode is the credits screen. */
+    private boolean credits;
+
     /** Constructs a new GameCamera, using the given viewport width and height. For pixel perfect 2D rendering just supply
      * the screen size, for other unit scales (e.g. meters for box2d) proceed accordingly. The camera will show the region
      * [-viewportWidth/2, -(viewportHeight/2-1)] - [(viewportWidth/2-1), viewportHeight/2]
@@ -279,6 +282,8 @@ public class GameCamera  extends OrthographicCamera {
     public void isLevelSelect (boolean value) {
         levelSelect = value;
     }
+
+    public void isCredits(boolean value) {credits = value;}
 
     /**
      * Updates this camera based on its target.

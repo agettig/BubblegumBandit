@@ -103,7 +103,8 @@ public class LevelIconModel {
     }
 
     public LevelIconModel (AssetDirectory directory, AssetDirectory internal, int level, float x, float y) {
-        this.texture = new TextureRegion(internal.getEntry("ship"+valueOf(level), Texture.class));
+        this.texture = new TextureRegion(internal.getEntry("ship1", Texture.class));
+
         this.level = level;
         this.x = x;
         this.y = y;
@@ -158,6 +159,8 @@ public class LevelIconModel {
 
     public void update() {
 
+        explosionEffectController.update();
+
         //update position based on hover
         if (y >= max_hover) {
             y = max_hover;
@@ -174,8 +177,6 @@ public class LevelIconModel {
         else if (y > min_hover && goingDown){
             y -= HOVER_SPEED;
         }
-
-
 
         if (SaveData.completed(level) && !exploded) {
             makeExplosion(x + rand.nextInt(texture.getRegionWidth()),y + rand.nextInt(texture.getRegionHeight()));
@@ -211,7 +212,7 @@ public class LevelIconModel {
         }
 
         //draw number icons
-        canvas.draw(marker, numTint, marker.getRegionWidth()/2, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
+        canvas.draw(marker, numTint, marker.getRegionWidth()/2f, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
         canvas.drawText(valueOf(level), font,numTint, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
 
         explosionEffectController.draw(canvas);
@@ -234,7 +235,7 @@ public class LevelIconModel {
                 //once drawn all the successes, the rest are failures
                 icon = fail;
             }
-            canvas.draw(icon, Color.WHITE, success.getRegionWidth()/2, success.getRegionHeight(),
+            canvas.draw(icon, Color.WHITE, success.getRegionWidth()/2f, success.getRegionHeight(),
                     start + space * i, center.y - texture.getRegionHeight()/2f - MARKER_OFFSET, 0,
                     1, 1);
 

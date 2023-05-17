@@ -33,252 +33,220 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 public class PauseView {
 
+    private Stage stage;
 
-  private Stage stage;
+    private AssetDirectory internal;
 
-  private AssetDirectory internal;
+    private TextureRegionDrawable background;
 
-  private TextureRegionDrawable background;
+    private TextureRegion pointer;
 
-  private TextureRegion pointer;
+    private TextButton resumeButton;
 
-  private TextButton resumeButton;
+    private TextButton retryButton;
 
-  private TextButton retryButton;
+    private TextButton levelSelectButton;
 
-  private TextButton levelSelectButton;
+    private TextButton settingsButton;
 
-  private TextButton settingsButton;
+    private TextButton quitButton;
 
-  private TextButton quitButton;
+    private boolean resumeClicked;
 
-  private boolean resumeClicked;
-
-  public boolean getResumeClicked() {return resumeClicked; }
-
-  private boolean retryClicked;
-
-  public boolean getRetryClicked() {return retryClicked; }
-
-
-  private boolean levelSelectClicked;
-
-  public boolean getLevelSelectClicked() {return levelSelectClicked; }
-
-
-  private boolean settingsClicked;
-
-  public boolean getSettingsClicked() {return settingsClicked; }
-
-
-  private boolean quitClicked;
-
-  public boolean getQuitClicked() {return quitClicked; }
-
-
-  private boolean active;
-
-  private Table pauseTable;
-
-  private ScreenListener listener;
-
-  private BitmapFont font;
-
-  private ShapeRenderer shape;
-
-  private TextButton.TextButtonStyle style;
-
-  public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
-
-  public void setScreenListener(ScreenListener listener) {
-    this.listener = listener;
-  }
-
-  public PauseView() {
-    internal = new AssetDirectory("jsons/pause.json");
-    internal.loadAssets();
-    internal.finishLoading();
-
-    background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
-    pointer = new TextureRegion(internal.getEntry("pointer", Texture.class));
-
-    stage = new Stage();
-    pauseTable = new Table();
-    pauseTable.align(Align.topLeft);
-    pauseTable.setFillParent(true);
-    stage.addActor(pauseTable);
-
-    shape = new ShapeRenderer();
-
-  }
-
-
-  public void makePauseTable() {
-    TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(null, null,
-            null, this.font);
-
-    resumeButton = new TextButton("Resume", style);
-    retryButton = new TextButton("Retry", style);
-    settingsButton = new TextButton("Settings", style);
-    levelSelectButton = new TextButton("Exit to Level Select", style);
-    quitButton = new TextButton("Quit to Title", style);
-
-    resumeButton.addListener(new ClickListener() {
-      public void clicked(InputEvent event, float x, float y) {
-
-        resumeClicked = true;
-      }
-
-      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-        resumeButton.getLabel().setColor(bubblegumPink);
-      }
-
-      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        resumeButton.getLabel().setColor(Color.WHITE);
-      }
-    });
-
-    retryButton.addListener(new ClickListener() {
-      public void clicked(InputEvent event, float x, float y) {
-
-        retryClicked = true;
-      }
-
-      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-        retryButton.getLabel().setColor(bubblegumPink);
-      }
-
-      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        retryButton.getLabel().setColor(Color.WHITE);
-      }
-    });
-
-    levelSelectButton.addListener(new ClickListener() {
-      public void clicked(InputEvent event, float x, float y) {
-
-        levelSelectClicked = true;
-      }
-
-      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-        levelSelectButton.getLabel().setColor(bubblegumPink);
-      }
-
-      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        levelSelectButton.getLabel().setColor(Color.WHITE);
-      }
-    });
-
-    settingsButton.addListener(new ClickListener() {
-      public void clicked(InputEvent event, float x, float y) {
-
-        settingsClicked = true;
-      }
-
-      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-        settingsButton.getLabel().setColor(bubblegumPink);
-      }
-
-      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        settingsButton.getLabel().setColor(Color.WHITE);
-      }
-    });
-
-    quitButton.addListener(new ClickListener() {
-      public void clicked(InputEvent event, float x, float y) {
-
-        quitClicked = true;
-      }
-
-      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-        quitButton.getLabel().setColor(bubblegumPink);
-      }
-
-      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        quitButton.getLabel().setColor(Color.WHITE);
-      }
-    });
-
-    pauseTable.row();
-    pauseTable.add(resumeButton).pad(160, 160, 32, 455);
-    pauseTable.row();
-    pauseTable.add(retryButton).pad(0, 160, 32, 455);
-    pauseTable.row();
-    pauseTable.add(settingsButton).pad(0, 160, 32, 455);
-    pauseTable.row();
-    pauseTable.add(levelSelectButton).pad(0, 160, 32, 455);
-    pauseTable.row();
-    pauseTable.add(quitButton).pad(0, 160, 32, 455);
-    pauseTable.row();
-
-    for (Cell cell : pauseTable.getCells()) {
-      cell.align(Align.left);
+    public boolean getResumeClicked() {
+        return resumeClicked;
     }
 
-    pauseTable.columnDefaults(1).setActorWidth(400);
-    pauseTable.columnDefaults(1).fillX();
-  }
+    private boolean retryClicked;
 
-  public void initialize(BitmapFont font) {
-    assert !(this.font == null);
-
-    this.font = font;
-    makePauseTable();
-  }
-
-  public void show() {
-    active = true;
-    resumeClicked = false;
-    retryClicked = false;
-    levelSelectClicked = false;
-    settingsClicked = false;
-    quitClicked = false;
-    Gdx.input.setInputProcessor(stage);
-  }
-
-  public void update(Screen curScreen) {
-    stage.act();
-
-    if (getQuitClicked()) {
-      listener.exitScreen(curScreen, Screens.LOADING_SCREEN);
+    public boolean getRetryClicked() {
+        return retryClicked;
     }
 
-    if (getLevelSelectClicked()) {
-      listener.exitScreen(curScreen, Screens.LEVEL_SELECT);
+
+    private boolean levelSelectClicked;
+
+    public boolean getLevelSelectClicked() {
+        return levelSelectClicked;
     }
-    if (getSettingsClicked()) {
-      listener.exitScreen(curScreen, Screens.SETTINGS);
+
+
+    private boolean settingsClicked;
+
+    public boolean getSettingsClicked() {
+        return settingsClicked;
     }
-  }
 
-  public void setViewport(Viewport view) {
-    stage.setViewport(view);
-    view.apply(true);
-  }
 
-  public boolean hasViewport() {
-    return stage.getViewport() != null;
-  }
+    private boolean quitClicked;
 
-  public void draw() {
-      stage.getBatch().begin();
-      //stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
+    public boolean getQuitClicked() {
+        return quitClicked;
+    }
 
-      Gdx.gl.glEnable(GL20.GL_BLEND);
-      Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-      shape.begin(ShapeRenderer.ShapeType.Filled);
-      shape.setColor(new Color(0, 0, 0, 0.5f));
-      shape.rect(0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
-      shape.end();
-      Gdx.gl.glDisable(GL20.GL_BLEND);
+    private Table pauseTable;
 
-      stage.getBatch().end();
+    private ScreenListener listener;
 
-      stage.draw();
-  }
+    private BitmapFont font;
+
+    private ShapeRenderer shape;
+
+    private TextButton.TextButtonStyle style;
+
+    public final Color bubblegumPink = new Color(1, 149 / 255f, 138 / 255f, 1);
+
+    public final Color pressTint = new Color(70 / 255f, 153 / 255f, 167 / 255f, 1);
+
+    public void setScreenListener(ScreenListener listener) {
+        this.listener = listener;
+    }
+
+    public void resizeViewport(int width, int height) {
+        stage.getViewport().update(width, height);
+    }
+
+    public PauseView() {
+        internal = new AssetDirectory("jsons/pause.json");
+        internal.loadAssets();
+        internal.finishLoading();
+
+        background = new TextureRegionDrawable(internal.getEntry("background", Texture.class));
+        pointer = new TextureRegion(internal.getEntry("pointer", Texture.class));
+
+        stage = new Stage();
+        pauseTable = new Table();
+        pauseTable.align(Align.topLeft);
+        pauseTable.setFillParent(true);
+        stage.addActor(pauseTable);
+
+        shape = new ShapeRenderer();
+
+    }
+
+
+    public void makePauseTable() {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(null, null,
+                null, this.font);
+        style.overFontColor = bubblegumPink;
+        style.fontColor = Color.WHITE;
+        style.downFontColor = pressTint;
+        ;
+
+        resumeButton = new TextButton("Resume", style);
+        retryButton = new TextButton("Retry", style);
+        settingsButton = new TextButton("Settings", style);
+        levelSelectButton = new TextButton("Exit to Level Select", style);
+        quitButton = new TextButton("Quit to Title", style);
+
+        resumeButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+
+                resumeClicked = true;
+            }
+
+//      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+//        resumeButton.getLabel().setColor(bubblegumPink);
+//      }
+//
+//      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+//        resumeButton.getLabel().setColor(Color.WHITE);
+//      }
+        });
+
+        retryButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                retryClicked = true;
+            }
+        });
+
+        levelSelectButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+
+                levelSelectClicked = true;
+            }
+
+        });
+
+        settingsButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+
+                settingsClicked = true;
+            }
+        });
+
+        quitButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+
+                quitClicked = true;
+            }
+        });
+
+        pauseTable.row();
+        pauseTable.add(resumeButton).pad(160, 160, 32, 455);
+        pauseTable.row();
+        pauseTable.add(retryButton).pad(0, 160, 32, 455);
+        pauseTable.row();
+        pauseTable.add(settingsButton).pad(0, 160, 32, 455);
+        pauseTable.row();
+        pauseTable.add(levelSelectButton).pad(0, 160, 32, 455);
+        pauseTable.row();
+        pauseTable.add(quitButton).pad(0, 160, 32, 455);
+        pauseTable.row();
+
+        for (Cell cell : pauseTable.getCells()) {
+            cell.align(Align.left);
+        }
+
+        pauseTable.columnDefaults(1).setActorWidth(400);
+        pauseTable.columnDefaults(1).fillX();
+    }
+
+    public void initialize(BitmapFont font) {
+        assert !(this.font == null);
+
+        this.font = font;
+        makePauseTable();
+    }
+
+    public void show() {
+        resumeClicked = false;
+        retryClicked = false;
+        levelSelectClicked = false;
+        settingsClicked = false;
+        quitClicked = false;
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    public void update() {
+        stage.act();
+    }
+
+    public void setViewport(Viewport view) {
+        stage.setViewport(view);
+    }
+
+    public boolean hasViewport() {
+        return stage.getViewport() != null;
+    }
+
+    public void draw() {
+        stage.getViewport().apply();
+        stage.getBatch().begin();
+        //stage.getBatch().draw(background.getRegion(), 0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(new Color(0, 0, 0, 0.5f));
+        shape.rect(0, 0, stage.getViewport().getWorldWidth(), stage.getViewport().getWorldHeight());
+        shape.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        stage.getBatch().end();
+
+        stage.draw();
+    }
 }

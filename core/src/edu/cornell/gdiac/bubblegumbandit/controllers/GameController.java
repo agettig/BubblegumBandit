@@ -15,6 +15,7 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.audio.SoundEffect;
 import edu.cornell.gdiac.bubblegumbandit.controllers.ai.AIController;
@@ -241,7 +243,7 @@ public class GameController implements Screen {
     /**
      * The number of levels in the game.
      */
-    private final int NUM_LEVELS = 9;
+    private final int NUM_LEVELS = 21;
 
     /**
      * Whether the orb has been collected.
@@ -444,7 +446,6 @@ public class GameController implements Screen {
 
     }
 
-
     /**
      * sets the level loaded by the game controller, set by level select
      */
@@ -453,7 +454,16 @@ public class GameController implements Screen {
         SaveData.setLevel(num);
     }
 
-    /**
+    public void previousLevel() {
+        levelNum -= 1;
+        SaveData.setLevel(levelNum - 1);
+    }
+
+    public void setPauseViewport(Viewport viewport){
+        pauseScreen.setViewport(viewport);
+    }
+
+                                 /**
      * Resets the status of the game so that we can play again.
      * <p>
      * This method disposes of the level and creates a new one. It will
@@ -476,7 +486,6 @@ public class GameController implements Screen {
         orbCollected = false;
         paused = false;
         spawnedPostOrbEnemies = false;
-        bubblegumController.resetAmmo();
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
@@ -491,6 +500,7 @@ public class GameController implements Screen {
         int x = levelFormat.get("width").asInt();
         int y = levelFormat.get("height").asInt();
         minimap.initialize(directory, levelFormat, x, y);
+        level.getBandit().resetAmmo();
 
         SoundController.playMusic("game");
 
@@ -498,20 +508,28 @@ public class GameController implements Screen {
         backgrounds.initialize(directory, levelFormat, x, y);
     }
 
-    public void respawn() {
-        setComplete(false);
-        setFailure(false);
-        countdown = -1;
-        orbCountdown = -1;
-        orbCollected = false;
-        level.endPostOrb();
-        for (EnemyModel enemy : level.getPostOrbEnemies()) {
-            enemy.markRemoved(true);
-        }
-        level.remakeOrb(directory, constantsJson);
-        bubblegumController.resetAmmo();
-        spawnedPostOrbEnemies = false;
-        level.getBandit().respawnPlayer();
+//    public void respawn() {
+//        setComplete(false);
+//        setFailure(false);
+//        countdown = -1;
+//        orbCountdown = -1;
+//        orbCollected = false;
+//        level.endPostOrb();
+//        for (EnemyModel enemy : level.getPostOrbEnemies()) {
+//            enemy.markRemoved(true);
+//        }
+//        level.remakeOrb(directory, constantsJson);
+//        bubblegumController.resetAmmo();
+//        spawnedPostOrbEnemies = false;
+//        level.getBandit().respawnPlayer();
+//    }
+
+    public int getCaughtCaptives() {
+        return level.getBandit().getNumStars();
+    }
+
+    public int getTotalCaptives() {
+        return level.getTotalCaptives();
     }
 
     /**
@@ -583,18 +601,10 @@ public class GameController implements Screen {
     }
 
     /**
-     * The core gameplay loop of this world.
-     * <p>
-     * This method contains the specific update code for this mini-game. It does
-     * not handle collisions, as those are managed by the parent class WorldController.
-     * This method is called after input is read, but before collisions are resolved.
-     * The very last thing that it should do is apply forces to the appropriate objects.
-     *
-     * @param dt Number of seconds since last animation frame
-     */
-    public void update(float dt) {
-        ticks++;
-        if (collisionController.isWinConditionMet() && !isComplete()) {
+     * Unlocks next level
+     * */
+    public void unlockNextLevel(){
+        if ( level.getBandit().winConditionMet() && !isComplete()) {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
@@ -607,6 +617,22 @@ public class GameController implements Screen {
             setComplete(true);
 
         }
+    }
+
+    /**
+     * The core gameplay loop of this world.
+     * <p>
+     * This method contains the specific update code for this mini-game. It does
+     * not handle collisions, as those are managed by the parent class WorldController.
+     * This method is called after input is read, but before collisions are resolved.
+     * The very last thing that it should do is apply forces to the appropriate objects.
+     *
+     * @param dt Number of seconds since last animation frame
+     */
+    public void update(float dt) {
+        ticks++;
+
+        unlockNextLevel();
 
         if (!orbCollected && level.getBandit().isOrbCollected()) {
             orbCollected = true;
@@ -629,7 +655,7 @@ public class GameController implements Screen {
                 bandit.setVY(0);
                 bandit.setVX(.1f);
             }
-        } else if (level.getBandit().getHealth()>0) {
+        } else if (level.getBandit().getHealth()>0 && (countdown > 100 || !complete)) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
@@ -638,13 +664,13 @@ public class GameController implements Screen {
             if (bandit.isGrounded()) bandit.setVY(0);
         }
 
-
         float grav = level.getWorld().getGravity().y;
-        boolean shouldFlip = (bandit.isGrounded() || !bandit.hasFlipped()) &&
+        boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip&&!complete&&!failed) {
+
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
             jumpId = SoundController.playSound("jump", 0.25f);
@@ -663,10 +689,10 @@ public class GameController implements Screen {
             }
         }
 
-        if (inputResults.didReload() && !bubblegumController.atMaxGum()) {
+        if (inputResults.didReload() && !bandit.atMaxGum() && bandit.isGrounded()) {
             bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
-                bubblegumController.addAmmo(1);
+                bandit.addAmmo(1);
                 reloadSymbolTimer = -1;
                 reloadingGum = true;
                 SoundController.playSound("reloadingGum", 1);
@@ -677,7 +703,7 @@ public class GameController implements Screen {
         }
 
 
-        if (inputResults.didShoot() && bubblegumController.getAmmo() > 0 && bandit.getHealth() > 0) {
+        if (inputResults.didShoot() && bandit.getAmmo() > 0 && bandit.getHealth() > 0) {
             bandit.setShooting(true);
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
@@ -688,7 +714,7 @@ public class GameController implements Screen {
             TextureRegion gumTexture = new TextureRegion(directory.getEntry(key, Texture.class));
             GumModel gum = bubblegumController.createGumProjectile(cross, gumJV, avatar, origin, scale, gumTexture);
             if (gum != null) {
-                bubblegumController.fireGum();
+                bandit.fireGum();
                 level.activate(gum);
                 gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
@@ -779,7 +805,7 @@ public class GameController implements Screen {
 
         }
         projectileController.update();
-        minimap.updateMinimap(dt, inputResults.didExpandMinimap());
+        minimap.updateMinimap(dt, inputResults.didExpandMinimap(), false);
         level.getAim().update(canvas, dt);
         laserController.updateLasers(dt, level.getWorld(), level.getBandit());
 
@@ -802,7 +828,6 @@ public class GameController implements Screen {
             level.postOrbDoors();
             spawnedPostOrbEnemies = true;
         }
-
 
         // Turn the physics engine crank.
         level.getWorld().step(WORLD_STEP, WORLD_VELOC, WORLD_POSIT);
@@ -831,24 +856,17 @@ public class GameController implements Screen {
         if (!hud.hasViewport()) hud.setViewport(canvas.getUIViewport());
         canvas.getUIViewport().apply();
 
-        if (paused) {
-            if (!pauseScreen.hasViewport()) {
-                pauseScreen.setViewport(canvas.getUIViewport());
-            }
-            pauseScreen.draw();
-        }
-
         Vector2 banditPosition = level.getBandit().getPosition();
 
         minimap.draw(banditPosition);
 
-        if (bubblegumController.getAmmo() == 0 && inputResults.didShoot()) {
+        if (level.getBandit().getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
             SoundController.playSound("noGum", 1);
         }
 
 
-        hud.draw(level, bubblegumController, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
+        hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
         hud.drawCountdownText((int)orbCountdown, delta, canvas.getCamera(), level.getBandit());
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
@@ -858,6 +876,11 @@ public class GameController implements Screen {
             reloadSymbolTimer++;
         }
 
+        if (paused) {
+            pauseScreen.draw();
+        }
+
+        // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
            // level.getBandit().setVX(0);
@@ -874,7 +897,26 @@ public class GameController implements Screen {
      * @param height The new height in pixels
      */
     public void resize(int width, int height) {
-        // IGNORE FOR NOW
+        pauseScreen.resizeViewport(width, height);
+    }
+
+    /**
+     * The update loop for when the game is paused.
+     */
+    public void pauseUpdate() {
+        PlayerController input = PlayerController.getInstance();
+        input.readInput();
+        if (input.didPause()) {
+            setPaused(false);
+        }
+        else {
+            pauseScreen.update();
+            if (pauseScreen.getResumeClicked()) {
+                paused = false;
+            } else if (pauseScreen.getRetryClicked()) {
+                reset();
+            }
+        }
     }
 
     /**
@@ -892,12 +934,7 @@ public class GameController implements Screen {
                     update(delta);
                 }
             } else {
-                pauseScreen.update(this);
-                if (pauseScreen.getResumeClicked()) {
-                    paused = false;
-                } else if (pauseScreen.getRetryClicked()) {
-                    reset();
-                }
+                pauseUpdate();
             }
             draw(delta);
             // Final message
@@ -908,6 +945,15 @@ public class GameController implements Screen {
                 else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
+            }
+            if (pauseScreen.getQuitClicked()) {
+                listener.exitScreen(this, Screens.LOADING_SCREEN);
+            }
+            if (pauseScreen.getLevelSelectClicked()) {
+                listener.exitScreen(this, Screens.LEVEL_SELECT);
+            }
+            if (pauseScreen.getSettingsClicked()) {
+                listener.exitScreen(this, Screens.SETTINGS);
             }
 
         }
@@ -922,6 +968,7 @@ public class GameController implements Screen {
     public void pause() {
         // We need this method to stop all sounds when we pause.
         SoundController.pause();
+        minimap.updateMinimap(0, false, true);
         pauseScreen.show();
     }
 

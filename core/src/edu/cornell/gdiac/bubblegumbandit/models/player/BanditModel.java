@@ -11,6 +11,13 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.models.player;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_CRUSHER;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_CRUSHER_BOX;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_CRUSHER;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_CRUSHER_BOX;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_CRUSHER_BOX_NO_PLAYER;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_TERRAIN;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,13 +27,16 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
+import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -183,8 +193,24 @@ public class BanditModel extends CapsuleObstacle {
      * */
     private int stunTime = 0;
 
+
+    /* Gum variables */
+    /** The current amount of gum ammo of the player. */
+    private int gumAmmo;
+
+    private int startingGum;
+
+
+    /**Maximum allowed gum for the level*/
+    private int maxGum;
+
     /** The shock obstacles currently colliding with the player */
     private ObjectSet<Fixture> shockFixtures;
+
+    /** The current frame of the animation */
+    private TextureRegion curFrame;
+
+    private boolean atDoor;
 
     public void setOrbPostion(Vector2 orbPostion){
         assert orbPostion != null;
@@ -235,6 +261,18 @@ public class BanditModel extends CapsuleObstacle {
      * Whether the bandit should be sparking this frame.
      */
     private boolean shouldSpark;
+
+    /** The current crusher on the bandit */
+    private CrusherModel crusher = null;
+
+    /** Whether the bandit is being crushed */
+    private boolean isCrushing;
+
+    /** Draw scale for crush anim */
+    private float crushScale;
+
+    /** ref to the box2d world */
+    private World world;
 
     /**
      * Whether the player has flipped in the air.
@@ -342,6 +380,28 @@ public class BanditModel extends CapsuleObstacle {
      * Gets whether the bandit should be sparking.
      */
     public boolean shouldSpark() { return shouldSpark; }
+
+
+    public void resetAmmo() {
+        gumAmmo = startingGum;
+    }
+    /** gets the amount of bubblegum player has */
+    public int getAmmo() {
+        return gumAmmo;
+    }
+
+    /** reduces max gum by 1 */
+    public void fireGum() {
+        gumAmmo -= 1;
+    }
+
+    /** Check if player already holds max gum*/
+    public boolean atMaxGum() {return gumAmmo == maxGum;}
+
+    /** increases amount of ammo by ammo */
+    public void addAmmo(int ammo) {
+        gumAmmo += ammo;
+    }
 
 
     /**
@@ -538,6 +598,25 @@ public class BanditModel extends CapsuleObstacle {
         return faceRight;
     }
 
+    /** Start crushing the bandit */
+    public void crush(CrusherModel crusher) {
+        setFilter(CollisionController.CATEGORY_PLAYER, CollisionController.MASK_CRUSHED_PLAYER);
+        this.crusher = crusher;
+        isCrushing = true;
+    }
+
+    /** Mark that the bandit should start getting crushed soon */
+    public void shouldCrush(CrusherModel crusher) {
+        this.crusher = crusher;
+    }
+
+    /** End the crush without destroying the bandit (bandit not fully squished) */
+    public void endCrush() {
+        setFilter(CollisionController.CATEGORY_PLAYER, CollisionController.MASK_PLAYER);
+        isCrushing = false;
+        crusher = null;
+    }
+
     /**
      * Creates a new dude with degenerate settings
      * <p>
@@ -565,6 +644,21 @@ public class BanditModel extends CapsuleObstacle {
         hasFlipped = false;
         shockFixtures = new ObjectSet<>();
         healthCountdown = 0;
+        isCrushing = false;
+        crushScale = 1;
+        atDoor = false;
+    }
+
+    public void setAtDoor(boolean b){
+        atDoor = b;
+    }
+
+    public boolean getAtDoor(){
+        return atDoor;
+    }
+
+    public boolean winConditionMet(){
+        return isOrbCollected() && isGrounded() && !isFlipped() && getAtDoor();
     }
 
     /**
@@ -579,6 +673,9 @@ public class BanditModel extends CapsuleObstacle {
      * @oaram constantsJson the JSON subtree defining the constant player information
      */
     public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson) {
+        gumAmmo = constantsJson.get("startingGum").asInt();
+        maxGum = constantsJson.get("maxGum").asInt();
+        startingGum = gumAmmo;
         setName(constantsJson.name());
         float[] size = constantsJson.get("size").asFloatArray();
         setPosition(x, y);
@@ -693,6 +790,8 @@ public class BanditModel extends CapsuleObstacle {
         //actviate physics for raycasts
         //vision.test(world);
 
+        this.world = world;
+
         return true;
     }
 
@@ -739,7 +838,7 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         // Velocity too high, clamp it
-        if (Math.abs(getVX()) >= getMaxSpeed()) {
+        if (Math.abs(getVX()) >= getMaxSpeed() && !isCrushing) {
             setVX(Math.signum(getVX()) * getMaxSpeed());
             if (getVX() * getMovement() < 0) { // Velocity and movement in opposite directions
                 forceCache.set(getMovement(), 0);
@@ -773,6 +872,7 @@ public class BanditModel extends CapsuleObstacle {
         healthCountdown--;
         ticks++;
         stunTime--;
+        poofController.update();
 
         if (shockFixtures.size != 0) {
             hitPlayer(Damage.DPS_ON_SHOCK * dt, true);
@@ -826,6 +926,110 @@ public class BanditModel extends CapsuleObstacle {
         cameraTarget.y = getY() * drawScale.y;
 
         super.update(dt);
+
+        // Anim controller update
+        if(!animationController.hasTemp()&&!animationController.isEnding()
+                &&!animationController.getCurrentAnimation().equals("victory")) {
+            if(playingReload) animationController.setAnimation("reload", true, false);
+            else if (!isGrounded) animationController.setAnimation("fall", true, false);
+            else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
+            else {
+                if(backpedal) {
+                    animationController.setAnimation("back", true, false);
+                } else {
+                    animationController.setAnimation("run", true, false);
+                }
+
+            }
+        }
+
+        curFrame = animationController.getFrame();
+
+        if (crusher != null) {
+            if (isCrushing) {
+                if (getHealth() <= 0) {
+                    crushScale = 0;
+                    return;
+                }
+                float banditLeft = getX() - getWidth() / 2f;
+                float banditRight = getX() + getWidth() / 2f;
+                float crusherLeft = crusher.getX() - crusher.getWidth() / 2f;
+                float crusherRight = crusher.getX() + crusher.getWidth() / 2f;
+                if (banditLeft > crusherRight) {
+                    endCrush();
+                }
+                else if (banditRight < crusherLeft) {
+                    endCrush();
+                }
+
+                else {
+                    if (world.getGravity().y < 0) {
+                        float bottomOfCrusher = crusher.getY() - (crusher.getHeight() / 2f);
+                        float bottomOfPlayer = getY() - (getHeight() / 2);
+                        crushScale = (bottomOfCrusher - bottomOfPlayer) / getHeight();
+                        if (crushScale <= 0.05f) {
+                            hitPlayer(getHealth(), true);
+                            setVX(0);
+                        } else if (crushScale > 1.02f) {
+                            endCrush();
+                        }
+                    } else {
+                        float topOfCrusher = crusher.getY() + (crusher.getHeight() / 2f);
+                        float topOfPlayer = getY() + (getHeight() / 2);
+                        crushScale = (topOfPlayer - topOfCrusher) / getHeight();
+                        if (crushScale <= 0.05f) {
+                            hitPlayer(getHealth(), true);
+                            setVX(0);
+                        } else if (crushScale > 1.02f) {
+                            endCrush();
+                        }
+                    }
+                    if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
+                        body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                    }
+                }
+            } else {
+                boolean shouldStartCrush = false;
+                float hw = (crusher.getWidth() / 2f);
+                float crusherRight = crusher.getX() + hw;
+                float crusherLeft = crusher.getX() - hw;
+                float banditLeft = getX() - (getWidth() / 2f);
+                float banditRight = getX() + (getWidth() / 2f);
+                boolean isCrusher = false;
+                for (Obstacle ob : getCollisions()) {
+                    if (!(ob instanceof CrusherModel)) {
+                        float obHW = 0;
+
+                        if (ob instanceof CapsuleObstacle) {
+                            obHW = ((CapsuleObstacle) ob).getWidth() / 2f;
+                        } else if (ob instanceof BoxObstacle) {
+                            obHW = ((BoxObstacle) ob).getWidth() / 2f;
+                        }
+                        if (obHW != 0) {
+                            float obLeft = ob.getX() - obHW;
+                            float obRight = ob.getX() + obHW;
+                            if (obRight > crusherLeft && banditRight > crusherLeft && banditLeft < crusherRight && obLeft < crusherRight) {
+                                shouldStartCrush = true;
+                            }
+                        }
+                    } else {
+                        isCrusher = true;
+                    }
+                }
+                if (!isCrusher) {
+                    endCrush();
+                }
+                else if (shouldStartCrush) {
+                    crush(crusher);
+                }
+            }
+        } else {
+            if (crushScale < 1) {
+                crushScale += 0.1f;
+            } else {
+                crushScale = 1;
+            }
+        }
     }
 
     private boolean playingReload;
@@ -844,32 +1048,16 @@ public class BanditModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        if (texture != null) {
+        if (curFrame != null) {
 
-            if(!animationController.hasTemp()&&!animationController.isEnding()
-                &&!animationController.getCurrentAnimation().equals("victory")) {
-                if(playingReload) animationController.setAnimation("reload", true, false);
-                else if (!isGrounded) animationController.setAnimation("fall", true, false);
-                else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
-                else {
-                    if(backpedal) {
-                        animationController.setAnimation("back", true, false);
-                    } else {
-                        animationController.setAnimation("run", true, false);
-                    }
-
-                }
-            }
+            float yOffset = ((1 - crushScale) * texture.getRegionHeight() * (world.getGravity().y < 0 ? -.5f : .5f));
 
             float effect = faceRight ? 1.0f : -1.0f;
             if(backpedal&&health>0) effect *= -1f;
 
-            TextureRegion text = animationController.getFrame();
-
-
-            canvas.drawWithShadow(text, Color.WHITE, origin.x, origin.y,
+            canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
-                    getY() * drawScale.y, getAngle(), effect, yScale);
+                    getY() * drawScale.y + yOffset, getAngle(), effect, yScale*crushScale);
 
         }
         poofController.draw(canvas);

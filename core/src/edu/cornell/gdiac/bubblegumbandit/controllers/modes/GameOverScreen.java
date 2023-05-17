@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -23,11 +25,11 @@ public class GameOverScreen implements Screen, InputProcessor {
      * The current state of the play button
      * <p>
      * 0 = nothing pressed
-     * 1 = play down
-     * 2 = level select down
+     * 1 = Try Again or Retry Level down
+     * 2 = level select or Continue down
      * 3 = return to title down
-     * 5 = play up, ready to go
-     * 6 = level select up, should open level select
+     * 5 = try again or retry level up, ready to go
+     * 6 = level select or continue up, should open level select
      * 7 = return to title up, should open title screen
      */
     private int pressState;
@@ -139,6 +141,12 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     private boolean hoveringReturnTitleScreen;
 
+    /**
+     * icon for captives
+     */
+    private Texture captiveIcon;
+    private Texture emptyIcon;
+
     /** How much of screen is shown*/
     private float fadeFraction;
 
@@ -150,12 +158,23 @@ public class GameOverScreen implements Screen, InputProcessor {
      */
     private int heightY;
 
+    private Array<Image> captiveIcons;
+
+    private int caughtCaptives;
+
+    private int totalCaptives;
+
+    private BitmapFont subHeadingFont;
+
     private float backgroundHeight;
 
     private float backgroundWidth;
 
+    private boolean levelWon;
+
     private Color green = new Color(10f/255f, 199f/255f, 152f/255f, 1f);
     private Color red = new Color(252f/255f, 97f/255f, 89/255f, 1f);
+    private Color yellow = new Color(255f/255f, 178f/255f, 23f/255f, 1f);
 
 
     public GameOverScreen() {}
@@ -175,25 +194,33 @@ public class GameOverScreen implements Screen, InputProcessor {
 
         background = new TextureRegion(directory.getEntry("settingsBackground", Texture.class));
         displayFont = directory.getEntry("projectSpaceLarge", BitmapFont.class).newFontCache().getFont();
-
+        subHeadingFont = directory.getEntry("codygoonRegular", BitmapFont.class).newFontCache().getFont();
         hoverPointer = directory.getEntry("hoverPointer", Texture.class);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("levelSelectButton", Texture.class);
         titleScreenButton = directory.getEntry("titleScreenButton", Texture.class);
+        captiveIcon = directory.getEntry("captiveIcon", Texture.class);
+        emptyIcon = directory.getEntry("captiveIconOutline", Texture.class);
         backgroundHeight = background.getRegionHeight();
         backgroundWidth = background.getRegionWidth();
         fadeFraction = 0;
         fadeRate = 0.01f;
+        levelWon = false;
 
     }
 
     public void gameWon(AssetDirectory directory) {
         gameOverMessage = "VICTORY";
         displayFont.setColor(green);
+        subHeadingFont.setColor(yellow);
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
+        levelSelectButton = directory.getEntry("retryLevelButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("victory", 1);
+        levelWon = true;
     }
+
+    public boolean gameWon() {return levelWon;}
 
     public void gameLost(AssetDirectory directory) {
         gameOverMessage = "HEIST FAILED";
@@ -201,6 +228,12 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("tryAgainButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.playSound("failure", 1);
+        levelWon = false;
+    }
+
+    public void setCaptive(int caught, int total) {
+        caughtCaptives = caught;
+        totalCaptives = total;
     }
 
     @Override
@@ -245,36 +278,59 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.begin();
 
-        int width = Gdx.graphics.getWidth();
-        int height = Gdx.graphics.getHeight();
-
-       // if (fadeFraction < 1) {
-           // background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
-           // canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
-       // }
-       // else {
+        if (fadeFraction < 1) {
+            background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
+            canvas.draw(background, 0, backgroundHeight - background.getRegionHeight());
+        }
+        else {
             canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth,
                 canvas.getCamera().viewportHeight);
-            canvas.drawTextCentered(gameOverMessage, displayFont, 100);
 
             float x = (canvas.getCamera().viewportWidth) / 2.0f;
             float y = (canvas.getCamera().viewportHeight)/ 2.0f;
-          //  Vector3 coords = canvas.getCamera().unproject(new Vector3(x, y, 0));
 
             float highestButtonY = y;
-            float lowestButtonY = y - 60;
+            float middleButtonY = y - 60;
+
+        if (levelWon && totalCaptives > 0) {
+            canvas.drawTextCentered(gameOverMessage, displayFont, 150);
+            canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 65);
+            int[] oddOffset = new int[]{-35, -115, 45};
+            int[] evenOffset = new int[]{-75, 5};
+            for (int i = 0; i < totalCaptives; i++) {
+                if (totalCaptives % 2 == 1) {
+                    canvas.draw(emptyIcon, x + oddOffset[i], y - 15);
+                }
+                else {
+                    canvas.draw(emptyIcon, x + evenOffset[i], y - 15);
+                }
+            }
+            for (int i = 0; i < caughtCaptives; i++) {
+                if (totalCaptives % 2 == 1) {
+                    canvas.draw(captiveIcon, x + oddOffset[i], y - 15);
+                }
+                else {
+                    canvas.draw(captiveIcon, x + evenOffset[i], y - 15);
+                }
+            }
+
+            highestButtonY = y - 60;
+            middleButtonY = y - 120;
+        }
+        else {
+            canvas.drawTextCentered(gameOverMessage, displayFont, 100);
+        }
 
 
             startButtonPositionX = (int) x;
             startButtonPositionY = (int) highestButtonY;
 
             levelSelectButtonPositionX = (int) x;
-            levelSelectButtonPositionY = (int) lowestButtonY;
+            levelSelectButtonPositionY = (int) middleButtonY;
 
             titleScreenButtonPositionX = (int) x;
-            titleScreenButtonPositionY = (int) lowestButtonY - 60;
+            titleScreenButtonPositionY = (int) middleButtonY - 60;
 
-            float pointerX = startButtonPositionX / 4f;
 
             //Draw continue game options
             canvas.draw(
@@ -316,7 +372,7 @@ public class GameOverScreen implements Screen, InputProcessor {
                     BUTTON_SCALE
             );
 
-        //}
+        }
         canvas.end();
     }
 
@@ -435,7 +491,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         // if loading has not started
         if (continueGameButton == null || levelSelectButton == null || titleScreenButton == null) return false;
 
-        //Detect clicks on the start button
+        //Detect clicks on the top button
         float rectWidth = scale * BUTTON_SCALE * continueGameButton.getWidth();
         float rectHeight = scale * BUTTON_SCALE * continueGameButton.getHeight();
         float leftX = startButtonPositionX - rectWidth / 2.0f;
@@ -443,10 +499,15 @@ public class GameOverScreen implements Screen, InputProcessor {
         float topY = startButtonPositionY - rectHeight / 2.0f;
         float bottomY = startButtonPositionY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
-            pressState = 1;
+            if (levelWon) {
+                pressState = 2; //continue should go to level select
+            }
+            else {
+                pressState = 1;
+            }
         }
 
-        //Detect clicks on the level select button
+        //Detect clicks on the middle button
         rectWidth = scale * BUTTON_SCALE * levelSelectButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * levelSelectButton.getHeight();
         leftX = levelSelectButtonPositionX - rectWidth / 2.0f;
@@ -454,9 +515,15 @@ public class GameOverScreen implements Screen, InputProcessor {
         topY = levelSelectButtonPositionY - rectHeight / 2.0f;
         bottomY = levelSelectButtonPositionY + rectHeight / 2.0f;
         if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
-            pressState = 2;
+            if (levelWon) {
+                pressState = 1;
+            }
+            else {
+                pressState = 2;
+            }
         }
 
+        //Detect clicks on the bottom button
         rectWidth = scale * BUTTON_SCALE * titleScreenButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * titleScreenButton.getHeight();
         leftX = titleScreenButtonPositionX - rectWidth / 2.0f;

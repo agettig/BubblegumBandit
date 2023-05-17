@@ -174,8 +174,6 @@ public class LevelModel {
     /** Number of total captives in the level */
     private int captiveCount;
 
-
-
     /**
      * Creates a new LevelModel
      * <p>
@@ -578,11 +576,16 @@ public class LevelModel {
             switch (objType) {
                 case "tutorial": {
                     int keyCode = object.get("properties").get(0).getInt("value");
-                    if(keyCode>7) {
+                    if(keyCode>8) {
                         System.err.println("Invalid keycode "+keyCode+" accessed by tutorial icon.");
                         break;
                     }
-                    icons.add(new TutorialIcon(directory, decorX, decorY, keyCode, scale));
+                    if(keyCode>=0) icons.add(new TutorialIcon(directory, decorX, decorY, keyCode, scale));
+                    else {
+                        String icon = object.get("properties").get(2).getString("value");
+                        String text = object.get("properties").get(1).getString("value");
+                        icons.add(new TutorialIcon(directory, decorX, decorY, text, icon, scale));
+                    }
                     break;
                 }
                 case "chair":
@@ -676,7 +679,7 @@ public class LevelModel {
                     crush.initialize(directory, scale, x, y, object, constants.get("crushingBlock"));
                     activate(crush);
                     flippableObjects.add(crush);
-                    crush.setFilter(CATEGORY_TERRAIN, MASK_TERRAIN);
+                    crush.setFixtureMasks(CATEGORY_CRUSHER, CATEGORY_CRUSHER_BOX, MASK_CRUSHER, MASK_CRUSHER_BOX, MASK_TERRAIN);
                     break;
                 case "glass":
                     SpecialTileModel glass = new SpecialTileModel();
@@ -775,7 +778,7 @@ public class LevelModel {
 
         bandit.setOrbPostion(orbPosition);
         activate(goalDoor);
-        goalDoor.setFilter(CATEGORY_EXIT, MASK_EXIT);
+        goalDoor.setFilter(CATEGORY_EXIT, MASK_COLLECTIBLE);
 
         for (EnemyModel e : newEnemies) {
             activate(e);
@@ -933,6 +936,10 @@ public class LevelModel {
 
         alarms.update();
         if (reactorModel != null) reactorModel.update();
+
+        glassEffectController.update();
+        sparkEffectController.update();
+
     }
 
     public float getXTrajectory(float ox, float vx, float t) {
@@ -999,18 +1006,12 @@ public class LevelModel {
             }
 
         }
-        drawChargeLasers(laserBeam, laserBeamEnd, canvas, dt);
-
-
-
-
+        drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
         if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
        // gumEffectController.draw(canvas);
         glassEffectController.draw(canvas);
         sparkEffectController.draw(canvas);
-
-
 
         canvas.end();
 
@@ -1029,9 +1030,7 @@ public class LevelModel {
         alarms.drawLights(canvas, scale);
     }
 
-    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas, float dt) {
-
-
+    public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {
 
         //Local variables to scale our laser depending on its phase.
         final float chargeLaserScale = .75f;
@@ -1041,10 +1040,13 @@ public class LevelModel {
 
         for (AIController ai : enemyControllers) {
             if (ai.getEnemy() instanceof LaserEnemyModel) {
-
                 //Don't draw inactive lasers.
                 LaserEnemyModel enemy = (LaserEnemyModel) ai.getEnemy();
+                if (enemy.isCrushing()) continue;
                 if(enemy.inactiveLaser()) continue;
+
+                //Don't draw if enemy can't see.
+                if(enemy.chargingLaser() && !enemy.canSeeBandit(getBandit())) continue;
 
 
                 //Determine properties based on our laser phase.
@@ -1086,6 +1088,8 @@ public class LevelModel {
 
                 boolean jetted = enemy.getCurrentFrameNum() > 0;
 
+                Array<Float> xScales = enemy.getRandomXScale();
+                Array<Float> yScales = enemy.getRandomYScale();
 
                 //Draw her up!
                 for(int i = 0; i < numSegments; i++){
@@ -1104,16 +1108,8 @@ public class LevelModel {
                     float ang = (float) Math.atan2(dir.y, dir.x);
 
                     //Vibrations
-                    if(enemy.firingLaser()){
-                        if(Math.floor(Math.random()*10) % 2 == 0){
-                            scaleX *= (1f + Math.random());
-                            scaleY *= (1f + Math.random());
-                        }
-                        else if (Math.floor(Math.random()*10) % 3 == 0){
-                            scaleX *= (1f + Math.random());
-                            scaleY *= (1f + Math.random());
-                        }
-                    }
+                    scaleX *= xScales.get(i % xScales.size);
+                    scaleY *= yScales.get(i % yScales.size);
 
                     canvas.draw(
                             beam,
@@ -1321,7 +1317,7 @@ public class LevelModel {
                     if (canUnstickThrough.contains(ob.getName())) {
                         return -1;
                     }
-                    if (ob.getName().equals("crushing_block") && ob.getStuck() && !ob.getGummed()) {
+                    if (ob instanceof CrusherModel && ob.getStuck() && !ob.getGummed()) {
                         return -1;
                     }
                     if (fixture.getUserData() instanceof DoorModel) {
