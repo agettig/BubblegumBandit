@@ -276,9 +276,11 @@ public class GameController implements Screen {
     private PauseView pauseScreen;
 
     public void setPaused(boolean paused) {this.paused = paused;
-    if (paused) {
-        pause();
-    }
+        if (paused) {
+            pause();
+        } else {
+            resume();
+        }
     }
 
     public boolean getPaused() {return paused; }
@@ -965,6 +967,7 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
+        Gdx.input.setInputProcessor(null);
         // TODO Auto-generated method stub
     }
 
