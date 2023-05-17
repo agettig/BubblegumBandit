@@ -1,12 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json",
-         "target":"level12.json"
-        }
-    },
  "height":57,
  "infinite":false,
  "layers":[
@@ -1068,10 +1060,22 @@
                 {
                  "gid":71,
                  "height":176,
-                 "id":224,
+                 "id":225,
                  "name":"",
                  "rotation":0,
-                 "type":"",
+                 "type":"exit",
+                 "visible":true,
+                 "width":128,
+                 "x":768,
+                 "y":1920
+                }, 
+                {
+                 "gid":71,
+                 "height":176,
+                 "id":226,
+                 "name":"",
+                 "rotation":0,
+                 "type":"exit",
                  "visible":true,
                  "width":128,
                  "x":768,
@@ -1220,7 +1224,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":225,
+ "nextobjectid":227,
  "orientation":"orthogonal",
  "properties":[
         {
