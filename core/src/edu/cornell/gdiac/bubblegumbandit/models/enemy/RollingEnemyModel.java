@@ -274,10 +274,9 @@ public class RollingEnemyModel extends EnemyModel {
             gumTexture.setRegionHeight((int) (unstickingFraction * gumTextureHeight));
         }
         else if (unsticking && getStuck()) {
-            System.out.println("Hi");
             HashSet<GumModel> stuckGum = getStuckGum();
             for(GumModel g : stuckGum){
-                g.getTexture().setRegionHeight((int) (unstickingFraction * g.getOutlineHeight()));
+                g.getTexture().setTexture(gumTexture.getTexture());
             }
         }
     }
