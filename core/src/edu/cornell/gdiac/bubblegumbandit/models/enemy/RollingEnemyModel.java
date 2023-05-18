@@ -73,6 +73,7 @@ public class RollingEnemyModel extends EnemyModel {
     private float gumTextureHeight;
     private float gumTextureWidth;
     private float outlineTextureHeight;
+    private TextureRegion stuckGumTexture;
 
     /**
      * Returns the damage a RollingEnemyModel deals when it bumps into
@@ -116,6 +117,8 @@ public class RollingEnemyModel extends EnemyModel {
         gumTextureHeight = gumTexture.getRegionHeight();
         gumTextureWidth = gumTexture.getRegionWidth();
         outlineTextureHeight = outline.getRegionHeight();
+
+        stuckGumTexture = new TextureRegion(directory.getEntry("splatGum", Texture.class));
     }
 
     @Override
@@ -273,10 +276,11 @@ public class RollingEnemyModel extends EnemyModel {
         if (unsticking && gummed) {
             gumTexture.setRegionHeight((int) (unstickingFraction * gumTextureHeight));
         }
-        else if (unsticking && getStuck()) {
+        else if (unsticking) {
+            stuckGumTexture.setRegionHeight((int) (unstickingFraction * 38));
             HashSet<GumModel> stuckGum = getStuckGum();
             for(GumModel g : stuckGum){
-                g.getTexture().setTexture(gumTexture.getTexture());
+                g.setTexture(stuckGumTexture);
             }
         }
     }
@@ -289,17 +293,14 @@ public class RollingEnemyModel extends EnemyModel {
         if (unsticking && gummed) {
             outline.setRegionHeight((int) (unstickingFraction * outlineTextureHeight));
         }
-        else if (unsticking && getStuck()) {
-            System.out.println("Hi");
-            HashSet<GumModel> stuckGum = getStuckGum();
-            for(GumModel g : stuckGum){
-                g.getOutlineTexture().setRegionHeight((int) (unstickingFraction * g.getOutlineHeight()));
-            }
-        }
     }
 
     public boolean isUnsticking() {
         return unsticking;
+    }
+
+    public float getUnstickingFraction() {
+        return unstickingFraction;
     }
 
     /**
