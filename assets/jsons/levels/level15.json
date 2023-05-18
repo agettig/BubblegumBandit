@@ -295,18 +295,6 @@
          "name":"Objects",
          "objects":[
                 {
-                 "gid":71,
-                 "height":177,
-                 "id":208,
-                 "name":"",
-                 "rotation":0,
-                 "type":"exit",
-                 "visible":true,
-                 "width":136,
-                 "x":2461.74540994257,
-                 "y":3391.4377918575
-                }, 
-                {
                  "gid":66,
                  "height":113,
                  "id":209,
@@ -315,8 +303,8 @@
                  "type":"bandit",
                  "visible":true,
                  "width":64,
-                 "x":2628.54988216811,
-                 "y":3389.40591301864
+                 "x":2638.18511960789,
+                 "y":3392.15883800143
                 }, 
                 {
                  "gid":2147483715,
@@ -1444,8 +1432,7 @@
                  "width":72,
                  "x":1199.52790737861,
                  "y":947.757905650596
-                },
-            
+                }, 
                 {
                  "gid":85,
                  "height":49,
@@ -1457,7 +1444,8 @@
                  "width":72,
                  "x":1132.13547606705,
                  "y":947.757905650596
-                }, 
+                },
+            
                 {
                  "gid":85,
                  "height":49,
@@ -1469,6 +1457,18 @@
                  "width":72,
                  "x":1087.20718852601,
                  "y":947.757905650596
+                }, 
+                {
+                 "gid":71,
+                 "height":176,
+                 "id":360,
+                 "name":"",
+                 "rotation":0,
+                 "type":"exit",
+                 "visible":true,
+                 "width":128,
+                 "x":2496,
+                 "y":3392
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1615,7 +1615,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":359,
+ "nextobjectid":361,
  "orientation":"orthogonal",
  "properties":[
         {
