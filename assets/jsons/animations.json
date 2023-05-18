@@ -18,6 +18,9 @@
     },  "stunned": {
       "strip": "banditStunned.stunned",
       "fps": 2
+    },  "afk": {
+      "strip": "banditAFK.afk",
+      "fps": 4
     },
     "fallNeg": {
       "strip": "banditFallNeg.fallNeg",

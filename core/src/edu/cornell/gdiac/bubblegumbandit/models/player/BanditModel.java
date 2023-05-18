@@ -169,6 +169,13 @@ public class BanditModel extends CapsuleObstacle {
      */
     private final Vector2 cameraTarget;
 
+    /** The timer for deciding to start the AFK animation */
+    private float AFKtimer;
+
+    /** The time until the AFK animation plays */
+    private float AFKwait = 8f;
+
+
     /**
      * Whether the player has collected the orb.
      */
@@ -938,7 +945,10 @@ public class BanditModel extends CapsuleObstacle {
             }
             else if (stunTime > 0) animationController.setAnimation("stunned", true, false);
             else if(playingReload) animationController.setAnimation("reload", true, false);
-             else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
+             else if (getMovement() == 0)  {
+                 if(AFKtimer>AFKwait) animationController.setAnimation("afk", true, false);
+                 else animationController.setAnimation("idle", true, false);
+             }
             else {
                 if (backpedal) {
                     animationController.setAnimation("back", true, false);
@@ -947,6 +957,12 @@ public class BanditModel extends CapsuleObstacle {
                 }
 
             }
+        }
+        if(animationController.getCurrentAnimation().equals("idle")
+            ||animationController.getCurrentAnimation().equals("afk")) {
+            AFKtimer+=dt;
+        } else {
+            AFKtimer = 0;
         }
 
         curFrame = animationController.getFrame();

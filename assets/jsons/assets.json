@@ -158,6 +158,17 @@
         }
       }
     },
+    "banditAFK": {
+      "file": "textures/bandit/banditAFK.png",
+      "wrap": false,
+      "sprites": {
+        "afk": {
+          "size": 16,
+          "rows": 1,
+          "cols": 16
+        }
+      }
+    },
     "banditFallNeg": {
       "file": "textures/bandit/banditFallNeg.png",
       "wrap": false,
