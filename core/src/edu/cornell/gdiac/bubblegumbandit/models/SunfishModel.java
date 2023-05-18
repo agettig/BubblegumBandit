@@ -178,7 +178,7 @@ public class SunfishModel extends WheelObstacle {
             offset.rotateRad(angle + ANGLE_OFFSET);
 
             exhaust.add(new Fire(getX() + offset.x, getY() +offset.y));
-            SoundController.playSound("shipExhaust", 0.5f);
+            SoundController.playSound("shipExhaust", 0.25f);
             cooldown = COOLDOWN_TIME;
         }
         else{
