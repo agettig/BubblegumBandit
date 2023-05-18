@@ -46,8 +46,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.awt.*;
 import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
@@ -292,6 +290,8 @@ public class GameController implements Screen {
         this.paused = paused;
         if (paused) {
             pause();
+        } else {
+            resume();
         }
     }
 
@@ -500,7 +500,7 @@ public class GameController implements Screen {
         countdown = -1;
         orbCountdown = -1;
         orbCollected = false;
-        paused = false;
+        setPaused(false);
         spawnedPostOrbEnemies = false;
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
         disableShooting = levelNum <= disableGumMaxLevel;
@@ -817,8 +817,6 @@ public class GameController implements Screen {
                     }
                 }
             }
-
-
         }
         projectileController.update();
         minimap.updateMinimap(dt, inputResults.didExpandMinimap(), false);
@@ -928,7 +926,7 @@ public class GameController implements Screen {
         } else {
             pauseScreen.update();
             if (pauseScreen.getResumeClicked()) {
-                paused = false;
+                setPaused(false);
             } else if (pauseScreen.getRetryClicked()) {
                 reset();
             }
@@ -993,6 +991,7 @@ public class GameController implements Screen {
      * This is usually when it regains focus.
      */
     public void resume() {
+        Gdx.input.setInputProcessor(null);
         // TODO Auto-generated method stub
     }
 

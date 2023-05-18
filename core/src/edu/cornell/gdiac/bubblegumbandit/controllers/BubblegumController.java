@@ -2,6 +2,7 @@ package edu.cornell.gdiac.bubblegumbandit.controllers;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
@@ -396,7 +397,9 @@ public class BubblegumController {
             } catch (Exception ignored) {
 
             }
-            level.getWorld().destroyJoint(j);
+            if (j.getBodyA() != null && j.getBodyB() != null) {
+                level.getWorld().destroyJoint(j);
+            }
         }
     }
 

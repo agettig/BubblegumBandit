@@ -1,5 +1,8 @@
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_PROJECTILE;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_PROJECTILE;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -86,8 +89,8 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
     /** Animation controller for the crest */
     private AnimationController animationController;
 
-    /** Maintains a set of collided walls */
-    private ObjectSet<WallModel> collisions;
+    /** Maintains a set of collided walls / glass */
+    private ObjectSet<Obstacle> collisions;
 
     /** Y scale factor for shrinking down before disappearing */
     private float yScaleFactor;
@@ -127,18 +130,18 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
 
     /**
      * Marks that a collision has started between the shock model and obstacle ob
-     * @param wall the wall in the collision
+     * @param ob the obstacle in the collision
      */
-    public void startCollision(WallModel wall) {
-        collisions.add(wall);
+    public void startCollision(Obstacle ob) {
+        collisions.add(ob);
     }
 
     /**
      * Marks that a collision has ended between the shock model and obstacle ob
-     * @param wall the wall in the collision
+     * @param ob the ob in the collision
      */
-    public void endCollision(WallModel wall) {
-        collisions.remove(wall);
+    public void endCollision(Obstacle ob) {
+        collisions.remove(ob);
     }
 
     public void initialize(AssetDirectory directory, Vector2 scale, JsonValue data, float x, float y, float radius, boolean isBottom, boolean isLeft) {
@@ -317,11 +320,13 @@ public class ShockModel extends BoxObstacle implements Pool.Poolable {
         sensorFixture = body.createFixture(sensorDef);
         sensorFixture.setUserData(this);
 
+        setFilter(CATEGORY_PROJECTILE, MASK_PROJECTILE);
+
         sensorDef.isSensor = false;
         sensorDef.shape = boxShape;
         boxFixture = body.createFixture(sensorDef);
         boxFixture.setUserData(this);
-        Filter f = boxFixture.getFilterData();
+        Filter f = getFilterData();
         f.maskBits = CollisionController.MASK_SHOCK_BOX;
         boxFixture.setFilterData(f);
 

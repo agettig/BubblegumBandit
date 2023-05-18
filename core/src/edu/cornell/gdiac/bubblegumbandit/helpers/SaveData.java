@@ -26,7 +26,7 @@ public class SaveData {
 
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
-    //return false; //uncomment to reset save data
+//    return false; //uncomment to reset save data
     return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
   }
 
