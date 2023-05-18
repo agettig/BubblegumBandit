@@ -931,7 +931,10 @@ public class BanditModel extends CapsuleObstacle {
         if(!animationController.hasTemp()&&!animationController.isEnding()
                 &&!animationController.getCurrentAnimation().equals("victory")) {
             if(playingReload) animationController.setAnimation("reload", true, false);
-            else if (!isGrounded) animationController.setAnimation("fall", true, false);
+            else if (!isGrounded) {
+                if(hasFlipped) animationController.setAnimation("fallNeg", true, false);
+                else animationController.setAnimation("fall", true, false);
+            }
             else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
             else {
                 if(backpedal) {

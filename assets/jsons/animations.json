@@ -16,6 +16,10 @@
       "strip": "banditFall.fall",
       "fps": 2
     },
+    "fallNeg": {
+      "strip": "banditFallNeg.fallNeg",
+      "fps": 2
+    },
     "victory": {
       "strip": "banditVictory.victory",
       "fps": 2

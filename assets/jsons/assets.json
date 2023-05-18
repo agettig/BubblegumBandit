@@ -148,6 +148,17 @@
         }
       }
     },
+    "banditFallNeg": {
+      "file": "textures/bandit/banditFallNeg.png",
+      "wrap": false,
+      "sprites": {
+        "fallNeg": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    },
     "banditKnock": {
       "file": "textures/bandit/banditKnockback.png",
       "wrap": false,
