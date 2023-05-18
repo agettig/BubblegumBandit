@@ -72,6 +72,10 @@ public class GumModel extends WheelObstacle implements Unstickable {
         }
     }
 
+    public float getOutlineHeight() {return outline.getRegionHeight();}
+
+    public TextureRegion getOutlineTexture() {return outline;}
+
     /** Sets the outline used for this gum model. */
     public void setOutline(TextureRegion t) {
         outline = t;

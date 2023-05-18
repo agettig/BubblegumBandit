@@ -273,6 +273,13 @@ public class RollingEnemyModel extends EnemyModel {
         if (unsticking && gummed) {
             gumTexture.setRegionHeight((int) (unstickingFraction * gumTextureHeight));
         }
+        else if (unsticking && getStuck()) {
+            System.out.println("Hi");
+            HashSet<GumModel> stuckGum = getStuckGum();
+            for(GumModel g : stuckGum){
+                g.getTexture().setRegionHeight((int) (unstickingFraction * g.getOutlineHeight()));
+            }
+        }
     }
 
     /**
@@ -282,6 +289,13 @@ public class RollingEnemyModel extends EnemyModel {
         super.drawWithOutline(canvas);
         if (unsticking && gummed) {
             outline.setRegionHeight((int) (unstickingFraction * outlineTextureHeight));
+        }
+        else if (unsticking && getStuck()) {
+            System.out.println("Hi");
+            HashSet<GumModel> stuckGum = getStuckGum();
+            for(GumModel g : stuckGum){
+                g.getOutlineTexture().setRegionHeight((int) (unstickingFraction * g.getOutlineHeight()));
+            }
         }
     }
 
