@@ -2357,7 +2357,7 @@
         {
          "name":"timer",
          "type":"int",
-         "value":45
+         "value":65
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",
