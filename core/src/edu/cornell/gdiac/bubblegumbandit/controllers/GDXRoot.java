@@ -200,6 +200,7 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(settingsMode);
             canvas.resetCamera();
         } else if (exitCode == Screens.LEVEL_SELECT) {
+            SoundController.lastPlayed(0);
             controller.gatherAssets(directory);
             levels.setup();
             levels.setCanvas(canvas);
@@ -214,7 +215,10 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.gatherAssets(directory);
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
-                if (screen == levels) controller.setLevelNum(levels.getSelectedLevel());
+                if (screen == levels) {
+                    SoundController.stopSound("shipExplosion");
+                    controller.setLevelNum(levels.getSelectedLevel());
+                }
                 if (screen == gameOver && gameOver.gameWon()) controller.previousLevel();
                 controller.reset();
             }

@@ -195,8 +195,6 @@ public class LevelIconModel {
         if (angle >= ANGLE){
             angle = ANGLE;
             exploded = true;
-            SoundController.stopSound("shipExplosion");
-            SoundController.lastPlayed(0);
         }
 
     }
