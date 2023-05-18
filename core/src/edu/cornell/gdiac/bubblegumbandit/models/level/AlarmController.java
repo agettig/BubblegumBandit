@@ -61,8 +61,8 @@ public class AlarmController {
    * @param directory The asset directory containing the alarm textures
    * @param world The physics world
    */
-  public AlarmController(Array<Vector2> locations, AssetDirectory directory, World world) {
-    this.rays = new RayHandler(world);
+  public AlarmController(Array<Vector2> locations, AssetDirectory directory, World world, RayHandler rays) {
+    this.rays = rays;
     rays.setAmbientLight(0.95f);
     rays.setShadows(true);
     this.lights = new PointLight[locations.size];
@@ -83,15 +83,7 @@ public class AlarmController {
    */
   public void drawLights(GameCanvas canvas, Vector2 scale) {
 
-    FitViewport viewport = canvas.getUIViewport();
-    GameCamera camera = canvas.getCamera();
-    Matrix4 box2dcombined = camera.combined.cpy();
-    box2dcombined.scl(scale.x);
-    rays.setCombinedMatrix(box2dcombined, camera.position.x / scale.x, camera.position.y / scale.y,
-            camera.viewportWidth * camera.zoom / scale.x, camera.viewportHeight * camera.zoom / scale.y);
-    int bufferScale = Math.round(Gdx.graphics.getBackBufferScale());
-    rays.useCustomViewport((viewport.getScreenX() * bufferScale), viewport.getScreenY() * bufferScale, viewport.getScreenWidth() * bufferScale, viewport.getScreenHeight() * bufferScale);
-    rays.render();
+
 
   }
 
