@@ -481,8 +481,11 @@ public class BanditModel extends CapsuleObstacle {
      * @param value whether the dude is on the ground.
      */
     public void setGrounded(boolean value) {
-        if(!isGrounded&&value) poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
-            drawScale, yScale==-1);
+        if(!isGrounded&&value) {
+            poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
+                    drawScale, yScale==-1);
+            SoundController.playSound("banditLanding", 1);
+        }
         isGrounded = value;
         if (isGrounded) {
             hasFlipped = false;

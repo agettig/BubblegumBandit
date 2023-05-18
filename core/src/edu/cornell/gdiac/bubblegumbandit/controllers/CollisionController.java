@@ -931,7 +931,6 @@ public class CollisionController implements ContactListener {
             }
             bandit.setGrounded(true);
             bandit.setKnockback(false);
-            SoundController.playSound("banditLanding", 1);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }
