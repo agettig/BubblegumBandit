@@ -6,9 +6,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import org.w3c.dom.Text;
+
+import java.util.Random;
 
 import static java.lang.String.valueOf;
 
@@ -18,13 +22,13 @@ public class LevelIconModel {
     private TextureRegion texture;
 
     /** texture for the level number to sit in*/
-    private TextureRegion marker;
+    private static TextureRegion marker;
 
     /** texture to mark a successful npc rescue*/
-    private TextureRegion success;
+    private static TextureRegion success;
 
     /** texture to mark a unsuccessful or incomplete npc rescue*/
-    private TextureRegion fail;
+    private static TextureRegion fail;
 
     /** the distance between the bottom of the marker and the top of the ship, in pixels*/
     private static final float MARKER_OFFSET = 30;
@@ -44,6 +48,9 @@ public class LevelIconModel {
     /** color to tint the level texture, determined by press state */
     private Color tint;
 
+    /** the tint of an exploded, dead ship */
+    private static final Color DEAD = new Color(255/255f, 100/255f, 120/255f, 1);
+
     /** the state of the button
      *
      * 0 - regular
@@ -53,6 +60,7 @@ public class LevelIconModel {
      * */
     private int pressState;
 
+    // variables for ship vertical hover
     private static final float HOVER_SPEED = 0.1f;
     private static final float HOVER_DIFF = 10f;
 
@@ -62,20 +70,57 @@ public class LevelIconModel {
 
     private boolean goingDown;
 
-    /** The number of collected stars in the level, updated based on save data*/
-    private int stars;
+    //Explosion variables
 
-    public LevelIconModel (TextureRegion texture, TextureRegion marker, TextureRegion success, TextureRegion fail, int level, float x, float y) {
-        this.texture = texture;
-        this.marker = marker;
-        this.success = success;
-        this.fail = fail;
+    /** the final rotation angle of an exploded ship*/
+    private static final float ANGLE = (float) (Math.PI/10);
+
+    /** whether this ship has exploded yet */
+    private boolean exploded = false;
+
+    /** Explosion effect drawn when a level is completed, repeated completions trigger the effect again */
+    private EffectController explosionEffectController;
+
+    /** Random number generator, used to set the placement of explosions */
+    private Random rand = new Random();
+
+    /** the current rotation angle of the ship */
+    private float angle;
+
+    /** the rotation rate of an exploding ship */
+    private static final float ROTATION_RATE = 0.002f;
+
+    //endRegion
+
+
+
+    /** sets the static attributes of the class */
+    public static void setTextures(AssetDirectory directory){
+        marker = new TextureRegion (directory.getEntry("marker", Texture.class));
+        success = new TextureRegion (directory.getEntry("o", Texture.class));
+        fail = new TextureRegion (directory.getEntry("x", Texture.class));
+
+    }
+
+    public LevelIconModel (AssetDirectory directory, AssetDirectory internal, int level, float x, float y) {
+
+        Texture entry = internal.getEntry("ship" + valueOf(level), Texture.class);
+        if (entry == null){
+            entry = internal.getEntry("ship1", Texture.class);
+        }
+
+        this.texture = new TextureRegion(entry);
+
+
         this.level = level;
         this.x = x;
         this.y = y;
         tint = Color.WHITE;
         max_hover = y + HOVER_DIFF;
         min_hover = y - HOVER_DIFF;
+
+        explosionEffectController = new EffectController("explosion", "explosion",
+                directory, true, true, 0.03f);
     }
 
     public void setPressState(int value) {
@@ -117,7 +162,11 @@ public class LevelIconModel {
         return SaveData.unlocked(level);
     }
 
+    int ticks = 0;
+
     public void update() {
+
+        explosionEffectController.update();
 
         //update position based on hover
         if (y >= max_hover) {
@@ -136,8 +185,14 @@ public class LevelIconModel {
             y -= HOVER_SPEED;
         }
 
-        //update stats from save data
-//        stars = SaveData.getStars(level);
+        if (SaveData.completed(level) && !exploded) {
+            makeExplosion(x + rand.nextInt(texture.getRegionWidth()),y + rand.nextInt(texture.getRegionHeight()));
+            angle += ROTATION_RATE;
+        }
+        if (angle >= ANGLE){
+            angle = ANGLE;
+            exploded = true;
+        }
 
     }
 
@@ -147,22 +202,31 @@ public class LevelIconModel {
         Color numTint = Color.WHITE;
 
         //draw ship icon
-        if (SaveData.unlocked(level)){
-            canvas.draw(texture, tint, x, y, texture.getRegionWidth(), texture.getRegionHeight());
+        if (SaveData.completed(level)){
+            canvas.draw(texture, tint.cpy().mul(DEAD), texture.getRegionWidth()/2f, texture.getRegionHeight()/2f,
+                    x + texture.getRegionWidth()/2f,y + texture.getRegionHeight()/2f,angle, 1, 1);
+            drawNPCs(canvas, pos);
 
+        }
+        else if (SaveData.unlocked(level)){
+            canvas.draw(texture, tint, x, y, texture.getRegionWidth(), texture.getRegionHeight());
             //draw npc status
             drawNPCs(canvas, pos);
         } else {
+            //locked levels are grayed out
             canvas.draw(texture, Color.DARK_GRAY, x, y, texture.getRegionWidth(), texture.getRegionHeight());
             numTint = Color.DARK_GRAY;
         }
 
         //draw number icons
-        canvas.draw(marker, numTint, marker.getRegionWidth()/2, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
+        canvas.draw(marker, numTint, marker.getRegionWidth()/2f, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
         canvas.drawText(valueOf(level), font,numTint, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
+
+        explosionEffectController.draw(canvas);
     }
 
-    public void drawNPCs(GameCanvas canvas, Vector2 center){
+    /** Draw npc indicator icons under the level */
+    private void drawNPCs(GameCanvas canvas, Vector2 center){
         int total = SaveData.getCaptiveCount(level);
         int successes = SaveData.completed(level) ? SaveData.getStars(level) : 0;
 
@@ -178,11 +242,17 @@ public class LevelIconModel {
                 //once drawn all the successes, the rest are failures
                 icon = fail;
             }
-            canvas.draw(icon, Color.WHITE, success.getRegionWidth()/2, success.getRegionHeight(),
+            canvas.draw(icon, Color.WHITE, success.getRegionWidth()/2f, success.getRegionHeight(),
                     start + space * i, center.y - texture.getRegionHeight()/2f - MARKER_OFFSET, 0,
                     1, 1);
 
         }
+    }
+
+
+    /** sets an explosion */
+    private void makeExplosion(float x, float y){
+        explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
     }
 
 

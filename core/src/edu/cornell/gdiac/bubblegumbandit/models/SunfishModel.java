@@ -34,7 +34,12 @@ public class SunfishModel extends WheelObstacle {
     private static final float RADIUS = 0.1f;
 
     /** The ship's speed */
-    private static final float SPEED = 10f;
+    private static final float SPEED = 12f;
+
+    /**
+     * The amount to speed the ship up
+     */
+    private static final float THRUST = 25f;
 
     /** the rate at which to update angle */
     private static final float ANGLE_RATE = 0.1f;
@@ -44,10 +49,7 @@ public class SunfishModel extends WheelObstacle {
      */
     private static final float DAMPING = 10f;
 
-    /**
-     * The amount to speed the ship up
-     */
-    private static final float THRUST = 30f;
+
 
     // attributes
 
@@ -82,8 +84,6 @@ public class SunfishModel extends WheelObstacle {
 
     /** How long we can draw flame again */
     private int cooldown;
-
-    private Vector2 pos;
 
     // endRegion
 
@@ -122,7 +122,7 @@ public class SunfishModel extends WheelObstacle {
 
         angle = d.angleRad();// - ANGLE_OFFSET;
 
-        movement = new Vector2(SPEED, 0);
+        movement.set(boosting ? THRUST : SPEED, 0);
         movement.rotateRad(angle);
 
 //        System.out.println(movement);
@@ -139,33 +139,37 @@ public class SunfishModel extends WheelObstacle {
     }
 
 
-    public void update(float dt){
-//        System.out.println(getVX());
+    /** updates the ship's position and its exhaust,
+     * ship only follows cursor once startMove is true.*/
+    public void update(float dt, boolean startMove){
 
+        if (startMove) {
+            updateMovement();
+        }
+        updateFires(dt);
+
+    }
+
+    /** moves the ship based on player input */
+    private void updateMovement(){
         float dst = getPosition().dst(lastPos);
 
         // damping distance
         if (dst < 150){
 //            forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
-
         }
-        //boosting distance
-         else if (boosting){
-            body.setTransform(body.getPosition().add(movement.scl(1.8f)), 0);
-//            System.out.println(body.getLinearVelocity());
-        }
-        //normal speed distance
-        else {
-            body.setTransform(body.getPosition().add(movement), 0);
-
-//            body.setLinearVelocity(movement);
-        }
+        else body.setTransform(body.getPosition().add(movement), 0);
 
 //        body.applyForce(forceCache, getPosition(), true);
 //        body.applyLinearImpulse(movement, getPosition(), true);
         //rotate ship to face cursor
         body.setTransform(body.getPosition(), angle);
+    }
 
+
+
+    /** updates the fires coming from the ship's exhaust */
+    private void updateFires(float dt){
         //add exhaust
         if (cooldown <= 0 ) {
 
@@ -189,8 +193,6 @@ public class SunfishModel extends WheelObstacle {
             }
         }
 
-
-        pos = getPosition();
     }
 
 

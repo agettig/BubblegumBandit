@@ -32,8 +32,10 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.DoorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
+import edu.cornell.gdiac.bubblegumbandit.models.level.SpecialTileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -41,6 +43,7 @@ import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
+import org.w3c.dom.Text;
 
 /**
  * Player avatar for the plaform game.
@@ -169,6 +172,13 @@ public class BanditModel extends CapsuleObstacle {
      */
     private final Vector2 cameraTarget;
 
+    /** The timer for deciding to start the AFK animation */
+    private float AFKtimer;
+
+    /** The time until the AFK animation plays */
+    private float AFKwait = 8f;
+
+
     /**
      * Whether the player has collected the orb.
      */
@@ -230,8 +240,8 @@ public class BanditModel extends CapsuleObstacle {
     public boolean getCooldown() {return inCooldown; }
 
     /** Sets the players cooldwon status*/
-    public void setCooldown(boolean inCooldown) {
-        this.inCooldown = inCooldown;
+    public void startCooldown() {
+        this.inCooldown = true;
         ticks = 0;
     }
 
@@ -274,6 +284,12 @@ public class BanditModel extends CapsuleObstacle {
     /** ref to the box2d world */
     private World world;
 
+    /** whether to show the victory pose */
+    private boolean victory;
+
+    /** The texture for the win pose */
+    private TextureRegion victoryText;
+
     /**
      * Whether the player has flipped in the air.
      */
@@ -308,7 +324,10 @@ public class BanditModel extends CapsuleObstacle {
                SoundController.playSound("banditShock", 0.75f);
            }
        }
+        knockbackTimer = STUN_TIME;
     }
+
+    public boolean isStunned(){ return stunTime>0;}
 
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
@@ -332,10 +351,10 @@ public class BanditModel extends CapsuleObstacle {
     public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
-            SoundController.playSound("banditHurt", 1);
-            SoundController.lastPlayed(-24);
+            SoundController.playSound("banditHurt", .7f);
+            SoundController.lastPlayed(-26);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
-            setCooldown(true);
+            startCooldown();
             return true;
         }
         return false;
@@ -480,8 +499,11 @@ public class BanditModel extends CapsuleObstacle {
      * @param value whether the dude is on the ground.
      */
     public void setGrounded(boolean value) {
-        if(!isGrounded&&value) poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
-            drawScale, yScale==-1);
+        if(!isGrounded&&value) {
+            poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
+                    drawScale, yScale==-1);
+            SoundController.playSound("banditLanding", .7f);
+        }
         isGrounded = value;
         if (isGrounded) {
             hasFlipped = false;
@@ -633,6 +655,8 @@ public class BanditModel extends CapsuleObstacle {
         isShooting = false;
         faceRight = false;
 
+        victory = false;
+
         shootCooldown = 0;
 
         isFlipped = false;
@@ -716,6 +740,10 @@ public class BanditModel extends CapsuleObstacle {
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        setTexture(texture);
+
+        key = constantsJson.get("victory").asString();
+        victoryText = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
 
@@ -892,8 +920,8 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         if (inCooldown) {
-            if (ticks >= 60) {
-                setCooldown(false);
+            if (ticks >= 30) {
+                inCooldown = false;
             }
         } else {
             SoundController.lastPlayed(0);
@@ -933,11 +961,18 @@ public class BanditModel extends CapsuleObstacle {
         // Anim controller update
         if(!animationController.hasTemp()&&!animationController.isEnding()
                 &&!animationController.getCurrentAnimation().equals("victory")) {
-            if(playingReload) animationController.setAnimation("reload", true, false);
-            else if (!isGrounded) animationController.setAnimation("fall", true, false);
-            else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
+             if (!isGrounded) {
+                if(hasFlipped) animationController.setAnimation("fallNeg", true, false);
+                else animationController.setAnimation("fall", true, false);
+            }
+            else if (stunTime > 0) animationController.setAnimation("stunned", true, false);
+            else if(playingReload) animationController.setAnimation("reload", true, false);
+             else if (getMovement() == 0)  {
+                 if(AFKtimer>AFKwait) animationController.setAnimation("afk", true, false);
+                 else animationController.setAnimation("idle", true, false);
+             }
             else {
-                if(backpedal) {
+                if (backpedal) {
                     animationController.setAnimation("back", true, false);
                 } else {
                     animationController.setAnimation("run", true, false);
@@ -945,6 +980,13 @@ public class BanditModel extends CapsuleObstacle {
 
             }
         }
+        if(animationController.getCurrentAnimation().equals("idle")
+            ||animationController.getCurrentAnimation().equals("afk")) {
+            AFKtimer+=dt;
+        } else {
+            AFKtimer = 0;
+        }
+
 
         curFrame = animationController.getFrame();
 
@@ -987,8 +1029,10 @@ public class BanditModel extends CapsuleObstacle {
                             endCrush();
                         }
                     }
-                    if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
-                        body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                    if (crusher != null) {
+                        if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
+                            body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                        }
                     }
                 }
             } else {
@@ -1000,7 +1044,7 @@ public class BanditModel extends CapsuleObstacle {
                 float banditRight = getX() + (getWidth() / 2f);
                 boolean isCrusher = false;
                 for (Obstacle ob : getCollisions()) {
-                    if (!(ob instanceof CrusherModel)) {
+                    if (!(ob instanceof CrusherModel || ob instanceof DoorModel)) {
                         float obHW = 0;
 
                         if (ob instanceof CapsuleObstacle) {
@@ -1051,12 +1095,17 @@ public class BanditModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        float effect = faceRight ? 1.0f : -1.0f;
+        if(backpedal&&health>0) effect *= -1f;
+
+        if(victory) {  canvas.drawWithShadow(victoryText, Color.WHITE, origin.x, origin.y,
+            getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
+            getY() * drawScale.y, getAngle(), effect, 1);
+            return;
+        }
         if (curFrame != null) {
 
             float yOffset = ((1 - crushScale) * texture.getRegionHeight() * (world.getGravity().y < 0 ? -.5f : .5f));
-
-            float effect = faceRight ? 1.0f : -1.0f;
-            if(backpedal&&health>0) effect *= -1f;
 
             canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
@@ -1105,4 +1154,7 @@ public class BanditModel extends CapsuleObstacle {
         super.drawDebug(canvas);
     }
 
+  public void setVictory() {
+        victory = true;
+  }
 }

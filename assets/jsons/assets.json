@@ -8,32 +8,18 @@
     "minimapBackground": "textures/UI/minimapBackground.png",
     "minimapTile": "textures/UI/square.png",
     "hoverPointer": "textures/UI/hoverPointer.png",
-    "continueGameButton": "textures/UI/nextLevel.png",
+    "continueGameButton": "textures/UI/continueGame.png",
     "levelSelectButton": "textures/UI/levelSelect.png",
     "nextLevelButton": "textures/UI/nextLevel.png",
     "titleScreenButton": "textures/UI/returnToTitleScreen.png",
     "tryAgainButton": "textures/UI/tryAgain.png",
+    "retryLevelButton": "textures/UI/retryLevel.png",
     "escape": "textures/UI/escape.png",
     "creditsBackground": "textures/UI/creditsBackground.png",
     "creditsTitle": "textures/UI/creditsTitle.png",
     "back": "textures/UI/back.png",
-    "sunfish": "textures/levelSelect/sunfish.png",
-    "fire": "textures/levelSelect/fire.png",
-    "boost": "textures/levelSelect/boost.png",
-    "point": "textures/levelSelect/point.png",
-    "marker": "textures/levelSelect/marker.png",
-    "x": "textures/levelSelect/x.png",
-    "o": "textures/levelSelect/o.png",
-    "ship1": "textures/levelSelect/level1.png",
-    "ship2": "textures/levelSelect/level1.png",
-    "ship3": "textures/levelSelect/level1.png",
-    "ship4": "textures/levelSelect/level1.png",
-    "ship5": "textures/levelSelect/level1.png",
-    "ship6": "textures/levelSelect/level1.png",
-    "ship7": "textures/levelSelect/level1.png",
-    "ship8": "textures/levelSelect/level1.png",
-    "ship9": "textures/levelSelect/level1.png",
     "mapIcon": "textures/tutorial/mapIcon.png",
+    "doubleFlipIcon": "textures/tutorial/doubleFlipIcon.png",
     "shootIcon": "textures/tutorial/gumIcon.png",
     "reloadIcon": "textures/tutorial/reloadIcon.png",
     "leftIcon": "textures/tutorial/leftIcon.png",
@@ -79,6 +65,7 @@
     "computer": "textures/environment/computer.png",
     "trajectoryProjectile": "textures/bandit/trajectory.png",
     "bandit": "textures/bandit/bandit.png",
+    "banditWithOrb" : "textures/bandit/banditWithOrb.png",
     "banditRun": {
       "file": "textures/bandit/banditRun.png",
       "wrap": false,
@@ -117,9 +104,9 @@
       "wrap": false,
       "sprites": {
         "victory": {
-          "size": 2,
+          "size": 4,
           "rows": 1,
-          "cols": 2
+          "cols": 4
         }
       }
     },
@@ -139,6 +126,38 @@
       "wrap": false,
       "sprites": {
         "fall": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    }, "banditStunned": {
+      "file": "textures/bandit/banditStunned.png",
+      "wrap": false,
+      "sprites": {
+        "stunned": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    },
+    "banditAFK": {
+      "file": "textures/bandit/banditAFK.png",
+      "wrap": false,
+      "sprites": {
+        "afk": {
+          "size": 16,
+          "rows": 1,
+          "cols": 16
+        }
+      }
+    },
+    "banditFallNeg": {
+      "file": "textures/bandit/banditFallNeg.png",
+      "wrap": false,
+      "sprites": {
+        "fallNeg": {
           "size": 2,
           "rows": 1,
           "cols": 2
@@ -419,7 +438,22 @@
           "cols": 2
         }
       }
-    }
+    },
+    "explosion": {
+      "file": "textures/levelSelect/explosion.png",
+      "wrap": false,
+      "sprites": {
+        "explosion": {
+          "size": 9,
+          "rows": 1,
+          "cols": 9
+        }
+      }
+    },
+    "doorFrame" : "textures/environment/doorFrame.png",
+    "doorBack" : "textures/environment/doorBack.png",
+    "doorLeft" : "textures/environment/doorLeft.png",
+    "doorRight" : "textures/environment/doorRight.png"
   },
   "fonts": {
     "display": {
@@ -475,7 +509,9 @@
     "doorSound": "sounds/doorSound.wav",
     "keyClick": "sounds/keyClick.wav",
     "knockback": "sounds/knockback.wav",
-    "banditHurt": "sounds/banditHurt.wav"
+    "banditHurt": "sounds/banditHurt.wav",
+    "glassSmash": "sounds/glassSmash.wav",
+    "smash": "sounds/smash.wav"
   },
   "samples": {
     "menu": "sounds/music/spaceCruising.ogg",
@@ -502,7 +538,7 @@
     "level17": "jsons/levels/level17.json",
     "level18": "jsons/levels/level18.json",
     "level19": "jsons/levels/level19.json",
-    "level20": "jsons/levels/placeholder.json",
+    "level20": "jsons/levels/level20.json",
     "level21": "jsons/levels/placeholder.json",
     "constants": "jsons/constants.json",
     "animations": "jsons/animations.json",

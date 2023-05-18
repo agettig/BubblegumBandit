@@ -62,6 +62,8 @@ public class SoundController {
     private static SoundEffect doorSound;
     private static SoundEffect keyClick;
     private static SoundEffect knockback;
+    private static SoundEffect glassSmash;
+    private static SoundEffect smash;
     private static SoundEffect banditHurt;
 
 
@@ -145,6 +147,8 @@ public class SoundController {
         doorSound = directory.getEntry("doorSound", SoundEffect.class);
         keyClick = directory.getEntry("keyClick", SoundEffect.class);
         knockback = directory.getEntry("knockback", SoundEffect.class);
+        glassSmash = directory.getEntry("glassSmash", SoundEffect.class);
+        smash = directory.getEntry("smash", SoundEffect.class);
         banditHurt = directory.getEntry("banditHurt", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
@@ -171,7 +175,9 @@ public class SoundController {
             put(doorSound, -21);
             put(keyClick, -22);
             put(knockback, -23);
-            put(banditHurt, -24);
+            put(glassSmash, -24);
+            put(smash, -25);
+            put(banditHurt, -26);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -198,6 +204,8 @@ public class SoundController {
             put("doorSound", doorSound);
             put("keyClick", keyClick);
             put("knockback", knockback);
+            put("glassSmash", glassSmash);
+            put("smash", smash);
             put("banditHurt", banditHurt);
         }};
 
@@ -215,8 +223,9 @@ public class SoundController {
     }
 
     public static void playMusic(String sound){
-        musicPlayer.clearSources();
         AudioSource sample = music.get(sound);
+        if (musicPlayer.getCurrent() == sample) return;
+        musicPlayer.clearSources();
         musicPlayer.setLooping(true);
         musicPlayer.addSource(sample);
         musicPlayer.setVolume(musicVolume);

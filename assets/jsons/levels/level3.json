@@ -331,18 +331,6 @@
                  "y":1615.7210031348
                 }, 
                 {
-                 "gid":71,
-                 "height":176,
-                 "id":103,
-                 "name":"",
-                 "rotation":0,
-                 "type":"exit",
-                 "visible":true,
-                 "width":144,
-                 "x":825.582836558386,
-                 "y":2047.02481872108
-                }, 
-                {
                  "gid":76,
                  "height":43,
                  "id":106,
@@ -489,6 +477,11 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
@@ -520,6 +513,18 @@
                  "width":115,
                  "x":4544,
                  "y":1562
+                }, 
+                {
+                 "gid":71,
+                 "height":176,
+                 "id":134,
+                 "name":"",
+                 "rotation":0,
+                 "type":"exit",
+                 "visible":true,
+                 "width":128,
+                 "x":832,
+                 "y":2048
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -666,7 +671,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":134,
+ "nextobjectid":135,
  "orientation":"orthogonal",
  "properties":[
         {
