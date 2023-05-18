@@ -580,6 +580,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         if (keycode == Input.Keys.SPACE) {
             sunfish.setBoosting(true);
+            SoundController.playSound("shipExhaust", 1);
+            SoundController.lastPlayed(-27);
         }
 
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 import org.w3c.dom.Text;
@@ -177,6 +178,7 @@ public class SunfishModel extends WheelObstacle {
             offset.rotateRad(angle + ANGLE_OFFSET);
 
             exhaust.add(new Fire(getX() + offset.x, getY() +offset.y));
+            SoundController.playSound("shipExhaust", 0.5f);
             cooldown = COOLDOWN_TIME;
         }
         else{

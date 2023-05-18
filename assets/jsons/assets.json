@@ -473,7 +473,8 @@
     "knockback": "sounds/knockback.wav",
     "glassSmash": "sounds/glassSmash.wav",
     "smash": "sounds/smash.wav",
-    "shipExplosion": "sounds/shipExplosion.wav"
+    "shipExplosion": "sounds/shipExplosion.wav",
+    "shipExhaust": "sounds/shipExhaust.wav"
   },
   "samples": {
     "menu": "sounds/music/spaceCruising.ogg",
