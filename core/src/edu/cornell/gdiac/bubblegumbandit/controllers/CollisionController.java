@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -728,10 +729,14 @@ public class CollisionController implements ContactListener {
                 crushed.markRemoved(true);
                 levelModel.makeShatter(crushed.getX(), crushed.getY());
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
+                SoundController.playSound("glassSmash", 0.1f);
             }
             else if (!crusher.didSmash) {
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
                 float hw = crusher.getWidth() / 2;
+                if (camera.isOnScreen(crusher.getX() * levelModel.getScale().x, crusher.getY() * levelModel.getScale().y)) {
+                    SoundController.playSound("smash", 1f);
+                }
                 if (crushed.getX() < crusher.getX() + hw & crushed.getX() > crusher.getX() - hw) {
                     crusher.maxAbsFallVel = 0;
                     crusher.didSmash = true;
@@ -767,6 +772,7 @@ public class CollisionController implements ContactListener {
             if (wasHit) {
                 shouldFlipGravity = true;
                 bandit.setVY(0);
+                bandit.setVX(-bandit.getVX());
             }
         } else { // Bandit colliding on side of hazard
             applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 15f, 5f, true);
@@ -930,7 +936,6 @@ public class CollisionController implements ContactListener {
             }
             bandit.setGrounded(true);
             bandit.setKnockback(false);
-            SoundController.playSound("banditLanding", 1);
             sensorFixtures.add(bandit == bodyA ? fixB : fixA);
         }
     }

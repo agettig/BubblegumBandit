@@ -21,6 +21,7 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Gummable;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
@@ -54,6 +55,9 @@ public class DoorModel extends TileModel implements Gummable {
 
     /** Whether the camera tile second mode the y axis */
     private boolean isSecondFixedY;
+
+    /** Reference to the game camera for sound purposes */
+    private GameCamera camera;
 
     /** Gets the value of isHorizontal */
     public boolean isHorizontal() {
@@ -200,7 +204,7 @@ public class DoorModel extends TileModel implements Gummable {
      * @param isHorizontal whether the door is horizontal
      * @param enemyMap hashmap mapping enemy ids to actual enemies
      */
-    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal, boolean isLocked, HashMap<Integer, EnemyModel> enemyMap) {
+    public void initialize(AssetDirectory directory, float x, float y, Vector2 scale, float levelHeight, JsonValue objectJson, JsonValue constants, boolean isHorizontal, boolean isLocked, HashMap<Integer, EnemyModel> enemyMap, GameCamera camera) {
         // make the body fixture into a sensor
         setName(isHorizontal ? "doorH" : "door");
 
@@ -340,6 +344,7 @@ public class DoorModel extends TileModel implements Gummable {
 
         this.isLocked = isLocked;
         this.enemyMap = enemyMap;
+        this.camera = camera;
 
         assert !(locksOnOrb && unlocksOnOrb);
     }
@@ -405,7 +410,9 @@ public class DoorModel extends TileModel implements Gummable {
      */
     private void openDoor() {
         if (!isLocked && !gummed) {
-            SoundController.playSound("doorSound", 0.5f);
+            if (camera.isOnScreen(getX() * drawScale.x, getY() * drawScale.y)) {
+                SoundController.playSound("doorSound", 0.5f);
+            }
             isOpen = true;
             body.getFixtureList().get(0).setSensor(true);
         }
@@ -416,7 +423,9 @@ public class DoorModel extends TileModel implements Gummable {
      */
     private void closeDoor() {
         if (!gummed) {
-            SoundController.playSound("doorSound", 0.5f);
+            if (camera.isOnScreen(getX() * drawScale.x, getY() * drawScale.y)) {
+                SoundController.playSound("doorSound", 0.5f);
+            }
             isOpen = false;
             body.getFixtureList().get(0).setSensor(false);
         }

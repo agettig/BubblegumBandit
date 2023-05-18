@@ -43,6 +43,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.ReactorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -175,6 +176,8 @@ public class LevelModel {
     private Array<DoorModel> doors;
     /** Number of total captives in the level */
     private int captiveCount;
+
+    private GameCamera camera;
 
     /**
      * Creates a new LevelModel
@@ -348,8 +351,10 @@ public class LevelModel {
      * @param levelFormat the JSON file defining the level
      * @param constants   the JSON file defining the constants
      * @param tilesetJson the JSON file defining the tileset
+     * @param camera the current game camera
      */
-    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, boolean disableShooting) {
+    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, boolean disableShooting, GameCamera camera) {
+        this.camera = camera;
 
         //Initializations & Logic
         aim.initialize(directory, constants);
@@ -670,7 +675,7 @@ public class LevelModel {
                     DoorModel door = new DoorModel();
                     boolean isLocked = objType.contains("Locked");
                     JsonValue doorJv = objType.contains("doorH") ? constants.get("doorH") : constants.get("door");
-                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds);
+                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds, camera);
                     activate(door);
                     doors.add(door);
                     break;

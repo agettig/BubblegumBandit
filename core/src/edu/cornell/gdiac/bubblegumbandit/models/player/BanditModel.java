@@ -232,8 +232,8 @@ public class BanditModel extends CapsuleObstacle {
     public boolean getCooldown() {return inCooldown; }
 
     /** Sets the players cooldwon status*/
-    public void setCooldown(boolean inCooldown) {
-        this.inCooldown = inCooldown;
+    public void startCooldown() {
+        this.inCooldown = true;
         ticks = 0;
     }
 
@@ -310,6 +310,7 @@ public class BanditModel extends CapsuleObstacle {
                SoundController.playSound("banditShock", 1);
            }
        }
+        knockbackTimer = STUN_TIME;
     }
 
     public void setKnockback(boolean knockback) {
@@ -335,7 +336,7 @@ public class BanditModel extends CapsuleObstacle {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
-            setCooldown(true);
+            startCooldown();
             return true;
         }
         return false;
@@ -480,8 +481,11 @@ public class BanditModel extends CapsuleObstacle {
      * @param value whether the dude is on the ground.
      */
     public void setGrounded(boolean value) {
-        if(!isGrounded&&value) poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
-            drawScale, yScale==-1);
+        if(!isGrounded&&value) {
+            poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
+                    drawScale, yScale==-1);
+            SoundController.playSound("banditLanding", 1);
+        }
         isGrounded = value;
         if (isGrounded) {
             hasFlipped = false;
@@ -892,8 +896,8 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         if (inCooldown) {
-            if (ticks >= 60) {
-                setCooldown(false);
+            if (ticks >= 30) {
+                inCooldown = false;
             }
         } else {
             if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {

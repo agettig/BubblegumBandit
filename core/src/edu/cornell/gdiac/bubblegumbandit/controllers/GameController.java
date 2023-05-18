@@ -512,7 +512,7 @@ public class GameController implements Screen {
         canvas.getCamera().setZoom(1);
 
         // Reload the json each time
-        level.populate(directory, levelFormat, constantsJson, tilesetJson, disableShooting);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson, disableShooting, canvas.getCamera());
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
@@ -688,6 +688,7 @@ public class GameController implements Screen {
         boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
+        shouldFlip = shouldFlip && !bandit.isKnockback();
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip && !complete && !failed) {
 
