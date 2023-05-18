@@ -493,7 +493,7 @@ public class CollisionController implements ContactListener {
 //
 
                                        o.setFlipped(greaterEnemyY);
-                                        System.out.println(greaterEnemyY);
+                                       System.out.println(greaterEnemyY);
 
 
 //                                    if ((!isFlipped && !gUp && !greaterEnemyY) || (gUp && greaterEnemyY) || (isFlipped && greaterEnemyY)) {
@@ -621,8 +621,8 @@ public class CollisionController implements ContactListener {
                 }
                 bubblegumController.createGummableJoint(gummable, ob2);
                 SoundController.playSound("enemySplat", 1f);
-                boolean greaterEnemyY = ob1.getY() < ob2.getY();
-                ob1.setFlipped(greaterEnemyY);
+                boolean greaterEnemyY = ob1.getY() > ob2.getY();
+                ob1.setFlipped(!greaterEnemyY);
                 ob1.setStuck(true);
             }
         }
@@ -636,8 +636,8 @@ public class CollisionController implements ContactListener {
                 SoundController.playSound("enemySplat", 1f);
                 // orientation of robot and gravity have to be opposite
 
-                boolean greaterEnemyY = ob2.getY() < ob1.getY();
-                ob2.setFlipped(greaterEnemyY);
+                boolean greaterEnemyY = ob2.getY() > ob1.getY();
+                ob2.setFlipped(!greaterEnemyY);
 //                if (ob2.isFlipped() != (levelModel.getWorld().getGravity().y >= 0)){
 //                  ob2.flipGravity();
 //                }

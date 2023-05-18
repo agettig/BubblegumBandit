@@ -8,31 +8,16 @@
     "minimapBackground": "textures/UI/minimapBackground.png",
     "minimapTile": "textures/UI/square.png",
     "hoverPointer": "textures/UI/hoverPointer.png",
-    "continueGameButton": "textures/UI/nextLevel.png",
+    "continueGameButton": "textures/UI/continueGame.png",
     "levelSelectButton": "textures/UI/levelSelect.png",
     "nextLevelButton": "textures/UI/nextLevel.png",
     "titleScreenButton": "textures/UI/returnToTitleScreen.png",
     "tryAgainButton": "textures/UI/tryAgain.png",
+    "retryLevelButton": "textures/UI/retryLevel.png",
     "escape": "textures/UI/escape.png",
     "creditsBackground": "textures/UI/creditsBackground.png",
     "creditsTitle": "textures/UI/creditsTitle.png",
     "back": "textures/UI/back.png",
-    "sunfish": "textures/levelSelect/sunfish.png",
-    "fire": "textures/levelSelect/fire.png",
-    "boost": "textures/levelSelect/boost.png",
-    "point": "textures/levelSelect/point.png",
-    "marker": "textures/levelSelect/marker.png",
-    "x": "textures/levelSelect/x.png",
-    "o": "textures/levelSelect/o.png",
-    "ship1": "textures/levelSelect/level1.png",
-    "ship2": "textures/levelSelect/level1.png",
-    "ship3": "textures/levelSelect/level1.png",
-    "ship4": "textures/levelSelect/level1.png",
-    "ship5": "textures/levelSelect/level1.png",
-    "ship6": "textures/levelSelect/level1.png",
-    "ship7": "textures/levelSelect/level1.png",
-    "ship8": "textures/levelSelect/level1.png",
-    "ship9": "textures/levelSelect/level1.png",
     "mapIcon": "textures/tutorial/mapIcon.png",
     "shootIcon": "textures/tutorial/gumIcon.png",
     "reloadIcon": "textures/tutorial/reloadIcon.png",
@@ -417,6 +402,17 @@
           "size": 2,
           "rows": 1,
           "cols": 2
+        }
+      }
+    },
+    "explosion": {
+      "file": "textures/levelSelect/explosion.png",
+      "wrap": false,
+      "sprites": {
+        "explosion": {
+          "size": 9,
+          "rows": 1,
+          "cols": 9
         }
       }
     }

@@ -167,6 +167,8 @@ public class LevelModel {
     /** represents the reactor around the orb */
     private ReactorModel reactorModel;
 
+    private boolean disableShooting;
+
     /** Cache for figuring out which tile is hit */
     private Vector2 tileCache = new Vector2();
 
@@ -351,7 +353,7 @@ public class LevelModel {
      * @param tilesetJson the JSON file defining the tileset
      * @param camera the current game camera
      */
-    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, GameCamera camera) {
+    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, boolean disableShooting, GameCamera camera) {
         this.camera = camera;
 
         //Initializations & Logic
@@ -362,6 +364,7 @@ public class LevelModel {
         backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
+        this.disableShooting = disableShooting;
         doors = new Array<>();
 
         JsonValue boardGravityDownLayer = null;
@@ -1013,7 +1016,7 @@ public class LevelModel {
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
-        if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
+        if(bandit.getHealth()>0 && !disableShooting) aim.drawProjectileRay(canvas);
        // gumEffectController.draw(canvas);
         glassEffectController.draw(canvas);
         sparkEffectController.draw(canvas);

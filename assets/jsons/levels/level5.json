@@ -273,6 +273,11 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
@@ -296,6 +301,11 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
@@ -1382,7 +1392,7 @@
         {
          "name":"captives",
          "type":"int",
-         "value":0
+         "value":2
         }, 
         {
          "name":"gravity",
