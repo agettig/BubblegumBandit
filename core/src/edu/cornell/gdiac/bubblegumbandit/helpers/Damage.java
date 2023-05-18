@@ -30,10 +30,10 @@ public class Damage {
     public static final float ROLLING_HIT_DAMAGE = 25f;
 
     /** Initial shock damage*/
-    public static final float SHOCK_DAMAGE = 0;
+    public static final float SHOCK_DAMAGE = 20f;
 
     /** Continued shock damage*/
-    public static final float DPS_ON_SHOCK = 0;
+    public static final float DPS_ON_SHOCK = 10f;
 
     // --- END REGION: ENEMIES ---
 
