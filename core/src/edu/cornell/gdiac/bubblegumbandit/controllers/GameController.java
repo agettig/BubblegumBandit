@@ -19,6 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -45,8 +46,6 @@ import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
-
-import java.awt.event.WindowListener;
 import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
@@ -242,6 +241,10 @@ public class GameController implements Screen {
      */
     private int levelNum;
 
+    public int getLevelNum(){
+        return levelNum;
+    }
+
     /**
      * The number of levels in the game.
      */
@@ -251,6 +254,8 @@ public class GameController implements Screen {
      * Whether the orb has been collected.
      */
     private boolean orbCollected;
+
+    public static int disableGumMaxLevel = 5;
 
     /**
      * true if Enemies that should spawn after the orb gets picked up
@@ -267,6 +272,8 @@ public class GameController implements Screen {
      * Tick counter for gum reloading
      */
     private long ticks;
+
+    private boolean disableShooting;
     /**
      * Whether the player is reloading gum
      */
@@ -274,10 +281,13 @@ public class GameController implements Screen {
 
     private boolean paused;
 
-    /** The pause screen */
+    /**
+     * The pause screen
+     */
     private PauseView pauseScreen;
 
-    public void setPaused(boolean paused) {this.paused = paused;
+    public void setPaused(boolean paused) {
+        this.paused = paused;
         if (paused) {
             pause();
         } else {
@@ -285,7 +295,9 @@ public class GameController implements Screen {
         }
     }
 
-    public boolean getPaused() {return paused; }
+    public boolean getPaused() {
+        return paused;
+    }
 
     /**
      * Returns true if the level is completed.
@@ -445,11 +457,10 @@ public class GameController implements Screen {
         pauseScreen = new PauseView();
         pauseScreen.initialize(directory.getEntry("codygoonRegular", BitmapFont.class));
         minimap = new Minimap();
-        backgrounds =  new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
+        backgrounds = new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
 
     }
-
 
     /**
      * sets the level loaded by the game controller, set by level select
@@ -459,11 +470,16 @@ public class GameController implements Screen {
         SaveData.setLevel(num);
     }
 
-    public void setPauseViewport(Viewport viewport){
+    public void previousLevel() {
+        levelNum -= 1;
+        SaveData.setLevel(levelNum - 1);
+    }
+
+    public void setPauseViewport(Viewport viewport) {
         pauseScreen.setViewport(viewport);
     }
 
-                                 /**
+    /**
      * Resets the status of the game so that we can play again.
      * <p>
      * This method disposes of the level and creates a new one. It will
@@ -474,7 +490,7 @@ public class GameController implements Screen {
         bubblegumController.resetAllBubblegum();
         projectileController.reset();
         collisionController.reset();
-        hud.setCaptives(0,0);
+        hud.setCaptives(0, 0);
 
 
         level.dispose();
@@ -487,12 +503,16 @@ public class GameController implements Screen {
         setPaused(false);
         spawnedPostOrbEnemies = false;
         levelFormat = directory.getEntry("level" + levelNum, JsonValue.class);
+        disableShooting = levelNum <= disableGumMaxLevel;
+
+        hud.disableShooting(disableShooting);
+
         canvas.getCamera().setFixedX(false);
         canvas.getCamera().setFixedY(false);
         canvas.getCamera().setZoom(1);
 
         // Reload the json each time
-        level.populate(directory, levelFormat, constantsJson, tilesetJson);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson, disableShooting);
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
@@ -523,6 +543,14 @@ public class GameController implements Screen {
 //        spawnedPostOrbEnemies = false;
 //        level.getBandit().respawnPlayer();
 //    }
+
+    public int getCaughtCaptives() {
+        return level.getBandit().getNumStars();
+    }
+
+    public int getTotalCaptives() {
+        return level.getTotalCaptives();
+    }
 
     /**
      * Returns whether to process the update loop
@@ -594,9 +622,9 @@ public class GameController implements Screen {
 
     /**
      * Unlocks next level
-     * */
-    public void unlockNextLevel(){
-        if ( level.getBandit().winConditionMet() && !isComplete()) {
+     */
+    public void unlockNextLevel() {
+        if (level.getBandit().winConditionMet() && !isComplete()) {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
@@ -607,6 +635,7 @@ public class GameController implements Screen {
             }
             SaveData.setLevel(levelNum);
             setComplete(true);
+
         }
     }
 
@@ -646,7 +675,7 @@ public class GameController implements Screen {
                 bandit.setVY(0);
                 bandit.setVX(.1f);
             }
-        } else if (level.getBandit().getHealth()>0 && (countdown > 100 || !complete)) {
+        } else if (level.getBandit().getHealth() > 0 && (countdown > 100 || !complete)) {
             float movement = inputResults.getHorizontal() * bandit.getForce();
             bandit.setMovement(movement);
             bandit.applyForce();
@@ -655,13 +684,12 @@ public class GameController implements Screen {
             if (bandit.isGrounded()) bandit.setVY(0);
         }
 
-
         float grav = level.getWorld().getGravity().y;
         boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
-        if (shouldFlip&&!complete&&!failed) {
+        if (shouldFlip && !complete && !failed) {
 
             Vector2 currentGravity = level.getWorld().getGravity();
             currentGravity.y = -currentGravity.y;
@@ -695,7 +723,7 @@ public class GameController implements Screen {
         }
 
 
-        if (inputResults.didShoot() && bandit.getAmmo() > 0 && bandit.getHealth() > 0) {
+        if (inputResults.didShoot() && bandit.getAmmo() > 0 && bandit.getHealth() > 0 && !disableShooting) {
             bandit.setShooting(true);
             Vector2 cross = level.getAim().getProjTarget(canvas);
             JsonValue gumJV = constantsJson.get("gumProjectile");
@@ -760,8 +788,7 @@ public class GameController implements Screen {
                 } else {
                     controller.coolDown(true);
                 }
-            }
-            else if (isLaserEnemy) {
+            } else if (isLaserEnemy) {
                 LaserEnemyModel laserEnemy = (LaserEnemyModel) controller.getEnemy();
                 if (laserEnemy.coolingDown()) laserEnemy.decrementCooldown(dt);
                 else {
@@ -775,26 +802,21 @@ public class GameController implements Screen {
                         }
                     }
                 }
-            }
-            else if(isRollingEnemy){
+            } else if (isRollingEnemy) {
                 RollingEnemyModel rollingEnemy = (RollingEnemyModel) controller.getEnemy();
-                if(rollingEnemy.shouldUnstick()){
-                    if(rollingEnemy.getGummed()){
+                if (rollingEnemy.shouldUnstick()) {
+                    if (rollingEnemy.getGummed()) {
                         bubblegumController.removeGummable(rollingEnemy);
                         rollingEnemy.resetUnstick();
-                    }
-                    else if(rollingEnemy.getStuck()){
+                    } else if (rollingEnemy.getStuck()) {
                         HashSet<GumModel> stuckGum = rollingEnemy.getStuckGum();
-                        for(GumModel g : stuckGum){
+                        for (GumModel g : stuckGum) {
                             bubblegumController.removeGum(g);
                         }
                         rollingEnemy.resetUnstick();
                     }
                 }
             }
-
-
-
         }
         projectileController.update();
         minimap.updateMinimap(dt, inputResults.didExpandMinimap(), false);
@@ -857,8 +879,10 @@ public class GameController implements Screen {
             SoundController.playSound("noGum", 1);
         }
 
-        hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
-        hud.drawCountdownText((int)orbCountdown, delta, canvas.getCamera(), level.getBandit());
+
+        hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum, disableShooting);
+
+        hud.drawCountdownText((int) orbCountdown, delta, canvas.getCamera(), level.getBandit());
 
         if (reloadSymbolTimer != -1 && reloadSymbolTimer < 60) {
             canvas.begin();
@@ -874,7 +898,7 @@ public class GameController implements Screen {
         // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
-           // level.getBandit().setVX(0);
+            // level.getBandit().setVX(0);
         }
     }
 
@@ -899,8 +923,7 @@ public class GameController implements Screen {
         input.readInput();
         if (input.didPause()) {
             setPaused(false);
-        }
-        else {
+        } else {
             pauseScreen.update();
             if (pauseScreen.getResumeClicked()) {
                 setPaused(false);
@@ -929,11 +952,10 @@ public class GameController implements Screen {
             }
             draw(delta);
             // Final message
-            if (countdown == 0){
+            if (countdown == 0) {
                 if (complete && !failed) {
                     listener.exitScreen(this, Screens.GAME_WON);
-                }
-                else {
+                } else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
             }

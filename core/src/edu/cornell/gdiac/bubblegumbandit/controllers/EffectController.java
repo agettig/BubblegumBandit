@@ -61,7 +61,6 @@ public class EffectController {
     this.delay = delay;
     delayTimer = (long) (delay*1000+1);
 
-
   }
 
   /**
@@ -74,7 +73,7 @@ public class EffectController {
   /**
    * Adds a new effect to the controller
    * @param x the x position of the effect
-   * @param y the f position of the effect
+   * @param y the y position of the effect
    * @param scale the physics to world scalar
    * @param reflect whether this effect
    *               should be reflected across the x axis
@@ -84,7 +83,6 @@ public class EffectController {
       effects.add(new Effect(x, y, scale, reflect, animationName));
       delayTimer = TimeUtils.millis();
     }
-
   }
 
   /** Updates all effects */
@@ -94,16 +92,19 @@ public class EffectController {
     }
   }
 
+
 /** Draws to the game canvas */
   public void draw(GameCanvas canvas) {
+
+
     if(effects.size==0) return;
+
     for(int i = 0; i< effects.size; i++) {
       if(effects.get(i).dispose) trash.add(effects.get(i));
     }
     for(Effect effect: trash) {
       effects.removeValue(effect, false);
     }
-
 
     for(Effect effect: effects) {
       effect.draw(canvas);

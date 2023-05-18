@@ -26,8 +26,8 @@ public class SaveData {
 
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
-//    return false; //uncomment to reset save data
-    return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
+    return false; //uncomment to reset save data
+//    return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
   }
 
   /** Makes a new save with defaults
@@ -47,7 +47,6 @@ public class SaveData {
     while (true) {
       level = directory.getEntry("level" + i, JsonValue.class);
       if (level != null) {
-        prefs.putInteger("level" + (i), lockLevels ? LOCKED : INCOMPLETE);
         JsonValue prop = level.get("properties").child;
         int count = 0;
         while (prop != null) {
@@ -142,7 +141,7 @@ public class SaveData {
     boolean levelExists = prefs.contains("level"+level);
     boolean levelLocked = !unlocked(level);
     if(levelExists&&levelLocked) {
-      prefs.putInteger("level"+level, 0);
+      prefs.putInteger("level"+level, -1);
       prefs.flush();
     }
     if(!levelExists) {
