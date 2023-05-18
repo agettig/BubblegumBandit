@@ -660,6 +660,7 @@ public class GameController implements Screen {
         boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
+        shouldFlip = shouldFlip && !bandit.isKnockback();
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip&&!complete&&!failed) {
 

@@ -767,6 +767,7 @@ public class CollisionController implements ContactListener {
             if (wasHit) {
                 shouldFlipGravity = true;
                 bandit.setVY(0);
+                bandit.setVX(-bandit.getVX());
             }
         } else { // Bandit colliding on side of hazard
             applyKnockback(hazard, bandit, true, Damage.HAZARD_DAMAGE, 15f, 5f, true);

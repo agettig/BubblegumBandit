@@ -310,6 +310,7 @@ public class BanditModel extends CapsuleObstacle {
                SoundController.playSound("banditShock", 1);
            }
        }
+        knockbackTimer = STUN_TIME;
     }
 
     public void setKnockback(boolean knockback) {
