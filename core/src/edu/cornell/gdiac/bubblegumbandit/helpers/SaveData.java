@@ -94,8 +94,8 @@ public class SaveData {
   private static int getLevelStatus(int level) {
     int status =  Gdx.app.getPreferences(prefsName).
         getInteger("level"+level, NOT_FOUND);
-    if(status == NOT_FOUND) System.err.println("Could not find level" +
-        " "+level+" when retrieving save data. ");
+    //if(status == NOT_FOUND) System.err.println("Could not find level" +
+        //" "+level+" when retrieving save data. ");
     return status;
 
   }
@@ -103,8 +103,8 @@ public class SaveData {
   public static int getCaptiveCount(int level) {
     int count =  Gdx.app.getPreferences(prefsName).
         getInteger("level"+level+"Captives", NOT_FOUND);
-    if(count == NOT_FOUND) System.err.println("Could not find level" +
-        " "+level+" when retrieving save data. ");
+    //if(count == NOT_FOUND) System.err.println("Could not find level" +
+        //" "+level+" when retrieving save data. ");
     return count;
   }
 

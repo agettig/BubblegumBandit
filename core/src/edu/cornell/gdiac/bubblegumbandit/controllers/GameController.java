@@ -248,7 +248,7 @@ public class GameController implements Screen {
     /**
      * The number of levels in the game.
      */
-    private final int NUM_LEVELS = 21;
+    public final static int NUM_LEVELS = 21;
 
     /**
      * Whether the orb has been collected.
@@ -334,6 +334,7 @@ public class GameController implements Screen {
     public boolean getFailure() {
         return failed;
     }
+
 
     /**
      * Sets whether the level is failed.
@@ -565,6 +566,8 @@ public class GameController implements Screen {
     public boolean preUpdate(float dt) {
 
         PlayerController input = PlayerController.getInstance();
+        SaveData.setLevel(NUM_LEVELS);
+        levelNum = SaveData.getContinueLevel();
         input.readInput();
         if (listener == null) {
             return true;
@@ -583,9 +586,7 @@ public class GameController implements Screen {
         if (input.didAdvance()) {
             SaveData.setLevel(levelNum);
             levelNum++;
-            if (levelNum > NUM_LEVELS) {
-                levelNum = 1;
-            }
+            if (levelNum > NUM_LEVELS) levelNum = 1;
             reset();
         }
         if (input.didRetreat()) {

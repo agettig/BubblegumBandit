@@ -159,7 +159,9 @@ public class LevelIconModel {
 
     /** whether this level is unlocked or not, locked levels are inaccessible by the player */
     public boolean isUnlocked() {
-        return SaveData.unlocked(level);
+
+        //return SaveData.unlocked(level);
+        return true;
     }
 
     int ticks = 0;
