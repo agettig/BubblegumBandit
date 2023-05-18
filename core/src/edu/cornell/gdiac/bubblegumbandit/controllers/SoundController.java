@@ -64,6 +64,7 @@ public class SoundController {
     private static SoundEffect knockback;
     private static SoundEffect glassSmash;
     private static SoundEffect smash;
+    private static SoundEffect shipExplosion;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -148,6 +149,7 @@ public class SoundController {
         knockback = directory.getEntry("knockback", SoundEffect.class);
         glassSmash = directory.getEntry("glassSmash", SoundEffect.class);
         smash = directory.getEntry("smash", SoundEffect.class);
+        shipExplosion = directory.getEntry("shipExplosion", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -175,6 +177,7 @@ public class SoundController {
             put(knockback, -23);
             put(glassSmash, -24);
             put(smash, -25);
+            put(shipExplosion, -26);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -203,6 +206,7 @@ public class SoundController {
             put("knockback", knockback);
             put("glassSmash", glassSmash);
             put("smash", smash);
+            put("shipExplosion", shipExplosion);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -242,6 +246,7 @@ public class SoundController {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
         if (!(soundId == lastPlayed)) {
+            System.out.println(volume * soundEffectsVolume);
             return playSound(s,soundId, volume * soundEffectsVolume);
         }
         return 0;
@@ -249,6 +254,10 @@ public class SoundController {
 
     public static void lastPlayed(int soundId) {
         lastPlayed = soundId;
+    }
+
+    public static int lastPlayed() {
+        return lastPlayed;
     }
 
 

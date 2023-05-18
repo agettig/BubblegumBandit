@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.bubblegumbandit.models;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import org.w3c.dom.Text;
@@ -121,6 +123,7 @@ public class LevelIconModel {
 
         explosionEffectController = new EffectController("explosion", "explosion",
                 directory, true, true, 0.03f);
+
     }
 
     public void setPressState(int value) {
@@ -192,6 +195,8 @@ public class LevelIconModel {
         if (angle >= ANGLE){
             angle = ANGLE;
             exploded = true;
+            SoundController.stopSound("shipExplosion");
+            SoundController.lastPlayed(0);
         }
 
     }
@@ -253,6 +258,8 @@ public class LevelIconModel {
     /** sets an explosion */
     private void makeExplosion(float x, float y){
         explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
+        SoundController.playSound("shipExplosion",1);
+        SoundController.lastPlayed(-26);
     }
 
 
