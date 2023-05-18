@@ -885,7 +885,6 @@ public class GameController implements Screen {
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
             level.getExit().setOpen(true);
-           // level.getBandit().setVX(0);
         }
     }
 
@@ -947,6 +946,8 @@ public class GameController implements Screen {
                 else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
+            } else if (countdown < 5&& countdown>=0) {
+                level.getBandit().setVictory();
             }
             if (pauseScreen.getQuitClicked()) {
                 listener.exitScreen(this, Screens.LOADING_SCREEN);

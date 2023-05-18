@@ -82,6 +82,7 @@
     "computer": "textures/environment/computer.png",
     "trajectoryProjectile": "textures/bandit/trajectory.png",
     "bandit": "textures/bandit/bandit.png",
+    "banditWithOrb" : "textures/bandit/banditWithOrb.png",
     "banditRun": {
       "file": "textures/bandit/banditRun.png",
       "wrap": false,

@@ -18,6 +18,7 @@
     "force": 30.0,
     "damping": 20.0,
     "maxSpeed": 7.0,
+    "victory" : "banditWithOrb",
     "texture": "bandit",
     "debugColor": "white",
     "debugOpacity": 192,

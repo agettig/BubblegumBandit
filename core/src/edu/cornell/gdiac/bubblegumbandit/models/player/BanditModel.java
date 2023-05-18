@@ -41,6 +41,7 @@ import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import java.lang.reflect.Field;
+import org.w3c.dom.Text;
 
 /**
  * Player avatar for the plaform game.
@@ -280,6 +281,12 @@ public class BanditModel extends CapsuleObstacle {
 
     /** ref to the box2d world */
     private World world;
+
+    /** whether to show the victory pose */
+    private boolean victory;
+
+    /** The texture for the win pose */
+    private TextureRegion victoryText;
 
     /**
      * Whether the player has flipped in the air.
@@ -640,6 +647,8 @@ public class BanditModel extends CapsuleObstacle {
         isShooting = false;
         faceRight = false;
 
+        victory = false;
+
         shootCooldown = 0;
 
         isFlipped = false;
@@ -723,6 +732,10 @@ public class BanditModel extends CapsuleObstacle {
         // Now get the texture from the AssetManager singleton
         String key = constantsJson.get("texture").asString();
         TextureRegion texture = new TextureRegion(directory.getEntry(key, Texture.class));
+        setTexture(texture);
+
+        key = constantsJson.get("victory").asString();
+        victoryText = new TextureRegion(directory.getEntry(key, Texture.class));
         setTexture(texture);
 
 
@@ -965,6 +978,7 @@ public class BanditModel extends CapsuleObstacle {
             AFKtimer = 0;
         }
 
+
         curFrame = animationController.getFrame();
 
         if (crusher != null) {
@@ -1070,12 +1084,17 @@ public class BanditModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        float effect = faceRight ? 1.0f : -1.0f;
+        if(backpedal&&health>0) effect *= -1f;
+
+        if(victory) {  canvas.drawWithShadow(victoryText, Color.WHITE, origin.x, origin.y,
+            getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
+            getY() * drawScale.y, getAngle(), effect, 1);
+            return;
+        }
         if (curFrame != null) {
 
             float yOffset = ((1 - crushScale) * texture.getRegionHeight() * (world.getGravity().y < 0 ? -.5f : .5f));
-
-            float effect = faceRight ? 1.0f : -1.0f;
-            if(backpedal&&health>0) effect *= -1f;
 
             canvas.drawWithShadow(curFrame, Color.WHITE, origin.x, origin.y,
                     getX() * drawScale.x - getWidth() / 2 * drawScale.x * effect, //adjust for animation origin
@@ -1124,4 +1143,7 @@ public class BanditModel extends CapsuleObstacle {
         super.drawDebug(canvas);
     }
 
+  public void setVictory() {
+        victory = true;
+  }
 }

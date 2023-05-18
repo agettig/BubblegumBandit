@@ -1046,7 +1046,7 @@ public class LevelModel {
         drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
         if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
-       // gumEffectController.draw(canvas);
+
         glassEffectController.draw(canvas);
         sparkEffectController.draw(canvas);
 
