@@ -29,6 +29,8 @@ import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.GameController.disableGumMaxLevel;
+
 /**
  * Root class for a LibGDX.
  * <p>
@@ -169,21 +171,14 @@ public class GDXRoot extends Game implements ScreenListener {
      */
     public void exitScreen(Screen screen, int exitCode) {
 
-
         // gathering assets only happens once
         if (screen == loading && !initialized) {
             directory = loading.getAssets();
             levels.gatherAssets(directory);
             initialized = true;
         }
-        if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
-            Gdx.graphics.setCursor(crosshairCursor);
-        } else{
-            Gdx.graphics.setCursor(mouseCursor);
-        }
 
-
-        if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
+        if ((exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER ) && controller.getLevelNum() > disableGumMaxLevel){
             Gdx.graphics.setCursor(crosshairCursor);
         } else{
             Gdx.graphics.setCursor(mouseCursor);
