@@ -88,12 +88,12 @@ public class GumModel extends WheelObstacle implements Unstickable {
         for (Obstacle ob : obstacles) {
             if (ob instanceof RollingEnemyModel && ((RollingEnemyModel) ob).isUnsticking()) {
                 outline.setRegionHeight((int) (((RollingEnemyModel) ob).getUnstickingFraction() * outlineHeight));
-            }
-            else {
-                outline.setRegionHeight((int) outlineHeight);
+                canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
+                return;
             }
         }
         if (outline != null) {
+            outline.setRegionHeight((int) outlineHeight);
             canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
         } else {
             super.draw(canvas);
