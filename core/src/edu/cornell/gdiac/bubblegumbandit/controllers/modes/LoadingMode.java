@@ -501,12 +501,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
-        if(assets.isFinished()) {
-            if(!SaveData.saveExists()&&!dataMade)  {
+        if(assets.isFinished()&&!dataMade) {
+            boolean hasSave = SaveData.saveExists(assets);
+            if(!hasSave)  {
                 dataMade = true;
                 SaveData.makeData(false, assets);
-
-            }
+            } else if (hasSave) dataMade = true;
         }
     }
 
