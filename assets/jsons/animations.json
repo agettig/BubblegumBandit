@@ -28,7 +28,7 @@
     },
     "victory": {
       "strip": "banditVictory.victory",
-      "fps": 2
+      "fps": 6
     },
     "knock": {
       "strip": "banditKnock.knock",
