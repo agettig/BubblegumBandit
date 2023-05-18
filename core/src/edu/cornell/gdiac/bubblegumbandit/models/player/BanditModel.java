@@ -232,8 +232,8 @@ public class BanditModel extends CapsuleObstacle {
     public boolean getCooldown() {return inCooldown; }
 
     /** Sets the players cooldwon status*/
-    public void setCooldown(boolean inCooldown) {
-        this.inCooldown = inCooldown;
+    public void startCooldown() {
+        this.inCooldown = true;
         ticks = 0;
     }
 
@@ -335,7 +335,7 @@ public class BanditModel extends CapsuleObstacle {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
-            setCooldown(true);
+            startCooldown();
             return true;
         }
         return false;
@@ -892,8 +892,8 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         if (inCooldown) {
-            if (ticks >= 60) {
-                setCooldown(false);
+            if (ticks >= 30) {
+                inCooldown = false;
             }
         } else {
             if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
