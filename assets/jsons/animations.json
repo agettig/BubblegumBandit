@@ -15,6 +15,9 @@
     "fall": {
       "strip": "banditFall.fall",
       "fps": 2
+    },  "stunned": {
+      "strip": "banditStunned.stunned",
+      "fps": 2
     },
     "fallNeg": {
       "strip": "banditFallNeg.fallNeg",

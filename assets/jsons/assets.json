@@ -147,6 +147,16 @@
           "cols": 2
         }
       }
+    }, "banditStunned": {
+      "file": "textures/bandit/banditStunned.png",
+      "wrap": false,
+      "sprites": {
+        "stunned": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
     },
     "banditFallNeg": {
       "file": "textures/bandit/banditFallNeg.png",

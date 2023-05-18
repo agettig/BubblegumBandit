@@ -689,7 +689,8 @@ public class GameController implements Screen {
             }
         }
 
-        if (inputResults.didReload() && !bandit.atMaxGum() && bandit.isGrounded()) {
+        if (inputResults.didReload() && !bandit.atMaxGum()
+            && bandit.isGrounded()&&!bandit.isKnockback()&&!bandit.isStunned()) {
             bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
                 bandit.addAmmo(1);

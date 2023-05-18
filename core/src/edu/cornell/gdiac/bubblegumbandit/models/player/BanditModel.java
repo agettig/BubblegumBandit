@@ -310,6 +310,8 @@ public class BanditModel extends CapsuleObstacle {
        }
     }
 
+    public boolean isStunned(){ return stunTime>0;}
+
     public void setKnockback(boolean knockback) {
         isKnockback = knockback;
         if(knockback && health>0) {
@@ -930,14 +932,15 @@ public class BanditModel extends CapsuleObstacle {
         // Anim controller update
         if(!animationController.hasTemp()&&!animationController.isEnding()
                 &&!animationController.getCurrentAnimation().equals("victory")) {
-            if(playingReload) animationController.setAnimation("reload", true, false);
-            else if (!isGrounded) {
+             if (!isGrounded) {
                 if(hasFlipped) animationController.setAnimation("fallNeg", true, false);
                 else animationController.setAnimation("fall", true, false);
             }
-            else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
+            else if (stunTime > 0) animationController.setAnimation("stunned", true, false);
+            else if(playingReload) animationController.setAnimation("reload", true, false);
+             else if (getMovement() == 0) animationController.setAnimation("idle", true, false);
             else {
-                if(backpedal) {
+                if (backpedal) {
                     animationController.setAnimation("back", true, false);
                 } else {
                     animationController.setAnimation("run", true, false);
