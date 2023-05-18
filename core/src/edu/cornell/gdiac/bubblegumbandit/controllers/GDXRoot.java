@@ -217,6 +217,7 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setCanvas(canvas);
                 if (screen == levels) {
                     SoundController.stopSound("shipExplosion");
+                    SoundController.stopSound("shipExhaust");
                     controller.setLevelNum(levels.getSelectedLevel());
                 }
                 if (screen == gameOver && gameOver.gameWon()) controller.previousLevel();

@@ -204,7 +204,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         backgroundHeight = background.getRegionHeight();
         backgroundWidth = background.getRegionWidth();
         fadeFraction = 0;
-        fadeRate = 0.01f;
+        fadeRate = 0.05f;
         levelWon = false;
 
     }
