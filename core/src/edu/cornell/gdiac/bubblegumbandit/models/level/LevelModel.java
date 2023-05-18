@@ -820,6 +820,10 @@ public class LevelModel {
 
     public void makeShatter(float x, float y){
         glassEffectController.makeEffect(x, y, scale, false);
+        tiledGraphGravityUp.getNode((int) x, (int) y - 1).disableNode();
+        tiledGraphGravityUp.getNode((int) x, (int) y + 1).disableNode();
+        tiledGraphGravityDown.getNode((int) x, (int) y - 1).disableNode();
+        tiledGraphGravityDown.getNode((int) x, (int) y + 1).disableNode();
     }
     public void makeSpark(float x, float y){
         sparkEffectController.makeEffect(x, y, scale, false);
