@@ -492,7 +492,7 @@ public class GameController implements Screen {
         canvas.getCamera().setZoom(1);
 
         // Reload the json each time
-        level.populate(directory, levelFormat, constantsJson, tilesetJson);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson, canvas.getCamera());
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());

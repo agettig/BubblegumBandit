@@ -245,14 +245,9 @@ public class GameCamera  extends OrthographicCamera {
         levelHeight = height;
     }
 
-    /** Apply screen shake trauma if the obstacle causing it is on screen.
-     * Use positive trauma for the camera to move up at first (good for gravity facing up)
-     * and negative trauma for the camera to move down at first (something falling down).
-     *
-     * @param xPos the pixel x position of the obstacle causing the trauma.
-     * @param yPos the pixel y position of the obstacle causing the trauma.
-     * @param trauma the amount of trauma to apply.*/
-    public void addTrauma(float xPos, float yPos, float trauma) {
+    /** Returns whether xPos, yPos is on the current camera screen.
+     * Note: xPos and yPos are PIXEl values, not world space */
+    public boolean isOnScreen(float xPos, float yPos) {
         float halfHeight = (viewportHeight * zoom) / 2;
         float lowerYBound = basePos.y - halfHeight;
         float upperYBound = basePos.y + halfHeight;
@@ -260,7 +255,18 @@ public class GameCamera  extends OrthographicCamera {
         float lowerXBound = basePos.x - halfWidth;
         float upperXBound = basePos.x + halfWidth;
 
-        if (yPos >= lowerYBound && yPos <= upperYBound && xPos >= lowerXBound && xPos <= upperXBound) {
+        return (yPos >= lowerYBound && yPos <= upperYBound && xPos >= lowerXBound && xPos <= upperXBound);
+    }
+
+    /** Apply screen shake trauma if the obstacle causing it is on screen.
+     * Use positive trauma for the camera to move up at first (good for gravity facing up)
+     * and negative trauma for the camera to move down at first (something falling down).
+     *
+     * @param xPos the PIXEL x position of the obstacle causing the trauma.
+     * @param yPos the PIXEL y position of the obstacle causing the trauma.
+     * @param trauma the amount of trauma to apply.*/
+    public void addTrauma(float xPos, float yPos, float trauma) {
+        if (isOnScreen(xPos, yPos)) {
             shake.addTrauma(trauma);
         }
     }
