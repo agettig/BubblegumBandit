@@ -435,17 +435,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
          font = internal.getEntry("projectSpace", BitmapFont.class);
          ship = internal.getEntry("bigShip", Texture.class);
          ship.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
-        // Break up the status bar texture into regions
-       /* statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
-        statusBkgRight = internal.getEntry("progress.backRight", TextureRegion.class);
-        statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
-
-        statusFrgLeft = internal.getEntry("progress.foreLeft", TextureRegion.class);
-        statusFrgRight = internal.getEntry("progress.foreRight", TextureRegion.class);
-        statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class); */
-
-        // No progress so far.
+//
+//        // Break up the status bar texture into regions
+//       /* statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
+//        statusBkgRight = internal.getEntry("progress.backRight", TextureRegion.class);
+//        statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
+//
+//        statusFrgLeft = internal.getEntry("progress.foreLeft", TextureRegion.class);
+//        statusFrgRight = internal.getEntry("progress.foreRight", TextureRegion.class);
+//        statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class); */
+//
+//        // No progress so far.
         progress = 0;
         pressState = 0;
 
@@ -472,6 +472,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     public void dispose() {
         internal.unloadAssets();
         internal.dispose();
+        assets.unloadAssets();
+        assets.dispose();
     }
 
     private boolean dataMade = false;

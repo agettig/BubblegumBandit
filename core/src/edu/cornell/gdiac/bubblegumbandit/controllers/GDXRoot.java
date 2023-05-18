@@ -131,7 +131,15 @@ public class GDXRoot extends Game implements ScreenListener {
     public void dispose() {
         // Call dispose on our children
         setScreen(null);
+
         controller.dispose();
+        loading.dispose();
+        levels.dispose();
+        settingsMode.dispose();
+        gameOver.dispose();
+        credits.dispose();
+        mouseCursor.dispose();
+        crosshairCursor.dispose();
 
         canvas.dispose();
         canvas = null;
@@ -172,17 +180,17 @@ public class GDXRoot extends Game implements ScreenListener {
     public void exitScreen(Screen screen, int exitCode) {
 
         // gathering assets only happens once
-        if (screen == loading && !initialized) {
-            directory = loading.getAssets();
-            levels.gatherAssets(directory);
-            initialized = true;
-        }
-
-        if ((exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER ) && controller.getLevelNum() > disableGumMaxLevel){
-            Gdx.graphics.setCursor(crosshairCursor);
-        } else{
-            Gdx.graphics.setCursor(mouseCursor);
-        }
+//        if (screen == loading && !initialized) {
+//            directory = loading.getAssets();
+//            levels.gatherAssets(directory);
+//            initialized = true;
+//        }
+//
+//        if ((exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER ) && controller.getLevelNum() > disableGumMaxLevel){
+//            Gdx.graphics.setCursor(crosshairCursor);
+//        } else{
+//            Gdx.graphics.setCursor(mouseCursor);
+//        }
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();

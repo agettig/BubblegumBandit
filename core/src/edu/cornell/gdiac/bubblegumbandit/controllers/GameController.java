@@ -421,6 +421,7 @@ public class GameController implements Screen {
      * Dispose of all (non-static) resources allocated to this mode.
      */
     public void dispose() {
+        pauseScreen.dispose();
         level.dispose();
         level = null;
         canvas = null;

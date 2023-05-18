@@ -73,9 +73,6 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     /** Reference to the GameCanvas that draws onto the screen. */
     private GameCanvas canvas;
 
-    /** Box2D world for the CreditsMode. */
-    private World world;
-
     /** Stage to hold CreditsMode texture assets. */
     private Stage stage;
 
@@ -150,7 +147,6 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         this.directory = directory;
         this.directory.finishLoading();
         Gdx.input.setInputProcessor( this );
-        world = new World(new Vector2(0, 0), false);
         SoundController.playMusic("menu");
 
         background = directory.getEntry("creditsBackground", Texture.class);
@@ -402,9 +398,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
      */
     public void render(float delta) {
         if (active) {
-            update(delta);
+            update();
             draw();
-
             //Logic for returing to Main Menu below
             if (backPressedUp && listener!=null){
                 canvas.getCamera().isLevelSelect(false);
@@ -416,13 +411,9 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
     /**
      * Update the status of the CreditsMode.
      *
-     * @param dt Number of seconds since last animation frame
      */
-    private void update(float dt) {
-        world.step(dt, 8, 3);
+    private void update() {
         resize(canvas.getWidth(), canvas.getHeight());
-        Vector2 mousePos = canvas.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-        canvas.getCamera().update(dt);
     }
 
     /**
@@ -560,7 +551,7 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 
     @Override
