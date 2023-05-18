@@ -207,7 +207,7 @@ public class ModifiedIndexedPathFinder<N> implements PathFinder<N> {
             N node = connection.getToNode();
 
             TiledNode n = (TiledNode) node;
-            if((n.getType() == GRAVITY_UP_RESTRICRED && n.getY() < currY) || (n.getType() == GRAVITY_DOWN_RESTRICTED && n.getY() > currY)){
+            if((n.getType() == GRAVITY_UP_RESTRICRED && n.getY() < currY) || (n.getType() == GRAVITY_DOWN_RESTRICTED && n.getY() > currY || !n.getEnabled())){
                 continue;
             }
             float nodeCost = current.costSoFar + connection.getCost();

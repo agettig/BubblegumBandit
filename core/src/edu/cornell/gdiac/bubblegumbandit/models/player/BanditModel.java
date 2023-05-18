@@ -32,8 +32,10 @@ import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Damage;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
+import edu.cornell.gdiac.bubblegumbandit.models.level.DoorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
+import edu.cornell.gdiac.bubblegumbandit.models.level.SpecialTileModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -238,8 +240,8 @@ public class BanditModel extends CapsuleObstacle {
     public boolean getCooldown() {return inCooldown; }
 
     /** Sets the players cooldwon status*/
-    public void setCooldown(boolean inCooldown) {
-        this.inCooldown = inCooldown;
+    public void startCooldown() {
+        this.inCooldown = true;
         ticks = 0;
     }
 
@@ -322,6 +324,7 @@ public class BanditModel extends CapsuleObstacle {
                SoundController.playSound("banditShock", 1);
            }
        }
+        knockbackTimer = STUN_TIME;
     }
 
     public boolean isStunned(){ return stunTime>0;}
@@ -349,7 +352,7 @@ public class BanditModel extends CapsuleObstacle {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
-            setCooldown(true);
+            startCooldown();
             return true;
         }
         return false;
@@ -494,8 +497,11 @@ public class BanditModel extends CapsuleObstacle {
      * @param value whether the dude is on the ground.
      */
     public void setGrounded(boolean value) {
-        if(!isGrounded&&value) poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
-            drawScale, yScale==-1);
+        if(!isGrounded&&value) {
+            poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
+                    drawScale, yScale==-1);
+            SoundController.playSound("banditLanding", 1);
+        }
         isGrounded = value;
         if (isGrounded) {
             hasFlipped = false;
@@ -912,8 +918,8 @@ public class BanditModel extends CapsuleObstacle {
         }
 
         if (inCooldown) {
-            if (ticks >= 60) {
-                setCooldown(false);
+            if (ticks >= 30) {
+                inCooldown = false;
             }
         } else {
             if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
@@ -1020,8 +1026,10 @@ public class BanditModel extends CapsuleObstacle {
                             endCrush();
                         }
                     }
-                    if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
-                        body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                    if (crusher != null) {
+                        if (crushScale >= 0.05f && Math.abs(crusher.getX() - getX()) > crusher.getWidth() / 3) {
+                            body.applyForce(crusher.getX() < getX() ? 500 : -500, 0, getX(), getY(), true);
+                        }
                     }
                 }
             } else {
@@ -1033,7 +1041,7 @@ public class BanditModel extends CapsuleObstacle {
                 float banditRight = getX() + (getWidth() / 2f);
                 boolean isCrusher = false;
                 for (Obstacle ob : getCollisions()) {
-                    if (!(ob instanceof CrusherModel)) {
+                    if (!(ob instanceof CrusherModel || ob instanceof DoorModel)) {
                         float obHW = 0;
 
                         if (ob instanceof CapsuleObstacle) {

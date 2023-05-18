@@ -491,7 +491,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             this.progress = assets.getProgress();
             if (progress >= 1.0f) {
                 SoundController.getInstance().initialize(assets);
-                SoundController.playMusic("menu");
                 this.progress = 1.0f;
                 hoverPointer = internal.getEntry("hoverPointer", Texture.class);
                 startButton = internal.getEntry("startButton", Texture.class);
@@ -503,10 +502,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         resize(canvas.getWidth(), canvas.getHeight());
         if(assets.isFinished()&&!dataMade) {
             boolean hasSave = SaveData.saveExists(assets);
+
+            //    Uncomment to reset
+            //    boolean hasSave = false;
             if(!hasSave)  {
                 dataMade = true;
-                SaveData.makeData(false, assets);
+                SaveData.makeData(true, assets);
             } else if (hasSave) dataMade = true;
+        SoundController.playMusic("menu");
         }
     }
 

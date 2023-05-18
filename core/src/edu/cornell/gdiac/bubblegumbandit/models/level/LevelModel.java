@@ -173,6 +173,8 @@ public class LevelModel {
     /** represents the reactor around the orb */
     private ReactorModel reactorModel;
 
+    private boolean disableShooting;
+
     /** Cache for figuring out which tile is hit */
     private Vector2 tileCache = new Vector2();
 
@@ -180,6 +182,8 @@ public class LevelModel {
     private Array<DoorModel> doors;
     /** Number of total captives in the level */
     private int captiveCount;
+
+    private GameCamera camera;
 
     private RayHandler rays;
     private HashMap<Light, Obstacle> objLights;
@@ -358,8 +362,10 @@ public class LevelModel {
      * @param levelFormat the JSON file defining the level
      * @param constants   the JSON file defining the constants
      * @param tilesetJson the JSON file defining the tileset
+     * @param camera the current game camera
      */
-    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson) {
+    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, boolean disableShooting, GameCamera camera) {
+        this.camera = camera;
 
         //Initializations & Logic
         aim.initialize(directory, constants);
@@ -369,6 +375,7 @@ public class LevelModel {
         backgroundTiles = new Array<>();
         enemyControllers = new Array<>();
         backgroundObjects = new Array<>();
+        this.disableShooting = disableShooting;
         doors = new Array<>();
 
         JsonValue boardGravityDownLayer = null;
@@ -690,7 +697,7 @@ public class LevelModel {
                     DoorModel door = new DoorModel();
                     boolean isLocked = objType.contains("Locked");
                     JsonValue doorJv = objType.contains("doorH") ? constants.get("doorH") : constants.get("door");
-                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds);
+                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds, camera);
                     activate(door);
                     doors.add(door);
                     break;
@@ -835,6 +842,10 @@ public class LevelModel {
 
     public void makeShatter(float x, float y){
         glassEffectController.makeEffect(x, y, scale, false);
+        tiledGraphGravityUp.getNode((int) x, (int) y - 1).disableNode();
+        tiledGraphGravityUp.getNode((int) x, (int) y + 1).disableNode();
+        tiledGraphGravityDown.getNode((int) x, (int) y - 1).disableNode();
+        tiledGraphGravityDown.getNode((int) x, (int) y + 1).disableNode();
     }
     public void makeSpark(float x, float y){
         sparkEffectController.makeEffect(x, y, scale, false);
@@ -1045,8 +1056,8 @@ public class LevelModel {
         }
         drawChargeLasers(laserBeam, laserBeamEnd, canvas);
 
-        if(bandit.getHealth()>0) aim.drawProjectileRay(canvas);
-
+        if(bandit.getHealth()>0 && !disableShooting) aim.drawProjectileRay(canvas);
+       // gumEffectController.draw(canvas);
         glassEffectController.draw(canvas);
         sparkEffectController.draw(canvas);
 

@@ -29,6 +29,8 @@ import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
 
+import static edu.cornell.gdiac.bubblegumbandit.controllers.GameController.disableGumMaxLevel;
+
 /**
  * Root class for a LibGDX.
  * <p>
@@ -78,6 +80,9 @@ public class GDXRoot extends Game implements ScreenListener {
     private Cursor crosshairCursor;
 
     private GameCamera oldCamera;
+
+    /** Whether the game controller and the level select have already gathered assets. */
+    private boolean initialized;
 
     /**
      * Creates a new game from the configuration settings.
@@ -166,7 +171,14 @@ public class GDXRoot extends Game implements ScreenListener {
      */
     public void exitScreen(Screen screen, int exitCode) {
 
-        if (exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER){
+        // gathering assets only happens once
+        if (screen == loading && !initialized) {
+            directory = loading.getAssets();
+            levels.gatherAssets(directory);
+            initialized = true;
+        }
+
+        if ((exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER ) && controller.getLevelNum() > disableGumMaxLevel){
             Gdx.graphics.setCursor(crosshairCursor);
         } else{
             Gdx.graphics.setCursor(mouseCursor);
@@ -188,9 +200,8 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(settingsMode);
             canvas.resetCamera();
         } else if (exitCode == Screens.LEVEL_SELECT) {
-            directory = loading.getAssets();
             controller.gatherAssets(directory);
-            levels.gatherAssets(directory);
+            levels.setup();
             levels.setCanvas(canvas);
             levels.setScreenListener(this);
             setScreen(levels);
@@ -200,7 +211,6 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setPaused(true);
                 controller.update(0);
             } else {
-                directory = loading.getAssets();
                 controller.gatherAssets(directory);
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
@@ -210,7 +220,6 @@ public class GDXRoot extends Game implements ScreenListener {
             }
             setScreen(controller);
         } else if (exitCode == Screens.GAME_WON) {
-            directory = loading.getAssets();
             gameOver.initialize(directory, canvas);
             gameOver.gameWon(directory);
             gameOver.setScreenListener(this);
@@ -218,7 +227,6 @@ public class GDXRoot extends Game implements ScreenListener {
             canvas.resetCamera();
             setScreen(gameOver);
         } else if (exitCode == Screens.GAME_LOST) {
-            directory = loading.getAssets();
             gameOver.initialize(directory, canvas);
             gameOver.gameLost(directory);
             gameOver.setScreenListener(this);

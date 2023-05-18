@@ -53,8 +53,6 @@ public class SaveData {
     }
 
     return true;
-
-
   }
 
   /** Makes a new save with defaults
@@ -169,7 +167,7 @@ public class SaveData {
     boolean levelExists = prefs.contains("level"+level);
     boolean levelLocked = !unlocked(level);
     if(levelExists&&levelLocked) {
-      prefs.putInteger("level"+level, 0);
+      prefs.putInteger("level"+level, -1);
       prefs.flush();
     }
     if(!levelExists) {
