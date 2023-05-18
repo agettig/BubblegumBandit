@@ -475,7 +475,8 @@
     "doorSound": "sounds/doorSound.wav",
     "keyClick": "sounds/keyClick.wav",
     "knockback": "sounds/knockback.wav",
-    "glassSmash": "sounds/glassSmash.wav"
+    "glassSmash": "sounds/glassSmash.wav",
+    "smash": "sounds/smash.wav"
   },
   "samples": {
     "menu": "sounds/music/spaceCruising.ogg",
