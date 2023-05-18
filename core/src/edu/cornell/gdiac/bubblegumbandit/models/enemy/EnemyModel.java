@@ -452,6 +452,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     }
                     else if (crushScale <= 0.1f) {
                         markRemoved(true);
+                        if (this instanceof ShockEnemyModel) {
+                            ((ShockEnemyModel) this).stopShocks();
+                        }
                     } else if (crushScale > 1) {
                         endCrush();
                     }
@@ -464,6 +467,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     }
                     else if (crushScale <= 0.05f) {
                         markRemoved(true);
+                        if (this instanceof ShockEnemyModel) {
+                            ((ShockEnemyModel) this).stopShocks();
+                        }
                     } else if (crushScale > 1) {
                         endCrush();
                     }
