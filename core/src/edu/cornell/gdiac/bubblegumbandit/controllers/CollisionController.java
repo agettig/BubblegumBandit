@@ -728,6 +728,7 @@ public class CollisionController implements ContactListener {
                 crushed.markRemoved(true);
                 levelModel.makeShatter(crushed.getX(), crushed.getY());
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt);
+                SoundController.playSound("glassSmash", 0.1f);
             }
             else if (!crusher.didSmash) {
                 camera.addTrauma(crushed.getX() * crushed.getDrawScale().x, crushed.getY() * crushed.getDrawScale().y, CrusherModel.traumaAmt * (crusher.maxAbsFallVel / 20));
