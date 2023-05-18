@@ -635,6 +635,7 @@ public class GameController implements Screen {
             }
             SaveData.setLevel(levelNum);
             setComplete(true);
+
         }
     }
 
@@ -682,7 +683,6 @@ public class GameController implements Screen {
             bandit.setVX(0f);
             if (bandit.isGrounded()) bandit.setVY(0);
         }
-
 
         float grav = level.getWorld().getGravity().y;
         boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&

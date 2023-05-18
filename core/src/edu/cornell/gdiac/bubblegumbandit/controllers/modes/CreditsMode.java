@@ -297,7 +297,7 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         emily.setFontScaleX(.5f);
         creditsTableRight.add(emily).padBottom(20f).padTop(40f).padRight(180f);
         creditsTableRight.row();
-        Label emilyRole = new Label("Programmer, Designer, Musician", roleStyle);
+        Label emilyRole = new Label("Programmer, Designer, Composer", roleStyle);
         emilyRole.setAlignment(Align.left);
         emilyRole.setFontScale(.45f);
         creditsTableRight.add(emilyRole).padRight(198f);
