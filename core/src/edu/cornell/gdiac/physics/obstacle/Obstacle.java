@@ -101,11 +101,17 @@ public abstract class Obstacle {
 	}
 
 	// Gum methods
-	public void setGummed(boolean value) {gummed = value; /*stuck = value;*/}
+	public void setGummed(boolean value) {
+		System.out.println("gummed");
+		gummed = value; /*stuck = value;*/
+	}
 
 	public boolean getGummed() {return gummed; }
 
-	public void setStuck(boolean value) {stuck = value; }
+	public void setStuck(boolean value) {
+		System.out.println("stuck");
+		stuck = value;
+	}
 
 	public boolean getStuck() {return stuck; }
 
@@ -1082,4 +1088,8 @@ public abstract class Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public abstract void drawDebug(GameCanvas canvas);
+
+	public void forceFlipGravity() {
+		isFlipped = !isFlipped;
+	}
 }

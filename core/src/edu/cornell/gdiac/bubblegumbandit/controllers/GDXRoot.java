@@ -127,6 +127,11 @@ public class GDXRoot extends Game implements ScreenListener {
         // Call dispose on our children
         setScreen(null);
         controller.dispose();
+        loading.dispose();
+        levels.dispose();
+        settingsMode.dispose();
+        gameOver.dispose();
+        credits.dispose();
 
         canvas.dispose();
         canvas = null;
@@ -138,6 +143,7 @@ public class GDXRoot extends Game implements ScreenListener {
             directory = null;
         }
         super.dispose();
+//        Gdx.app.exit();
     }
 
     /**
@@ -155,6 +161,7 @@ public class GDXRoot extends Game implements ScreenListener {
         canvas.resize();
         super.resize(width, height);
     }
+
 
     /**
      * The given screen has made a request to exit its player mode.
@@ -174,6 +181,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
         if (exitCode == Screens.EXIT_CODE) {
             Gdx.app.exit();
+            System.out.println("quit");
         } else if (exitCode == Screens.LOADING_SCREEN) {
             canvas.resetCamera();
             loading.setScreenListener(this);
@@ -237,7 +245,9 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(credits);
         }
         else {
-            throw new UnsupportedOperationException("Invalid screen");
+            System.out.println("quit else");
+            Gdx.app.exit();
+//            throw new UnsupportedOperationException("Invalid screen");
         }
     }
 }
