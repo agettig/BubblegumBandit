@@ -107,7 +107,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      */
     protected AnimationController animationController;
 
-    private TextureRegion gummedTexture;
+    protected TextureRegion gummedTexture;
 
     protected TextureRegion squishedGum;
     protected TextureRegion squishedGumOutline;
@@ -156,7 +156,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * Whether a shielded enemy's shield is lowered, happens during attacking
      */
-    private boolean isShielded;
+    protected boolean isShielded;
 
     /**
      * texture for the shield surrounding an enemy

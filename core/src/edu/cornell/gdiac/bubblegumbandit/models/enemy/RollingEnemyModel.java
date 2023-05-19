@@ -1,13 +1,19 @@
 package edu.cornell.gdiac.bubblegumbandit.models.enemy;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation.SwingOut;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.models.level.CrusherModel;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
+
+import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_LEFT;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.InputController.CONTROL_MOVE_RIGHT;
@@ -61,6 +67,15 @@ public class RollingEnemyModel extends EnemyModel {
     /** How many seconds it takes for a RollingEnemyModel to unstick itself*/
     private final float UNSTICK_TIME = 3f;
 
+    /**rate at which gum disappears during unsticking*/
+    private float unstickingRate;
+    private float unstickingFraction;
+    private float gumTextureHeight;
+    private float gumTextureWidth;
+    private float outlineTextureHeight;
+    private float stuckGumTextureHeight;
+    private TextureRegion stuckGumTexture;
+
     /**
      * Returns the damage a RollingEnemyModel deals when it bumps into
      * its target.
@@ -98,6 +113,15 @@ public class RollingEnemyModel extends EnemyModel {
         ROLL_SPEED = constantsJson.get("mediumAttack").asInt();
         setName("mediumEnemy");
         attackDuration = 0;
+        unstickingFraction = 1;
+        unstickingRate = 0.005f;
+        gumTextureHeight = gumTexture.getRegionHeight();
+        gumTextureWidth = gumTexture.getRegionWidth();
+        outlineTextureHeight = outline.getRegionHeight();
+
+        stuckGumTexture = new TextureRegion(directory.getEntry("splatGum", Texture.class));
+
+        stuckGumTextureHeight = stuckGumTexture.getRegionHeight();
     }
 
     @Override
@@ -114,6 +138,9 @@ public class RollingEnemyModel extends EnemyModel {
         updateUnstick(delta);
         updateFrame();
         updateCrush();
+        if (unsticking) {
+            unstickingFraction -= unstickingRate;
+        }
     }
 
     private void updateYScale(){
@@ -230,6 +257,7 @@ public class RollingEnemyModel extends EnemyModel {
         clearStuckGum();
         unstickStopWatch = 0;
         unsticking = false;
+        unstickingFraction = 1;
     }
 
 
@@ -243,6 +271,38 @@ public class RollingEnemyModel extends EnemyModel {
     public void stickWithGum(GumModel gum) {
         super.stickWithGum(gum);
         unstickStopWatch = 0;
+    }
+
+    public void draw(GameCanvas canvas) {
+        super.draw(canvas);
+        if (unsticking && gummed) {
+            gumTexture.setRegionHeight((int) (unstickingFraction * gumTextureHeight));
+        }
+        else if (unsticking) {
+            stuckGumTexture.setRegionHeight((int) (unstickingFraction * stuckGumTextureHeight));
+            HashSet<GumModel> stuckGum = getStuckGum();
+            for(GumModel g : stuckGum){
+                g.setTexture(stuckGumTexture);
+            }
+        }
+    }
+
+    /**
+     * Draw method for when highlighting the enemy before unsticking them
+     */
+    public void drawWithOutline(GameCanvas canvas) {
+        super.drawWithOutline(canvas);
+        if (unsticking && gummed) {
+            outline.setRegionHeight((int) (unstickingFraction * outlineTextureHeight));
+        }
+    }
+
+    public boolean isUnsticking() {
+        return unsticking;
+    }
+
+    public float getUnstickingFraction() {
+        return unstickingFraction;
     }
 
     /**

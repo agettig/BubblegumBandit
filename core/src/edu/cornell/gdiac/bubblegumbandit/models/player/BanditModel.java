@@ -321,7 +321,7 @@ public class BanditModel extends CapsuleObstacle {
            if(!shock) animationController.setAnimation("knock", false, false);
            else {
                animationController.setAnimation("shock", false, false);
-               SoundController.playSound("banditShock", 1);
+               SoundController.playSound("banditShock", 0.75f);
            }
        }
         knockbackTimer = STUN_TIME;
@@ -351,6 +351,8 @@ public class BanditModel extends CapsuleObstacle {
     public boolean hitPlayer(float damage, boolean laser) {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
+            SoundController.playSound("banditHurt", .7f);
+            SoundController.lastPlayed(-26);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
             startCooldown();
             return true;
@@ -500,7 +502,7 @@ public class BanditModel extends CapsuleObstacle {
         if(!isGrounded&&value) {
             poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
                     drawScale, yScale==-1);
-            SoundController.playSound("banditLanding", 1);
+            SoundController.playSound("banditLanding", .7f);
         }
         isGrounded = value;
         if (isGrounded) {
@@ -922,6 +924,7 @@ public class BanditModel extends CapsuleObstacle {
                 inCooldown = false;
             }
         } else {
+            SoundController.lastPlayed(0);
             if (ticks % 3 == 0 && health>0 && healthCountdown <= 0) {
                 healPlayer(0.25f);
             }

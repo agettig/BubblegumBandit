@@ -509,6 +509,7 @@
     "doorSound": "sounds/doorSound.wav",
     "keyClick": "sounds/keyClick.wav",
     "knockback": "sounds/knockback.wav",
+    "banditHurt": "sounds/banditHurt.wav",
     "glassSmash": "sounds/glassSmash.wav",
     "smash": "sounds/smash.wav"
   },

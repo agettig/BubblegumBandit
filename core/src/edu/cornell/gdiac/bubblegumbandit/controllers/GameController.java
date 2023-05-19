@@ -876,7 +876,7 @@ public class GameController implements Screen {
 
         if (level.getBandit().getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
-            SoundController.playSound("noGum", 1);
+            SoundController.playSound("noGum", 0.75f);
         }
 
 
@@ -958,7 +958,7 @@ public class GameController implements Screen {
                 } else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
-            } else if (countdown < 5&& countdown>=0) {
+            } else if (countdown < 5&& countdown>=0 && !failed) {
                 level.getBandit().setVictory();
             }
             if (pauseScreen.getQuitClicked()) {
