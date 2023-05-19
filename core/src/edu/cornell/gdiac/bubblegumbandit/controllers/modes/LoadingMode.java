@@ -22,25 +22,25 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers.modes;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
-
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import edu.cornell.gdiac.assets.*;
-import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
-import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
+import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
-import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
-import edu.cornell.gdiac.util.*;
-import org.w3c.dom.Text;
+import edu.cornell.gdiac.util.Controllers;
+import edu.cornell.gdiac.util.ScreenListener;
+import edu.cornell.gdiac.util.XBoxController;
 
 /**
  * Class that provides a loading screen for the state of the game.
@@ -505,20 +505,25 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
-        if(assets.isFinished()&&!dataMade) {
+        if(assets.isFinished() && !dataMade) {
             boolean hasSave = SaveData.saveExists(assets);
 
             //    Uncomment to reset
-//                boolean hasSave = false;
+            //hasSave = false;
             if(!hasSave)  {
                 dataMade = true;
                 SaveData.makeData(true, assets);
             } else if (hasSave) dataMade = true;
         SoundController.playMusic("menu");
+
         }
-        if(assets.isFinished()&&pageTimer==-1){
-            pageTimer = 12f;
-            currentPage = page1;
+        if(assets.isFinished() && pageTimer==-1){
+            boolean hasSave = SaveData.saveExists(assets);
+
+            if (!hasSave) {
+                pageTimer = 12f;
+                currentPage = page1;
+            }
         }
         else if (assets.isFinished()&&pageTimer>0) {
             pageTimer -= delta;
