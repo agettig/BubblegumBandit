@@ -25,9 +25,34 @@ public class SaveData {
   //any numbers above -1 represent the number of stars collected
 
   /** Returns whether valid save data can be found on this device */
-  public static boolean saveExists() {
- //  return false; //uncomment to reset save data
-    return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
+  public static boolean saveExists(AssetDirectory directory) {
+
+    Preferences prefs =  Gdx.app.getPreferences(prefsName);
+
+    if(prefs.getFloat("music", -10)==-10) return false;
+    if(prefs.getFloat("sfx", -10)==-10) return false;
+    if(prefs.getInteger("lastFinished", -10)==-10) return false;
+
+    JsonValue level;
+    int i = 1;
+    while (true) {
+      level = directory.getEntry("level" + i, JsonValue.class);
+      if (level != null) {
+        if(prefs.getInteger("level" + (i), -10)==-10) return false;
+        if(prefs.getInteger("level"+i+"Captives", -10)==-10) return false;
+        i++;
+      } else break;
+
+    }
+
+    int[] defaultKeys = SettingsMode.defaultVals;
+    boolean[] defaultBindings = SettingsMode.defaultBindings;
+
+    for (int j = 0; j < keyCount; j++){
+      if(prefs.getInteger("key"+j, -10)==-10) return false;
+    }
+
+    return true;
   }
 
   /** Makes a new save with defaults
@@ -47,6 +72,7 @@ public class SaveData {
     while (true) {
       level = directory.getEntry("level" + i, JsonValue.class);
       if (level != null) {
+        if(i>1) prefs.putInteger("level" + (i), lockLevels ? LOCKED : INCOMPLETE);
         JsonValue prop = level.get("properties").child;
         int count = 0;
         while (prop != null) {

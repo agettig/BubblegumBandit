@@ -19,7 +19,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -635,7 +634,6 @@ public class GameController implements Screen {
             }
             SaveData.setLevel(levelNum);
             setComplete(true);
-
         }
     }
 
@@ -710,7 +708,8 @@ public class GameController implements Screen {
             }
         }
 
-        if (inputResults.didReload() && !bandit.atMaxGum() && bandit.isGrounded()) {
+        if (inputResults.didReload() && !bandit.atMaxGum()
+            && bandit.isGrounded()&&!bandit.isKnockback()&&!bandit.isStunned()) {
             bandit.startReload();
             if (ticks % RELOAD_RATE == 0) {
                 bandit.addAmmo(1);
@@ -877,7 +876,7 @@ public class GameController implements Screen {
 
         if (level.getBandit().getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
-            SoundController.playSound("noGum", 1);
+            SoundController.playSound("noGum", 0.75f);
         }
 
 
@@ -899,7 +898,7 @@ public class GameController implements Screen {
         // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
-            // level.getBandit().setVX(0);
+            level.getExit().setOpen(true);
         }
     }
 
@@ -959,6 +958,8 @@ public class GameController implements Screen {
                 } else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
+            } else if (countdown < 5&& countdown>=0 && !failed) {
+                level.getBandit().setVictory();
             }
             if (pauseScreen.getQuitClicked()) {
                 listener.exitScreen(this, Screens.LOADING_SCREEN);

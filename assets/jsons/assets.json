@@ -19,6 +19,7 @@
     "creditsTitle": "textures/UI/creditsTitle.png",
     "back": "textures/UI/back.png",
     "mapIcon": "textures/tutorial/mapIcon.png",
+    "doubleFlipIcon": "textures/tutorial/doubleFlipIcon.png",
     "shootIcon": "textures/tutorial/gumIcon.png",
     "reloadIcon": "textures/tutorial/reloadIcon.png",
     "leftIcon": "textures/tutorial/leftIcon.png",
@@ -64,6 +65,7 @@
     "computer": "textures/environment/computer.png",
     "trajectoryProjectile": "textures/bandit/trajectory.png",
     "bandit": "textures/bandit/bandit.png",
+    "banditWithOrb" : "textures/bandit/banditWithOrb.png",
     "banditRun": {
       "file": "textures/bandit/banditRun.png",
       "wrap": false,
@@ -102,9 +104,9 @@
       "wrap": false,
       "sprites": {
         "victory": {
-          "size": 2,
+          "size": 4,
           "rows": 1,
-          "cols": 2
+          "cols": 4
         }
       }
     },
@@ -124,6 +126,38 @@
       "wrap": false,
       "sprites": {
         "fall": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    }, "banditStunned": {
+      "file": "textures/bandit/banditStunned.png",
+      "wrap": false,
+      "sprites": {
+        "stunned": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    },
+    "banditAFK": {
+      "file": "textures/bandit/banditAFK.png",
+      "wrap": false,
+      "sprites": {
+        "afk": {
+          "size": 16,
+          "rows": 1,
+          "cols": 16
+        }
+      }
+    },
+    "banditFallNeg": {
+      "file": "textures/bandit/banditFallNeg.png",
+      "wrap": false,
+      "sprites": {
+        "fallNeg": {
           "size": 2,
           "rows": 1,
           "cols": 2
@@ -415,7 +449,11 @@
           "cols": 9
         }
       }
-    }
+    },
+    "doorFrame" : "textures/environment/doorFrame.png",
+    "doorBack" : "textures/environment/doorBack.png",
+    "doorLeft" : "textures/environment/doorLeft.png",
+    "doorRight" : "textures/environment/doorRight.png"
   },
   "fonts": {
     "display": {
@@ -471,6 +509,7 @@
     "doorSound": "sounds/doorSound.wav",
     "keyClick": "sounds/keyClick.wav",
     "knockback": "sounds/knockback.wav",
+    "banditHurt": "sounds/banditHurt.wav",
     "glassSmash": "sounds/glassSmash.wav",
     "smash": "sounds/smash.wav",
     "shipExplosion": "sounds/shipExplosion.wav",

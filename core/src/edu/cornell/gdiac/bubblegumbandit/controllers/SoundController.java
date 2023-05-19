@@ -66,6 +66,7 @@ public class SoundController {
     private static SoundEffect smash;
     private static SoundEffect shipExplosion;
     private static SoundEffect shipExhaust;
+    private static SoundEffect banditHurt;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -152,6 +153,7 @@ public class SoundController {
         smash = directory.getEntry("smash", SoundEffect.class);
         shipExplosion = directory.getEntry("shipExplosion", SoundEffect.class);
         shipExhaust = directory.getEntry("shipExhaust", SoundEffect.class);
+        banditHurt = directory.getEntry("banditHurt", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -181,6 +183,7 @@ public class SoundController {
             put(smash, -25);
             put(shipExplosion, -26);
             put(shipExhaust, -27);
+            put(banditHurt, -28);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -211,6 +214,7 @@ public class SoundController {
             put("smash", smash);
             put("shipExplosion", shipExplosion);
             put("shipExhaust", shipExhaust);
+            put("banditHurt", banditHurt);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -228,7 +232,10 @@ public class SoundController {
 
     public static void playMusic(String sound){
         AudioSource sample = music.get(sound);
-        if (musicPlayer.getCurrent() == sample) return;
+        if (musicPlayer.getCurrent() == sample) {
+            musicPlayer.play();
+            return;
+        }
         musicPlayer.clearSources();
         musicPlayer.setLooping(true);
         musicPlayer.addSource(sample);
@@ -250,7 +257,6 @@ public class SoundController {
         SoundEffect s = sounds.get(sound);
         int soundId = soundIds.get(s);
         if (!(soundId == lastPlayed)) {
-            System.out.println(lastPlayed());
             return playSound(s,soundId, volume * soundEffectsVolume);
         }
         return 0;
