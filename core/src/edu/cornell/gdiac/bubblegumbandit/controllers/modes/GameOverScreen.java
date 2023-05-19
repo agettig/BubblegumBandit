@@ -216,7 +216,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("retryLevelButton", Texture.class);
         SoundController.pauseMusic();
-      //  SoundController.stopSound("banditJingle");
+        SoundController.stopSound("banditJingle");
         SoundController.playSound("victory", 1);
         levelWon = true;
     }
