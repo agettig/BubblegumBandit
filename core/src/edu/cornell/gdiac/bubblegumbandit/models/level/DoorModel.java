@@ -334,7 +334,6 @@ public class DoorModel extends TileModel implements Gummable {
                           //  System.out.println("Unlocks on orb: " + unlocksOnOrb);
                             break;
                         case "lockOnPlayerPass":
-                            locksOnPlayerPass = (value == 1);
                             break;
                         default:
                             if (name.contains("enemy")) {
