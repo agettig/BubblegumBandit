@@ -352,7 +352,7 @@ public class BanditModel extends CapsuleObstacle {
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             SoundController.playSound("banditHurt", .7f);
-            SoundController.lastPlayed(-26);
+            SoundController.lastPlayed(-28);
             healthCountdown = HEALTH_REGEN_COOLDOWN;
             startCooldown();
             return true;
@@ -502,7 +502,7 @@ public class BanditModel extends CapsuleObstacle {
         if(!isGrounded&&value) {
             poofController.makeEffect(getX(),getY()-getHeight()/2*yScale,
                     drawScale, yScale==-1);
-            SoundController.playSound("banditLanding", .7f);
+            SoundController.playSound("banditLanding", .5f);
         }
         isGrounded = value;
         if (isGrounded) {

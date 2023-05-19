@@ -189,7 +189,7 @@ public class RollingEnemyModel extends EnemyModel {
             } else {
                 attackDuration = 0;
                 isRolling = true;
-                SoundController.playSound("rolling", 0.75f);
+                SoundController.playSound("rolling", 0.5f);
             }
         }
         rollCoolDown--;
