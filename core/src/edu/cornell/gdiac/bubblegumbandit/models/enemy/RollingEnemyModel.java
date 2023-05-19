@@ -291,10 +291,22 @@ public class RollingEnemyModel extends EnemyModel {
     /**
      * Draw method for when highlighting the enemy before unsticking them
      */
+    @Override
     public void drawWithOutline(GameCanvas canvas) {
-        super.drawWithOutline(canvas);
         if (unsticking && gummed) {
-            outline.setRegionHeight((int) (unstickingFraction * gumTextureHeight + 10));
+            outline.setRegionHeight((int) ((int) gumTextureHeight*unstickingFraction+5));
+        }
+        if (outline != null && gummedTexture != null) {
+            if (stuck) {
+                float y = getY() * drawScale.y; //-yScale*outline.getRegionHeight()/2;
+                canvas.draw(outline, Color.WHITE, origin.x, origin.y, getX()*drawScale.x-5,
+                    y , getAngle(), 1, yScale);
+            } else {
+                float y = getY() * drawScale.y; //-yScale*squishedGumOutline.getRegionHeight()/2;
+                canvas.draw(squishedGumOutline, Color.WHITE, origin.x, origin.y,
+                    getX()*drawScale.x-5,
+                    y-yScale*squishedGumOutline.getRegionHeight()/2, getAngle(), 1, yScale);
+            }
         }
     }
 
