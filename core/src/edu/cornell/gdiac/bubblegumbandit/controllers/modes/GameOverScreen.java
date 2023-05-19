@@ -210,7 +210,6 @@ public class GameOverScreen implements Screen, InputProcessor {
         fadeFraction = 0;
         fadeRate = 0.05f;
         levelWon = false;
-
     }
 
     public void setIsLastLevel(boolean b){
@@ -224,6 +223,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("retryLevelButton", Texture.class);
         SoundController.pauseMusic();
+        SoundController.stopSound("banditJingle");
         SoundController.playSound("victory", 1);
         levelWon = true;
     }
@@ -312,22 +312,33 @@ public class GameOverScreen implements Screen, InputProcessor {
         if (levelWon && totalCaptives > 0) {
             canvas.drawTextCentered(gameOverMessage, displayFont, 150);
             canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 65);
-            int[] oddOffset = new int[]{-35, -115, 45};
+            int[] oddOffset = new int[]{ -115, -35, 45};
             int[] evenOffset = new int[]{-75, 5};
-            for (int i = 0; i < totalCaptives; i++) {
-                if (totalCaptives % 2 == 1) {
-                    canvas.draw(emptyIcon, x + oddOffset[i], y - 15);
-                }
-                else {
-                    canvas.draw(emptyIcon, x + evenOffset[i], y - 15);
+            if (totalCaptives == 1) {
+                canvas.draw(emptyIcon, x + oddOffset[1], y - 15);
+            }
+            else {
+                for (int i = 0; i < totalCaptives; i++) {
+                    if (totalCaptives % 2 == 1) {
+                        canvas.draw(emptyIcon, x + oddOffset[i], y - 15);
+                    }
+                    else {
+                        canvas.draw(emptyIcon, x + evenOffset[i], y - 15);
+                    }
                 }
             }
-            for (int i = 0; i < caughtCaptives; i++) {
-                if (totalCaptives % 2 == 1) {
-                    canvas.draw(captiveIcon, x + oddOffset[i], y - 15);
-                }
-                else {
-                    canvas.draw(captiveIcon, x + evenOffset[i], y - 15);
+
+            if (totalCaptives == 1 && caughtCaptives == 1) {
+                canvas.draw(captiveIcon, x + oddOffset[1], y - 15);
+            }
+            else {
+                for (int i = 0; i < caughtCaptives; i++) {
+                    if (totalCaptives % 2 == 1) {
+                        canvas.draw(captiveIcon, x + oddOffset[i], y - 15);
+                    }
+                    else {
+                        canvas.draw(captiveIcon, x + evenOffset[i], y - 15);
+                    }
                 }
             }
 
@@ -654,7 +665,9 @@ public class GameOverScreen implements Screen, InputProcessor {
         pressState = 0;
     }
 
-    public void dispose() {}
+    public void dispose() {
+
+    }
 
     /**
      * Called when the Screen is resized.

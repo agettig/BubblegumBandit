@@ -183,9 +183,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         returnToMain = false;
 
-
-
-        path =new TextureRegion (internal.getEntry("point", Texture.class));
+        path = new TextureRegion (internal.getEntry("point", Texture.class));
 
 
     }
@@ -256,8 +254,11 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * Called when this screen should release all resources.
      */
     public void dispose() {
+        internal.dispose();
+        internal = null;
         canvas = null;
         sunfish = null;
+        world.dispose();
         world = null;
         levels = null;
     }

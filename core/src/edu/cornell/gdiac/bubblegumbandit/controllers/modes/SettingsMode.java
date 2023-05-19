@@ -812,6 +812,7 @@ public class SettingsMode implements Screen {
     @Override
     public void dispose() {
         internal.dispose();
+        stage.dispose();
     }
 
     /**

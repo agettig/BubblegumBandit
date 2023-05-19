@@ -86,7 +86,7 @@ public class SunfishModel extends WheelObstacle {
     /** How long we can draw flame again */
     private int cooldown;
 
-    /** if we are in motionn */
+    /** if we are in motion */
     private boolean moving;
 
     // endRegion
@@ -186,7 +186,7 @@ public class SunfishModel extends WheelObstacle {
             offset.rotateRad(angle + ANGLE_OFFSET);
 
             exhaust.add(new Fire(getX() + offset.x, getY() +offset.y));
-            if (moving) SoundController.playSound("shipExhaust", 0.15f);
+            SoundController.playSound("shipExhaust", 0.15f);
             cooldown = COOLDOWN_TIME;
         }
         else{

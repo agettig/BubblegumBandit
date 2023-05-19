@@ -10,13 +10,19 @@ import edu.cornell.gdiac.bubblegumbandit.models.level.ShockModel;
 
 public class ShockEnemyModel extends EnemyModel {
 
-    /** Whether the shock should disappear when the enemy leaves the ground */
+    /**
+     * Whether the shock should disappear when the enemy leaves the ground
+     */
     private final boolean SHOCK_DISAPPEARS = false;
 
-    /** The current left shock of the enemy */
+    /**
+     * The current left shock of the enemy
+     */
     private ShockModel leftShock;
 
-    /** The current right shock of the enemy */
+    /**
+     * The current right shock of the enemy
+     */
     private ShockModel rightShock;
 
 
@@ -28,52 +34,54 @@ public class ShockEnemyModel extends EnemyModel {
         }
     }
 
-    /** Sets the shock of the enemy */
+    /**
+     * Sets the shock of the enemy
+     */
     public void setShock(ShockModel leftShock, ShockModel rightShock) {
         this.leftShock = leftShock;
         this.rightShock = rightShock;
     }
 
     public void stopShocks() {
-        leftShock.destroy();
-        rightShock.destroy();
+        if (leftShock != null) leftShock.destroy();
+        if (rightShock != null) rightShock.destroy();
     }
 
-    /**Creates a MovingEnemy.
+    /**
+     * Creates a MovingEnemy.
      *
      * @param world The box2d world
-     * @param id the id of this Enemy
-     * */
-    public ShockEnemyModel(World world, int id){
+     * @param id    the id of this Enemy
+     */
+    public ShockEnemyModel(World world, int id) {
         super(world, id);
         leftShock = null;
         rightShock = null;
     }
 
-    /**Initializes this MovingEnemy in the game. Sets its vision radius.
+    /**
+     * Initializes this MovingEnemy in the game. Sets its vision radius.
      *
-     * @param directory The BubblegumBandit asset directory
-     * @param x the x position of this enemy
-     * @param y the y position of this enemy
+     * @param directory     The BubblegumBandit asset directory
+     * @param x             the x position of this enemy
+     * @param y             the y position of this enemy
      * @param constantsJson the constants json
      * @param isFacingRight whether the enemy spawns facing right
-     * */
-    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson, boolean isFacingRight){
+     */
+    public void initialize(AssetDirectory directory, float x, float y, JsonValue constantsJson, boolean isFacingRight) {
         super.initialize(directory, x, y, constantsJson, isFacingRight);
         vision.setRadius(constantsJson.get("visionRadius").asFloat());
         attacking.setRadius(constantsJson.get("attackRadius").asFloat());
     }
 
 
-    public void update(float dt){
+    public void update(float dt) {
         turnCooldown--;
-        if(fired()){
+        if (fired()) {
             animationController.setAnimation("fire", false, false);
-        }
-        else if (stuck || gummed){
+        } else if (stuck || gummed) {
             animationController.setAnimation("stuck", true, false);
-        }
-        else {
+        } else {
             animationController.setAnimation("patrol", true, false);
         }
 

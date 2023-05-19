@@ -94,6 +94,8 @@ public class GameController implements Screen {
 
     private long reloadSymbolTimer;
 
+    private int reloadTimer;
+
     /**
      * represents the ship and space backgrounds
      */
@@ -267,10 +269,6 @@ public class GameController implements Screen {
      */
     private float orbCountdown;
 
-    /**
-     * Tick counter for gum reloading
-     */
-    private long ticks;
 
     private boolean disableShooting;
     /**
@@ -391,7 +389,6 @@ public class GameController implements Screen {
     public GameController() {
 
         //Technicals
-        ticks = 0;
         complete = false;
         failed = false;
         active = false;
@@ -421,7 +418,9 @@ public class GameController implements Screen {
      * Dispose of all (non-static) resources allocated to this mode.
      */
     public void dispose() {
+        pauseScreen.dispose();
         level.dispose();
+        if (hud != null) hud.dispose();
         level = null;
         canvas = null;
     }
@@ -625,7 +624,9 @@ public class GameController implements Screen {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
-            SaveData.unlock(levelNum);
+            if (levelNum != NUM_LEVELS) {
+                SaveData.unlock(levelNum);
+            }
 
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;
@@ -646,7 +647,6 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-        ticks++;
 
         unlockNextLevel();
 
@@ -709,13 +709,15 @@ public class GameController implements Screen {
         if (inputResults.didReload() && !bandit.atMaxGum()
             && bandit.isGrounded()&&!bandit.isKnockback()&&!bandit.isStunned()) {
             bandit.startReload();
-            if (ticks % RELOAD_RATE == 0) {
+            reloadTimer += 1;
+            if (reloadTimer % RELOAD_RATE == 0) {
                 bandit.addAmmo(1);
                 reloadSymbolTimer = -1;
                 reloadingGum = true;
                 SoundController.playSound("reloadingGum", 1);
             }
         } else {
+            reloadTimer = 0;
             reloadingGum = false;
             bandit.stopReload();
         }
@@ -896,6 +898,7 @@ public class GameController implements Screen {
         // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
+            level.getBandit().setInvulnerable();
             level.getExit().setOpen(true);
         }
     }

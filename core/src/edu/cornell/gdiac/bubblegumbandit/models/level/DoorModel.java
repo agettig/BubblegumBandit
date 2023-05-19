@@ -2,6 +2,7 @@ package edu.cornell.gdiac.bubblegumbandit.models.level;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_DOOR;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -402,6 +403,7 @@ public class DoorModel extends TileModel implements Gummable {
         }
         if (allDead) {
             isLocked = false;
+            SoundController.playSound("unlockDoor", 1);
         }
     }
 
@@ -460,7 +462,7 @@ public class DoorModel extends TileModel implements Gummable {
         } else if (openFraction < 0) {
             openFraction = 0;
         }
-        if (isLocked && !postOrb) {
+        if (isLocked && !(postOrb && locksOnOrb)) {
             tryUnlockDoor();
         }
         if (playerPassed || isHorizontal) {

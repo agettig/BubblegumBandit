@@ -486,6 +486,7 @@
     }
   },
   "soundfx": {
+    "pageTurn": "sounds/pageTurn.wav",
     "jump": "sounds/jump.wav",
     "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
     "gumSplat": "sounds/gumSplat.wav",
@@ -513,7 +514,10 @@
     "glassSmash": "sounds/glassSmash.wav",
     "smash": "sounds/smash.wav",
     "shipExplosion": "sounds/shipExplosion.wav",
-    "shipExhaust": "sounds/shipExhaust.wav"
+    "shipExhaust": "sounds/shipExhaust.wav",
+    "shipDoor": "sounds/shipDoor.wav",
+    "banditJingle": "sounds/banditJingle.wav",
+    "unlockDoor": "sounds/unlockDoor.wav"
   },
   "samples": {
     "menu": "sounds/music/spaceCruising.ogg",

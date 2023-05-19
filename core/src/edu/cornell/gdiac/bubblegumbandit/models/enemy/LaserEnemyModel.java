@@ -126,6 +126,9 @@ public class LaserEnemyModel extends EnemyModel {
      */
     private Vector2 endVector = new Vector2();
 
+    /** Number of ticks applied in its firing phase. */
+    private int laserTicks;
+
     /** Random X scale for laser vibrations */
     private Array<Float> randomXScale;
 
@@ -419,6 +422,17 @@ public class LaserEnemyModel extends EnemyModel {
         return phase == LASER_PHASE.FIRING;
     }
 
+    /**
+     * Adds one to the count of firing ticks.
+     * */
+    public void incrementFiringTicks(){laserTicks++;}
+
+    /**
+     * Resets the number of firing ticks.
+     * */
+    public int getFiringTicks(){return laserTicks;}
+
+
 
     /**
      * Sets the Vector2 at which this LaserEnemyModel's laser
@@ -473,6 +487,7 @@ public class LaserEnemyModel extends EnemyModel {
     public void resetLaserCycle() {
         age = 0;
         firingTimer = 0;
+        laserTicks = 0;
         phase = LASER_PHASE.INACTIVE;
         cooldownTimer = LASER_COOLDOWN;
         setShouldJumpAttack(true);

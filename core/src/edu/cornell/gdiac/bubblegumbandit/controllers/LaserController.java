@@ -191,8 +191,10 @@ public class LaserController {
                 else {
                     SoundController.stopSound("laserFiring");
                 }
+                enemy.incrementFiringTicks();
 
                 //If we're hitting the bandit, take some damage.
+                if(enemy.getFiringTicks() == 1) bandit.hitPlayer(Damage.LASER_INITIAL_DAMAGE, true);
                 if (enemy.isHittingBandit()) bandit.hitPlayer(Damage.LASER_TICK_DAMAGE, true);
             }
         }
