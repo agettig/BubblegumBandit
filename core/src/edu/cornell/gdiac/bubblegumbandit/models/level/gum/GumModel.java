@@ -90,8 +90,8 @@ public class GumModel extends WheelObstacle implements Unstickable {
     public void drawWithOutline(GameCanvas canvas) {
         for (Obstacle ob : obstacles) {
             if (ob instanceof RollingEnemyModel && ((RollingEnemyModel) ob).isUnsticking()) {
-                rollingOutline.setRegionHeight((int) (((RollingEnemyModel) ob).getUnstickingFraction() * outlineHeight));
-                canvas.draw(rollingOutline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
+                rollingOutline.setRegionHeight((int) (((RollingEnemyModel) ob).getUnstickingFraction() * 38 + 10));
+                canvas.draw(rollingOutline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x- 5,getY()*drawScale.x-5,getAngle(),1,1);
                 return;
             }
         }
