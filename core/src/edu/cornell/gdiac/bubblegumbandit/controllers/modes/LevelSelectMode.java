@@ -183,9 +183,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         returnToMain = false;
 
-
-
-        path =new TextureRegion (internal.getEntry("point", Texture.class));
+        path = new TextureRegion (internal.getEntry("point", Texture.class));
 
 
     }
