@@ -206,7 +206,9 @@ public class LaserEnemyModel extends EnemyModel {
      * */
     public void initialize(AssetDirectory directory, float x, float y,
                            JsonValue constantsJson, boolean isFacingRight){
+
         super.initialize(directory, x, y, constantsJson, isFacingRight);
+        vision.setRadius(constantsJson.get("visionRadius").asFloat());
         halfStuck = new TextureRegion(directory.getEntry("halfStuck", Texture.class));
         halfStuckOutline = new TextureRegion(directory.getEntry("halfStuckOutline", Texture.class));
         setName("laserEnemy");

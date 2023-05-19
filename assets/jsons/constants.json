@@ -255,7 +255,7 @@
     "debugOpacity": 192,
     "sensorColor": "yellow",
     "sensorOpacity": 192,
-    "visionRadius": 3.0,
+    "visionRadius": 12.0,
     "sensorName": "listeningSensor",
     "listeningRadius": 7,
     "wanderSpeed": 1,

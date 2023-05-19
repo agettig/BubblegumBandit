@@ -25,7 +25,7 @@ public class RayCastCone {
     /** The length of the FOV. */
     private float radius;
     /** The number of rays being cast per radius unit */
-    private int numRays = 10;
+    private int numRays = 2;
     boolean resetRadius = false;
 
     /**

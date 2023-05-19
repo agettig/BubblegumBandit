@@ -517,7 +517,9 @@
   },
   "samples": {
     "menu": "sounds/music/spaceCruising.ogg",
+    "menuIntro": "sounds/music/scIntro.ogg",
     "inGame": "sounds/music/bubblegumBallad.ogg",
+    "inGameIntro": "sounds/music/bbIntro.ogg",
     "escape": "sounds/music/escape.ogg"
   },
   "jsons": {
@@ -527,7 +529,7 @@
     "level4": "jsons/levels/level4.json",
     "level5": "jsons/levels/level5.json",
     "level6": "jsons/levels/level6.json",
-    "level7": "jsons/levels/level7.json",
+    "level7": "jsons/levels/level7.5.json",
     "level8": "jsons/levels/level8.json",
     "level9": "jsons/levels/level9.json",
     "level10": "jsons/levels/level10.json",

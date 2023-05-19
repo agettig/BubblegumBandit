@@ -87,8 +87,14 @@ public class SoundController {
     /** menu music: SpaceCruising */
    private static AudioSource menu;
 
+   /** intro to menu music */
+   private static AudioSource menuIntro;
+
     /** in-game music: BubbleGumBallad */
     private static AudioSource game;
+
+    /** intro to in-game music */
+    private static AudioSource gameIntro;
 
     /** alarm music: escape! */
     private static AudioSource escape;
@@ -218,12 +224,16 @@ public class SoundController {
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
+       menuIntro = directory.getEntry( "menuIntro", AudioSource.class );
        game = directory.getEntry( "inGame", AudioSource.class );
+       gameIntro = directory.getEntry( "inGameIntro", AudioSource.class );
        escape = directory.getEntry( "escape", AudioSource.class );
 
         music = new HashMap<String, AudioSource>() {{
             put("menu", menu);
+            put("menuIntro", menu);
             put("game", game);
+            put("gameIntro", game);
             put("escape", escape);
         }};
        engine = (AudioEngine) Gdx.audio;
