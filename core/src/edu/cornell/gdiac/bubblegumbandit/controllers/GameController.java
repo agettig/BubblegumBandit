@@ -15,7 +15,10 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -278,6 +281,7 @@ public class GameController implements Screen {
     private PauseView pauseScreen;
 
     private ShapeRenderer shape;
+    private ShapeRenderer shape1;
 
     public void setPaused(boolean paused) {this.paused = paused;
     if (paused) {
@@ -395,6 +399,7 @@ public class GameController implements Screen {
         //Data Structures && Classes
         level = new LevelModel();
         shape = new ShapeRenderer();
+        shape1 = new ShapeRenderer();
 
         setComplete(false);
         setFailure(false);
@@ -873,14 +878,21 @@ public class GameController implements Screen {
             SoundController.playSound("noGum", 1);
         }
 
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//        shape.begin(ShapeRenderer.ShapeType.Filled);
-//        shape.setColor(new Color(255, 0, 0, 0.5f));
-//        shape.rect(0, 0, canvas.getWidth(), canvas.getHeight(),
-//                Color.RED, Color.RED, Color.CLEAR, Color.CLEAR);
-//        shape.end();
-//        Gdx.gl.glDisable(GL20.GL_BLEND);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(new Color(255, 0, 0, 0.5f));
+        shape.rect(0, 0, canvas.getWidth(), canvas.getHeight()/10,
+                Color.RED, Color.RED, Color.CLEAR, Color.CLEAR);
+        shape.end();
+
+        shape1.begin(ShapeRenderer.ShapeType.Filled);
+        shape1.setColor(new Color(255, 0, 0, 0.5f));
+        shape1.rect(0, canvas.getHeight(), canvas.getWidth(), canvas.getHeight()/10,
+                Color.RED, Color.RED, Color.CLEAR, Color.CLEAR);
+        shape1.end();
+
+        Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
         hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
