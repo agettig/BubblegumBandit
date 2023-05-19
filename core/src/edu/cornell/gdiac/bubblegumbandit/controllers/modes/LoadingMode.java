@@ -96,6 +96,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private Texture exitButton;
 
+    private Texture skipButton;
+
     /**
      * Pointer to what is being hovered.
      */
@@ -110,6 +112,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * The fill for the progress bar
      */
     private final Texture progressFill;
+
 
     /**
      * The current fill for the progress bar
@@ -243,6 +246,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private int exitButtonPositionY;
 
+    private int skipPositionX;
+
+    private int skipPositionY;
+
     /**
      * true if the player is hovering over the start button
      */
@@ -262,6 +269,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * true if the player is hovering over the exit button
      */
     private boolean hoveringExit;
+
+    private boolean hoveringSkip;
 
 
     private float scale;
@@ -294,6 +303,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * 7 = settings up, should open settings
      * 8 = credits up, should open credits
      * 9 = exit up, should quit.
+     * 10 = skip down
+     * 11 = skip up, should skip the video
      */
     private int pressState;
     /**
@@ -307,6 +318,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private boolean active;
 
     private float shipTime;
+
+    private boolean skipClicked;
 
     /**
      * Returns the budget for the asset loader.
@@ -371,6 +384,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     }
 
 
+
     /**
      * Returns the asset directory produced by this loading screen
      * <p>
@@ -423,7 +437,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         creditsButton = null;
         settingsButton = null;
         exitButton = null;
+        skipButton = null;
         hoverPointer = null;
+        skipClicked = false;
 
         background = internal.getEntry("background", Texture.class);
         background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -465,8 +481,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         active = true;
 
-
-
     }
 
     /**
@@ -502,6 +516,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 creditsButton = internal.getEntry("creditsButton", Texture.class);
                 settingsButton = internal.getEntry("settingsButton", Texture.class);
                 exitButton = internal.getEntry("exitButton", Texture.class);
+                skipButton = internal.getEntry("skipButton", Texture.class);
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
@@ -518,12 +533,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         }
         if(assets.isFinished() && pageTimer==-1){
-            boolean hasSave = SaveData.saveExists(assets);
-
-            if (!hasSave) {
-                pageTimer = 12f;
-                currentPage = page1;
-            }
+            //boolean hasSave = SaveData.saveExists(assets);
+            pageTimer = 12f;
+            currentPage = page1;
         }
         else if (assets.isFinished()&&pageTimer>0) {
             pageTimer -= delta;
@@ -568,6 +580,22 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 canvas.draw(currentPage, pageColor,
                     canvas.getCamera().viewportWidth/2-currentPage.getWidth()/2, canvas.getCamera().viewportHeight/2-currentPage.getHeight()/2, currentPage.getWidth(), currentPage.getHeight());
 
+//                skipPositionX = (int) canvas.getCamera().viewportWidth/10;
+//                skipPositionY = (int) (canvas.getCamera().viewportHeight - skipButton.getHeight() * 4);
+                skipPositionX = (int) canvas.getCamera().viewportWidth - 85;
+                skipPositionY = (int) (canvas.getCamera().viewportHeight - skipButton.getHeight() * 4.5);
+
+                canvas.draw(
+                        skipButton,
+                        getButtonTint("skip"),
+                        skipButton.getWidth() / 2f,
+                        skipButton.getHeight() / 2f,
+                        skipPositionX,
+                        skipPositionY,
+                        0,
+                        scale * BUTTON_SCALE,
+                        scale * BUTTON_SCALE
+                );
             } else {
                 canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
                 float highestButtonY = canvas.getCamera().viewportHeight / 2 - BUTTONS_PUSH_DOWN;
@@ -587,6 +615,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
                 exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
                 exitButtonPositionY = (int) (highestButtonY - gap * 3);
+
 
                 float pointerX = startButtonPositionX / 4f;
 
@@ -735,6 +764,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             else return defaultTint;
         }
 
+        if (buttonName.equals("skip")) {
+            if (hoveringSkip && pressState == 10) return pressTint;
+            else if (hoveringSkip) return hoverTint;
+            else return defaultTint;
+        }
+
         //Should never reach here, keeps Java happy
         return null;
     }
@@ -821,6 +856,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             if (shouldQuit()) {
                 SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, Screens.EXIT_CODE);
+            }
+
+            if (skipClicked) {
+                SoundController.playSound("keyClick", 1);
+                pageTimer = 0;
+                skipClicked = false;
             }
         }
     }
@@ -925,7 +966,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
         // if loading has not started
         if (startButton == null || creditsButton == null
-                || settingsButton == null || exitButton == null) return false;
+                || settingsButton == null || exitButton == null || skipButton == null) return false;
 
         //Detect clicks on the start button
         float rectWidth = scale * BUTTON_SCALE * startButton.getWidth();
@@ -971,6 +1012,17 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             pressState = 4;
         }
 
+        rectWidth = scale * BUTTON_SCALE * skipButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * skipButton.getHeight();
+        leftX = skipPositionX - rectWidth / 2.0f;
+        rightX = skipPositionX + rectWidth / 2.0f;
+        topY = skipPositionY - rectHeight / 2.0f;
+        bottomY = skipPositionY + rectHeight / 2.0f;
+        if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
+            pressState = 10;
+            skipClicked = true;
+        }
+
         return false;
     }
 
@@ -1013,6 +1065,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         //Exit
         if (pressState == 5) {
             pressState = 9;
+            return false;
+        }
+
+        if (pressState == 10) {
+            pressState = 11;
             return false;
         }
 
@@ -1148,6 +1205,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
         hoveringExit = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
+
+        rectWidth = scale * BUTTON_SCALE * skipButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * skipButton.getHeight();
+        leftX = skipPositionX - rectWidth / 2.0f;
+        rightX = skipPositionX + rectWidth / 2.0f;
+        topY = skipPositionY - rectHeight / 2.0f;
+        bottomY = skipPositionY + rectHeight / 2.0f;
+        hoveringSkip = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         return true;
     }
