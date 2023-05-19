@@ -528,12 +528,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             else if(pageTimer<5.5&&pageTimer>=5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
             else if(pageTimer<5&&pageTimer>4.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
             else if (pageTimer<.5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
-            else pageColor = Color.WHITE;
+            else pageColor = Color.WHITE.cpy();
 
         }
     }
 
-    private Color pageColor = Color.CLEAR;
+    private Color pageColor = Color.CLEAR.cpy();
     float pageTimer = -1;
     /**
      * Draw the status of this player mode.
