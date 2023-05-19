@@ -35,6 +35,8 @@ public class GumModel extends WheelObstacle implements Unstickable {
 
     private TextureRegion outline;
 
+    private TextureRegion rollingOutline;
+
     private float outlineHeight;
 
     /**
@@ -82,18 +84,18 @@ public class GumModel extends WheelObstacle implements Unstickable {
     /** Sets the outline used for this gum model. */
     public void setOutline(TextureRegion t) {
         outline = t;
+        rollingOutline = new TextureRegion(t);
     }
 
     public void drawWithOutline(GameCanvas canvas) {
         for (Obstacle ob : obstacles) {
             if (ob instanceof RollingEnemyModel && ((RollingEnemyModel) ob).isUnsticking()) {
-                outline.setRegionHeight((int) (((RollingEnemyModel) ob).getUnstickingFraction() * outlineHeight));
-                canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
+                rollingOutline.setRegionHeight((int) (((RollingEnemyModel) ob).getUnstickingFraction() * outlineHeight));
+                canvas.draw(rollingOutline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
                 return;
             }
         }
         if (outline != null) {
-            outline.setRegionHeight((int) outlineHeight);
             canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
         } else {
             super.draw(canvas);
