@@ -735,7 +735,6 @@ public class GameController implements Screen {
             if (gum != null) {
                 bandit.fireGum();
                 level.activate(gum);
-                gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         } else {
             bandit.setShooting(false);
