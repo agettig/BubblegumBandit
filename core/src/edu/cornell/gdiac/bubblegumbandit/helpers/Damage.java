@@ -26,6 +26,9 @@ public class Damage {
     /** Damage dealt when the Bandit touches a LaserEnemy's laser. */
     public static final float LASER_TICK_DAMAGE = .5f;
 
+    /** Additional damage dealt during the first tick of the laser. */
+    public static final float LASER_INITIAL_DAMAGE = 10f;
+
     /** Damage dealt when a RollingEnemy rolls into the Bandit. */
     public static final float ROLLING_HIT_DAMAGE = 25f;
 
