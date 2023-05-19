@@ -878,19 +878,21 @@ public class GameController implements Screen {
             SoundController.playSound("noGum", 1);
         }
 
+        Color mutedRed = new Color(203, 176, 178, 0.5f);
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(new Color(255, 0, 0, 0.5f));
+        shape.setColor(mutedRed);
         shape.rect(0, 0, canvas.getWidth(), canvas.getHeight()/10,
                 Color.RED, Color.RED, Color.CLEAR, Color.CLEAR);
         shape.end();
 
-        shape1.begin(ShapeRenderer.ShapeType.Filled);
-        shape1.setColor(new Color(255, 0, 0, 0.5f));
-        shape1.rect(0, canvas.getHeight(), canvas.getWidth(), canvas.getHeight()/10,
-                Color.RED, Color.RED, Color.CLEAR, Color.CLEAR);
-        shape1.end();
+//        shape1.begin(ShapeRenderer.ShapeType.Filled);
+//        shape1.setColor(mutedRed);
+//        shape1.rect(0, canvas.getHeight(), canvas.getWidth(), canvas.getHeight()/10,
+//                mutedRed, mutedRed, Color.CLEAR, Color.CLEAR);
+//        shape1.end();
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
