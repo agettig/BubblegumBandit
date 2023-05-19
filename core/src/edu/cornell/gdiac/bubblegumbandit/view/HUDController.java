@@ -420,4 +420,8 @@ public class HUDController {
             emptyGumImage.setVisible(shootingEnabled);
         }
     }
+
+    public void dispose() {
+        stage.dispose();
+    }
 }

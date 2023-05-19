@@ -420,6 +420,7 @@ public class GameController implements Screen {
     public void dispose() {
         pauseScreen.dispose();
         level.dispose();
+        if (hud != null) hud.dispose();
         level = null;
         canvas = null;
     }
