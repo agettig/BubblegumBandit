@@ -210,7 +210,6 @@ public class GameOverScreen implements Screen, InputProcessor {
         fadeFraction = 0;
         fadeRate = 0.05f;
         levelWon = false;
-
     }
 
     public void setIsLastLevel(boolean b){
@@ -666,7 +665,9 @@ public class GameOverScreen implements Screen, InputProcessor {
         pressState = 0;
     }
 
-    public void dispose() {}
+    public void dispose() {
+
+    }
 
     /**
      * Called when the Screen is resized.
