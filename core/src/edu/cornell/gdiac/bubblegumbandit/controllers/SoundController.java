@@ -69,6 +69,7 @@ public class SoundController {
     private static SoundEffect banditHurt;
     private static SoundEffect shipDoor;
     private static SoundEffect banditJingle;
+    private static SoundEffect pageTurn;
 
     /**Hashmap holding sounds and corresponding Id*/
     private static HashMap<SoundEffect, Integer> soundIds;
@@ -157,6 +158,7 @@ public class SoundController {
         banditHurt = directory.getEntry("banditHurt", SoundEffect.class);
         shipDoor = directory.getEntry("shipDoor", SoundEffect.class);
         banditJingle = directory.getEntry("banditJingle", SoundEffect.class);
+        pageTurn = directory.getEntry("pageTurn", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -189,9 +191,11 @@ public class SoundController {
             put(banditHurt, -28);
             put(shipDoor, -29);
             put(banditJingle, -30);
+            put(pageTurn, -31);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
+            put("pageTurn", pageTurn);
             put("jump", jumpSound);
             put("smallEnemyShooting", smallEnemyShootingSound);
             put("gumSplat", gumSplatSound);

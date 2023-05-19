@@ -116,6 +116,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private TextureRegion progressCurrent;
 
+    private Texture page1;
+    private Texture page2;
+    private Texture currentPage;
+
+
     /**
      * The margin for the progress bar fill against the background
      */
@@ -435,17 +440,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
          font = internal.getEntry("projectSpace", BitmapFont.class);
          ship = internal.getEntry("bigShip", Texture.class);
          ship.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-//
-//        // Break up the status bar texture into regions
-//       /* statusBkgLeft = internal.getEntry("progress.backLeft", TextureRegion.class);
-//        statusBkgRight = internal.getEntry("progress.backRight", TextureRegion.class);
-//        statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
-//
-//        statusFrgLeft = internal.getEntry("progress.foreLeft", TextureRegion.class);
-//        statusFrgRight = internal.getEntry("progress.foreRight", TextureRegion.class);
-//        statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class); */
-//
-//        // No progress so far.
+
+         page1 = internal.getEntry("page1", Texture.class);
+         page2 = internal.getEntry("page2", Texture.class);
+         currentPage = page1;
+
+
+       // No progress so far.
         progress = 0;
         pressState = 0;
 
@@ -513,8 +514,27 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             } else if (hasSave) dataMade = true;
         SoundController.playMusic("menu");
         }
+        if(assets.isFinished()&&pageTimer==-1){
+            pageTimer = 10f;
+            currentPage = page1;
+        }
+        else if (assets.isFinished()&&pageTimer>0) {
+            pageTimer -= delta;
+            if(pageTimer<5&&currentPage==page1) {
+                currentPage = page2;
+                SoundController.playSound("pageTurn", 1);
+            }
+            if(pageTimer>9.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
+            else if(pageTimer<5.5&&pageTimer>5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
+            else if(pageTimer<5&&pageTimer>4.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
+            else if (pageTimer<.5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
+            else pageColor = Color.WHITE;
+
+        }
     }
 
+    private Color pageColor = Color.CLEAR;
+    float pageTimer = -1;
     /**
      * Draw the status of this player mode.
      * <p>
@@ -529,30 +549,37 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         if (startButton == null || settingsButton == null || exitButton == null || hoverPointer == null) {
             drawProgress(canvas);
         } else {
-            canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
-            float highestButtonY = canvas.getCamera().viewportHeight / 2 - BUTTONS_PUSH_DOWN;
-            float lowestButtonY = canvas.getCamera().viewportHeight / 6;
-            float buttonSpace = highestButtonY+BUTTONS_PUSH_DOWN - lowestButtonY;
-            float gap = buttonSpace / 4;
+            if(pageTimer>0) {
+                canvas.draw(loadingBackground, Color.WHITE, 0, 0,
+                    canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+                canvas.draw(currentPage, pageColor,
+                    canvas.getCamera().viewportWidth/2-currentPage.getWidth()/2, canvas.getCamera().viewportHeight/2-currentPage.getHeight()/2, currentPage.getWidth(), currentPage.getHeight());
+
+            } else {
+                canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+                float highestButtonY = canvas.getCamera().viewportHeight / 2 - BUTTONS_PUSH_DOWN;
+                float lowestButtonY = canvas.getCamera().viewportHeight / 6;
+                float buttonSpace = highestButtonY+BUTTONS_PUSH_DOWN - lowestButtonY;
+                float gap = buttonSpace / 4;
 
 
-            startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-            startButtonPositionY = (int) highestButtonY;
+                startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+                startButtonPositionY = (int) highestButtonY;
 
-            settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-            settingsButtonPositionY = (int) (highestButtonY - gap);
+                settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+                settingsButtonPositionY = (int) (highestButtonY - gap);
 
-            levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-            levelSelectButtonPositionY = (int) (highestButtonY - gap * 2);
+                levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+                levelSelectButtonPositionY = (int) (highestButtonY - gap * 2);
 
-            exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-            exitButtonPositionY = (int) (highestButtonY - gap * 3);
+                exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
+                exitButtonPositionY = (int) (highestButtonY - gap * 3);
 
-            float pointerX = startButtonPositionX / 4f;
+                float pointerX = startButtonPositionX / 4f;
 
 
-            //Draw Continue Game
-            canvas.draw(
+                //Draw Continue Game
+                canvas.draw(
                     startButton,
                     getButtonTint("start"),
                     startButton.getWidth() / 2f,
@@ -562,9 +589,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                     0,
                     scale * BUTTON_SCALE,
                     scale * BUTTON_SCALE
-            );
-            if (hoveringStart) {
-                canvas.draw(
+                );
+                if (hoveringStart) {
+                    canvas.draw(
                         hoverPointer,
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
@@ -574,11 +601,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                         0,
                         scale,
                         scale
-                );
-            }
+                    );
+                }
 
-            //Draw Level Select
-            canvas.draw(
+                //Draw Level Select
+                canvas.draw(
                     creditsButton,
                     getButtonTint("credits"),
                     creditsButton.getWidth() / 2f,
@@ -588,9 +615,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                     0,
                     scale * BUTTON_SCALE,
                     scale * BUTTON_SCALE
-            );
-            if (hoveringCredits) {
-                canvas.draw(
+                );
+                if (hoveringCredits) {
+                    canvas.draw(
                         hoverPointer,
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
@@ -600,11 +627,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                         0,
                         scale,
                         scale
-                );
-            }
+                    );
+                }
 
-            //Draw Settings
-            canvas.draw(
+                //Draw Settings
+                canvas.draw(
                     settingsButton,
                     getButtonTint("settings"),
                     settingsButton.getWidth() / 2f,
@@ -614,9 +641,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                     0,
                     scale * BUTTON_SCALE,
                     scale * BUTTON_SCALE
-            );
-            if (hoveringSettings) {
-                canvas.draw(
+                );
+                if (hoveringSettings) {
+                    canvas.draw(
                         hoverPointer,
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
@@ -626,11 +653,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                         0,
                         scale,
                         scale
-                );
-            }
+                    );
+                }
 
-            //Draw Exit
-            canvas.draw(
+                //Draw Exit
+                canvas.draw(
                     exitButton,
                     getButtonTint("exit"),
                     exitButton.getWidth() / 2f,
@@ -640,10 +667,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                     0,
                     scale * BUTTON_SCALE,
                     scale * BUTTON_SCALE
-            );
+                );
 
-            if (hoveringExit) {
-                canvas.draw(
+                if (hoveringExit) {
+                    canvas.draw(
                         hoverPointer,
                         Color.WHITE,
                         hoverPointer.getWidth() / 2f,
@@ -653,17 +680,19 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                         0,
                         scale,
                         scale
-                );
+                    );
+                }
+
+                float offsetY = (float) (Math.sin(shipTime) * 10 )+20;
+
+                canvas.draw(ship, Color.WHITE, 0, 0,
+                    canvas.getCamera().viewportWidth-ship.getWidth(),
+                    canvas.getCamera().viewportHeight-ship.getHeight()+offsetY,
+                    ship.getWidth(), ship.getHeight());
+
+            }
             }
 
-           float offsetY = (float) (Math.sin(shipTime) * 10 )+20;
-
-            canvas.draw(ship, Color.WHITE, 0, 0,
-                canvas.getCamera().viewportWidth-ship.getWidth(),
-                canvas.getCamera().viewportHeight-ship.getHeight()+offsetY,
-                ship.getWidth(), ship.getHeight());
-
-        }
         canvas.end();
     }
 

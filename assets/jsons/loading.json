@@ -12,7 +12,9 @@
     "progressFill": "textures/UI/progressFill.png",
     "spaceship": "textures/levelSelect/sunfish.png",
     "jet": "textures/UI/jet.png",
-    "bigShip": "textures/UI/ship.png"
+    "bigShip": "textures/UI/ship.png",
+    "page1": "textures/UI/page1.png",
+    "page2": "textures/UI/page2.png"
   },
   "fonts": {
     "projectSpace": {
@@ -20,4 +22,5 @@
       "size": 25
     }
   }
+
 }
