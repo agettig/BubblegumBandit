@@ -118,6 +118,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
     private Texture page1;
     private Texture page2;
+    private Texture page3;
     private Texture currentPage;
 
 
@@ -443,6 +444,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
          page1 = internal.getEntry("page1", Texture.class);
          page2 = internal.getEntry("page2", Texture.class);
+        page3 = internal.getEntry("page3", Texture.class);
          currentPage = page1;
 
 
@@ -515,18 +517,23 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         SoundController.playMusic("menu");
         }
         if(assets.isFinished()&&pageTimer==-1){
-            pageTimer = 10f;
+            pageTimer = 12f;
             currentPage = page1;
         }
         else if (assets.isFinished()&&pageTimer>0) {
             pageTimer -= delta;
-            if(pageTimer<5&&currentPage==page1) {
+            if(pageTimer<8&&currentPage==page1) {
                 currentPage = page2;
                 SoundController.playSound("pageTurn", 1);
+            } else if(pageTimer<4&&currentPage==page2) {
+                currentPage = page3;
+                SoundController.playSound("pageTurn", 1);
             }
-            if(pageTimer>9.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
-            else if(pageTimer<5.5&&pageTimer>=5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
-            else if(pageTimer<5&&pageTimer>4.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
+            if(pageTimer>11.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
+            else if(pageTimer<8.5&&pageTimer>=8) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
+            else if(pageTimer<8&&pageTimer>7.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
+            else if(pageTimer<4.5&&pageTimer>=4) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
+            else if(pageTimer<4&&pageTimer>3.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
             else if (pageTimer<.5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
             else pageColor = Color.WHITE.cpy();
 

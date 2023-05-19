@@ -14,7 +14,9 @@
     "jet": "textures/UI/jet.png",
     "bigShip": "textures/UI/ship.png",
     "page1": "textures/UI/page1.png",
-    "page2": "textures/UI/page2.png"
+    "page2": "textures/UI/page2.png",
+    "page3": "textures/UI/page3.png"
+
   },
   "fonts": {
     "projectSpace": {
