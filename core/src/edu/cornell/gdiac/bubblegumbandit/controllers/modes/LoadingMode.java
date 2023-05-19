@@ -557,8 +557,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             drawProgress(canvas);
         } else {
             if(pageTimer>0) {
-                canvas.draw(loadingBackground, Color.WHITE, 0, 0,
-                    canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+                canvas.clear();
+                //canvas.draw(loadingBackground, Color.WHITE, 0, 0,
+                   // canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
                 canvas.draw(currentPage, pageColor,
                     canvas.getCamera().viewportWidth/2-currentPage.getWidth()/2, canvas.getCamera().viewportHeight/2-currentPage.getHeight()/2, currentPage.getWidth(), currentPage.getHeight());
 
