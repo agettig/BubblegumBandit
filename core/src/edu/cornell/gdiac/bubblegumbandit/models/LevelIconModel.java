@@ -258,7 +258,7 @@ public class LevelIconModel {
     /** sets an explosion */
     private void makeExplosion(float x, float y){
         explosionEffectController.makeEffect(x, y, new Vector2(1, 1), false);
-        SoundController.playSound("shipExplosion",0.5f);
+        SoundController.playSound("shipExplosion",0.25f);
         SoundController.lastPlayed(-26);
     }
 

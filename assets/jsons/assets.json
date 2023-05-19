@@ -513,7 +513,9 @@
     "glassSmash": "sounds/glassSmash.wav",
     "smash": "sounds/smash.wav",
     "shipExplosion": "sounds/shipExplosion.wav",
-    "shipExhaust": "sounds/shipExhaust.wav"
+    "shipExhaust": "sounds/shipExhaust.wav",
+    "shipDoor": "sounds/shipDoor.wav",
+    "banditJingle": "sounds/banditJingle.wav"
   },
   "samples": {
     "menu": "sounds/music/spaceCruising.ogg",
