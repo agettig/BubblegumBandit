@@ -525,7 +525,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 SoundController.playSound("pageTurn", 1);
             }
             if(pageTimer>9.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
-            else if(pageTimer<5.5&&pageTimer>5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
+            else if(pageTimer<5.5&&pageTimer>=5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
             else if(pageTimer<5&&pageTimer>4.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
             else if (pageTimer<.5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
             else pageColor = Color.WHITE;
