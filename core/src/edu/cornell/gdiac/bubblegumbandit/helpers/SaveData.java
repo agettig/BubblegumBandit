@@ -1,12 +1,10 @@
 package edu.cornell.gdiac.bubblegumbandit.helpers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
-import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 
 public class SaveData {
 
@@ -26,8 +24,8 @@ public class SaveData {
 
   /** Returns whether valid save data can be found on this device */
   public static boolean saveExists() {
-    //return false; //uncomment to reset save data
-    return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
+    return false; //uncomment to reset save data
+    //return Gdx.app.getPreferences(prefsName).getBoolean("save created", false);
   }
 
   /** Makes a new save with defaults

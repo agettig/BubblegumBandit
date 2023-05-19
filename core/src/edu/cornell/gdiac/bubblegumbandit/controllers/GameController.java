@@ -15,16 +15,12 @@
  */
 package edu.cornell.gdiac.bubblegumbandit.controllers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -37,17 +33,19 @@ import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.BackObjModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.EnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.LaserEnemyModel;
-import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.ShockEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.bubblegumbandit.models.level.gum.GumModel;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.ScreenListener;
+
 import java.util.HashSet;
 
-import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.*;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_GUM;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_GUM;
 
 /**
  * Gameplay controller for the game.
@@ -270,10 +268,16 @@ public class GameController implements Screen {
      */
     private boolean reloadingGum;
 
+    private boolean isLowHealth;
+
+    public void setIsLowHealth(boolean lowHealth) {this.isLowHealth = lowHealth;}
+
     private boolean paused;
 
     /** The pause screen */
     private PauseView pauseScreen;
+
+    private ShapeRenderer shape;
 
     public void setPaused(boolean paused) {this.paused = paused;
     if (paused) {
@@ -390,6 +394,7 @@ public class GameController implements Screen {
 
         //Data Structures && Classes
         level = new LevelModel();
+        shape = new ShapeRenderer();
 
         setComplete(false);
         setFailure(false);
@@ -743,6 +748,9 @@ public class GameController implements Screen {
                 }
             }
         }
+        if (bandit.getHealth() <= 20) {
+            setIsLowHealth(true);
+        }
 
         level.update(dt);
         for (AIController controller : level.aiControllers()) {
@@ -864,6 +872,15 @@ public class GameController implements Screen {
             reloadSymbolTimer = 0;
             SoundController.playSound("noGum", 1);
         }
+
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        shape.begin(ShapeRenderer.ShapeType.Filled);
+//        shape.setColor(new Color(255, 0, 0, 0.5f));
+//        shape.rect(0, 0, canvas.getWidth(), canvas.getHeight(),
+//                Color.RED, Color.RED, Color.CLEAR, Color.CLEAR);
+//        shape.end();
+//        Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
         hud.draw(level, (int) (1 / delta), (int) orbCountdown, level.getDebug(), reloadingGum);
