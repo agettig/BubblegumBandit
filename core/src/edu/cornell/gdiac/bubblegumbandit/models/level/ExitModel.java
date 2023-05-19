@@ -159,6 +159,9 @@ public class ExitModel extends BoxObstacle {
         lx = 0;
         lw = left.getWidth();
         rw = right.getWidth();
+        SoundController.playSound("shipDoor", 1);
+        SoundController.lastPlayed(-29);
+       // SoundController.playSound("banditJingle", 0.75f);
       } else {
         lx = left.getWidth() - startSize;
         lw = startSize;
@@ -166,9 +169,9 @@ public class ExitModel extends BoxObstacle {
         leftCurr = new TextureRegion(left, left.getWidth() - startSize, 0, startSize,
             this.left.getHeight());
         rightCurr = new TextureRegion(right, 0, 0, startSize, this.left.getHeight());
+        SoundController.playSound("shipDoor", 1);
+        SoundController.lastPlayed(-29);
       }
-      SoundController.playSound("shipDoor", 1);
-      SoundController.lastPlayed(-29);
     }
     this.open = set;
 
