@@ -161,7 +161,7 @@ public class ExitModel extends BoxObstacle {
         rw = right.getWidth();
         SoundController.playSound("shipDoor", 1);
         SoundController.lastPlayed(-29);
-        SoundController.playSound("banditJingle", 0.5f);
+        SoundController.playSound("banditJingle", 0.25f);
       } else {
         lx = left.getWidth() - startSize;
         lw = startSize;
