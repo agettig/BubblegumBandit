@@ -1333,69 +1333,6 @@
                 {
                  "gid":94,
                  "height":256,
-                 "id":774,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"leftx1",
-                         "type":"int",
-                         "value":2
-                        }, 
-                        {
-                         "name":"leftx2",
-                         "type":"int",
-                         "value":25
-                        }, 
-                        {
-                         "name":"lefty1",
-                         "type":"int",
-                         "value":-1
-                        }, 
-                        {
-                         "name":"lefty2",
-                         "type":"int",
-                         "value":-1
-                        }, 
-                        {
-                         "name":"lockOnOrb",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"rightx1",
-                         "type":"int",
-                         "value":-1
-                        }, 
-                        {
-                         "name":"rightx2",
-                         "type":"int",
-                         "value":-1
-                        }, 
-                        {
-                         "name":"righty1",
-                         "type":"int",
-                         "value":-1
-                        }, 
-                        {
-                         "name":"righty2",
-                         "type":"int",
-                         "value":-1
-                        }, 
-                        {
-                         "name":"unlockOnOrb",
-                         "type":"bool",
-                         "value":false
-                        }],
-                 "rotation":0,
-                 "type":"doorV",
-                 "visible":true,
-                 "width":64,
-                 "x":1280,
-                 "y":2176
-                }, 
-                {
-                 "gid":94,
-                 "height":256,
                  "id":775,
                  "name":"",
                  "properties":[
@@ -2286,6 +2223,74 @@
                  "width":44,
                  "x":4288,
                  "y":6592
+                }, 
+                {
+                 "gid":95,
+                 "height":256,
+                 "id":862,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"enemy1",
+                         "type":"object",
+                         "value":0
+                        }, 
+                        {
+                         "name":"leftx1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"leftx2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"lefty1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"lefty2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"lockOnOrb",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"rightx1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"rightx2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"righty1",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"righty2",
+                         "type":"int",
+                         "value":-1
+                        }, 
+                        {
+                         "name":"unlockOnOrb",
+                         "type":"bool",
+                         "value":true
+                        }],
+                 "rotation":0,
+                 "type":"doorVLocked",
+                 "visible":true,
+                 "width":64,
+                 "x":1216,
+                 "y":2176
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2698,7 +2703,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":862,
+ "nextobjectid":863,
  "orientation":"orthogonal",
  "properties":[
         {
