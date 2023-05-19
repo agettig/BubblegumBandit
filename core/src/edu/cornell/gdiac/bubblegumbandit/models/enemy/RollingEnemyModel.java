@@ -271,6 +271,7 @@ public class RollingEnemyModel extends EnemyModel {
     public void stickWithGum(GumModel gum) {
         super.stickWithGum(gum);
         unstickStopWatch = 0;
+        unstickingFraction = 1;
     }
 
     public void draw(GameCanvas canvas) {
