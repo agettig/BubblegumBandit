@@ -551,6 +551,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void dispose() {
+        directory.unloadAssets();
+        directory.dispose();
         stage.dispose();
     }
 

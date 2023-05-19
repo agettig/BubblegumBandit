@@ -811,6 +811,7 @@ public class SettingsMode implements Screen {
 
     @Override
     public void dispose() {
+        internal.unloadAssets();
         internal.dispose();
         stage.dispose();
     }

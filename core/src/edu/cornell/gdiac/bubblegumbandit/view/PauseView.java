@@ -251,6 +251,7 @@ public class PauseView {
     }
 
     public void dispose() {
+        internal.unloadAssets();
         internal.dispose();
 //        stage.dispose();
     }

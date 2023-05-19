@@ -256,6 +256,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
      * Called when this screen should release all resources.
      */
     public void dispose() {
+        internal.unloadAssets();
         internal.dispose();
         internal = null;
         canvas = null;
