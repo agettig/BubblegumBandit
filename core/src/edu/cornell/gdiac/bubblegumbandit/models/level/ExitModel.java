@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import java.lang.reflect.*;
 
@@ -165,8 +166,9 @@ public class ExitModel extends BoxObstacle {
         leftCurr = new TextureRegion(left, left.getWidth() - startSize, 0, startSize,
             this.left.getHeight());
         rightCurr = new TextureRegion(right, 0, 0, startSize, this.left.getHeight());
-
       }
+      SoundController.playSound("shipDoor", 1);
+      SoundController.lastPlayed(-29);
     }
     this.open = set;
 

@@ -67,6 +67,7 @@ public class SoundController {
     private static SoundEffect shipExplosion;
     private static SoundEffect shipExhaust;
     private static SoundEffect banditHurt;
+    private static SoundEffect shipDoor;
 
 
     /**Hashmap holding sounds and corresponding Id*/
@@ -154,6 +155,7 @@ public class SoundController {
         shipExplosion = directory.getEntry("shipExplosion", SoundEffect.class);
         shipExhaust = directory.getEntry("shipExhaust", SoundEffect.class);
         banditHurt = directory.getEntry("banditHurt", SoundEffect.class);
+        shipDoor = directory.getEntry("shipDoor", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -184,6 +186,7 @@ public class SoundController {
             put(shipExplosion, -26);
             put(shipExhaust, -27);
             put(banditHurt, -28);
+            put(shipDoor, -29);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -215,6 +218,7 @@ public class SoundController {
             put("shipExplosion", shipExplosion);
             put("shipExhaust", shipExhaust);
             put("banditHurt", banditHurt);
+            put("shipDoor", shipDoor);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
