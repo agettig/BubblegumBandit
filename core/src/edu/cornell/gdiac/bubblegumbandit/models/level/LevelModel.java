@@ -15,10 +15,15 @@
 
 package edu.cornell.gdiac.bubblegumbandit.models.level;
 
+import box2dLight.Light;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -28,6 +33,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.InputController;
@@ -43,6 +49,7 @@ import edu.cornell.gdiac.bubblegumbandit.models.ReactorModel;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.*;
 import edu.cornell.gdiac.bubblegumbandit.models.player.BanditModel;
 import edu.cornell.gdiac.bubblegumbandit.view.AnimationController;
+import edu.cornell.gdiac.bubblegumbandit.view.GameCamera;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
@@ -176,6 +183,11 @@ public class LevelModel {
     /** Number of total captives in the level */
     private int captiveCount;
 
+    private GameCamera camera;
+
+    private RayHandler rays;
+    private HashMap<Light, Obstacle> objLights;
+
     /**
      * Creates a new LevelModel
      * <p>
@@ -190,6 +202,8 @@ public class LevelModel {
         aim = new AimModel();
         icons = new Array<>();
         captiveCount = 0;
+        objLights = new HashMap<>();
+
     }
 
     /**
@@ -348,8 +362,10 @@ public class LevelModel {
      * @param levelFormat the JSON file defining the level
      * @param constants   the JSON file defining the constants
      * @param tilesetJson the JSON file defining the tileset
+     * @param camera the current game camera
      */
-    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, boolean disableShooting) {
+    public void populate(AssetDirectory directory, JsonValue levelFormat, JsonValue constants, JsonValue tilesetJson, boolean disableShooting, GameCamera camera) {
+        this.camera = camera;
 
         //Initializations & Logic
         aim.initialize(directory, constants);
@@ -439,6 +455,7 @@ public class LevelModel {
         levelWidth = levelFormat.getInt("width");
         levelHeight = levelFormat.getInt("height");
         world = new World(new Vector2(0, gravity), false);
+        this.rays = new RayHandler(world);
         bounds = new Rectangle(0, 0, levelWidth, levelHeight);
 
         scale.x = pSize[0];
@@ -630,8 +647,8 @@ public class LevelModel {
                     enemy = new RollingEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
-                    // Always has a shield now
-                    enemy.hasShield(true);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
@@ -641,14 +658,24 @@ public class LevelModel {
                     enemy = new LaserEnemyModel(world, enemyCount);
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
-//                    //if shielded add shield
-//                    if (objType.contains("shielded")) enemy.hasShield(true);
+                    //if shielded add shield
+                    if (objType.contains("shielded")) enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;
                 case "orb":
                     orbPlaced = true;
                     orbPosition = new Vector2(x,y);
+                    Collectible orb = new Collectible();
+                    orb.initialize(directory, x, y, scale, constants.get(objType));
+                    activate(orb);
+                    orb.setFilter(CATEGORY_COLLECTIBLE, MASK_COLLECTIBLE);
+                    orb.getFilterData().categoryBits = CATEGORY_COLLECTIBLE;
+                    PointLight orbPoint = new PointLight(rays, 20,
+                         new Color(.8f, 1, .9f, 0.65f), 4, x,y);
+                    orbPoint.attachToBody(orb.getBody());
+                    objLights.put(orbPoint, orb);
+                    break;
                 case "floatingGum":
                     Collectible coll = new Collectible();
                     coll.initialize(directory, x, y, scale, constants.get(objType));
@@ -670,7 +697,7 @@ public class LevelModel {
                     DoorModel door = new DoorModel();
                     boolean isLocked = objType.contains("Locked");
                     JsonValue doorJv = objType.contains("doorH") ? constants.get("doorH") : constants.get("door");
-                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds);
+                    door.initialize(directory, x, y, scale, levelHeight, object, doorJv, objType.contains("doorH"), isLocked, enemyIds, camera);
                     activate(door);
                     doors.add(door);
                     break;
@@ -794,7 +821,7 @@ public class LevelModel {
         activate(bandit);
         bandit.setFilter(CATEGORY_PLAYER, MASK_PLAYER);
 
-        alarms = new AlarmController(alarmPos, directory, world);
+        alarms = new AlarmController(alarmPos, directory, world, rays);
 
         if (reactorPos.size >= 2) {
             reactorModel = new ReactorModel(reactorPos, orbPosition, directory);
@@ -805,7 +832,7 @@ public class LevelModel {
         glassEffectController = new EffectController("glass", "shatter",
             directory, true, true, 0);
         sparkEffectController = new EffectController("sparks", "sparks",
-            directory, true, true, 0.2f);
+            directory, true, true, 0.3f);
 
     }
 
@@ -815,6 +842,10 @@ public class LevelModel {
 
     public void makeShatter(float x, float y){
         glassEffectController.makeEffect(x, y, scale, false);
+        tiledGraphGravityUp.getNode((int) x, (int) y - 1).disableNode();
+        tiledGraphGravityUp.getNode((int) x, (int) y + 1).disableNode();
+        tiledGraphGravityDown.getNode((int) x, (int) y - 1).disableNode();
+        tiledGraphGravityDown.getNode((int) x, (int) y + 1).disableNode();
     }
     public void makeSpark(float x, float y){
         sparkEffectController.makeEffect(x, y, scale, false);
@@ -858,6 +889,7 @@ public class LevelModel {
             alarms.dispose();
             reactorModel = null;
         }
+        objLights.clear();
         captiveCount = 0;
     }
 
@@ -896,6 +928,7 @@ public class LevelModel {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+
         // Garbage collect the deleted objects.
         for (AIController controller : enemyControllers) {
             // TODO: Add custom state for dead enemies
@@ -913,6 +946,18 @@ public class LevelModel {
                     enemy.setNextAction(InputController.CONTROL_NO_ACTION);
                 }
             }
+        }
+        Array<Light> garbage = new Array<>();
+        for(Light light : objLights.keySet()) {
+
+            if (objLights.get(light).isRemoved()) {
+                light.remove();
+                garbage.add(light);
+                System.out.println("was removed");
+            }
+        }
+        for(Light light: garbage) {
+            objLights.remove(light);
         }
         Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
         while (iterator.hasNext()) {
@@ -1030,7 +1075,15 @@ public class LevelModel {
             }
             canvas.endDebug();
         }
-        alarms.drawLights(canvas, scale);
+        FitViewport viewport = canvas.getUIViewport();
+        GameCamera camera = canvas.getCamera();
+        Matrix4 box2dcombined = camera.combined.cpy();
+        box2dcombined.scl(scale.x);
+        rays.setCombinedMatrix(box2dcombined, camera.position.x / scale.x, camera.position.y / scale.y,
+            camera.viewportWidth * camera.zoom / scale.x, camera.viewportHeight * camera.zoom / scale.y);
+        int bufferScale = Math.round(Gdx.graphics.getBackBufferScale());
+        rays.useCustomViewport((viewport.getScreenX() * bufferScale), viewport.getScreenY() * bufferScale, viewport.getScreenWidth() * bufferScale, viewport.getScreenHeight() * bufferScale);
+        rays.render();
     }
 
     public void drawChargeLasers(TextureRegion beam, TextureRegion beamEnd, GameCanvas canvas) {

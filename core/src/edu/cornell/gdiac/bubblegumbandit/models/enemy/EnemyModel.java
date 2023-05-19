@@ -107,7 +107,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
      */
     protected AnimationController animationController;
 
-    private TextureRegion gummedTexture;
+    protected TextureRegion gummedTexture;
 
     protected TextureRegion squishedGum;
     protected TextureRegion squishedGumOutline;
@@ -156,7 +156,7 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
     /**
      * Whether a shielded enemy's shield is lowered, happens during attacking
      */
-    private boolean isShielded;
+    protected boolean isShielded;
 
     /**
      * texture for the shield surrounding an enemy
@@ -452,6 +452,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     }
                     else if (crushScale <= 0.1f) {
                         markRemoved(true);
+                        if (this instanceof ShockEnemyModel) {
+                            ((ShockEnemyModel) this).stopShocks();
+                        }
                     } else if (crushScale > 1) {
                         endCrush();
                     }
@@ -464,6 +467,9 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     }
                     else if (crushScale <= 0.05f) {
                         markRemoved(true);
+                        if (this instanceof ShockEnemyModel) {
+                            ((ShockEnemyModel) this).stopShocks();
+                        }
                     } else if (crushScale > 1) {
                         endCrush();
                     }
@@ -600,15 +606,16 @@ public abstract class EnemyModel extends CapsuleObstacle implements Gummable, Sh
                     canvas.draw(squishedGum, Color.WHITE, origin.x, origin.y, gumX,
                        gumY-yScale*squishedGum.getRegionHeight()/2, getAngle(), 1, yScale*crushScale);
                 }
-//
+
             }
 
             //if shielded, overlay shield
             if (isShielded) {
-                canvas.draw(shield, Color.WHITE, origin.x, origin.y, (getX() - (getDimension().x / 2)) * drawScale.x,
-                        y - shield.getRegionHeight() / 8f * yScale, getAngle(), 1, yScale*crushScale);
+                canvas.draw(shield, Color.WHITE, origin.x, origin.y, (getX() - (getDimension().x / 2)) * drawScale.x-10f*effect,
+                        y - shield.getRegionHeight() / 5f * yScale, getAngle(), 1, yScale*crushScale);
+
             }
-//            color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
+    //           color = new Color(1f,0.8f,1f,1); //honestly a nice color filter
         }
 
     /**

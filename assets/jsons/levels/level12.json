@@ -329,6 +329,11 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
@@ -352,6 +357,11 @@
                          "name":"text",
                          "type":"string",
                          "value":"move right"
+                        }, 
+                        {
+                         "name":"x_iconDirectoryKey",
+                         "type":"string",
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"tutorial",
@@ -1274,7 +1284,7 @@
         {
          "name":"timer",
          "type":"int",
-         "value":45
+         "value":35
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",

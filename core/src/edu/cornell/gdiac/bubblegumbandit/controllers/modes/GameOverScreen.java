@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.ScreenListener;
 import org.w3c.dom.Text;
@@ -100,6 +101,8 @@ public class GameOverScreen implements Screen, InputProcessor {
      * The y-coordinate of the center of the start button.
      */
     private int startButtonPositionY;
+
+    private boolean isLastLevel;
 
     /**
      * The x-coordinate of the center of the level select button.
@@ -203,9 +206,14 @@ public class GameOverScreen implements Screen, InputProcessor {
         emptyIcon = directory.getEntry("captiveIconOutline", Texture.class);
         backgroundHeight = background.getRegionHeight();
         backgroundWidth = background.getRegionWidth();
+        isLastLevel = false;
         fadeFraction = 0;
-        fadeRate = 0.01f;
+        fadeRate = 0.05f;
         levelWon = false;
+    }
+
+    public void setIsLastLevel(boolean b){
+        isLastLevel = b;
     }
 
     public void gameWon(AssetDirectory directory) {
@@ -215,6 +223,7 @@ public class GameOverScreen implements Screen, InputProcessor {
         continueGameButton = directory.getEntry("continueGameButton", Texture.class);
         levelSelectButton = directory.getEntry("retryLevelButton", Texture.class);
         SoundController.pauseMusic();
+        SoundController.stopSound("banditJingle");
         SoundController.playSound("victory", 1);
         levelWon = true;
     }
@@ -259,7 +268,10 @@ public class GameOverScreen implements Screen, InputProcessor {
                 listener.exitScreen(this, Screens.CONTROLLER);
             }
             if (levelSelect() && listener != null) {
-                listener.exitScreen(this, Screens.LEVEL_SELECT);
+                if(isLastLevel){
+                    listener.exitScreen(this, Screens.CREDITS);
+                }
+                else listener.exitScreen(this, Screens.LEVEL_SELECT);
             }
             if (returnToTitle() && listener != null) {
                 listener.exitScreen(this, Screens.LOADING_SCREEN);
@@ -276,6 +288,12 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     private void draw() {
         canvas.begin();
+
+        if(levelWon && SaveData.getContinueLevel() >= GameController.NUM_LEVELS){
+            listener.exitScreen(this, Screens.CREDITS);
+            canvas.end();
+            return;
+        }
 
         if (fadeFraction < 1) {
             background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
@@ -294,22 +312,33 @@ public class GameOverScreen implements Screen, InputProcessor {
         if (levelWon && totalCaptives > 0) {
             canvas.drawTextCentered(gameOverMessage, displayFont, 150);
             canvas.drawTextCentered("CAPTIVES SAVED", subHeadingFont, 65);
-            int[] oddOffset = new int[]{-35, -115, 45};
+            int[] oddOffset = new int[]{ -115, -35, 45};
             int[] evenOffset = new int[]{-75, 5};
-            for (int i = 0; i < totalCaptives; i++) {
-                if (totalCaptives % 2 == 1) {
-                    canvas.draw(emptyIcon, x + oddOffset[i], y - 15);
-                }
-                else {
-                    canvas.draw(emptyIcon, x + evenOffset[i], y - 15);
+            if (totalCaptives == 1) {
+                canvas.draw(emptyIcon, x + oddOffset[1], y - 15);
+            }
+            else {
+                for (int i = 0; i < totalCaptives; i++) {
+                    if (totalCaptives % 2 == 1) {
+                        canvas.draw(emptyIcon, x + oddOffset[i], y - 15);
+                    }
+                    else {
+                        canvas.draw(emptyIcon, x + evenOffset[i], y - 15);
+                    }
                 }
             }
-            for (int i = 0; i < caughtCaptives; i++) {
-                if (totalCaptives % 2 == 1) {
-                    canvas.draw(captiveIcon, x + oddOffset[i], y - 15);
-                }
-                else {
-                    canvas.draw(captiveIcon, x + evenOffset[i], y - 15);
+
+            if (totalCaptives == 1 && caughtCaptives == 1) {
+                canvas.draw(captiveIcon, x + oddOffset[1], y - 15);
+            }
+            else {
+                for (int i = 0; i < caughtCaptives; i++) {
+                    if (totalCaptives % 2 == 1) {
+                        canvas.draw(captiveIcon, x + oddOffset[i], y - 15);
+                    }
+                    else {
+                        canvas.draw(captiveIcon, x + evenOffset[i], y - 15);
+                    }
                 }
             }
 

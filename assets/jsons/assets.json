@@ -19,6 +19,7 @@
     "creditsTitle": "textures/UI/creditsTitle.png",
     "back": "textures/UI/back.png",
     "mapIcon": "textures/tutorial/mapIcon.png",
+    "doubleFlipIcon": "textures/tutorial/doubleFlipIcon.png",
     "shootIcon": "textures/tutorial/gumIcon.png",
     "reloadIcon": "textures/tutorial/reloadIcon.png",
     "leftIcon": "textures/tutorial/leftIcon.png",
@@ -64,6 +65,7 @@
     "computer": "textures/environment/computer.png",
     "trajectoryProjectile": "textures/bandit/trajectory.png",
     "bandit": "textures/bandit/bandit.png",
+    "banditWithOrb" : "textures/bandit/banditWithOrb.png",
     "banditRun": {
       "file": "textures/bandit/banditRun.png",
       "wrap": false,
@@ -102,9 +104,9 @@
       "wrap": false,
       "sprites": {
         "victory": {
-          "size": 2,
+          "size": 4,
           "rows": 1,
-          "cols": 2
+          "cols": 4
         }
       }
     },
@@ -124,6 +126,38 @@
       "wrap": false,
       "sprites": {
         "fall": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    }, "banditStunned": {
+      "file": "textures/bandit/banditStunned.png",
+      "wrap": false,
+      "sprites": {
+        "stunned": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    },
+    "banditAFK": {
+      "file": "textures/bandit/banditAFK.png",
+      "wrap": false,
+      "sprites": {
+        "afk": {
+          "size": 16,
+          "rows": 1,
+          "cols": 16
+        }
+      }
+    },
+    "banditFallNeg": {
+      "file": "textures/bandit/banditFallNeg.png",
+      "wrap": false,
+      "sprites": {
+        "fallNeg": {
           "size": 2,
           "rows": 1,
           "cols": 2
@@ -415,96 +449,107 @@
           "cols": 9
         }
       }
+    },
+    "doorFrame" : "textures/environment/doorFrame.png",
+    "doorBack" : "textures/environment/doorBack.png",
+    "doorLeft" : "textures/environment/doorLeft.png",
+    "doorRight" : "textures/environment/doorRight.png"
+  },
+  "fonts": {
+    "display": {
+      "file": "fonts/RetroGame.ttf",
+      "size": 64
+    },
+    "lucida": {
+      "file": "fonts/LucidaGrande.ttf",
+      "size": 16
+    },
+    "codygoonRegular": {
+      "file": "fonts/Codygoon.ttf",
+      "size": 30
+    },
+    "projectSpace": {
+      "file": "fonts/ProjectSpace.ttf",
+      "size": 40
+    },
+    "projectSpaceLarge": {
+      "file": "fonts/ProjectSpace.ttf",
+      "size": 60
+    },
+    "sedgwickAve": {
+      "file": "fonts/SedgwickAveDisplay-Regular.ttf",
+      "size": 30
+    },
+    "sedgwickAveSmall": {
+      "file": "fonts/SedgwickAve-Regular.ttf",
+      "size": 20
     }
   },
-    "fonts": {
-      "display": {
-        "file": "fonts/RetroGame.ttf",
-        "size": 64
-      },
-      "lucida": {
-        "file": "fonts/LucidaGrande.ttf",
-        "size": 16
-      },
-      "codygoonRegular": {
-        "file": "fonts/Codygoon.ttf",
-        "size": 30
-      },
-      "projectSpace": {
-        "file": "fonts/ProjectSpace.ttf",
-        "size": 40
-      },
-      "projectSpaceLarge": {
-        "file": "fonts/ProjectSpace.ttf",
-        "size": 60
-      },
-      "sedgwickAve": {
-        "file": "fonts/SedgwickAveDisplay-Regular.ttf",
-        "size": 30
-      },
-      "sedgwickAveSmall": {
-        "file": "fonts/SedgwickAve-Regular.ttf",
-        "size": 20
-      }
-    },
-    "soundfx": {
-      "jump": "sounds/jump.wav",
-      "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
-      "gumSplat": "sounds/gumSplat.wav",
-      "enemySplat": "sounds/splatEnemy.wav",
-      "collectItem": "sounds/collectItem.wav",
-      "error": "sounds/error.wav",
-      "laserFiring": "sounds/laserFiring.wav",
-      "laserCharging": "sounds/laserCharging.wav",
-      "laserLocking": "sounds/laserLocking.wav",
-      "laserThud": "sounds/laserThud.wav",
-      "shockAttack": "sounds/shockAttack.wav",
-      "electricShock": "sounds/electricShock.wav",
-      "noGum": "sounds/noGum.wav",
-      "victory": "sounds/victory.wav",
-      "failure": "sounds/failure.wav",
-      "rolling": "sounds/rolling.wav",
-      "clockTick": "sounds/clockTicking.wav",
-      "lowStressAlarm": "sounds/lowStressAlarm.wav",
-      "reloadingGum": "sounds/reloadingGum.wav",
-      "banditLanding": "sounds/banditLanding.wav",
-      "doorSound": "sounds/doorSound.wav",
-      "keyClick": "sounds/keyClick.wav",
-      "knockback": "sounds/knockback.wav"
-    },
-    "samples": {
-      "menu": "sounds/music/spaceCruising.ogg",
-      "inGame": "sounds/music/bubblegumBallad.ogg",
-      "escape": "sounds/music/escape.ogg"
-    },
-    "jsons": {
-      "level1": "jsons/levels/level1.json",
-      "level2": "jsons/levels/level2.json",
-      "level3": "jsons/levels/level3.json",
-      "level4": "jsons/levels/level4.json",
-      "level5": "jsons/levels/level5.json",
-      "level6": "jsons/levels/level6.json",
-      "level7": "jsons/levels/level7.json",
-      "level8": "jsons/levels/level8.json",
-      "level9": "jsons/levels/level9.json",
-      "level10": "jsons/levels/level10.json",
-      "level11": "jsons/levels/placeholder.json",
-      "level12": "jsons/levels/level12.json",
-      "level13": "jsons/levels/level13.json",
-      "level14": "jsons/levels/level14.json",
-      "level15": "jsons/levels/level15.json",
-      "level16": "jsons/levels/level16.json",
-      "level17": "jsons/levels/level17.json",
-      "level18": "jsons/levels/level18.json",
-      "level19": "jsons/levels/level19.json",
-      "level20": "jsons/levels/level20.json",
-      "level21": "jsons/levels/placeholder.json",
-      "constants": "jsons/constants.json",
-      "animations": "jsons/animations.json",
-      "supports": "tilesets/supports.json",
-      "backgroundTiles": "tilesets/backgroundTiles.json",
-      "terrain": "tilesets/terrain.json",
-      "objects": "tilesets/objects.json",
-      "reactor": "tilesets/reactor.json"
-    }
+  "soundfx": {
+    "jump": "sounds/jump.wav",
+    "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
+    "gumSplat": "sounds/gumSplat.wav",
+    "enemySplat": "sounds/splatEnemy.wav",
+    "collectItem": "sounds/collectItem.wav",
+    "error": "sounds/error.wav",
+    "laserFiring": "sounds/laserFiring.wav",
+    "laserCharging": "sounds/laserCharging.wav",
+    "laserLocking": "sounds/laserLocking.wav",
+    "laserThud": "sounds/laserThud.wav",
+    "shockAttack": "sounds/shockAttack.wav",
+    "electricShock": "sounds/electricShock.wav",
+    "noGum": "sounds/noGum.wav",
+    "victory": "sounds/victory.wav",
+    "failure": "sounds/failure.wav",
+    "rolling": "sounds/rolling.wav",
+    "clockTick": "sounds/clockTicking.wav",
+    "lowStressAlarm": "sounds/lowStressAlarm.wav",
+    "reloadingGum": "sounds/reloadingGum.wav",
+    "banditLanding": "sounds/banditLanding.wav",
+    "doorSound": "sounds/doorSound.wav",
+    "keyClick": "sounds/keyClick.wav",
+    "knockback": "sounds/knockback.wav",
+    "banditHurt": "sounds/banditHurt.wav",
+    "glassSmash": "sounds/glassSmash.wav",
+    "smash": "sounds/smash.wav",
+    "shipExplosion": "sounds/shipExplosion.wav",
+    "shipExhaust": "sounds/shipExhaust.wav",
+    "shipDoor": "sounds/shipDoor.wav",
+    "banditJingle": "sounds/banditJingle.wav"
+  },
+  "samples": {
+    "menu": "sounds/music/spaceCruising.ogg",
+    "inGame": "sounds/music/bubblegumBallad.ogg",
+    "escape": "sounds/music/escape.ogg"
+  },
+  "jsons": {
+    "level1": "jsons/levels/level1.json",
+    "level2": "jsons/levels/level2.json",
+    "level3": "jsons/levels/level3.json",
+    "level4": "jsons/levels/level4.json",
+    "level5": "jsons/levels/level5.json",
+    "level6": "jsons/levels/level6.json",
+    "level7": "jsons/levels/level7.json",
+    "level8": "jsons/levels/level8.json",
+    "level9": "jsons/levels/level9.json",
+    "level10": "jsons/levels/level10.json",
+    "level11": "jsons/levels/level11.json",
+    "level12": "jsons/levels/level12.json",
+    "level13": "jsons/levels/level13.json",
+    "level14": "jsons/levels/level14.json",
+    "level15": "jsons/levels/level15.json",
+    "level16": "jsons/levels/level16.json",
+    "level17": "jsons/levels/level17.json",
+    "level18": "jsons/levels/level18.json",
+    "level19": "jsons/levels/level19.json",
+    "level20": "jsons/levels/level20.json",
+    "level21": "jsons/levels/placeholder.json",
+    "constants": "jsons/constants.json",
+    "animations": "jsons/animations.json",
+    "supports": "tilesets/supports.json",
+    "backgroundTiles": "tilesets/backgroundTiles.json",
+    "terrain": "tilesets/terrain.json",
+    "objects": "tilesets/objects.json",
+    "reactor": "tilesets/reactor.json"
   }
+}

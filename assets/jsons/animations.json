@@ -15,10 +15,20 @@
     "fall": {
       "strip": "banditFall.fall",
       "fps": 2
+    },  "stunned": {
+      "strip": "banditStunned.stunned",
+      "fps": 2
+    },  "afk": {
+      "strip": "banditAFK.afk",
+      "fps": 4
+    },
+    "fallNeg": {
+      "strip": "banditFallNeg.fallNeg",
+      "fps": 2
     },
     "victory": {
       "strip": "banditVictory.victory",
-      "fps": 2
+      "fps": 5
     },
     "knock": {
       "strip": "banditKnock.knock",

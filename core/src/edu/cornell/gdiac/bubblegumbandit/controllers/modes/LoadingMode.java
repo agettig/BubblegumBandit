@@ -502,13 +502,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
-        if(assets.isFinished()) {
-            if(!SaveData.saveExists()&&!dataMade)  {
+        if(assets.isFinished()&&!dataMade) {
+            boolean hasSave = SaveData.saveExists(assets);
+
+            //    Uncomment to reset
+            //    boolean hasSave = false;
+            if(!hasSave)  {
                 dataMade = true;
                 SaveData.makeData(true, assets);
-
-            }
-            SoundController.playMusic("menu");
+            } else if (hasSave) dataMade = true;
+        SoundController.playMusic("menu");
         }
     }
 
@@ -729,11 +732,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
               sizes[i][0] = .2f;
               sizes[i][1] = sizes[i][1]*-1;
           }
-          canvas.draw(jet, Color.WHITE, jet.getWidth()*sizes[i][0]/2, jet.getHeight()*sizes[i][0]/2, (float) centerX+progressBackground.getWidth()/2-
+          canvas.draw(jet, Color.WHITE, jet.getWidth()*sizes[i][0]/2, jet.getHeight()*sizes[i][0]/2,
+              (float) centerX+progressBackground.getWidth()/2-
                   sunfish.getHeight()-(jet.getWidth()+8)*(i+.6f),
-              (float) centerY+progressBackground.getHeight()*2.4f, (float) (-Math.PI/2f), sizes[i][0],  sizes[i][0]);
+              (float) centerY+progressBackground.getHeight()*2.3f, (float) (-Math.PI/2f), sizes[i][0],  sizes[i][0]);
       }
-      canvas.drawText("loading", font, centerX-progressBackground.getWidth()/2, centerY+progressBackground.getHeight()*2.5f);
+      canvas.drawText("LOADING", font, centerX-progressBackground.getWidth()/2, centerY+progressBackground.getHeight()*2.3f);
 
 
 

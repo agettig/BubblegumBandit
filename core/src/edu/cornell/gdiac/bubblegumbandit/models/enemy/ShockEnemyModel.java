@@ -34,6 +34,11 @@ public class ShockEnemyModel extends EnemyModel {
         this.rightShock = rightShock;
     }
 
+    public void stopShocks() {
+        leftShock.destroy();
+        rightShock.destroy();
+    }
+
     /**Creates a MovingEnemy.
      *
      * @param world The box2d world
@@ -64,7 +69,6 @@ public class ShockEnemyModel extends EnemyModel {
         turnCooldown--;
         if(fired()){
             animationController.setAnimation("fire", false, false);
-            SoundController.playSound("shockAttack", 1);
         }
         else if (stuck || gummed){
             animationController.setAnimation("stuck", true, false);
@@ -86,6 +90,7 @@ public class ShockEnemyModel extends EnemyModel {
             updateRayCasts();
             updateMovement(InputController.CONTROL_NO_ACTION);
             updateFrame();
+            updateCrush();
         } else {
             super.update(dt);
         }

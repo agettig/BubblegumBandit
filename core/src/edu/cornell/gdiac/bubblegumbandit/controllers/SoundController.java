@@ -62,7 +62,13 @@ public class SoundController {
     private static SoundEffect doorSound;
     private static SoundEffect keyClick;
     private static SoundEffect knockback;
-
+    private static SoundEffect glassSmash;
+    private static SoundEffect smash;
+    private static SoundEffect shipExplosion;
+    private static SoundEffect shipExhaust;
+    private static SoundEffect banditHurt;
+    private static SoundEffect shipDoor;
+    private static SoundEffect banditJingle;
 
     /**Hashmap holding sounds and corresponding Id*/
     private static HashMap<SoundEffect, Integer> soundIds;
@@ -144,6 +150,13 @@ public class SoundController {
         doorSound = directory.getEntry("doorSound", SoundEffect.class);
         keyClick = directory.getEntry("keyClick", SoundEffect.class);
         knockback = directory.getEntry("knockback", SoundEffect.class);
+        glassSmash = directory.getEntry("glassSmash", SoundEffect.class);
+        smash = directory.getEntry("smash", SoundEffect.class);
+        shipExplosion = directory.getEntry("shipExplosion", SoundEffect.class);
+        shipExhaust = directory.getEntry("shipExhaust", SoundEffect.class);
+        banditHurt = directory.getEntry("banditHurt", SoundEffect.class);
+        shipDoor = directory.getEntry("shipDoor", SoundEffect.class);
+        banditJingle = directory.getEntry("banditJingle", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -169,6 +182,13 @@ public class SoundController {
             put(doorSound, -21);
             put(keyClick, -22);
             put(knockback, -23);
+            put(glassSmash, -24);
+            put(smash, -25);
+            put(shipExplosion, -26);
+            put(shipExhaust, -27);
+            put(banditHurt, -28);
+            put(shipDoor, -29);
+            put(banditJingle, -30);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -195,6 +215,13 @@ public class SoundController {
             put("doorSound", doorSound);
             put("keyClick", keyClick);
             put("knockback", knockback);
+            put("glassSmash", glassSmash);
+            put("smash", smash);
+            put("shipExplosion", shipExplosion);
+            put("shipExhaust", shipExhaust);
+            put("banditHurt", banditHurt);
+            put("shipDoor", shipDoor);
+            put("banditJingle", banditJingle);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );
@@ -212,7 +239,10 @@ public class SoundController {
 
     public static void playMusic(String sound){
         AudioSource sample = music.get(sound);
-        if (musicPlayer.getCurrent() == sample) return;
+        if (musicPlayer.getCurrent() == sample) {
+            musicPlayer.play();
+            return;
+        }
         musicPlayer.clearSources();
         musicPlayer.setLooping(true);
         musicPlayer.addSource(sample);
@@ -239,8 +269,13 @@ public class SoundController {
         return 0;
     }
 
+    /**mark what the most last played sound was, used to ensure sounds do not get played over each other*/
     public static void lastPlayed(int soundId) {
         lastPlayed = soundId;
+    }
+
+    public static int lastPlayed() {
+        return lastPlayed;
     }
 
 

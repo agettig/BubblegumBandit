@@ -109,7 +109,7 @@ public class ShockController {
         level.activate(left);
         level.activate(right);
 
-        SoundController.playSound("shockAttack", 0.25f);
+        SoundController.playSound("shockAttack", 0.3f);
     }
 
     /**

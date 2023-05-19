@@ -228,7 +228,6 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
             if (i % SHIPS_PER_ROW == 0) pos.set(pos.x, pos.y - SPACE_GAP * flip - ROW_GAP); //enter a new row
             else pos.set(polarity == 0 ? pos.x + LEVEL_GAP : pos.x - LEVEL_GAP, pos.y - SPACE_GAP * flip); //space the ships horizontally
 
-
         }
     }
 
@@ -584,6 +583,8 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
 
         if (keycode == Input.Keys.SPACE) {
             sunfish.setBoosting(true);
+            SoundController.playSound("shipExhaust", 1);
+//            SoundController.lastPlayed(-27);
         }
 
 

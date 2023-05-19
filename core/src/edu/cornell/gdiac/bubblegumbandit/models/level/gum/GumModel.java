@@ -4,9 +4,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
+import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
+
+import java.util.HashSet;
+
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_GUM;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_GUM_LIMIT;
 
@@ -31,6 +35,10 @@ public class GumModel extends WheelObstacle implements Unstickable {
 
     private TextureRegion outline;
 
+    private TextureRegion rollingOutline;
+
+    private float outlineHeight;
+
     /**
      * Creates a Bubblegum projectile.
      * */
@@ -38,6 +46,7 @@ public class GumModel extends WheelObstacle implements Unstickable {
         super(x, y, radius);
         obstacles = new ObjectSet<>();
         onTile = false;
+        outlineHeight = 48;
     }
 
     /**
@@ -75,9 +84,17 @@ public class GumModel extends WheelObstacle implements Unstickable {
     /** Sets the outline used for this gum model. */
     public void setOutline(TextureRegion t) {
         outline = t;
+        rollingOutline = new TextureRegion(t);
     }
 
     public void drawWithOutline(GameCanvas canvas) {
+        for (Obstacle ob : obstacles) {
+            if (ob instanceof RollingEnemyModel && ((RollingEnemyModel) ob).isUnsticking()) {
+                rollingOutline.setRegionHeight((int) (((RollingEnemyModel) ob).getUnstickingFraction() * outlineHeight));
+                canvas.draw(rollingOutline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
+                return;
+            }
+        }
         if (outline != null) {
             canvas.draw(outline, Color.WHITE,origin.x,origin.y,getX()*drawScale.x-5,getY()*drawScale.x-5,getAngle(),1,1);
         } else {

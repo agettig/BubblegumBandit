@@ -19,7 +19,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -94,6 +93,8 @@ public class GameController implements Screen {
     private Minimap minimap;
 
     private long reloadSymbolTimer;
+
+    private int reloadTimer;
 
     /**
      * represents the ship and space backgrounds
@@ -248,7 +249,7 @@ public class GameController implements Screen {
     /**
      * The number of levels in the game.
      */
-    private final int NUM_LEVELS = 21;
+    public final static int NUM_LEVELS = 21;
 
     /**
      * Whether the orb has been collected.
@@ -268,10 +269,6 @@ public class GameController implements Screen {
      */
     private float orbCountdown;
 
-    /**
-     * Tick counter for gum reloading
-     */
-    private long ticks;
 
     private boolean disableShooting;
     /**
@@ -335,6 +332,7 @@ public class GameController implements Screen {
         return failed;
     }
 
+
     /**
      * Sets whether the level is failed.
      * <p>
@@ -391,7 +389,6 @@ public class GameController implements Screen {
     public GameController() {
 
         //Technicals
-        ticks = 0;
         complete = false;
         failed = false;
         active = false;
@@ -460,7 +457,6 @@ public class GameController implements Screen {
         minimap = new Minimap();
         backgrounds = new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
-
     }
 
     /**
@@ -513,7 +509,7 @@ public class GameController implements Screen {
         canvas.getCamera().setZoom(1);
 
         // Reload the json each time
-        level.populate(directory, levelFormat, constantsJson, tilesetJson, disableShooting);
+        level.populate(directory, levelFormat, constantsJson, tilesetJson, disableShooting, canvas.getCamera());
         level.getWorld().setContactListener(collisionController);
         projectileController.initialize(constantsJson.get("projectile"), directory, level.getScale().x, level.getScale().y);
         collisionController.initialize(canvas.getCamera());
@@ -584,9 +580,7 @@ public class GameController implements Screen {
         if (input.didAdvance()) {
             SaveData.setLevel(levelNum);
             levelNum++;
-            if (levelNum > NUM_LEVELS) {
-                levelNum = 1;
-            }
+            if (levelNum > NUM_LEVELS) levelNum = 1;
             reset();
         }
         if (input.didRetreat()) {
@@ -636,7 +630,6 @@ public class GameController implements Screen {
             }
             SaveData.setLevel(levelNum);
             setComplete(true);
-
         }
     }
 
@@ -651,7 +644,6 @@ public class GameController implements Screen {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
-        ticks++;
 
         unlockNextLevel();
 
@@ -689,6 +681,7 @@ public class GameController implements Screen {
         boolean shouldFlip = (bandit.isGrounded() || (!bandit.hasFlipped()) && !bandit.getStuck()) &&
                 ((PlayerController.getInstance().getGravityUp() && grav < 0) ||
                         (PlayerController.getInstance().getGravityDown() && grav > 0));
+        shouldFlip = shouldFlip && !bandit.isKnockback();
         shouldFlip = shouldFlip || (collisionController.shouldFlipGravity());
         if (shouldFlip && !complete && !failed) {
 
@@ -710,15 +703,18 @@ public class GameController implements Screen {
             }
         }
 
-        if (inputResults.didReload() && !bandit.atMaxGum() && bandit.isGrounded()) {
+        if (inputResults.didReload() && !bandit.atMaxGum()
+            && bandit.isGrounded()&&!bandit.isKnockback()&&!bandit.isStunned()) {
             bandit.startReload();
-            if (ticks % RELOAD_RATE == 0) {
+            reloadTimer += 1;
+            if (reloadTimer % RELOAD_RATE == 0) {
                 bandit.addAmmo(1);
                 reloadSymbolTimer = -1;
                 reloadingGum = true;
                 SoundController.playSound("reloadingGum", 1);
             }
         } else {
+            reloadTimer = 0;
             reloadingGum = false;
             bandit.stopReload();
         }
@@ -877,7 +873,7 @@ public class GameController implements Screen {
 
         if (level.getBandit().getAmmo() == 0 && inputResults.didShoot()) {
             reloadSymbolTimer = 0;
-            SoundController.playSound("noGum", 1);
+            SoundController.playSound("noGum", 0.75f);
         }
 
 
@@ -899,7 +895,7 @@ public class GameController implements Screen {
         // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
-            // level.getBandit().setVX(0);
+            level.getExit().setOpen(true);
         }
     }
 
@@ -959,6 +955,8 @@ public class GameController implements Screen {
                 } else {
                     listener.exitScreen(this, Screens.GAME_LOST);
                 }
+            } else if (countdown < 5&& countdown>=0 && !failed) {
+                level.getBandit().setVictory();
             }
             if (pauseScreen.getQuitClicked()) {
                 listener.exitScreen(this, Screens.LOADING_SCREEN);
