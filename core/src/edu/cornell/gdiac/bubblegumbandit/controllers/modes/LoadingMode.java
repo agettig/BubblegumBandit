@@ -509,7 +509,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             boolean hasSave = SaveData.saveExists(assets);
 
             //    Uncomment to reset
-            //    boolean hasSave = false;
+//                boolean hasSave = false;
             if(!hasSave)  {
                 dataMade = true;
                 SaveData.makeData(true, assets);

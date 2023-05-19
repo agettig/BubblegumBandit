@@ -179,8 +179,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         offsetX = -canvas.getCamera().viewportWidth/2;
         offsetY = -canvas.getCamera().viewportHeight/2;
 
-        backButtonX = canvas.getCamera().viewportWidth * BACK_SCALAR_X + offsetX;
-        backButtonY = canvas.getCamera().viewportWidth * BACK_SCALAR_Y + offsetY;
+        backButtonX = canvas.getCamera().viewportWidth * BACK_SCALAR_X ;
+        backButtonY = canvas.getCamera().viewportWidth * BACK_SCALAR_Y;
 
         makeCreditsTable();
 
@@ -349,8 +349,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(
                 background,
                 Color.WHITE,
-                offsetX,
-                offsetY,
+                0,
+                0,
                 canvas.getCamera().viewportWidth,
                 canvas.getCamera().viewportHeight
         );
@@ -373,14 +373,12 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         //Draw the credits title
 
         final float creditsScale = .4f;
-        float creditsX = -(creditsTitle.getWidth()/2f);
-        float creditsY = creditsTitle.getHeight() * 1.45f;
 
         canvas.draw(
                 creditsTitle,
                 PRESS_BLUE,
-                creditsX * creditsScale,
-                creditsY,
+                stage.getWidth()/2 - (creditsScale * (creditsTitle.getWidth()/2f)),
+                4* (stage.getHeight()/5f),
                 creditsTitle.getWidth() * creditsScale,
                 creditsTitle.getHeight() * creditsScale
         );

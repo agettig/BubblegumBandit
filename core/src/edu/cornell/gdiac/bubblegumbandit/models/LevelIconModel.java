@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.EffectController;
+import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -163,8 +164,8 @@ public class LevelIconModel {
     /** whether this level is unlocked or not, locked levels are inaccessible by the player */
     public boolean isUnlocked() {
 
-        //return SaveData.unlocked(level);
-        return true;
+        return SaveData.unlocked(level);
+//        return true;
     }
 
     int ticks = 0;
@@ -224,8 +225,16 @@ public class LevelIconModel {
         }
 
         //draw number icons
-        canvas.draw(marker, numTint, marker.getRegionWidth()/2f, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
-        canvas.drawText(valueOf(level), font,numTint, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
+        if (level != GameController.NUM_LEVELS){
+            canvas.draw(marker, numTint, marker.getRegionWidth()/2f, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
+            canvas.drawText(valueOf(level), font,numTint, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
+        }
+        else{
+            int[] counts = SaveData.getCaptivesRescued();
+            if (counts[0] == counts[1]) SaveData.unlock(21);
+            canvas.draw(success, numTint, success.getRegionWidth()/2f, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
+            canvas.drawText(valueOf(counts[1]) + "/" + valueOf(counts[0]), font,Color.WHITE, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
+        }
 
         explosionEffectController.draw(canvas);
     }
