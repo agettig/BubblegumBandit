@@ -805,7 +805,7 @@
         {
          "name":"timer",
          "type":"int",
-         "value":15
+         "value":25
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",

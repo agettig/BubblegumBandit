@@ -460,7 +460,6 @@ public class GameController implements Screen {
         minimap = new Minimap();
         backgrounds = new Background(new TextureRegion(directory.getEntry("background", Texture.class)),
                 new TextureRegion(directory.getEntry("spaceBg", Texture.class)));
-
     }
 
     /**
@@ -566,8 +565,6 @@ public class GameController implements Screen {
     public boolean preUpdate(float dt) {
 
         PlayerController input = PlayerController.getInstance();
-        SaveData.setLevel(NUM_LEVELS);
-        levelNum = SaveData.getContinueLevel();
         input.readInput();
         if (listener == null) {
             return true;
@@ -636,7 +633,6 @@ public class GameController implements Screen {
             }
             SaveData.setLevel(levelNum);
             setComplete(true);
-
         }
     }
 
