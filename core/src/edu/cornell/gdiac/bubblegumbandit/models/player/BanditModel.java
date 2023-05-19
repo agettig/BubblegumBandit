@@ -1044,7 +1044,7 @@ public class BanditModel extends CapsuleObstacle {
                 float banditRight = getX() + (getWidth() / 2f);
                 boolean isCrusher = false;
                 for (Obstacle ob : getCollisions()) {
-                    if (!(ob instanceof CrusherModel || ob instanceof DoorModel)) {
+                    if (!(ob instanceof CrusherModel)) {
                         float obHW = 0;
 
                         if (ob instanceof CapsuleObstacle) {

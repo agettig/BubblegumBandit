@@ -161,6 +161,8 @@ public class DoorModel extends TileModel implements Gummable {
     /** Whether the orb has been collected. */
     private boolean postOrb;
 
+    private boolean locksOnPlayerPass;
+
     /** Constructs a new DoorModel
      * Uses generic values to start
      */
@@ -181,6 +183,7 @@ public class DoorModel extends TileModel implements Gummable {
         locksOnOrb = false;
         unlocksOnOrb = false;
         postOrb = false;
+        locksOnPlayerPass = false;
     }
 
     /**
@@ -330,6 +333,9 @@ public class DoorModel extends TileModel implements Gummable {
                             unlocksOnOrb = (value == 1);
                           //  System.out.println("Unlocks on orb: " + unlocksOnOrb);
                             break;
+                        case "lockOnPlayerPass":
+                            locksOnPlayerPass = (value == 1);
+                            break;
                         default:
                             if (name.contains("enemy")) {
                                 enemyIds.add((int) value);
@@ -451,37 +457,50 @@ public class DoorModel extends TileModel implements Gummable {
      */
     public void update(float dt) {
         super.update(dt);
-        // Update how open the door is
-        if (isOpen && openFraction < 1) {
-            openFraction += doorOpenRate;
-        } else if (!isOpen && openFraction > 0){
-            openFraction -= doorOpenRate;
-        }
-        if (openFraction > 1) {
-            openFraction = 1;
-        } else if (openFraction < 0) {
-            openFraction = 0;
-        }
-        if (isLocked && !(postOrb && locksOnOrb)) {
-            tryUnlockDoor();
-        }
-        if (playerPassed || isHorizontal) {
-            if (obsInRange.size == 0 && isOpen) {
+
+        if (locksOnPlayerPass && playerPassed) {
+            if (!playerInRange) {
                 closeDoor();
-            } else if (obsInRange.size > 0 && !isOpen) {
-                openDoor();
-            }
-        } else {
-            for (Obstacle ob : obsInRange) {
-                if (ob instanceof CrusherModel) {
-                    openDoor();
-                    playerPassed = true;
+                if (openFraction <= 0){
+                    isLocked = true;
                 }
             }
-            if (!playerInRange && isOpen) {
-                closeDoor();
-            } else if (playerInRange && !isOpen) {
-                openDoor();
+            if (!isOpen && openFraction > 0){
+                openFraction -= doorOpenRate;
+            }
+        } else {
+            // Update how open the door is
+            if (isOpen && openFraction < 1) {
+                openFraction += doorOpenRate;
+            } else if (!isOpen && openFraction > 0){
+                openFraction -= doorOpenRate;
+            }
+            if (openFraction > 1) {
+                openFraction = 1;
+            } else if (openFraction < 0) {
+                openFraction = 0;
+            }
+            if (isLocked && !(postOrb && locksOnOrb)) {
+                tryUnlockDoor();
+            }
+            if (playerPassed || isHorizontal) {
+                if (obsInRange.size == 0 && isOpen) {
+                    closeDoor();
+                } else if (obsInRange.size > 0 && !isOpen) {
+                    openDoor();
+                }
+            } else {
+                for (Obstacle ob : obsInRange) {
+                    if (ob instanceof CrusherModel) {
+                        openDoor();
+                        playerPassed = true;
+                    }
+                }
+                if (!playerInRange && isOpen) {
+                    closeDoor();
+                } else if (playerInRange && !isOpen) {
+                    openDoor();
+                }
             }
         }
     }

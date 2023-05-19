@@ -593,6 +593,7 @@ public class GameController implements Screen {
 //        }
 
         if (input.didPause()) {
+            System.out.println("Pause!");
             setPaused(true);
             return false;
         }
