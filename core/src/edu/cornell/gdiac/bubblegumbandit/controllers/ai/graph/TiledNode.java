@@ -30,6 +30,8 @@ public class TiledNode {
 
 	private int type;
 
+	private boolean isEnabled;
+
 	// Getters
 	public int getX() {
 		return x;
@@ -40,6 +42,9 @@ public class TiledNode {
 	}
 
 	public int getType(){
+		if (!isEnabled){
+			return 0;
+		}
 		return type;
 	}
 
@@ -50,9 +55,18 @@ public class TiledNode {
 		this.y = y;
 		this.type = type;
 		this.connections =  new Array<>(4);
+		this.isEnabled = true;
 	}
 
 	public Array<Connection<TiledNode>> getConnections () {
 		return this.connections;
+	}
+
+	public boolean getEnabled() {
+		return isEnabled;
+	}
+
+	public void disableNode(){
+		isEnabled = false;
 	}
 }

@@ -174,6 +174,7 @@ public class LaserController {
                 lockHitPoint = shootRaycastTowards(world, enemy, bodiesToIgnore);
                 enemy.setBeamIntersect(lockHitPoint);
                 SoundController.playSound("laserLocking", 0.25f);
+                SoundController.lastPlayed(0);
             }
 
             if(enemy.firingLaser()){
@@ -185,6 +186,7 @@ public class LaserController {
 
                 if (enemy.getFiringDistance(firingTime) < 0.98) {
                     SoundController.playSound("laserFiring", 1);
+                    SoundController.lastPlayed(-7);
                 }
                 else {
                     SoundController.stopSound("laserFiring");

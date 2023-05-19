@@ -124,15 +124,17 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				int val = nodes[j * width + i].getType();
-				if (val != 0) {
+				if (!nodes[j * width + i].getEnabled()){
+					canvas.drawPhysics(s, Color.ORANGE, i * scale.x + margin, j * scale.y + margin);
+				}
+				else if (val != 0) {
 					Color color;
 					if (val == GRAVITY_DOWN_UNRESTRICTED) color = Color.BLUE;
 					else if (val == GRAVITY_UP_UNRESTRICTED) {
 						color = Color.RED;
 					} else if (val == GRAVITY_UP_RESTRICRED){
 						color = Color.GREEN;
-					}
-					else{
+					} else{
 						color = Color.PURPLE;
 					}
 					canvas.drawPhysics(s, color, i * scale.x + margin, j * scale.y + margin);
@@ -140,5 +142,4 @@ public class TiledGraph implements IndexedGraph<TiledNode>{
 			}
 		}
 	}
-
 }

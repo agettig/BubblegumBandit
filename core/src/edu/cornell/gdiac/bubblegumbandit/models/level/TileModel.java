@@ -96,7 +96,8 @@ public class TileModel extends BoxObstacle {
      */
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1, 1);
+            canvas.drawWithShadow(texture, Color.WHITE, origin.x, origin.y,
+                getX()*drawScale.x, getY()*drawScale.y, getAngle(), 1.0f, 1.0f);
         }
 
     }
