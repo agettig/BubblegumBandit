@@ -294,7 +294,7 @@ public class RollingEnemyModel extends EnemyModel {
     public void drawWithOutline(GameCanvas canvas) {
         super.drawWithOutline(canvas);
         if (unsticking && gummed) {
-            outline.setRegionHeight((int) (unstickingFraction * outlineTextureHeight));
+            outline.setRegionHeight((int) (unstickingFraction * gumTextureHeight + 10));
         }
     }
 
