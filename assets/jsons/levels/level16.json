@@ -899,7 +899,7 @@
         {
          "name":"timer",
          "type":"int",
-         "value":30
+         "value":60
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",

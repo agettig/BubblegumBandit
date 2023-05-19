@@ -471,7 +471,7 @@
                  "type":"reactor",
                  "visible":true,
                  "width":115,
-                 "x":2622.86798679868,
+                 "x":2624,
                  "y":1623.55775577558
                 }, 
                 {
@@ -747,8 +747,8 @@
                  "type":"orb",
                  "visible":true,
                  "width":44,
-                 "x":2664.76595229447,
-                 "y":1747.17968277031
+                 "x":2660,
+                 "y":1747
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -911,7 +911,7 @@
         {
          "name":"timer",
          "type":"int",
-         "value":30
+         "value":45
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.0",

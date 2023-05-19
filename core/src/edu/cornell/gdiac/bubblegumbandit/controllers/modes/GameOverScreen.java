@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.ScreenListener;
 import org.w3c.dom.Text;
@@ -100,6 +101,8 @@ public class GameOverScreen implements Screen, InputProcessor {
      * The y-coordinate of the center of the start button.
      */
     private int startButtonPositionY;
+
+    private boolean isLastLevel;
 
     /**
      * The x-coordinate of the center of the level select button.
@@ -203,10 +206,15 @@ public class GameOverScreen implements Screen, InputProcessor {
         emptyIcon = directory.getEntry("captiveIconOutline", Texture.class);
         backgroundHeight = background.getRegionHeight();
         backgroundWidth = background.getRegionWidth();
+        isLastLevel = false;
         fadeFraction = 0;
         fadeRate = 0.05f;
         levelWon = false;
 
+    }
+
+    public void setIsLastLevel(boolean b){
+        isLastLevel = b;
     }
 
     public void gameWon(AssetDirectory directory) {
@@ -260,7 +268,10 @@ public class GameOverScreen implements Screen, InputProcessor {
                 listener.exitScreen(this, Screens.CONTROLLER);
             }
             if (levelSelect() && listener != null) {
-                listener.exitScreen(this, Screens.LEVEL_SELECT);
+                if(isLastLevel){
+                    listener.exitScreen(this, Screens.CREDITS);
+                }
+                else listener.exitScreen(this, Screens.LEVEL_SELECT);
             }
             if (returnToTitle() && listener != null) {
                 listener.exitScreen(this, Screens.LOADING_SCREEN);
@@ -277,6 +288,12 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     private void draw() {
         canvas.begin();
+
+        if(levelWon && SaveData.getContinueLevel() >= GameController.NUM_LEVELS){
+            listener.exitScreen(this, Screens.CREDITS);
+            canvas.end();
+            return;
+        }
 
         if (fadeFraction < 1) {
             background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));
