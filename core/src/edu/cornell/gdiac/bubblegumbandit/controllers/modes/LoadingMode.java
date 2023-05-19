@@ -500,16 +500,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
-        if(assets.isFinished()&&!dataMade) {
-            boolean hasSave = SaveData.saveExists(assets);
+        if(assets.isFinished()) {
+            SoundController.playMusic("menu");
+            if (!dataMade) {
+                boolean hasSave = SaveData.saveExists(assets);
 
-            //    Uncomment to reset
-            //    boolean hasSave = false;
-            if(!hasSave)  {
-                dataMade = true;
-                SaveData.makeData(true, assets);
-            } else if (hasSave) dataMade = true;
-        SoundController.playMusic("menu");
+                //    Uncomment to reset
+                //    boolean hasSave = false;
+                if (!hasSave) {
+                    dataMade = true;
+                    SaveData.makeData(true, assets);
+                } else if (hasSave) dataMade = true;
+            }
         }
     }
 

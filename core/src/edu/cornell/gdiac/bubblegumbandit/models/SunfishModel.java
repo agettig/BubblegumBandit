@@ -86,6 +86,9 @@ public class SunfishModel extends WheelObstacle {
     /** How long we can draw flame again */
     private int cooldown;
 
+    /** if we are in motionn */
+    private boolean moving;
+
     // endRegion
 
     public SunfishModel (TextureRegion texture, TextureRegion fire_texture, TextureRegion boost_texture, float x, float y){
@@ -158,8 +161,13 @@ public class SunfishModel extends WheelObstacle {
         // damping distance
         if (dst < 150){
 //            forceCache.set(-DAMPING * getVX(), -DAMPING * getVY());
+            moving = false;
         }
-        else body.setTransform(body.getPosition().add(movement), 0);
+        else {
+            body.setTransform(body.getPosition().add(movement), 0);
+            moving = true;
+
+        }
 
 //        body.applyForce(forceCache, getPosition(), true);
 //        body.applyLinearImpulse(movement, getPosition(), true);
@@ -178,7 +186,7 @@ public class SunfishModel extends WheelObstacle {
             offset.rotateRad(angle + ANGLE_OFFSET);
 
             exhaust.add(new Fire(getX() + offset.x, getY() +offset.y));
-            SoundController.playSound("shipExhaust", 0.25f);
+            if (moving) SoundController.playSound("shipExhaust", 0.15f);
             cooldown = COOLDOWN_TIME;
         }
         else{
