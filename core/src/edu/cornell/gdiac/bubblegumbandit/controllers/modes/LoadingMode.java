@@ -937,6 +937,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 SoundController.playSound("keyClick", 1);
                 pageTimer = 0;
                 skipClicked = false;
+                pressState = 0;
             }
         }
     }
