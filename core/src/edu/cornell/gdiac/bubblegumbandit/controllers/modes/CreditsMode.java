@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.SoundController;
@@ -129,8 +130,10 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
 
     /** Creates the CreditsMode. */
-    public CreditsMode(){
+    public CreditsMode(Viewport view){
         stage = new Stage();
+        stage.setViewport(view);
+
     }
 
     /**
@@ -171,7 +174,6 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        resize(canvas.getWidth(), canvas.getHeight());
         canvas.resetCamera();
         canvas.getCamera().isCredits(true);
 
@@ -185,14 +187,13 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         makeCreditsTable();
 
 
+
     }
 
     /**
      * Creates the table of names and roles.
      * */
     private void makeCreditsTable(){
-        stage = new Stage();
-
 
         creditsTableLeft = new Table();
         creditsTableLeft.align(Align.left);
@@ -328,6 +329,8 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
     }
 
+
+
     /**
      * Draws the CreditsMode.
      */
@@ -335,15 +338,15 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
 
         if(!active) return;
 
+        //stage.getViewport().apply();
 
 
-        resize(
-                (int)canvas.getCamera().viewportWidth,
-                (int)canvas.getCamera().viewportHeight
-        );
+
+
 
         canvas.clear();
         canvas.begin();
+        canvas.resize();
 
         //Draw the background.
         canvas.draw(
@@ -396,7 +399,6 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
      */
     public void render(float delta) {
         if (active) {
-            update();
             draw();
             //Logic for returing to Main Menu below
             if (backPressedUp && listener!=null){
@@ -406,13 +408,6 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
         }
     }
 
-    /**
-     * Update the status of the CreditsMode.
-     *
-     */
-    private void update() {
-        resize(canvas.getWidth(), canvas.getHeight());
-    }
 
     /**
      * Called when a finger was lifted or a mouse button was released.
@@ -451,12 +446,7 @@ public class CreditsMode implements Screen, InputProcessor, ControllerListener {
      * @param width  The new width in pixels
      * @param height The new height in pixels
      */
-    public void resize(int width, int height) {
-        // Compute the drawing scale
-        float sx = ((float) width) / STANDARD_WIDTH;
-        float sy = ((float) height) / STANDARD_HEIGHT;
-        scale = (sx < sy ? sx : sy);
-    }
+    public void resize(int width, int height) { }
 
 
     /**
