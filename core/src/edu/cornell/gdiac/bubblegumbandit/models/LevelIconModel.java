@@ -271,5 +271,14 @@ public class LevelIconModel {
         SoundController.lastPlayed(-26);
     }
 
+    /** clear all explosions effects if any are ongoing */
+    public void clear(){
+        if (angle > 0){
+            angle = ANGLE;
+            explosionEffectController.clear();
+            exploded = true;
+        }
+    }
+
 
 }
