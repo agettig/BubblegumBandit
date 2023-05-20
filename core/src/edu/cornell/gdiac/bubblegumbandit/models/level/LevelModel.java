@@ -1138,7 +1138,7 @@ public class LevelModel {
 
                 float laserEyeNormalOffsetXLeft = 41 + canvas.getShadowOffset();
                 float laserEyeNormalOffsetYLeft = 20;
-                float laserEyeJettedOffsetXRight = 41 + + canvas.getShadowOffset();
+                float laserEyeJettedOffsetXRight = 41 + canvas.getShadowOffset();
                 float laserEyeJettedOffsetYRight = 20;
                 float jetBoostY = 3;
 
@@ -1153,7 +1153,7 @@ public class LevelModel {
                     //Calculate the positions and angle of the charging laser.
                     float enemyOffsetX = enemy.getFaceRight()? laserEyeJettedOffsetXRight : laserEyeNormalOffsetXLeft;
                     float enemyOffsetY = enemy.getFaceRight()? laserEyeJettedOffsetYRight : laserEyeNormalOffsetYLeft;
-                    if(jetted) enemyOffsetY += jetBoostY;
+                    if(!jetted) enemyOffsetY += jetBoostY;
                     if(!enemy.getFaceRight()) enemyOffsetX = -enemyOffsetX;
 
 
