@@ -186,6 +186,12 @@ public class GDXRoot extends Game implements ScreenListener {
             initialized = true;
         }
 
+        if (screen == levels) {
+            SoundController.stopSound("shipExplosion");
+            SoundController.stopSound("shipExhaust");
+            levels.clearExplosions();
+        }
+
         if ((exitCode == Screens.RESUME_CONTROLLER || exitCode == Screens.CONTROLLER ) && controller.getLevelNum() > disableGumMaxLevel){
             Gdx.graphics.setCursor(crosshairCursor);
         } else{
@@ -224,8 +230,9 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
                 if (screen == levels) {
-                    SoundController.stopSound("shipExplosion");
-                    SoundController.stopSound("shipExhaust");
+//                    SoundController.stopSound("shipExplosion");
+//                    SoundController.stopSound("shipExhaust");
+//                    levels.clearExplosions();
                     controller.setLevelNum(levels.getSelectedLevel());
                 }
                 if (screen == gameOver && gameOver.gameWon()) controller.previousLevel();

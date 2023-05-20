@@ -25,6 +25,7 @@ import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
 import edu.cornell.gdiac.util.ScreenListener;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 import static java.lang.String.valueOf;
 
@@ -271,6 +272,12 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
         SoundController.playMusic("menu");
         startMove = false;
         sunfish.setBoosting(false);
+    }
+
+    public void clearExplosions(){
+        for (LevelIconModel level : levels){
+            level.clear();
+        }
     }
 
     /**
