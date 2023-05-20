@@ -5,6 +5,7 @@
     "startButton": "textures/UI/start.png",
     "settingsButton": "textures/UI/settings.png",
     "skipButton": "textures/UI/skip.png",
+    "newSaveButton": "textures/UI/newSave.png",
     "exitButton": "textures/UI/quit.png",
     "levelSelectButton": "textures/UI/levelSelect.png",
     "creditsButton": "textures/UI/credits.png",
