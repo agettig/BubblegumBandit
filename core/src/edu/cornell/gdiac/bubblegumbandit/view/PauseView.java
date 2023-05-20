@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.bubblegumbandit.controllers.BubblegumController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.Screens;
+import edu.cornell.gdiac.bubblegumbandit.helpers.SaveData;
 import edu.cornell.gdiac.bubblegumbandit.models.level.LevelModel;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -50,6 +51,8 @@ public class PauseView {
     private TextButton settingsButton;
 
     private TextButton quitButton;
+
+    private Label levelNumber;
 
     private boolean resumeClicked;
 
@@ -129,6 +132,7 @@ public class PauseView {
     public void makePauseTable() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(null, null,
                 null, this.font);
+        Label.LabelStyle labelStyle = new Label.LabelStyle(this.font,pressTint);
         style.overFontColor = bubblegumPink;
         style.fontColor = Color.WHITE;
         style.downFontColor = pressTint;
@@ -139,6 +143,7 @@ public class PauseView {
         settingsButton = new TextButton("Settings", style);
         levelSelectButton = new TextButton("Exit to Level Select", style);
         quitButton = new TextButton("Quit to Title", style);
+        levelNumber = new Label("Level ".toUpperCase()+ SaveData.getContinueLevel(), labelStyle);
 
         resumeButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -182,9 +187,10 @@ public class PauseView {
                 quitClicked = true;
             }
         });
-
         pauseTable.row();
-        pauseTable.add(resumeButton).pad(160, 160, 32, 455);
+        pauseTable.add(levelNumber).pad(160, 160, 32, 455);
+        pauseTable.row();
+        pauseTable.add(resumeButton).pad(20, 160, 32, 455);
         pauseTable.row();
         pauseTable.add(retryButton).pad(0, 160, 32, 455);
         pauseTable.row();
@@ -217,6 +223,7 @@ public class PauseView {
         settingsClicked = false;
         quitClicked = false;
         Gdx.input.setInputProcessor(stage);
+        levelNumber.setText("Level ".toUpperCase()+SaveData.getContinueLevel());
     }
 
     public void update() {
