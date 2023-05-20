@@ -339,6 +339,17 @@
         }
       }
     },
+    "largeJump": {
+      "file": "textures/largeEnemy/jump.png",
+      "wrap": false,
+      "sprites": {
+        "jump": {
+          "size": 2,
+          "rows": 1,
+          "cols": 2
+        }
+      }
+    },
     "gumProjectile": "textures/gum/gum.png",
     "reloadGumSymbol": "textures/gum/reloading_gum.png",
     "floatingGum": "textures/gum/gum.png",
