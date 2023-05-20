@@ -22,6 +22,8 @@ public class SaveData {
   /** The number of key bindings in-game */
   private static int keyCount = 9;
 
+  private static boolean lockLevels = true;
+
   //any numbers above -1 represent the number of stars collected
 
   /** Returns whether valid save data can be found on this device */
@@ -56,10 +58,9 @@ public class SaveData {
   }
 
   /** Makes a new save with defaults
-   * @param lockLevels whether this save should start with levels initially locked or not
    * */
 
-  public static void makeData(boolean lockLevels, AssetDirectory directory) {
+  public static void makeData(AssetDirectory directory) {
     Preferences prefs =  Gdx.app.getPreferences(prefsName);
 
     prefs.putFloat("music", .5f);

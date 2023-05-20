@@ -648,7 +648,7 @@ public class LevelModel {
                     enemy.initialize(directory, x, y, enemyConstants, isFacingRight);
                     enemy.setDrawScale(scale);
                     //if shielded add shield
-                    if (objType.contains("shielded")) enemy.hasShield(true);
+                    enemy.hasShield(true);
                     enemyIds.put(objId, enemy);
                     newEnemies.add(enemy);
                     break;

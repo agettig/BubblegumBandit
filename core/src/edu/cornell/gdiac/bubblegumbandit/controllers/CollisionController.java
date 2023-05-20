@@ -138,7 +138,7 @@ public class CollisionController implements ContactListener {
             if ((obstacleA instanceof Gummable || obstacleA instanceof BanditModel) && !(obstacleB instanceof ShockModel)) {
                 if (obstacleB instanceof DoorModel) {
                    DoorModel door = (DoorModel) obstacleB;
-                   if (door.isLocked() && door.isHorizontal()) {
+                   if (door.isLocked() && door.isHorizontal() && !fixB.isSensor()) {
                        obstacleA.startCollision(obstacleB, fixA);
                    }
                 } else {
@@ -148,7 +148,7 @@ public class CollisionController implements ContactListener {
             if ((obstacleB instanceof Gummable || obstacleB instanceof BanditModel) && !(obstacleA instanceof ShockModel)) {
                 if (obstacleA instanceof DoorModel) {
                     DoorModel door = (DoorModel) obstacleA;
-                    if (door.isLocked() && door.isHorizontal()) {
+                    if (door.isLocked() && door.isHorizontal() && !fixA.isSensor()) {
                         obstacleB.startCollision(obstacleA, fixB);
                     }
                 } else {
