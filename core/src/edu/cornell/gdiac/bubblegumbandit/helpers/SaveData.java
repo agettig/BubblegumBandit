@@ -54,7 +54,7 @@ public class SaveData {
       if(prefs.getInteger("key"+j, -10)==-10) return false;
     }
 
-    return true;
+    return false;
   }
 
   /** Makes a new save with defaults
@@ -139,7 +139,8 @@ public class SaveData {
    * @param level the level number
    */
   public static boolean completed(int level) {
-    return getLevelStatus(level)>-1;
+    return true;
+    //return getLevelStatus(level)>-1;
   }
 
   /** Returns the number of stars collected from a completed level
