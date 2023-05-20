@@ -176,7 +176,6 @@ public class LaserController {
                 SoundController.playSound("laserLocking", 0.25f);
                 SoundController.lastPlayed(0);
             }
-
             if(enemy.firingLaser()){
                 //We use the most recent charging hit point to shoot our locked laser towards.
                 bodiesToIgnore.remove("bandit");
@@ -190,6 +189,10 @@ public class LaserController {
                 }
                 else {
                     SoundController.stopSound("laserFiring");
+                }
+                if (enemy.getFiringDistance(firingTime) > 0.99) {
+                    System.out.println(SoundController.playSound("banditHurt", 0.9f));
+                    SoundController.lastPlayed(-28);
                 }
                 enemy.incrementFiringTicks();
 

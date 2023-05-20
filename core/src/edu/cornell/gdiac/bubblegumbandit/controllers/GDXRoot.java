@@ -186,6 +186,7 @@ public class GDXRoot extends Game implements ScreenListener {
             initialized = true;
         }
 
+        //if leaving level select, clear any ongoing explosions
         if (screen == levels) {
             SoundController.stopSound("shipExplosion");
             SoundController.stopSound("shipExhaust");
@@ -230,9 +231,6 @@ public class GDXRoot extends Game implements ScreenListener {
                 controller.setScreenListener(this);
                 controller.setCanvas(canvas);
                 if (screen == levels) {
-//                    SoundController.stopSound("shipExplosion");
-//                    SoundController.stopSound("shipExhaust");
-//                    levels.clearExplosions();
                     controller.setLevelNum(levels.getSelectedLevel());
                 }
                 if (screen == gameOver && gameOver.gameWon()) controller.previousLevel();
