@@ -2251,12 +2251,12 @@
                         {
                          "name":"rightx1",
                          "type":"int",
-                         "value":-1
+                         "value":2
                         }, 
                         {
                          "name":"rightx2",
                          "type":"int",
-                         "value":-1
+                         "value":25
                         }, 
                         {
                          "name":"righty1",
