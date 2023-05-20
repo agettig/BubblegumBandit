@@ -540,39 +540,39 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
-        if(assets.isFinished() && !dataMade) {
-            dataMade = true;
-            boolean hasSave = SaveData.saveExists(assets);
-            displayNewSave = true;
-            if(!hasSave)  {
-                SaveData.makeData(assets);
-                displayNewSave = false;
+        if (assets.isFinished()) {
+            SoundController.playMusic("menu");
+            if (!dataMade) {
+                dataMade = true;
+                boolean hasSave = SaveData.saveExists(assets);
+                displayNewSave = true;
+                if (!hasSave) {
+                    SaveData.makeData(assets);
+                    displayNewSave = false;
+                }
             }
-        SoundController.playMusic("menu");
+            if (pageTimer == -1) {
+                //boolean hasSave = SaveData.saveExists(assets);
+                pageTimer = 12f;
+                currentPage = page1;
+            } else if (assets.isFinished() && pageTimer > 0) {
+                pageTimer -= delta;
+                if (pageTimer < 8 && currentPage == page1) {
+                    currentPage = page2;
+                    SoundController.playSound("pageTurn", 1);
+                } else if (pageTimer < 4 && currentPage == page2) {
+                    currentPage = page3;
+                    SoundController.playSound("pageTurn", 1);
+                }
+                if (pageTimer > 11.5) pageColor = new Color(1, 1, 1, pageColor.a += .1f);
+                else if (pageTimer < 8.5 && pageTimer >= 8) pageColor = new Color(1, 1, 1, pageColor.a -= .1f);
+                else if (pageTimer < 8 && pageTimer > 7.5) pageColor = new Color(1, 1, 1, pageColor.a += .1f);
+                else if (pageTimer < 4.5 && pageTimer >= 4) pageColor = new Color(1, 1, 1, pageColor.a -= .1f);
+                else if (pageTimer < 4 && pageTimer > 3.5) pageColor = new Color(1, 1, 1, pageColor.a += .1f);
+                else if (pageTimer < .5) pageColor = new Color(1, 1, 1, pageColor.a -= .1f);
+                else pageColor = Color.WHITE.cpy();
 
-        }
-        if(assets.isFinished() && pageTimer==-1){
-            //boolean hasSave = SaveData.saveExists(assets);
-            pageTimer = 12f;
-            currentPage = page1;
-        }
-        else if (assets.isFinished()&&pageTimer>0) {
-            pageTimer -= delta;
-            if(pageTimer<8&&currentPage==page1) {
-                currentPage = page2;
-                SoundController.playSound("pageTurn", 1);
-            } else if(pageTimer<4&&currentPage==page2) {
-                currentPage = page3;
-                SoundController.playSound("pageTurn", 1);
             }
-            if(pageTimer>11.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
-            else if(pageTimer<8.5&&pageTimer>=8) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
-            else if(pageTimer<8&&pageTimer>7.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
-            else if(pageTimer<4.5&&pageTimer>=4) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
-            else if(pageTimer<4&&pageTimer>3.5) pageColor = new Color(1, 1, 1, pageColor.a+=.1f);
-            else if (pageTimer<.5) pageColor = new Color(1, 1, 1, pageColor.a-=.1f);
-            else pageColor = Color.WHITE.cpy();
-
         }
     }
 
