@@ -293,11 +293,11 @@ public class GameOverScreen implements Screen, InputProcessor {
     private void draw() {
         canvas.begin();
 
-        if(levelWon && SaveData.getContinueLevel() >= GameController.NUM_LEVELS){
-            listener.exitScreen(this, Screens.CREDITS);
-            canvas.end();
-            return;
-        }
+//        if(levelWon && SaveData.getContinueLevel() >= GameController.NUM_LEVELS){
+//            listener.exitScreen(this, Screens.CREDITS);
+//            canvas.end();
+//            return;
+//        }
 
         if (fadeFraction < 1) {
             background.setRegionHeight((int) ((fadeFraction) * backgroundHeight));

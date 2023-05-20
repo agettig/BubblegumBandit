@@ -240,10 +240,10 @@ public class GDXRoot extends Game implements ScreenListener {
             setScreen(controller);
         } else if (exitCode == Screens.GAME_WON) {
             gameOver.initialize(directory, canvas);
+            gameOver.setIsLastLevel(controller.getLevelNum() == 1);
             gameOver.gameWon(directory);
             gameOver.setScreenListener(this);
             gameOver.setCaptive(controller.getCaughtCaptives(), controller.getTotalCaptives());
-            gameOver.setIsLastLevel(controller.getLevelNum() == 1);
             canvas.resetCamera();
             setScreen(gameOver);
         } else if (exitCode == Screens.GAME_LOST) {
