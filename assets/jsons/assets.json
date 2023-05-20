@@ -558,7 +558,7 @@
     "level19": "jsons/levels/level18.json",
     "level20": "jsons/levels/level19.json",
     "level21": "jsons/levels/level20.json",
-    "level22": "jsons/levels/placeholder.json",
+    "level22": "jsons/levels/level21.json",
     "constants": "jsons/constants.json",
     "animations": "jsons/animations.json",
     "supports": "tilesets/supports.json",
