@@ -350,12 +350,12 @@ public class PlayerController{
         pausePrevious = pausePressed;
 
         // Check to see if a GamePad is connected
-        if (xbox != null && xbox.isConnected()) {
-            readGamepad();
-            readKeyboard( true); // Read as a back-up
-        } else {
+//        if (xbox != null && xbox.isConnected()) {
+//            readGamepad();
+//            readKeyboard( true); // Read as a back-up
+//        } else {
             readKeyboard(false);
-        }
+//        }
     }
 
     /**
