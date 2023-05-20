@@ -249,7 +249,7 @@ public class GameController implements Screen {
     /**
      * The number of levels in the game.
      */
-    public final static int NUM_LEVELS = 21;
+    public final static int NUM_LEVELS = 22;
 
     /**
      * Whether the orb has been collected.
@@ -898,6 +898,7 @@ public class GameController implements Screen {
         // Final message
         if (complete && !failed) {
             level.getBandit().setAnimation("victory", true, false);
+            level.getBandit().setInvulnerable();
             level.getExit().setOpen(true);
         }
     }

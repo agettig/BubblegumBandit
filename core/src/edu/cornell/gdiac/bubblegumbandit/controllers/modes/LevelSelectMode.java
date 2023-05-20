@@ -47,7 +47,7 @@ public class LevelSelectMode implements Screen, InputProcessor, ControllerListen
     //constants
 
     /** the number of levels to add to the level select screen*/
-    private final static int NUM_LEVELS = 21;
+    private final static int NUM_LEVELS = 22;
 
     /** the gap between level icons */
     private final static float LEVEL_GAP = 700;

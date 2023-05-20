@@ -333,6 +333,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private float shipTime;
 
     private boolean skipClicked;
+    private Color pageColor = Color.CLEAR.cpy();
+    float pageTimer = -1;
 
     /**
      * Returns the budget for the asset loader.
@@ -574,8 +576,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         }
     }
 
-    private Color pageColor = Color.CLEAR.cpy();
-    float pageTimer = -1;
+
     /**
      * Draw the status of this player mode.
      * <p>
@@ -583,7 +584,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
      */
-    private void draw() {
+    private void draw(){
         canvas.begin();
         resize((int)canvas.getCamera().viewportWidth, (int)canvas.getCamera().viewportHeight);
 
@@ -857,14 +858,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         canvas.draw(loadingBackground, Color.WHITE, 0, 0,
             canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
         canvas.draw(progressBackground, Color.WHITE,
-            centerX-progressBackground.getWidth()/2, centerY,
+            centerX-progressBackground.getWidth()/2f, centerY,
             scale*progressBackground.getWidth(), scale*progressBackground.getHeight());
       progressCurrent = new TextureRegion(progressFill, 0, 0,
           (int) (progressFill.getWidth()*progress), progressFill.getHeight());
       canvas.draw(progressCurrent, Color.WHITE, 0, 0,
-          centerX-progressFill.getWidth()/2, centerY+FILL_MARGIN,
+          centerX-progressFill.getWidth()/2f, centerY+FILL_MARGIN,
           progressCurrent.getRegionWidth(), progressCurrent.getRegionHeight());
-      canvas.draw(sunfish, Color.WHITE, 0f, 0f, (float) centerX+progressBackground.getWidth()/2-
+      canvas.draw(sunfish, Color.WHITE, 0f, 0f, (float) centerX+progressBackground.getWidth()/2f-
               sunfish.getHeight(),
           (float) centerY+progressBackground.getHeight()*3.2f, (float) (-Math.PI/2f), 1f, 1f);
       for(int i = 0; i<3; i++) {
@@ -877,14 +878,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
               sizes[i][1] = sizes[i][1]*-1;
           }
           canvas.draw(jet, Color.WHITE, jet.getWidth()*sizes[i][0]/2, jet.getHeight()*sizes[i][0]/2,
-              (float) centerX+progressBackground.getWidth()/2-
+              (float) centerX+progressBackground.getWidth()/2f-
                   sunfish.getHeight()-(jet.getWidth()+8)*(i+.6f),
               (float) centerY+progressBackground.getHeight()*2.3f, (float) (-Math.PI/2f), sizes[i][0],  sizes[i][0]);
       }
-      canvas.drawText("LOADING", font, centerX-progressBackground.getWidth()/2, centerY+progressBackground.getHeight()*2.3f);
-
-
-
+      canvas.drawText("LOADING", font, centerX-progressBackground.getWidth()/2f, centerY+progressBackground.getHeight()*2.3f);
 
     }
 

@@ -287,6 +287,9 @@ public class BanditModel extends CapsuleObstacle {
     /** whether to show the victory pose */
     private boolean victory;
 
+    /** whether the bandit should not be damaged anymore */
+    private boolean invulnerable;
+
     /** The texture for the win pose */
     private TextureRegion victoryText;
 
@@ -317,7 +320,9 @@ public class BanditModel extends CapsuleObstacle {
 
     public void setKnockback(boolean knockback, boolean shock) {
         isKnockback = knockback;
-       if( health>0) {
+        if (invulnerable) return;
+        System.out.println("knock");
+        if( health>0) {
            if(!shock) animationController.setAnimation("knock", false, false);
            else {
                animationController.setAnimation("shock", false, false);
@@ -349,6 +354,7 @@ public class BanditModel extends CapsuleObstacle {
      * @param laser Whether the player was hit by a laser
      */
     public boolean hitPlayer(float damage, boolean laser) {
+        if(invulnerable) return false;
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
             if (!laser) {
@@ -658,6 +664,7 @@ public class BanditModel extends CapsuleObstacle {
         faceRight = false;
 
         victory = false;
+        invulnerable = false;
 
         shootCooldown = 0;
 
@@ -962,7 +969,7 @@ public class BanditModel extends CapsuleObstacle {
 
         // Anim controller update
         if(!animationController.hasTemp()&&!animationController.isEnding()
-                &&!animationController.getCurrentAnimation().equals("victory")) {
+                &&!animationController.getCurrentAnimation().equals("victory")&&!invulnerable) {
              if (!isGrounded) {
                 if(hasFlipped) animationController.setAnimation("fallNeg", true, false);
                 else animationController.setAnimation("fall", true, false);
@@ -1162,4 +1169,6 @@ public class BanditModel extends CapsuleObstacle {
   public void setVictory() {
         victory = true;
   }
+
+  public void setInvulnerable() {invulnerable = true;}
 }
