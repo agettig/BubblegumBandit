@@ -569,30 +569,31 @@ public class GameController implements Screen {
         }
 
         // Toggle debug and handle resets.
-        if (input.didDebug()) {
-            level.setDebug(!level.getDebug());
-        }
-        if (input.didReset()) {
-            reset();
-        }
-        if (input.didCameraSwap()) {
-            canvas.getCamera().toggleDebug();
-        }
-        if (input.didAdvance()) {
-            SaveData.setLevel(levelNum);
-            levelNum++;
-            if (levelNum > NUM_LEVELS) levelNum = 1;
-            reset();
-        }
-        if (input.didRetreat()) {
-            levelNum--;
-            if (levelNum < 1) {
-                levelNum = NUM_LEVELS;
-            }
-            reset();
-        }
+//        if (input.didDebug()) {
+//            level.setDebug(!level.getDebug());
+//        }
+//        if (input.didReset()) {
+//            reset();
+//        }
+//        if (input.didCameraSwap()) {
+//            canvas.getCamera().toggleDebug();
+//        }
+//        if (input.didAdvance()) {
+//            SaveData.setLevel(levelNum);
+//            levelNum++;
+//            if (levelNum > NUM_LEVELS) levelNum = 1;
+//            reset();
+//        }
+//        if (input.didRetreat()) {
+//            levelNum--;
+//            if (levelNum < 1) {
+//                levelNum = NUM_LEVELS;
+//            }
+//            reset();
+//        }
 
         if (input.didPause()) {
+            System.out.println("Pause!");
             setPaused(true);
             return false;
         }
@@ -736,7 +737,6 @@ public class GameController implements Screen {
             if (gum != null) {
                 bandit.fireGum();
                 level.activate(gum);
-                gum.setFilter(CATEGORY_GUM, MASK_GUM);
             }
         } else {
             bandit.setShooting(false);

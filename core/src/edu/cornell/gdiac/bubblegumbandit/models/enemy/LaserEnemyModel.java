@@ -256,6 +256,7 @@ public class LaserEnemyModel extends EnemyModel {
 
         // if jumping
         if (isJumping){
+
             if (jumpCooldown > 0){
                 jumpCooldown--;
             }
@@ -264,7 +265,10 @@ public class LaserEnemyModel extends EnemyModel {
                 if (!hasJumped && jumpCooldown <= 0) {
                     int impulse = isFlipped ? -30 : 30;
                     getBody().applyLinearImpulse(new Vector2(0, impulse), getPosition(), true);
+                    animationController.setAnimation("jump", true, false);
+
                     hasJumped = true;
+
                 }
             }
 
@@ -285,8 +289,14 @@ public class LaserEnemyModel extends EnemyModel {
             jumpCooldown --;
         }
         // attack animations
-        if (chargingLaser()) {
+        if (chargingLaser() ){
             animationController.setAnimation("charge", true, false);
+        }
+        else if (lockingLaser()){
+            animationController.setAnimation("lock", true, false);
+        }
+        else if (firingLaser()){
+            animationController.setAnimation("fire", true, false);
         }
         else if (stuck || gummed){
             animationController.setAnimation("stuck", true, false);

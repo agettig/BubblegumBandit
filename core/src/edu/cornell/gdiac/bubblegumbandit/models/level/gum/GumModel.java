@@ -2,7 +2,14 @@ package edu.cornell.gdiac.bubblegumbandit.models.level.gum;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
+import edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController;
 import edu.cornell.gdiac.bubblegumbandit.helpers.Unstickable;
 import edu.cornell.gdiac.bubblegumbandit.models.enemy.RollingEnemyModel;
 import edu.cornell.gdiac.bubblegumbandit.view.GameCanvas;
@@ -12,7 +19,10 @@ import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 import java.util.HashSet;
 
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_GUM;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.CATEGORY_PROJECTILE;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_GUM;
 import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_GUM_LIMIT;
+import static edu.cornell.gdiac.bubblegumbandit.controllers.CollisionController.MASK_PROJECTILE;
 
 /**
  * Class to represent a "stuck" Bubblegum. This Bubblegum
@@ -39,6 +49,10 @@ public class GumModel extends WheelObstacle implements Unstickable {
 
     private float outlineHeight;
 
+    private Fixture sensorFixture;
+    private CircleShape sensorShape;
+
+
     /**
      * Creates a Bubblegum projectile.
      * */
@@ -47,7 +61,31 @@ public class GumModel extends WheelObstacle implements Unstickable {
         obstacles = new ObjectSet<>();
         onTile = false;
         outlineHeight = 48;
+        sensorShape = new CircleShape();
+        sensorShape.setRadius(radius * 1.5f);
     }
+
+    public boolean activatePhysics(World world) {
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+
+        setFilter(CATEGORY_GUM, MASK_GUM);
+
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = 0;
+        sensorDef.isSensor = true;
+        sensorDef.shape = sensorShape;
+        sensorFixture = body.createFixture(sensorDef);
+        sensorFixture.setUserData(this);
+
+        Filter filter = sensorFixture.getFilterData();
+        filter.maskBits = 0;
+        sensorFixture.setFilterData(filter);
+
+        return true;
+    }
+
 
     /**
      * Checks if obstacle is not already stuck to gum and gum has not reached max stuck obstacles

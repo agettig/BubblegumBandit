@@ -357,8 +357,10 @@ public class BanditModel extends CapsuleObstacle {
         if(invulnerable) return false;
         if (!inCooldown || laser) {
             health = Math.max(0, health - damage);
-            SoundController.playSound("banditHurt", .7f);
-            SoundController.lastPlayed(-28);
+            if (!laser) {
+                SoundController.playSound("banditHurt", .9f);
+                SoundController.lastPlayed(-28);
+            }
             healthCountdown = HEALTH_REGEN_COOLDOWN;
             startCooldown();
             return true;
@@ -972,7 +974,9 @@ public class BanditModel extends CapsuleObstacle {
                 if(hasFlipped) animationController.setAnimation("fallNeg", true, false);
                 else animationController.setAnimation("fall", true, false);
             }
-            else if (stunTime > 0) animationController.setAnimation("stunned", true, false);
+            else if (stunTime > 0) {
+                animationController.setAnimation("stunned", true, false);
+             }
             else if(playingReload) animationController.setAnimation("reload", true, false);
              else if (getMovement() == 0)  {
                  if(AFKtimer>AFKwait) animationController.setAnimation("afk", true, false);
@@ -1052,7 +1056,7 @@ public class BanditModel extends CapsuleObstacle {
                 float banditRight = getX() + (getWidth() / 2f);
                 boolean isCrusher = false;
                 for (Obstacle ob : getCollisions()) {
-                    if (!(ob instanceof CrusherModel || ob instanceof DoorModel)) {
+                    if (!(ob instanceof CrusherModel)) {
                         float obHW = 0;
 
                         if (ob instanceof CapsuleObstacle) {
