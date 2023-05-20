@@ -113,7 +113,8 @@ public class GDXRoot extends Game implements ScreenListener {
         settingsMode = new SettingsMode();
         settingsMode.setViewport(canvas.getUIViewport());
         gameOver = new GameOverScreen();
-        credits = new CreditsMode();
+        credits = new CreditsMode(canvas.getUIViewport());
+
 
 
         // Initialize the three game worlds
