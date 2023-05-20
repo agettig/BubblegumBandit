@@ -71,6 +71,7 @@ public class SoundController {
     private static SoundEffect banditJingle;
     private static SoundEffect pageTurn;
     private static SoundEffect unlockDoor;
+    private static SoundEffect hubbaVictory;
 
     /**Hashmap holding sounds and corresponding Id*/
     private static HashMap<SoundEffect, Integer> soundIds;
@@ -167,7 +168,7 @@ public class SoundController {
         banditJingle = directory.getEntry("banditJingle", SoundEffect.class);
         pageTurn = directory.getEntry("pageTurn", SoundEffect.class);
         unlockDoor = directory.getEntry("unlockDoor", SoundEffect.class);
-
+        hubbaVictory = directory.getEntry("hubbaVictory", SoundEffect.class);
 
         soundIds = new HashMap<SoundEffect, Integer>() {{
             put(jumpSound, -1);
@@ -202,6 +203,7 @@ public class SoundController {
             put(banditJingle, -30);
             put(unlockDoor, -31);
             put(pageTurn, -32);
+            put(hubbaVictory, -33);
         }};
 
         sounds = new HashMap<String, SoundEffect>() {{
@@ -237,6 +239,7 @@ public class SoundController {
             put("shipDoor", shipDoor);
             put("banditJingle", banditJingle);
             put("unlockDoor", unlockDoor);
+            put("hubbaVictory", hubbaVictory);
         }};
 
        menu = directory.getEntry( "menu", AudioSource.class );

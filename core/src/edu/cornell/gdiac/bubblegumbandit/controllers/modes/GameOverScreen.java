@@ -224,7 +224,11 @@ public class GameOverScreen implements Screen, InputProcessor {
         levelSelectButton = directory.getEntry("retryLevelButton", Texture.class);
         SoundController.pauseMusic();
         SoundController.stopSound("banditJingle");
-        SoundController.playSound("victory", 1);
+        if (isLastLevel) {
+            SoundController.playSound("hubbaVictory", 1);
+        } else {
+            SoundController.playSound("victory", 1);
+        }
         levelWon = true;
     }
 
