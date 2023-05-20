@@ -3,6 +3,7 @@ package edu.cornell.gdiac.bubblegumbandit.helpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
+import edu.cornell.gdiac.bubblegumbandit.controllers.GameController;
 import edu.cornell.gdiac.bubblegumbandit.controllers.modes.SettingsMode;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -287,7 +288,7 @@ public class SaveData {
     // counts[0] = total
     // counts[1] = collected
     int[] counts = new int[2];
-    for(int i = 0; i<=20; i++) {
+    for(int i = 0; i<= GameController.NUM_LEVELS - 1; i++) {
       int captives = SaveData.getCaptiveCount(i);
       counts[0] += captives == NOT_FOUND ? 0 : captives;
       counts[1] += SaveData.completed(i) ? SaveData.getStars(i) : 0;

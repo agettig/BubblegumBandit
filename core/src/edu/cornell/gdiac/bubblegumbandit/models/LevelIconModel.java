@@ -228,7 +228,7 @@ public class LevelIconModel {
         }
         else{
             int[] counts = SaveData.getCaptivesRescued();
-            if (counts[0] == counts[1]) SaveData.unlock(21);
+            if (counts[0] == counts[1]) SaveData.unlock(GameController.NUM_LEVELS);
             canvas.draw(success, numTint, success.getRegionWidth()/2f, 0, pos.x, pos.y + texture.getRegionHeight()/2f + MARKER_OFFSET, 0, 1, 1);
             canvas.drawText(valueOf(counts[1]) + "/" + valueOf(counts[0]), font,Color.WHITE, pos.x, pos.y + texture.getRegionHeight()/2f +marker.getRegionHeight() * 0.7f + MARKER_OFFSET, 1, Align.center, false);
         }
