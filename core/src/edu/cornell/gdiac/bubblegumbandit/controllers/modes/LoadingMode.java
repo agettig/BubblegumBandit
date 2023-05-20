@@ -541,10 +541,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         if(assets.isFinished() && !dataMade) {
             dataMade = true;
             boolean hasSave = SaveData.saveExists(assets);
+            displayNewSave = true;
             if(!hasSave)  {
                 SaveData.makeData(assets);
                 displayNewSave = false;
-            } else displayNewSave = true;
+            }
         SoundController.playMusic("menu");
 
         }

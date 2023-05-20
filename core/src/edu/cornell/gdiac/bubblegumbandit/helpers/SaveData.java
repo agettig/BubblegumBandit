@@ -22,7 +22,7 @@ public class SaveData {
   /** The number of key bindings in-game */
   private static int keyCount = 9;
 
-  private static boolean lockLevels = true;
+  private static boolean lockLevels = false;
 
   //any numbers above -1 represent the number of stars collected
 
