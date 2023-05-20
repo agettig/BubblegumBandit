@@ -4,6 +4,7 @@
     "loadingBackground": "textures/settings/settingsBackground.png",
     "startButton": "textures/UI/start.png",
     "settingsButton": "textures/UI/settings.png",
+    "skipButton": "textures/UI/skip.png",
     "exitButton": "textures/UI/quit.png",
     "levelSelectButton": "textures/UI/levelSelect.png",
     "creditsButton": "textures/UI/credits.png",
@@ -12,7 +13,11 @@
     "progressFill": "textures/UI/progressFill.png",
     "spaceship": "textures/levelSelect/sunfish.png",
     "jet": "textures/UI/jet.png",
-    "bigShip": "textures/UI/ship.png"
+    "bigShip": "textures/UI/ship.png",
+    "page1": "textures/UI/page1.png",
+    "page2": "textures/UI/page2.png",
+    "page3": "textures/UI/page3.png"
+
   },
   "fonts": {
     "projectSpace": {
@@ -20,4 +25,5 @@
       "size": 25
     }
   }
+
 }

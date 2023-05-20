@@ -625,7 +625,9 @@ public class GameController implements Screen {
             levelNum++;
 
             SaveData.setStatus(levelNum - 1, level.getBandit().getNumStars());
-            SaveData.unlock(levelNum);
+            if (levelNum != NUM_LEVELS) {
+                SaveData.unlock(levelNum);
+            }
 
             if (levelNum > NUM_LEVELS) {
                 levelNum = 1;

@@ -987,6 +987,7 @@ public class BanditModel extends CapsuleObstacle {
             AFKtimer = 0;
         }
 
+        if(isShooting||playingReload) AFKtimer = 0;
 
         curFrame = animationController.getFrame();
 

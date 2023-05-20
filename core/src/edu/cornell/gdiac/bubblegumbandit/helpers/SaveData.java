@@ -181,9 +181,11 @@ public class SaveData {
    */
   public static void setStatus(int level, int status) {
     Preferences prefs = Gdx.app.getPreferences(prefsName);
-    prefs.putInteger("level"+level, status);
-    prefs.flush();
-
+    // only rewrite if more captives gained
+    if (status >  prefs.getInteger("level"+level, -10)) {
+      prefs.putInteger("level" + level, status);
+      prefs.flush();
+    }
   }
 
   /** Returns an array of the current key bindings
@@ -279,4 +281,16 @@ public class SaveData {
     prefs.flush();
   }
 
+
+  public static int[] getCaptivesRescued(){
+    // counts[0] = total
+    // counts[1] = collected
+    int[] counts = new int[2];
+    for(int i = 0; i<=20; i++) {
+      int captives = SaveData.getCaptiveCount(i);
+      counts[0] += captives == NOT_FOUND ? 0 : captives;
+      counts[1] += SaveData.completed(i) ? SaveData.getStars(i) : 0;
+    }
+    return counts;
+  }
 }

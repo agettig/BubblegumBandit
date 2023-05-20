@@ -742,7 +742,7 @@
          "name":"BoardGravityUp",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":50,
          "x":0,
          "y":0
@@ -783,7 +783,7 @@
          "name":"BoardGravityDown",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":50,
          "x":0,
          "y":0

@@ -486,6 +486,7 @@
     }
   },
   "soundfx": {
+    "pageTurn": "sounds/pageTurn.wav",
     "jump": "sounds/jump.wav",
     "smallEnemyShooting": "sounds/smallEnemyShooting.wav",
     "gumSplat": "sounds/gumSplat.wav",
