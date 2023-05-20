@@ -82,6 +82,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private Texture startButton;
 
     /**
+     * Button to reset save
+     */
+    private Texture newSaveButton;
+
+    /**
      * Button to enter level select
      */
     private Texture creditsButton;
@@ -272,6 +277,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
     private boolean hoveringSkip;
 
+    private boolean displayNewSave;
+
+    private boolean hoveringNewSave;
+
+    private int newSavePositionX;
+
+    private int newSavePositionY;
+
 
     private float scale;
 
@@ -356,6 +369,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * */
     public boolean isReady() {
         return pressState == 5;
+    }
+
+    public boolean isNewSave() {
+        return pressState == 13;
     }
 
     /**
@@ -517,18 +534,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 settingsButton = internal.getEntry("settingsButton", Texture.class);
                 exitButton = internal.getEntry("exitButton", Texture.class);
                 skipButton = internal.getEntry("skipButton", Texture.class);
+                newSaveButton = internal.getEntry("newSaveButton", Texture.class);
             }
         }
         resize(canvas.getWidth(), canvas.getHeight());
         if(assets.isFinished() && !dataMade) {
+            dataMade = true;
             boolean hasSave = SaveData.saveExists(assets);
-
-            //    Uncomment to reset
-            //hasSave = false;
+            displayNewSave = true;
             if(!hasSave)  {
-                dataMade = true;
-                SaveData.makeData(true, assets);
-            } else if (hasSave) dataMade = true;
+                SaveData.makeData(assets);
+                displayNewSave = false;
+            }
         SoundController.playMusic("menu");
 
         }
@@ -570,7 +587,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         canvas.begin();
         resize((int)canvas.getCamera().viewportWidth, (int)canvas.getCamera().viewportHeight);
 
-        if (startButton == null || settingsButton == null || exitButton == null || hoverPointer == null) {
+        if (startButton == null || settingsButton == null || exitButton == null
+            || hoverPointer == null|| newSaveButton == null) {
             drawProgress(canvas);
         } else {
             if(pageTimer>0) {
@@ -598,23 +616,38 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 );
             } else {
                 canvas.draw(background, Color.WHITE, 0, 0, canvas.getCamera().viewportWidth, canvas.getCamera().viewportHeight);
+
                 float highestButtonY = canvas.getCamera().viewportHeight / 2 - BUTTONS_PUSH_DOWN;
                 float lowestButtonY = canvas.getCamera().viewportHeight / 6;
                 float buttonSpace = highestButtonY+BUTTONS_PUSH_DOWN - lowestButtonY;
-                float gap = buttonSpace / 4;
+                float gap = displayNewSave? buttonSpace/5.35f : buttonSpace / 4;
 
+
+                int gapMulti = 0;
 
                 startButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-                startButtonPositionY = (int) highestButtonY;
+                startButtonPositionY = (int) ((int) highestButtonY-gap*gapMulti);
+
+                gapMulti++;
+
+                if(displayNewSave) {
+                    newSavePositionX = (int) canvas.getCamera().viewportWidth / 5;
+                    newSavePositionY = (int) ((int) highestButtonY-gap*gapMulti);
+                    gapMulti++;
+                }
 
                 settingsButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-                settingsButtonPositionY = (int) (highestButtonY - gap);
+                settingsButtonPositionY = (int) (highestButtonY - gap*gapMulti);
+
+                gapMulti++;
 
                 levelSelectButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-                levelSelectButtonPositionY = (int) (highestButtonY - gap * 2);
+                levelSelectButtonPositionY = (int) (highestButtonY - gap * gapMulti);
+
+                gapMulti++;
 
                 exitButtonPositionX = (int) canvas.getCamera().viewportWidth / 5;
-                exitButtonPositionY = (int) (highestButtonY - gap * 3);
+                exitButtonPositionY = (int) (highestButtonY - gap * gapMulti);
 
 
                 float pointerX = startButtonPositionX / 4f;
@@ -645,6 +678,35 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                         scale
                     );
                 }
+
+                if(displayNewSave) {
+                    canvas.draw(
+                        newSaveButton,
+                        getButtonTint("newSave"),
+                        newSaveButton.getWidth() / 2f,
+                        newSaveButton.getHeight() / 2f,
+                        newSavePositionX,
+                        newSavePositionY,
+                        0,
+                        scale * BUTTON_SCALE,
+                        scale * BUTTON_SCALE
+                    );
+                    if (hoveringNewSave) {
+                        canvas.draw(
+                            hoverPointer,
+                            Color.WHITE,
+                            hoverPointer.getWidth() / 2f,
+                            hoverPointer.getHeight() / 2f,
+                            pointerX,
+                            newSavePositionY,
+                            0,
+                            scale,
+                            scale
+                        );
+                    }
+                }
+
+
 
                 //Draw Level Select
                 canvas.draw(
@@ -739,7 +801,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     }
 
 
-    private Color getButtonTint(String buttonName) {
+    private Color getButtonTint(String buttonName) { //why is this not a switch?
 
         if (buttonName.equals("start")) {
             if (hoveringStart && pressState == 1) return pressTint;
@@ -750,6 +812,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         if (buttonName.equals("settings")) {
             if (hoveringSettings && pressState == 2) return pressTint;
             else if (hoveringSettings) return hoverTint;
+            else return defaultTint;
+        }
+        if(buttonName.equals("newSave")) {
+            if(hoveringNewSave&&pressState == 12) return pressTint;
+            else if(hoveringNewSave) return hoverTint;
             else return defaultTint;
         }
 
@@ -841,10 +908,19 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             if (isReady() && listener != null) {
                 SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, Screens.LEVEL_SELECT);
+
             }
             if (isSettings() && listener != null){
                 SoundController.playSound("keyClick", 1);
                 listener.exitScreen(this, Screens.SETTINGS);
+            }
+
+            if (isNewSave() && listener != null){
+                SoundController.playSound("keyClick", 1);
+                displayNewSave = false;
+                SaveData.makeData(assets);
+                pressState = 0;
+                return;
             }
 
             if (isCredits() && listener != null){
@@ -862,6 +938,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
                 SoundController.playSound("keyClick", 1);
                 pageTimer = 0;
                 skipClicked = false;
+                pressState = 0;
             }
         }
     }
@@ -990,6 +1067,20 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             pressState = 2;
         }
 
+        //Detect clicks on new save button
+        if(displayNewSave) {
+            rectWidth = scale * BUTTON_SCALE * newSaveButton.getWidth();
+            rectHeight = scale * BUTTON_SCALE * newSaveButton.getHeight();
+            leftX = newSavePositionX - rectWidth / 2.0f;
+            rightX = newSavePositionX + rectWidth / 2.0f;
+            topY = newSavePositionY - rectHeight / 2.0f;
+            bottomY = newSavePositionY + rectHeight / 2.0f;
+            if (pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY) {
+                pressState = 12;
+            }
+        }
+
+
         //Detect clicks on the credits button
         rectWidth = scale * BUTTON_SCALE * creditsButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * creditsButton.getHeight();
@@ -1053,6 +1144,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         //Settings
         if (pressState == 3) {
             pressState = 7;
+            return false;
+        }
+
+        //New Save
+        if(pressState == 12) {
+            pressState = 13;
             return false;
         }
 
@@ -1205,6 +1302,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
         topY = exitButtonPositionY - rectHeight / 2.0f;
         bottomY = exitButtonPositionY + rectHeight / 2.0f;
         hoveringExit = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
+
+        rectWidth = scale * BUTTON_SCALE * newSaveButton.getWidth();
+        rectHeight = scale * BUTTON_SCALE * newSaveButton.getHeight();
+        leftX = newSavePositionX - rectWidth / 2.0f;
+        rightX = newSavePositionX + rectWidth / 2.0f;
+        topY = newSavePositionY - rectHeight / 2.0f;
+        bottomY = newSavePositionY + rectHeight / 2.0f;
+        hoveringNewSave = pixelX >= leftX && pixelX <= rightX && pixelY >= topY && pixelY <= bottomY;
 
         rectWidth = scale * BUTTON_SCALE * skipButton.getWidth();
         rectHeight = scale * BUTTON_SCALE * skipButton.getHeight();
