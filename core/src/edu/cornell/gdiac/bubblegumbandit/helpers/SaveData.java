@@ -48,14 +48,16 @@ public class SaveData {
 
     }
 
-    int[] defaultKeys = SettingsMode.defaultVals;
-    boolean[] defaultBindings = SettingsMode.defaultBindings;
-
     for (int j = 0; j < keyCount; j++){
       if(prefs.getInteger("key"+j, -10)==-10) return false;
     }
 
     return true;
+  }
+
+  public static boolean saveExistsSettings(){
+    Preferences prefs =  Gdx.app.getPreferences(prefsName);
+    return prefs.getBoolean("save created", false);
   }
 
   /** Makes a new save with defaults
@@ -106,7 +108,7 @@ public class SaveData {
     int[] defaultKeys = SettingsMode.defaultVals;
     boolean[] defaultBindings = SettingsMode.defaultBindings;
 
-    for (int j = 0; i < keyCount; j++){
+    for (int j = 0; j < keyCount; j++){
       prefs.putInteger("key" + j, defaultKeys[j]);
       prefs.putBoolean("key"+j+"bool", defaultBindings[j]);
     }

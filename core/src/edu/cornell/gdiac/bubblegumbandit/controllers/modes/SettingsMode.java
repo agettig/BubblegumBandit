@@ -298,8 +298,14 @@ public class SettingsMode implements Screen {
         controlsTable.setFillParent(true);
 //        controlsTable.debug();
         stage.addActor(settingsTable);
-        values = SaveData.getKeyBindings();
-        bindings = SaveData.getKeyButtons();
+        if (SaveData.saveExistsSettings()) {
+            values = SaveData.getKeyBindings();
+            bindings = SaveData.getKeyButtons();
+        }
+        else{
+            values = defaultVals;
+            bindings = defaultBindings;
+        }
         accessedFromMain = true;
 
         settingsInputProcessor = new SettingsInputProcessor();
