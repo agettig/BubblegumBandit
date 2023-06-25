@@ -305,7 +305,6 @@ public class SettingsMode implements Screen {
         else{
             values = defaultVals;
             bindings = defaultBindings;
-//            resetDefaultBindings();
         }
         accessedFromMain = true;
 
@@ -318,7 +317,6 @@ public class SettingsMode implements Screen {
         buttonToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
         buttonToString.put(Input.Buttons.BACK, "BACK CLICK");
         buttonToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
-
     }
 
     public void resetDefaultBindings() {

@@ -223,7 +223,6 @@ public class GDXRoot extends Game implements ScreenListener {
             levels.setScreenListener(this);
             setScreen(levels);
         } else if (exitCode == Screens.CONTROLLER) {
-//            settingsMode.verifySettings();
             if (screen == settingsMode) {
                 canvas.setCamera(oldCamera);
                 controller.setPaused(true);
