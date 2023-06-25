@@ -298,8 +298,15 @@ public class SettingsMode implements Screen {
         controlsTable.setFillParent(true);
 //        controlsTable.debug();
         stage.addActor(settingsTable);
-        values = SaveData.getKeyBindings();
-        bindings = SaveData.getKeyButtons();
+        if (SaveData.saveExistsSettings()) {
+            values = SaveData.getKeyBindings();
+            bindings = SaveData.getKeyButtons();
+        }
+        else{
+            values = defaultVals;
+            bindings = defaultBindings;
+//            resetDefaultBindings();
+        }
         accessedFromMain = true;
 
         settingsInputProcessor = new SettingsInputProcessor();
@@ -311,6 +318,7 @@ public class SettingsMode implements Screen {
         buttonToString.put(Input.Buttons.FORWARD, "FORWARD CLICK");
         buttonToString.put(Input.Buttons.BACK, "BACK CLICK");
         buttonToString.put(Input.Buttons.MIDDLE, "MIDDLE CLICK");
+
     }
 
     public void resetDefaultBindings() {

@@ -131,10 +131,15 @@ public class SoundController {
     }
 
     public void initialize(AssetDirectory directory){
-       // musicVolume = .5f;
-       // soundEffectsVolume = 1f;
-        musicVolume = SaveData.getMusicVolume();
-        soundEffectsVolume = SaveData.getSFXVolume();
+
+        if (SaveData.saveExistsSettings()){
+            musicVolume = SaveData.getMusicVolume();
+            soundEffectsVolume = SaveData.getSFXVolume();
+        }
+        else{
+             musicVolume = .5f;
+             soundEffectsVolume = 1f;
+        }
         //get from save data
         jumpSound = directory.getEntry("jump", SoundEffect.class);
         smallEnemyShootingSound = directory.getEntry("smallEnemyShooting", SoundEffect.class);
